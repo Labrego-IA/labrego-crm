@@ -1,0 +1,921 @@
+/* Labrego IA - WhatsApp Extension Styles */
+/* Design alinhado com o CRM labrego-ia */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Variables - Matching CRM Design System */
+:root {
+  --gm-primary: #4f46e5;
+  --gm-primary-light: #9c46e0;
+  --gm-accent: #7C83FD;
+  --gm-bg: #ffffff;
+  --gm-bg-secondary: #f9fafb;
+  --gm-bg-card: #ffffff;
+  --gm-text: #1E1E2F;
+  --gm-text-secondary: #4b5563;
+  --gm-text-muted: #9ca3af;
+  --gm-border: #e5e7eb;
+  --gm-border-light: #f3f4f6;
+  --gm-error: #f28b82;
+  --gm-success: #47c799;
+  --gm-warning: #fbbc05;
+  --gm-shadow: rgba(0, 0, 0, 0.08);
+  --gm-shadow-lg: rgba(0, 0, 0, 0.12);
+  --gm-sidebar-width: 380px;
+  --gm-gradient: linear-gradient(90deg, #5b4ce1 0%, #6d5ae6 50%, #8a76f0 100%);
+}
+
+/* Base Font */
+#gm-floating-button,
+#gm-sidebar,
+.gm-notification {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Floating Action Button */
+#gm-floating-button {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 99999;
+}
+
+.gm-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--gm-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.gm-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.5);
+}
+
+.gm-fab:active {
+  transform: scale(0.98);
+}
+
+.gm-fab svg {
+  width: 26px;
+  height: 26px;
+  color: white;
+  pointer-events: none;
+}
+
+/* Dragging state */
+#gm-floating-button {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+#gm-floating-button.gm-dragging {
+  cursor: grabbing !important;
+  transition: none !important;
+}
+
+#gm-floating-button.gm-dragging .gm-fab {
+  cursor: grabbing !important;
+  transform: scale(1.1);
+  box-shadow: 0 25px 50px -10px rgba(79, 70, 229, 0.6);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.gm-fab {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Tooltip for drag hint */
+#gm-floating-button::before {
+  content: 'Arraste para mover';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  margin-bottom: 8px;
+}
+
+#gm-floating-button::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  margin-bottom: 2px;
+}
+
+#gm-floating-button:hover::before,
+#gm-floating-button:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+#gm-floating-button.gm-dragging::before,
+#gm-floating-button.gm-dragging::after {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Sidebar */
+#gm-sidebar {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  left: auto;
+  width: var(--gm-sidebar-width);
+  height: 100vh;
+  background: var(--gm-bg);
+  box-shadow: -4px 0 40px var(--gm-shadow-lg);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border-left: 1px solid var(--gm-border);
+}
+
+/* Sidebar posicionada na esquerda */
+#gm-sidebar.gm-sidebar-left {
+  right: auto;
+  left: -380px;
+  box-shadow: 4px 0 40px var(--gm-shadow-lg);
+  border-left: none;
+  border-right: 1px solid var(--gm-border);
+}
+
+#gm-sidebar.gm-sidebar-left.open {
+  left: 0;
+  right: auto;
+}
+
+#gm-sidebar.open {
+  right: 0;
+}
+
+/* Sidebar Header - Gradient like CRM tables */
+.gm-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--gm-gradient);
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.gm-sidebar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.gm-header-logo {
+  height: 32px;
+  width: auto;
+}
+
+.gm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sidebar Content */
+.gm-sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: var(--gm-bg-secondary);
+}
+
+/* Sidebar Footer */
+.gm-sidebar-footer {
+  padding: 12px 20px;
+  text-align: center;
+  border-top: 1px solid var(--gm-border);
+  color: var(--gm-text-muted);
+  font-size: 11px;
+  background: var(--gm-bg);
+}
+
+/* Sections - Card Style */
+.gm-section {
+  background: var(--gm-bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--gm-border);
+  box-shadow: 0 1px 3px var(--gm-shadow);
+}
+
+.gm-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gm-text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* User Info */
+.gm-user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(79, 70, 229, 0.05);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(79, 70, 229, 0.15);
+}
+
+#gm-user-name {
+  font-weight: 600;
+  color: var(--gm-primary);
+  font-size: 14px;
+}
+
+/* Inputs - Matching CRM input style */
+.gm-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--gm-bg);
+  border: 1px solid var(--gm-border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--gm-text);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.gm-input::placeholder {
+  color: var(--gm-text-muted);
+}
+
+.gm-input:hover {
+  border-color: #d1d5db;
+}
+
+.gm-input:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.gm-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Buttons - Matching CRM button styles */
+.gm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 8px;
+  font-family: inherit;
+  min-height: 44px;
+}
+
+.gm-btn-primary {
+  background: var(--gm-primary);
+  color: white;
+  border: 1px solid var(--gm-primary);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+}
+
+.gm-btn-primary:hover {
+  background: rgba(79, 70, 229, 0.9);
+  box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+}
+
+.gm-btn-primary:active {
+  transform: scale(0.99);
+}
+
+.gm-btn-secondary {
+  background: var(--gm-bg);
+  color: var(--gm-text);
+  border: 1px solid var(--gm-border);
+}
+
+.gm-btn-secondary:hover {
+  background: rgba(79, 70, 229, 0.05);
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
+/* Tertiary Button - like CRM .btn */
+.gm-btn-tertiary {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--gm-primary);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+.gm-btn-tertiary:hover {
+  background: rgba(79, 70, 229, 0.15);
+  border-color: rgba(79, 70, 229, 0.5);
+}
+
+.gm-btn-danger {
+  background: var(--gm-error);
+  color: white;
+  border: 1px solid var(--gm-error);
+}
+
+.gm-btn-danger:hover {
+  background: rgba(242, 139, 130, 0.9);
+}
+
+.gm-btn-success {
+  background: var(--gm-success);
+  color: white;
+  border: 1px solid var(--gm-success);
+}
+
+.gm-btn-success:hover {
+  background: rgba(71, 199, 153, 0.9);
+}
+
+.gm-btn-small {
+  padding: 8px 14px;
+  font-size: 13px;
+  min-height: 36px;
+}
+
+.gm-btn-block {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.gm-icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.gm-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Error/Success Messages */
+.gm-error {
+  color: #dc2626;
+  font-size: 13px;
+  padding: 12px 14px;
+  background: rgba(242, 139, 130, 0.1);
+  border: 1px solid rgba(242, 139, 130, 0.3);
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.gm-success {
+  color: #059669;
+  font-size: 13px;
+  padding: 12px 14px;
+  background: rgba(71, 199, 153, 0.1);
+  border: 1px solid rgba(71, 199, 153, 0.3);
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.gm-muted {
+  color: var(--gm-text-muted);
+  font-size: 13px;
+}
+
+/* Hidden */
+.hidden {
+  display: none !important;
+}
+
+/* Message Preview */
+.gm-msg-preview {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.gm-msg-item {
+  padding: 12px;
+  background: var(--gm-bg-secondary);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--gm-text-secondary);
+  border-left: 3px solid var(--gm-primary);
+}
+
+.gm-msg-more {
+  font-size: 12px;
+  color: var(--gm-text-muted);
+  text-align: center;
+  padding: 8px;
+}
+
+/* Notification */
+.gm-notification {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--gm-bg-card);
+  color: var(--gm-text);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 100001;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--gm-border);
+}
+
+.gm-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gm-notification-success {
+  background: var(--gm-success);
+  color: white;
+  border: none;
+}
+
+.gm-notification-error {
+  background: var(--gm-error);
+  color: white;
+  border: none;
+}
+
+.gm-notification-warning {
+  background: var(--gm-warning);
+  color: #1E1E2F;
+  border: none;
+}
+
+.gm-notification-info {
+  background: var(--gm-primary);
+  color: white;
+  border: none;
+}
+
+/* Contact Details */
+#gm-contact-details p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--gm-text-secondary);
+}
+
+#gm-contact-details strong {
+  color: var(--gm-text);
+}
+
+/* Quick Actions */
+#gm-quick-actions .gm-btn {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+/* Message Actions */
+#gm-message-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Scrollbar Styling */
+.gm-sidebar-content::-webkit-scrollbar,
+.gm-msg-preview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gm-sidebar-content::-webkit-scrollbar-track,
+.gm-msg-preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gm-sidebar-content::-webkit-scrollbar-thumb,
+.gm-msg-preview::-webkit-scrollbar-thumb {
+  background: var(--gm-border);
+  border-radius: 3px;
+}
+
+.gm-sidebar-content::-webkit-scrollbar-thumb:hover,
+.gm-msg-preview::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* Status Badge - Pill style like CRM */
+.gm-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.gm-status-badge.new {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--gm-primary);
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+.gm-status-badge.existing {
+  background: rgba(71, 199, 153, 0.1);
+  color: #059669;
+  border: 1px solid rgba(71, 199, 153, 0.3);
+}
+
+/* Label */
+.gm-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gm-text-secondary);
+}
+
+/* Select - Matching CRM input style */
+.gm-select {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--gm-bg);
+  border: 1px solid var(--gm-border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--gm-text);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 44px;
+}
+
+.gm-select:hover {
+  border-color: #d1d5db;
+}
+
+.gm-select:focus {
+  outline: none;
+  border-color: rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.gm-select option {
+  background: var(--gm-bg);
+  color: var(--gm-text);
+}
+
+/* Tabs - Matching CRM Tabs Component */
+.gm-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: rgba(79, 70, 229, 0.05);
+  padding: 4px;
+  border-radius: 16px;
+  border: 1px solid var(--gm-border);
+}
+
+.gm-tab {
+  flex: 1;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gm-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.gm-tab:hover {
+  color: var(--gm-text);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.gm-tab.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  color: white;
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.4);
+}
+
+/* Tab Content */
+.gm-tab-content {
+  display: none;
+}
+
+.gm-tab-content.active {
+  display: block;
+}
+
+/* Helper Classes */
+.gm-mb-8 {
+  margin-bottom: 8px !important;
+}
+
+.gm-mt-8 {
+  margin-top: 8px !important;
+}
+
+.gm-mt-12 {
+  margin-top: 12px !important;
+}
+
+.gm-btn-sm {
+  padding: 8px 12px;
+  font-size: 12px;
+  min-height: 32px;
+}
+
+.gm-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Disabled Select */
+.gm-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--gm-bg-secondary);
+}
+
+/* Searchable Dropdown */
+.gm-searchable-dropdown {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.gm-searchable-dropdown.disabled {
+  opacity: 0.5;
+}
+
+.gm-searchable-dropdown .gm-input {
+  margin-bottom: 0;
+  padding-right: 40px;
+}
+
+.gm-searchable-dropdown .gm-input:disabled {
+  cursor: not-allowed;
+  background-color: var(--gm-bg-secondary);
+}
+
+.gm-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  background: var(--gm-bg);
+  border: 1px solid var(--gm-border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  z-index: 10;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+
+.gm-dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gm-dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gm-dropdown-list::-webkit-scrollbar-thumb {
+  background: var(--gm-border);
+  border-radius: 3px;
+}
+
+.gm-dropdown-item {
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid var(--gm-border-light);
+}
+
+.gm-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.gm-dropdown-item:hover {
+  background: rgba(79, 70, 229, 0.05);
+}
+
+.gm-dropdown-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gm-text);
+  margin-bottom: 4px;
+}
+
+.gm-dropdown-item-details {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gm-dropdown-phone,
+.gm-dropdown-date {
+  font-size: 12px;
+  color: var(--gm-text-muted);
+}
+
+.gm-dropdown-phone {
+  color: var(--gm-primary);
+}
+
+.gm-dropdown-date {
+  color: var(--gm-text-secondary);
+}
+
+.gm-dropdown-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--gm-text-muted);
+  font-size: 13px;
+}
+
+/* Disabled Button */
+.gm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Loading State */
+.gm-btn.loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.gm-btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: gm-spin 0.8s linear infinite;
+}
+
+.gm-btn-primary.loading::after {
+  border-top-color: white;
+}
+
+.gm-btn-secondary.loading::after {
+  border-top-color: var(--gm-primary);
+}
+
+@keyframes gm-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Selected Count Text */
+#gm-selected-count {
+  color: var(--gm-success) !important;
+  font-weight: 600 !important;
+}
+
+/* Selected Message Highlight in WhatsApp */
+.gm-message-selected {
+  background: rgba(79, 70, 229, 0.1) !important;
+  border-radius: 8px;
+  outline: 2px solid rgba(79, 70, 229, 0.3);
+  outline-offset: 2px;
+}
+
+/* Info Box */
+.gm-info-box {
+  padding: 12px 14px;
+  background: rgba(79, 70, 229, 0.05);
+  border: 1px solid rgba(79, 70, 229, 0.15);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--gm-text-secondary);
+  margin-bottom: 12px;
+}
+
+.gm-info-box strong {
+  color: var(--gm-primary);
+}
+
+/* Divider */
+.gm-divider {
+  height: 1px;
+  background: var(--gm-border);
+  margin: 16px 0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  #gm-sidebar {
+    width: 100%;
+    right: -100%;
+  }
+
+  #gm-sidebar.gm-sidebar-left {
+    left: -100%;
+  }
+
+  .gm-fab {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+
+  .gm-fab svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .gm-tabs {
+    flex-direction: column;
+  }
+
+  .gm-sidebar-header h3 {
+    font-size: 14px;
+  }
+}
+
+/* Animation for sidebar */
+@keyframes gm-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+#gm-sidebar.open .gm-section {
+  animation: gm-slideIn 0.3s ease forwards;
+}
+
+#gm-sidebar.open .gm-section:nth-child(1) { animation-delay: 0.05s; }
+#gm-sidebar.open .gm-section:nth-child(2) { animation-delay: 0.1s; }
+#gm-sidebar.open .gm-section:nth-child(3) { animation-delay: 0.15s; }

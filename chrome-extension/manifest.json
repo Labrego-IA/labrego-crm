@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Plugin WhatsApp Labrego IA",
+  "version": "1.0.0",
+  "description": "Plugin de integração do WhatsApp Web com o CRM Labrego IA. Capture leads e salve conversas.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "contextMenus",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "https://labregoia.app.br/*",
+    "https://*.labregoia.app.br/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Plugin WhatsApp Labrego IA"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://web.whatsapp.com/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*", "assets/*"],
+      "matches": ["https://web.whatsapp.com/*"]
+    }
+  ]
+}

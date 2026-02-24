@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Icons</title>
+</head>
+<body>
+  <h1>Icon Generator - Gestão Mundo</h1>
+  <p>Clique nos links para baixar os ícones:</p>
+  <div id="icons"></div>
+
+  <script>
+    const sizes = [16, 32, 48, 128];
+    const container = document.getElementById('icons');
+
+    sizes.forEach(size => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Gradient background
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#25D366');
+      gradient.addColorStop(1, '#075E54');
+
+      // Rounded rectangle
+      const radius = size * 0.1875;
+      ctx.beginPath();
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(size - radius, 0);
+      ctx.quadraticCurveTo(size, 0, size, radius);
+      ctx.lineTo(size, size - radius);
+      ctx.quadraticCurveTo(size, size, size - radius, size);
+      ctx.lineTo(radius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Letter G
+      ctx.fillStyle = 'white';
+      ctx.font = `bold ${size * 0.5625}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('G', size / 2, size / 2 + size * 0.05);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = `icon${size}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.innerHTML = `<br>icon${size}.png (${size}x${size})`;
+      link.style.display = 'block';
+      link.style.marginBottom = '10px';
+
+      // Show preview
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL('image/png');
+      img.style.marginRight = '10px';
+
+      container.appendChild(img);
+      container.appendChild(link);
+
+      // Log data URI for manual copy
+      console.log(`icon${size}.png:`, canvas.toDataURL('image/png'));
+    });
+  </script>
+</body>
+</html>

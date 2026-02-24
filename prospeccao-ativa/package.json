@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "open": "^11.0.0"
+  },
+  "dependencies": {
+    "googleapis": "^171.1.0"
+  }
+}

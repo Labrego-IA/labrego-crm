@@ -1,0 +1,45 @@
+{
+  "name": "CRM Inteligente | Labrego IA",
+  "short_name": "CRM Labrego",
+  "description": "CRM Inteligente - Gerencie contatos, funil de vendas e propostas",
+  "start_url": "/contatos",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#7c3aed",
+  "background_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Contatos",
+      "short_name": "Contatos",
+      "description": "Ver lista de contatos",
+      "url": "/contatos",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Funil de Vendas",
+      "short_name": "Funil",
+      "description": "Ver funil de vendas",
+      "url": "/funil",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
