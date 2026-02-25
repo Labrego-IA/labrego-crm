@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
-import Image from 'next/image'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -39,14 +38,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-slate-100 p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         <div className="flex flex-col items-center mb-8">
-          <Image
-            src="/logo_crm.png"
-            alt="CRM Labrego IA"
-            width={180}
-            height={60}
-            className="mb-4"
-          />
-          <h1 className="text-xl font-semibold text-slate-800">Entrar no CRM</h1>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-[#13DEFC] to-[#09B00F] bg-clip-text text-transparent mb-2">Voxium</h2>
+          <h1 className="text-xl font-semibold text-slate-800">Entrar</h1>
           <p className="text-sm text-slate-500 mt-1">Acesse sua conta para continuar</p>
         </div>
 

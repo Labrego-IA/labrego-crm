@@ -1,12 +1,12 @@
 {
-  "name": "CRM Inteligente | Labrego IA",
-  "short_name": "CRM Labrego",
-  "description": "CRM Inteligente - Gerencie contatos, funil de vendas e propostas",
+  "name": "Voxium CRM",
+  "short_name": "Voxium",
+  "description": "Voxium CRM - Gerencie contatos, funil de vendas e propostas",
   "start_url": "/contatos",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#7c3aed",
+  "theme_color": "#13DEFC",
   "background_color": "#f8fafc",
   "icons": [
     {

@@ -5,38 +5,38 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --color-primary: #F97316;
-  --color-primary-600: #EA580C;
-  --color-primary-500: #F97316;
-  --color-primary-400: #FB923C;
+  --color-primary: #13DEFC;
+  --color-primary-600: #06B3D4;
+  --color-primary-500: #13DEFC;
+  --color-primary-400: #3CD4F5;
   --color-secondary: #ffffff;
   --color-black: #171717;
   --color-light: #ffffff;
-  --color-accent: #FB923C;
+  --color-accent: #09B00F;
   --color-success: #47c799;
   --color-warning: #fbbc05;
   --color-error: #f28b82;
-  --gradient-header: linear-gradient(90deg, #EA580C 0%, #F97316 50%, #FB923C 100%);
+  --gradient-header: linear-gradient(90deg, #078EA9 0%, #13DEFC 50%, #09B00F 100%);
 }
 
 .dark {
   --background: #0A0A0A;
   --foreground: #E5E5E5;
-  --color-primary: #FB923C;
-  --color-primary-600: #F97316;
-  --color-primary-500: #FB923C;
-  --color-primary-400: #FDBA74;
+  --color-primary: #3CD4F5;
+  --color-primary-600: #13DEFC;
+  --color-primary-500: #3CD4F5;
+  --color-primary-400: #7AE4F9;
   --color-secondary: #171717;
   --color-black: #E5E5E5;
   --color-light: #171717;
-  --color-accent: #FDBA74;
-  --gradient-header: linear-gradient(90deg, #C2410C 0%, #EA580C 50%, #F97316 100%);
+  --color-accent: #34D399;
+  --gradient-header: linear-gradient(90deg, #0B7189 0%, #06B3D4 50%, #078EA9 100%);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Inter', sans-serif;
   @apply transition-colors duration-200;
 }
 
@@ -92,7 +92,7 @@ body {
 }
 
   .brand-gradient {
-    background-image: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+    background-image: linear-gradient(to right, #13DEFC, #09B00F);
   }
   .pdf-page {
     width: 794px;

@@ -540,7 +540,7 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
               <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" width={40} />
               <RechartsTooltip content={<ChartTooltip />} />
               <Legend />
-              <Line type="monotone" dataKey="newLeads" name="Novos Leads" stroke="#EA580C" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="newLeads" name="Novos Leads" stroke="#13DEFC" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="converted" name="Convertidos" stroke="#10b981" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="lost" name="Perdidos" stroke="#ef4444" strokeWidth={2} dot={false} />
             </LineChart>
@@ -710,7 +710,7 @@ function AgingTab({ clients, stages }: { clients: Client[]; stages: FunnelStage[
                 <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" width={40} />
                 <RechartsTooltip content={<ChartTooltip />} />
                 <Legend />
-                <Bar dataKey="Lead" name="Lead" stackId="a" fill="#FB923C" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="Lead" name="Lead" stackId="a" fill="#3CD4F5" radius={[0, 0, 0, 0]} />
                 <Bar dataKey="Ativo" name="Ativo" stackId="a" fill="#10b981" />
                 <Bar dataKey="Inativo" name="Inativo" stackId="a" fill="#ef4444" />
                 <Bar dataKey="Outro" name="Outro" stackId="a" fill="#94a3b8" radius={[4, 4, 0, 0]} />
@@ -857,12 +857,12 @@ function ProfileChart({ field, label, type, activeClients, pipelineClients, comp
             <RechartsTooltip content={<ChartTooltip />} />
             {compareMode ? (
               <>
-                <Bar dataKey="Ativos" fill="#F97316" radius={[0, 4, 4, 0]} barSize={14} />
+                <Bar dataKey="Ativos" fill="#06B3D4" radius={[0, 4, 4, 0]} barSize={14} />
                 <Bar dataKey="Pipeline" fill="#94a3b8" radius={[0, 4, 4, 0]} barSize={14} />
                 <Legend />
               </>
             ) : (
-              <Bar dataKey="value" name="Quantidade" fill="#F97316" radius={[0, 4, 4, 0]} barSize={18} />
+              <Bar dataKey="value" name="Quantidade" fill="#06B3D4" radius={[0, 4, 4, 0]} barSize={18} />
             )}
           </BarChart>
         </ResponsiveContainer>
@@ -1040,7 +1040,7 @@ function ConversionTab({ clients }: { clients: Client[] }) {
               <RechartsTooltip content={<ChartTooltip />} />
               <Legend />
               <Bar dataKey="Total" name="Total" fill="#c7d2fe" radius={[4, 4, 0, 0]} cursor="pointer" onClick={(data) => { if (data?.name) setDrillDimValue(data.name as string) }} />
-              <Bar dataKey="Convertidos" name="Convertidos" fill="#F97316" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Convertidos" name="Convertidos" fill="#06B3D4" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

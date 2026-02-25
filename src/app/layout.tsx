@@ -9,7 +9,7 @@ import { doc, getDoc, collectionGroup, query, where, getDocs } from 'firebase/fi
 import { auth, db } from '@/lib/firebaseClient'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
-import { Poppins, Dancing_Script } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import Image from 'next/image'
 
 import CrmSidebar from '@/components/CrmSidebar'
@@ -20,17 +20,10 @@ import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
 
-const poppins = Poppins({
+const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
-})
-
-const dancingScript = Dancing_Script({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  variable: '--font-dancing-script',
 })
 
 interface CrmLayoutProps {
@@ -156,10 +149,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   // Login: renderiza só o conteúdo, sem sidebar/header
   if (isLoginPage) {
     return (
-      <html lang="pt-BR" className={`${poppins.className} ${dancingScript.variable}`}>
+      <html lang="pt-BR" className={`${inter.className}`}>
         <head>
           <link rel="manifest" href="/manifest.json" />
-          <title>CRM Inteligente | Labrego IA</title>
+          <title>Voxium CRM</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content="#ffffff" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -178,10 +171,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   // Splash enquanto checa auth
   if (checkingAuth) {
     return (
-      <html lang="pt-BR" className={`${poppins.className} ${dancingScript.variable}`}>
+      <html lang="pt-BR" className={`${inter.className}`}>
         <head>
           <link rel="manifest" href="/manifest.json" />
-          <title>CRM Inteligente | Labrego IA</title>
+          <title>Voxium CRM</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="theme-color" content="#ffffff" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -197,10 +190,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   }
 
   return (
-    <html lang="pt-BR" className={`${poppins.className} ${dancingScript.variable}`}>
+    <html lang="pt-BR" className={`${inter.className}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <title>CRM Inteligente | Labrego IA</title>
+        <title>Voxium CRM</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -263,7 +256,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 </button>
 
                 {/* Title - mobile */}
-                <span className="md:hidden text-sm font-semibold text-slate-700">CRM Inteligente</span>
+                <span className="md:hidden text-sm font-semibold text-slate-700">Voxium</span>
 
                 {/* Spacer */}
                 <div className="hidden md:block" />

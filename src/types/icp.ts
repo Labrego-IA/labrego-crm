@@ -40,7 +40,7 @@ export const EMPTY_ICP_CRITERIA: IcpCriteria = {
 export const EMPTY_ICP_PROFILE: Omit<IcpProfile, 'id' | 'orgId' | 'createdAt' | 'updatedAt'> = {
   name: '',
   description: '',
-  color: '#EA580C',
+  color: '#13DEFC',
   criteria: { ...EMPTY_ICP_CRITERIA },
   funnelIds: [],
   productIds: [],
@@ -49,7 +49,7 @@ export const EMPTY_ICP_PROFILE: Omit<IcpProfile, 'id' | 'orgId' | 'createdAt' | 
 }
 
 export const ICP_COLORS = [
-  '#EA580C', '#DC2626', '#D97706', '#059669',
+  '#13DEFC', '#DC2626', '#D97706', '#059669',
   '#2563EB', '#7C3AED', '#DB2777', '#0891B2',
 ]
 

@@ -348,7 +348,7 @@ function BlockPreview({ block }: { block: EmailBlockData }) {
             style={{
               display: 'inline-block',
               padding: '12px 24px',
-              backgroundColor: block.buttonColor || '#EA580C',
+              backgroundColor: block.buttonColor || '#13DEFC',
               color: block.buttonTextColor || '#fff',
               borderRadius: block.buttonRadius || 6,
               fontWeight: 'bold',
@@ -487,7 +487,7 @@ function BlockProperties({
           <div className="grid grid-cols-2 gap-2">
             <label className="block">
               <span className={labelCls}>Cor fundo</span>
-              <input type="color" value={block.buttonColor || '#EA580C'} onChange={(e) => onChange({ buttonColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
+              <input type="color" value={block.buttonColor || '#13DEFC'} onChange={(e) => onChange({ buttonColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
             </label>
             <label className="block">
               <span className={labelCls}>Cor texto</span>

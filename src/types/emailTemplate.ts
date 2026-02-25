@@ -76,7 +76,7 @@ export function createDefaultBlock(type: BlockType): EmailBlockData {
     case 'image':
       return { ...base, src: '', alt: 'Imagem', imageWidth: 600, align: 'center' }
     case 'button':
-      return { ...base, buttonText: 'Clique aqui', buttonUrl: 'https://', buttonColor: '#EA580C', buttonTextColor: '#FFFFFF', buttonRadius: 6, align: 'center' }
+      return { ...base, buttonText: 'Clique aqui', buttonUrl: 'https://', buttonColor: '#13DEFC', buttonTextColor: '#FFFFFF', buttonRadius: 6, align: 'center' }
     case 'divider':
       return { ...base, dividerColor: '#E2E8F0', dividerThickness: 1, paddingTop: 16, paddingBottom: 16 }
     case 'spacer':
@@ -117,7 +117,7 @@ function blockToRow(block: EmailBlockData): string {
     case 'image':
       return `<tr><td style="${p}${bg}text-align:${a};"><img src="${esc(block.src || '')}" alt="${esc(block.alt || '')}" width="${block.imageWidth || 600}" style="max-width:100%;height:auto;display:block;${a === 'center' ? 'margin:0 auto;' : ''}" /></td></tr>`
     case 'button': {
-      const btnColor = sanitizeColor(block.buttonColor || '') || '#EA580C'
+      const btnColor = sanitizeColor(block.buttonColor || '') || '#13DEFC'
       const btnTextColor = sanitizeColor(block.buttonTextColor || '') || '#FFFFFF'
       const bs = `display:inline-block;padding:12px 24px;background-color:${btnColor};color:${btnTextColor};text-decoration:none;border-radius:${block.buttonRadius || 6}px;font-weight:bold;font-size:16px;`
       return `<tr><td style="${p}${bg}text-align:${a};"><a href="${esc(block.buttonUrl || '#')}" style="${bs}">${esc(block.buttonText || 'Clique aqui')}</a></td></tr>`

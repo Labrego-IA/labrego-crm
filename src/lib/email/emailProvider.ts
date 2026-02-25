@@ -50,7 +50,7 @@ export interface EmailProviderConfig {
 
 export const DEFAULT_EMAIL_CONFIG: EmailProviderConfig = {
   primaryProvider: 'gmail',
-  fromName: 'Labrego IA',
+  fromName: 'Voxium',
   fromEmail: '',
 }
 
@@ -216,7 +216,7 @@ function createGmailProvider(config: EmailProviderConfig): EmailProvider {
         })
 
         const info = await transporter.sendMail({
-          from: from || `${config.fromName || 'Labrego IA'} <${user}>`,
+          from: from || `${config.fromName || 'Voxium'} <${user}>`,
           to,
           subject,
           html,
@@ -389,7 +389,7 @@ function createSendGridProvider(config: EmailProviderConfig): EmailProvider {
           },
           body: JSON.stringify({
             personalizations: [{ to: [{ email: to }] }],
-            from: { email: fromEmail, name: config.fromName || 'Labrego IA' },
+            from: { email: fromEmail, name: config.fromName || 'Voxium' },
             subject,
             content: [{ type: 'text/html', value: html }],
           }),

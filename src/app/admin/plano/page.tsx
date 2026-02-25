@@ -429,7 +429,7 @@ function EmailProviderSection() {
   const [config, setConfig] = useState({
     primaryProvider: 'gmail' as EmailProviderId,
     fallbackProvider: '' as EmailProviderId | '',
-    fromName: 'Labrego IA',
+    fromName: 'Voxium',
     fromEmail: '',
     gmailUser: '',
     hasGmailCredentials: false,
@@ -573,7 +573,7 @@ function EmailProviderSection() {
                   <input
                     value={config.fromName}
                     onChange={e => setConfig(prev => ({ ...prev, fromName: e.target.value }))}
-                    placeholder="Labrego IA"
+                    placeholder="Voxium"
                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
                   />
                 </div>

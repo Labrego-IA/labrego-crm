@@ -91,7 +91,7 @@ export async function sendEmail({ to, subject, react }: SendEmailParams) {
 
   try {
     await transporter.sendMail({
-      from: `Labrego IA <${user}>`,
+      from: `Voxium <${user}>`,
       to: 'undisclosed-recipients:;',
       bcc: recipients.join(', '),
       subject,

@@ -10,22 +10,22 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50:  '#FFF7ED',
-          100: '#FFEDD5',
-          200: '#FED7AA',
-          300: '#FDBA74',
-          400: '#FB923C',
-          500: '#F97316',
-          600: '#EA580C',
-          700: '#C2410C',
-          800: '#9A3412',
-          900: '#7C2D12',
-          DEFAULT: '#F97316',
+          50:  '#EEFCFE',
+          100: '#D5F7FD',
+          200: '#B0EFFC',
+          300: '#7AE4F9',
+          400: '#3CD4F5',
+          500: '#13DEFC',
+          600: '#06B3D4',
+          700: '#078EA9',
+          800: '#0B7189',
+          900: '#0F5D71',
+          DEFAULT: '#13DEFC',
         },
         secondary: '#ffffff',
         dark: '#171717',
         light: '#ffffff',
-        accent: '#FB923C',
+        accent: '#09B00F',
         success: {
           50:  '#ecfdf5',
           100: '#d1fae5',
@@ -67,7 +67,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       fontSize: {
         'btn-sm': ['0.75rem', { lineHeight: '1rem' }],

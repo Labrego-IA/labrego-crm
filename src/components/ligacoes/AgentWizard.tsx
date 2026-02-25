@@ -541,7 +541,7 @@ function Phase1Fields({ answers, updateField, onBlur }: PhaseFieldsProps) {
         value={answers.companyName}
         onChange={(val) => updateField('companyName', val)}
         onBlur={onBlur}
-        placeholder="Ex: Labrego IA"
+        placeholder="Ex: Voxium"
       />
       <WizardInput
         label="Como voce quer que ele fale? Descreva o tom de voz"
@@ -606,7 +606,7 @@ function Phase3Fields({ answers, updateField, onBlur }: PhaseFieldsProps) {
         value={answers.openingApproach}
         onChange={(val) => updateField('openingApproach', val)}
         onBlur={onBlur}
-        placeholder="Ex: Ola {{contactName}}, aqui e o Leo da Labrego IA. Me da 30 segundos pra explicar porque estou te ligando..."
+        placeholder="Ex: Ola {{contactName}}, aqui e o Leo da Voxium. Me da 30 segundos pra explicar porque estou te ligando..."
         type="textarea"
       />
       <WizardInput

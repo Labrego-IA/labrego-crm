@@ -317,7 +317,7 @@ export async function createCalendarMeeting(
   const end = new Date(start.getTime() + slotDuration * 60 * 1000)
 
   const event = {
-    summary: `Reunião Labrego IA - ${prospectCompany}`,
+    summary: `Reunião Voxium - ${prospectCompany}`,
     description: `Reunião de apresentação com ${prospectName} da ${prospectCompany}\nTelefone: ${prospectPhone || 'N/A'}`,
     start: {
       dateTime: start.toISOString(),

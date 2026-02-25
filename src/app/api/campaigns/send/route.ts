@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const emailConfig = await getEmailProviderConfig(orgId)
     const provider = createProvider(emailConfig.primaryProvider, emailConfig)
     const from = emailConfig.fromEmail
-      ? `${emailConfig.fromName || 'Labrego IA'} <${emailConfig.fromEmail}>`
+      ? `${emailConfig.fromName || 'Voxium'} <${emailConfig.fromEmail}>`
       : undefined
 
     let sentCount = 0
