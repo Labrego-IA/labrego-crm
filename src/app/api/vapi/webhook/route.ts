@@ -377,7 +377,7 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
 
       // 1. Registrar follow-up
       try {
-        await addFollowUp(clientId, followupText, 'agente-voz')
+        await addFollowUp(clientId, followupText, 'agente-voz', recordingUrl || undefined)
       } catch (followupError) {
         console.error('[VAPI WEBHOOK] Error adding follow-up:', followupError)
       }
@@ -410,6 +410,7 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
           transcript,
           summary,
           endedReason,
+          ...(recordingUrl ? { recordingUrl } : {}),
           metadata: {
             prospectName,
             prospectCompany,

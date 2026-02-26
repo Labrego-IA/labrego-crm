@@ -1022,13 +1022,15 @@ export async function getActiveProspects(limit = 500, orgId?: string): Promise<{
 export async function addFollowUp(
   clientId: string,
   text: string,
-  author = 'agente-voz'
+  author = 'agente-voz',
+  recordingUrl?: string
 ): Promise<void> {
   const db = getAdminDb()
   await db.collection('clients').doc(clientId).collection('followups').add({
     text,
     author,
     createdAt: new Date().toISOString(),
+    ...(recordingUrl ? { recordingUrl } : {}),
   })
 
   // Atualizar lastFollowUpAt no cliente

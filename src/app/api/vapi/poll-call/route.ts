@@ -207,7 +207,7 @@ export async function GET(req: NextRequest) {
 
     // Executar operações CRM em paralelo (cada uma isolada)
     const results = await Promise.allSettled([
-      addFollowUp(clientId, followupText, 'agente-voz'),
+      addFollowUp(clientId, followupText, 'agente-voz', recordingUrl || undefined),
       updateFunnelStage(clientId, getTargetStageForOutcome(classification)),
       addLog(clientId, `Ligação: ${resultado}`, 'vapi-poll'),
       saveCallRecord(clientId, {
@@ -221,6 +221,7 @@ export async function GET(req: NextRequest) {
         transcript,
         summary,
         endedReason,
+        ...(recordingUrl ? { recordingUrl } : {}),
         metadata: {
           prospectName,
           prospectCompany,
