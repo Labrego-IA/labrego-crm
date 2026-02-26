@@ -882,6 +882,7 @@ type ContactActivityLog = {
   text: string
   author: string
   createdAt: Date
+  recordingUrl?: string
 }
 
 type ActivitySortField = 'createdAt' | 'clientName' | 'type' | 'author'
@@ -969,6 +970,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
               text: data.text || data.message || '',
               author: data.author || data.email || 'Sistema',
               createdAt: date,
+              recordingUrl: data.recordingUrl || undefined,
             })
             return acc
           }, [])
@@ -1174,8 +1176,13 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                     <td className="px-4 py-3 text-sm text-slate-700">
                       {log.author}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600 max-w-md truncate">
-                      {log.text || '-'}
+                    <td className="px-4 py-3 text-sm text-slate-600 max-w-md">
+                      <span className="block truncate">{log.text || '-'}</span>
+                      {log.recordingUrl && (
+                        <audio controls preload="none" className="mt-1 w-full h-8">
+                          <source src={log.recordingUrl} />
+                        </audio>
+                      )}
                     </td>
                   </tr>
                 ))}

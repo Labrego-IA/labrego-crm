@@ -167,6 +167,7 @@ type FollowUp = {
   author?: string
   createdAt: string
   source?: 'followup' | 'log'
+  recordingUrl?: string
 }
 
 type CostCenter = {
@@ -648,6 +649,7 @@ export default function FunilDetailPage() {
             author: data.author || data.email || 'Sistema',
             createdAt: data.createdAt,
             source: 'followup' as const,
+            recordingUrl: data.recordingUrl || undefined,
           }
         })
 
@@ -6369,6 +6371,11 @@ export default function FunilDetailPage() {
                               </p>
                             )}
                             <p className="text-sm text-slate-600">{note.text}</p>
+                            {note.recordingUrl && (
+                              <audio controls preload="none" className="mt-2 w-full h-8">
+                                <source src={note.recordingUrl} />
+                              </audio>
+                            )}
                           </div>
                         </div>
                       ))}

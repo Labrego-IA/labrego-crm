@@ -294,6 +294,7 @@ export interface CallRecord {
     calendarEventId?: string
   }
   scriptUsed?: string
+  recordingUrl?: string
   metadata?: {
     prospectName?: string
     prospectCompany?: string
