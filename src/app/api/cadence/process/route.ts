@@ -178,42 +178,40 @@ async function processOrg(
   const stageMap = new Map<string, { id: string; name: string; funnelId: string }>()
   stagesSnap.docs.forEach(d => stageMap.set(d.id, { id: d.id, name: d.data().name, funnelId: d.data().funnelId || '' }))
 
-  // Find eligible contacts (root 'clients' collection)
-  const clientsSnap = await db.collection('clients')
-    .where('orgId', '==', orgId)
-    .where('currentCadenceStepId', '!=', '')
-    .get()
-
+  // Find eligible contacts per step (avoids != operator which requires composite index)
   type ContactDoc = Record<string, unknown> & { id: string }
   const eligible: { contact: ContactDoc; step: CadenceStep; stage: { id: string; name: string } }[] = []
 
-  for (const doc of clientsSnap.docs) {
-    const contact: ContactDoc = { id: doc.id, ...doc.data() }
-    const stepId = contact.currentCadenceStepId as string
-    if (!stepId) continue
-
-    // Check if responded — skip if cadence is paused
-    if (contact.lastCadenceStepResponded) continue
-
-    const step = stepMap.get(stepId)
-    if (!step || !step.isActive) continue
-
+  for (const step of steps) {
     // Check if stage is paused
     if (pausedStageIds.includes(step.stageId)) continue
-
-    // Check timing: lastCadenceActionAt + daysAfterPrevious <= now
-    const lastAction = contact.lastCadenceActionAt as string
-    if (lastAction) {
-      const nextEligible = new Date(lastAction)
-      nextEligible.setDate(nextEligible.getDate() + step.daysAfterPrevious)
-      if (nextEligible > now) continue
-    }
-    // If no lastCadenceActionAt, the contact just entered the cadence — first step should execute if days=0
 
     const stage = stageMap.get(step.stageId)
     if (!stage) continue
 
-    eligible.push({ contact, step, stage })
+    // Query contacts enrolled in this specific step (equality filter, no composite index needed)
+    const stepClientsSnap = await db.collection('clients')
+      .where('orgId', '==', orgId)
+      .where('currentCadenceStepId', '==', step.id)
+      .get()
+
+    for (const contactDoc of stepClientsSnap.docs) {
+      const contact: ContactDoc = { id: contactDoc.id, ...contactDoc.data() }
+
+      // Check if responded
+      if (contact.lastCadenceStepResponded) continue
+
+      // Check timing: lastCadenceActionAt + daysAfterPrevious <= now
+      const lastAction = contact.lastCadenceActionAt as string
+      if (lastAction) {
+        const nextEligible = new Date(lastAction)
+        nextEligible.setDate(nextEligible.getDate() + step.daysAfterPrevious)
+        if (nextEligible > now) continue
+      }
+      // If no lastCadenceActionAt, first step executes immediately
+
+      eligible.push({ contact, step, stage })
+    }
   }
 
   // Process in batches
