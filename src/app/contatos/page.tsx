@@ -684,7 +684,10 @@ export default function ContatosPage() {
 
     // Quick funnel filter — includes contacts with no stage or orphaned stage IDs
     if (quickFunnelFilter === 'no-funnel') {
-      const validStageIds = new Set(funnelStages.map(s => s.id))
+      const funnelIdSet = new Set(funnels.map(f => f.id))
+      const validStageIds = new Set(
+        funnelStages.filter(s => s.funnelId && funnelIdSet.has(s.funnelId)).map(s => s.id)
+      )
       result = result.filter(c => !c.funnelStage || !validStageIds.has(c.funnelStage))
     }
 
@@ -729,7 +732,7 @@ export default function ContatosPage() {
     }
 
     return result
-  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages])
+  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels])
 
   // Export contacts to CSV
   const handleExport = useCallback(() => {
