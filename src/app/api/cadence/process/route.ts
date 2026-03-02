@@ -33,25 +33,30 @@ export async function POST(request: NextRequest) {
     for (const orgDoc of orgsSnap.docs) {
       const orgId = orgDoc.id
 
-      const config = await getAutomationConfig(orgId)
-      if (!config.enabled) continue
+      try {
+        const config = await getAutomationConfig(orgId)
+        if (!config.enabled) continue
 
-      // Check work hours
-      const hours = now.getHours()
-      const minutes = now.getMinutes()
-      const currentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
-      if (currentTime < config.workHoursStart || currentTime > config.workHoursEnd) {
-        continue
+        // Check work hours
+        const hours = now.getHours()
+        const minutes = now.getMinutes()
+        const currentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+        if (currentTime < config.workHoursStart || currentTime > config.workHoursEnd) {
+          continue
+        }
+
+        // Check daily limit
+        const todayCount = await getTodayActionCount(orgId)
+        if (todayCount >= config.maxActionsPerDay) {
+          continue
+        }
+
+        const remaining = config.maxActionsPerDay - todayCount
+        await processOrg(db, orgId, config.pausedStageIds, remaining, results)
+      } catch (orgError) {
+        console.error(`Cadence error for org ${orgId}:`, orgError)
+        results.failed++
       }
-
-      // Check daily limit
-      const todayCount = await getTodayActionCount(orgId)
-      if (todayCount >= config.maxActionsPerDay) {
-        continue
-      }
-
-      const remaining = config.maxActionsPerDay - todayCount
-      await processOrg(db, orgId, config.pausedStageIds, remaining, results)
     }
 
     return NextResponse.json({
@@ -61,8 +66,11 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Cadence process error:', error)
+    const details = error instanceof Error
+      ? { message: error.message, stack: error.stack?.split('\n').slice(0, 3) }
+      : String(error)
     return NextResponse.json(
-      { error: 'Failed to process cadences', details: error instanceof Error ? error.message : '' },
+      { error: 'Failed to process cadences', details },
       { status: 500 }
     )
   }
