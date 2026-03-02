@@ -27,16 +27,14 @@ export async function POST(request: NextRequest) {
   const results = { processed: 0, success: 0, failed: 0, skipped: 0 }
 
   try {
-    // Get all orgs with automation enabled
-    const orgsSnap = await db.collectionGroup('automationConfig')
-      .where('enabled', '==', true)
-      .get()
+    // Get all organizations
+    const orgsSnap = await db.collection('organizations').get()
 
-    for (const configDoc of orgsSnap.docs) {
-      const orgId = configDoc.ref.parent.parent?.id
-      if (!orgId) continue
+    for (const orgDoc of orgsSnap.docs) {
+      const orgId = orgDoc.id
 
       const config = await getAutomationConfig(orgId)
+      if (!config.enabled) continue
 
       // Check work hours
       const hours = now.getHours()
@@ -99,8 +97,9 @@ async function processOrg(
   const stageMap = new Map<string, { id: string; name: string; funnelId: string }>()
   stagesSnap.docs.forEach(d => stageMap.set(d.id, { id: d.id, name: d.data().name, funnelId: d.data().funnelId || '' }))
 
-  // Find eligible contacts
-  const clientsSnap = await db.collection('organizations').doc(orgId).collection('clients')
+  // Find eligible contacts (root 'clients' collection)
+  const clientsSnap = await db.collection('clients')
+    .where('orgId', '==', orgId)
     .where('currentCadenceStepId', '!=', '')
     .get()
 
@@ -214,7 +213,7 @@ async function advanceToNextStep(
   const currentIndex = stageSteps.findIndex(s => s.id === currentStep.id)
   const nextStep = stageSteps[currentIndex + 1]
 
-  const clientRef = db.collection('organizations').doc(orgId).collection('clients').doc(contact.id)
+  const clientRef = db.collection('clients').doc(contact.id)
 
   if (nextStep) {
     // Advance to next step
@@ -242,12 +241,13 @@ async function advanceToNextStep(
       })
 
       // Log the move
-      await db.collection('organizations').doc(orgId).collection('clients').doc(contact.id).collection('logs').add({
+      await db.collection('clients').doc(contact.id).collection('logs').add({
         action: 'cadence_exhausted_move',
         message: `Cadência esgotada — movido para ${targetStage?.name || 'outra etapa'}`,
         type: 'cadence',
         author: 'Sistema (Cadência automática)',
         createdAt: new Date().toISOString(),
+        orgId,
       })
     } else if (exhaustedAction === 'notify') {
       const assignedTo = contact.assignedTo as string
@@ -295,12 +295,13 @@ async function handleFailedStep(
     })
   } else {
     // Max retries exceeded — log and advance to next step
-    await db.collection('organizations').doc(orgId).collection('clients').doc(contact.id).collection('logs').add({
+    await db.collection('clients').doc(contact.id).collection('logs').add({
       action: 'cadence_auto_error',
       message: `Cadência falhou após ${retryCount} tentativas: ${step.name} — avançando para próximo step`,
       type: 'cadence',
       author: 'Sistema (Cadência automática)',
       createdAt: new Date().toISOString(),
+      orgId,
     })
 
     // Reset retry count on the step
