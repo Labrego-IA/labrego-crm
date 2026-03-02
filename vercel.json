@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cadence/process",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/automation/reengagement",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}

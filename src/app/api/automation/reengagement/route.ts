@@ -269,4 +269,7 @@ function findNextActiveStep(steps: ReengagementConfig['steps'], fromIndex: numbe
   return -1
 }
 
-// GET removed — mutations must use POST only
+// Support GET for Vercel Cron
+export async function GET(req: NextRequest) {
+  return POST(req)
+}
