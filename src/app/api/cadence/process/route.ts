@@ -91,15 +91,18 @@ async function enrollUnenrolledContacts(
   pausedStageIds: string[],
   results: { enrolled: number }
 ) {
-  // Get all active cadence steps for this org
+  // Get cadence steps for this org (single-field query, filter isActive in code)
   const stepsSnap = await db.collection('cadenceSteps')
     .where('orgId', '==', orgId)
-    .where('isActive', '==', true)
     .get()
 
   if (stepsSnap.empty) return
 
-  const steps = stepsSnap.docs.map(d => ({ id: d.id, ...d.data() } as CadenceStep))
+  const steps = stepsSnap.docs
+    .map(d => ({ id: d.id, ...d.data() } as CadenceStep))
+    .filter(s => s.isActive)
+
+  if (steps.length === 0) return
 
   // Find first step per stage (lowest order)
   const stageFirstSteps = new Map<string, CadenceStep>()
@@ -115,18 +118,16 @@ async function enrollUnenrolledContacts(
 
   const now = new Date().toISOString()
 
-  for (const [stageId, firstStep] of stageFirstSteps) {
-    // Get contacts in this stage (limit per cron run to avoid overload)
-    const contactsSnap = await db.collection('clients')
-      .where('orgId', '==', orgId)
-      .where('funnelStage', '==', stageId)
-      .limit(500)
-      .get()
+  // Single query — load all org clients and filter in code to avoid composite index
+  const clientsSnap = await db.collection('clients')
+    .where('orgId', '==', orgId)
+    .get()
 
-    // Filter unenrolled contacts (no currentCadenceStepId)
-    const unenrolled = contactsSnap.docs.filter(d => {
+  for (const [stageId, firstStep] of stageFirstSteps) {
+    // Filter contacts in this stage without cadence enrollment
+    const unenrolled = clientsSnap.docs.filter(d => {
       const data = d.data()
-      return !data.currentCadenceStepId
+      return data.funnelStage === stageId && !data.currentCadenceStepId
     })
 
     if (unenrolled.length === 0) continue
@@ -159,15 +160,19 @@ async function processOrg(
   const now = new Date()
   let actionsLeft = maxActions
 
-  // Get all active cadence steps for this org
+  // Get cadence steps for this org (single-field query, filter in code)
   const stepsSnap = await db.collection('cadenceSteps')
     .where('orgId', '==', orgId)
-    .where('isActive', '==', true)
     .get()
 
   if (stepsSnap.empty) return
 
-  const steps = stepsSnap.docs.map(d => ({ id: d.id, ...d.data() } as CadenceStep))
+  const steps = stepsSnap.docs
+    .map(d => ({ id: d.id, ...d.data() } as CadenceStep))
+    .filter(s => s.isActive)
+
+  if (steps.length === 0) return
+
   const stepMap = new Map<string, CadenceStep>()
   for (const s of steps) stepMap.set(s.id, s)
 
@@ -178,40 +183,41 @@ async function processOrg(
   const stageMap = new Map<string, { id: string; name: string; funnelId: string }>()
   stagesSnap.docs.forEach(d => stageMap.set(d.id, { id: d.id, name: d.data().name, funnelId: d.data().funnelId || '' }))
 
-  // Find eligible contacts per step (avoids != operator which requires composite index)
+  // Find eligible contacts — single-field query to avoid composite index requirement
   type ContactDoc = Record<string, unknown> & { id: string }
   const eligible: { contact: ContactDoc; step: CadenceStep; stage: { id: string; name: string } }[] = []
 
-  for (const step of steps) {
+  const clientsSnap = await db.collection('clients')
+    .where('orgId', '==', orgId)
+    .get()
+
+  for (const contactDoc of clientsSnap.docs) {
+    const contact: ContactDoc = { id: contactDoc.id, ...contactDoc.data() }
+    const stepId = contact.currentCadenceStepId as string
+    if (!stepId) continue
+
+    // Check if responded
+    if (contact.lastCadenceStepResponded) continue
+
+    const step = stepMap.get(stepId)
+    if (!step || !step.isActive) continue
+
     // Check if stage is paused
     if (pausedStageIds.includes(step.stageId)) continue
 
     const stage = stageMap.get(step.stageId)
     if (!stage) continue
 
-    // Query contacts enrolled in this specific step (equality filter, no composite index needed)
-    const stepClientsSnap = await db.collection('clients')
-      .where('orgId', '==', orgId)
-      .where('currentCadenceStepId', '==', step.id)
-      .get()
-
-    for (const contactDoc of stepClientsSnap.docs) {
-      const contact: ContactDoc = { id: contactDoc.id, ...contactDoc.data() }
-
-      // Check if responded
-      if (contact.lastCadenceStepResponded) continue
-
-      // Check timing: lastCadenceActionAt + daysAfterPrevious <= now
-      const lastAction = contact.lastCadenceActionAt as string
-      if (lastAction) {
-        const nextEligible = new Date(lastAction)
-        nextEligible.setDate(nextEligible.getDate() + step.daysAfterPrevious)
-        if (nextEligible > now) continue
-      }
-      // If no lastCadenceActionAt, first step executes immediately
-
-      eligible.push({ contact, step, stage })
+    // Check timing: lastCadenceActionAt + daysAfterPrevious <= now
+    const lastAction = contact.lastCadenceActionAt as string
+    if (lastAction) {
+      const nextEligible = new Date(lastAction)
+      nextEligible.setDate(nextEligible.getDate() + step.daysAfterPrevious)
+      if (nextEligible > now) continue
     }
+    // If no lastCadenceActionAt, first step executes immediately
+
+    eligible.push({ contact, step, stage })
   }
 
   // Process in batches
