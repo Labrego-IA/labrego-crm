@@ -1956,6 +1956,7 @@ export default function FunilDetailPage() {
           to: selectedClient.email,
           subject: emailSubject,
           body: emailBody,
+          orgId,
         }),
       })
       if (response.ok) {
