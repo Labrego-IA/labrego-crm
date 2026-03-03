@@ -937,28 +937,53 @@ export async function findClientByPhone(phone: string): Promise<{ id: string; na
   const db = getAdminDb()
   const digits = phone.replace(/\D/g, '')
 
-  // Tentar busca direta pelo campo phone
-  // Como o Firestore não suporta LIKE, buscamos todos e filtramos
-  // Limitamos a busca para performance
-  const snapshot = await db.collection('clients').limit(500).get()
-
   // Extrair últimos 8-9 dígitos para comparação parcial (sem código do país)
   const searchDigits = digits.length > 9 ? digits.slice(-9) : digits
 
-  for (const doc of snapshot.docs) {
-    const data = doc.data()
-    const clientPhone = (data.phone || '').replace(/\D/g, '')
+  // Buscar em batches de 5000 para suportar bases grandes (3600+ contatos)
+  let lastDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null
+  const batchSize = 5000
 
-    // Comparação exata
-    if (clientPhone === digits || clientPhone === `55${digits}` || `55${clientPhone}` === digits) {
-      return { id: doc.id, name: data.name || '' }
+  while (true) {
+    let query: FirebaseFirestore.Query = db.collection('clients').limit(batchSize)
+    if (lastDoc) {
+      query = query.startAfter(lastDoc)
+    }
+    const snapshot = await query.get()
+
+    if (snapshot.empty) break
+
+    for (const doc of snapshot.docs) {
+      const data = doc.data()
+      const clientPhone = (data.phone || '').replace(/\D/g, '')
+      if (!clientPhone) continue
+
+      // Comparação exata
+      if (clientPhone === digits || clientPhone === `55${digits}` || `55${clientPhone}` === digits) {
+        return { id: doc.id, name: data.name || '' }
+      }
+
+      // Comparação parcial (últimos 9 dígitos - DDD + número sem 9 ou com 9)
+      const clientDigits = clientPhone.length > 9 ? clientPhone.slice(-9) : clientPhone
+      if (clientDigits === searchDigits && clientDigits.length >= 8) {
+        return { id: doc.id, name: data.name || '' }
+      }
+
+      // Também verificar phone2
+      const clientPhone2 = (data.phone2 || '').replace(/\D/g, '')
+      if (clientPhone2) {
+        if (clientPhone2 === digits || clientPhone2 === `55${digits}` || `55${clientPhone2}` === digits) {
+          return { id: doc.id, name: data.name || '' }
+        }
+        const client2Digits = clientPhone2.length > 9 ? clientPhone2.slice(-9) : clientPhone2
+        if (client2Digits === searchDigits && client2Digits.length >= 8) {
+          return { id: doc.id, name: data.name || '' }
+        }
+      }
     }
 
-    // Comparação parcial (últimos 9 dígitos - DDD + número sem 9 ou com 9)
-    const clientDigits = clientPhone.length > 9 ? clientPhone.slice(-9) : clientPhone
-    if (clientDigits === searchDigits && clientDigits.length >= 8) {
-      return { id: doc.id, name: data.name || '' }
-    }
+    lastDoc = snapshot.docs[snapshot.docs.length - 1]
+    if (snapshot.docs.length < batchSize) break
   }
 
   return null

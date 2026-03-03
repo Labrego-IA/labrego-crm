@@ -289,6 +289,7 @@ export interface CallRecord {
   transcript?: string
   summary?: string
   endedReason?: string
+  recordingUrl?: string
   meetingScheduled?: {
     date: string
     calendarEventId?: string
@@ -417,6 +418,9 @@ export interface VapiEndOfCallReport {
       analysis?: {
         summary?: string
         successEvaluation?: string | boolean
+      }
+      artifact?: {
+        recordingUrl?: string
       }
     }
   }

@@ -1807,7 +1807,14 @@ export default function ContactDetailsPage() {
                                   {formatDateTime(fu.createdAt)}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-600 leading-relaxed">{fu.text}</p>
+                              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{fu.text}</p>
+                              {fu.recordingUrl && (
+                                <div className="mt-2">
+                                  <audio controls className="w-full h-8" preload="none">
+                                    <source src={fu.recordingUrl} type="audio/mpeg" />
+                                  </audio>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}

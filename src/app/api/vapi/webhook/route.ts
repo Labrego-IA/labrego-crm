@@ -218,7 +218,7 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
     const summary = message.summary || call?.analysis?.summary || ''
     const transcript = message.transcript || ''
     const endedReason = message.endedReason || call?.endedReason || 'unknown'
-    const recordingUrl = message.recordingUrl || ''
+    const recordingUrl = message.recordingUrl || call?.artifact?.recordingUrl || ''
 
     // Calcular duração
     let durationSec = 0
@@ -418,6 +418,7 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
           transcript,
           summary,
           endedReason,
+          ...(recordingUrl ? { recordingUrl } : {}),
           metadata: {
             prospectName,
             prospectCompany,
