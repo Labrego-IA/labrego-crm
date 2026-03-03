@@ -349,14 +349,17 @@ function buildSystemPrompt(config: CallRoutingConfig, prospect: {
   name: string
   company?: string
   industry?: string
-}): string | undefined {
+}, contactName?: string): string | undefined {
   const knowledge = config.agentKnowledge
   if (!knowledge?.systemPrompt) return undefined
 
-  const firstName = (prospect.name || '').split(' ')[0]
-
   // Montar contexto adicional
   const contextParts: string[] = []
+
+  // Quando não temos nome pessoal do contato, instruir o agente a perguntar
+  if (!contactName) {
+    contextParts.push(`IMPORTANTE: Voce nao sabe o nome da pessoa que vai atender. No inicio da ligacao, apos se apresentar, pergunte com quem voce esta falando. Use o nome que a pessoa informar durante toda a conversa.`)
+  }
 
   if (knowledge.agentName || knowledge.agentRole) {
     contextParts.push(`Voce e ${knowledge.agentName || 'um agente'}, ${knowledge.agentRole || 'consultor'} da ${knowledge.companyName || 'empresa'}.`)
@@ -414,8 +417,10 @@ function buildSystemPrompt(config: CallRoutingConfig, prospect: {
 
   // Contexto do prospect atual
   contextParts.push(`\nInformacoes do prospect atual:`)
-  contextParts.push(`- Nome: ${firstName}`)
-  if (prospect.company) contextParts.push(`- Empresa: ${prospect.company}`)
+  if (contactName) {
+    contextParts.push(`- Nome do contato: ${contactName}`)
+  }
+  contextParts.push(`- Empresa: ${prospect.company || prospect.name}`)
   if (prospect.industry) contextParts.push(`- Setor: ${prospect.industry}`)
 
   // Montar prompt final
@@ -555,7 +560,7 @@ export async function makeVapiCall(prospect: {
 
   // Montar overrides baseado no agentKnowledge
   const customFirstMessage = buildFirstMessage(config, prospect, contactName)
-  const customSystemPrompt = buildSystemPrompt(config, prospect)
+  const customSystemPrompt = buildSystemPrompt(config, prospect, contactName)
 
   const assistantOverrides: Record<string, any> = {
     variableValues: {
