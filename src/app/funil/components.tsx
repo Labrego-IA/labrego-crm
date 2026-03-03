@@ -224,10 +224,22 @@ export const KanbanCard = memo(function KanbanCard({
   onSelect,
 }: KanbanCardProps) {
   // Compute last activity = most recent of lastFollowUpAt and updatedAt
+  // Only consider updatedAt if it's different from createdAt (i.e. an actual update happened)
   const lastActivityDate = (() => {
-    const dates = [lastContactDate, client.updatedAt].filter(Boolean) as string[]
-    if (dates.length === 0) return null
-    return dates.reduce((latest, d) => {
+    const candidates: string[] = []
+    if (lastContactDate) candidates.push(lastContactDate)
+    // Only use updatedAt if it differs from createdAt by more than 1 minute (real update vs import)
+    if (client.updatedAt && client.createdAt) {
+      const updatedMs = new Date(client.updatedAt).getTime()
+      const createdMs = new Date(client.createdAt).getTime()
+      if (!isNaN(updatedMs) && !isNaN(createdMs) && Math.abs(updatedMs - createdMs) > 60000) {
+        candidates.push(client.updatedAt)
+      }
+    } else if (client.updatedAt && !client.createdAt) {
+      candidates.push(client.updatedAt)
+    }
+    if (candidates.length === 0) return null
+    return candidates.reduce((latest, d) => {
       const t = new Date(d).getTime()
       return !isNaN(t) && t > new Date(latest).getTime() ? d : latest
     })
