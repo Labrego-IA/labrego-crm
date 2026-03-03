@@ -18,6 +18,7 @@ import {
 const COLLECTION_QUEUE = 'callQueues'
 const COLLECTION_QUEUE_ITEMS = 'callQueueItems'
 const DEFAULT_MAX_CONCURRENT = 10
+const STUCK_CALL_TIMEOUT_MS = 15 * 60 * 1000 // 15 minutos: auto-fail chamadas travadas
 
 // ========== QUEUE MANAGEMENT ==========
 
@@ -284,9 +285,48 @@ export async function processQueue(queueId: string): Promise<{
   // Buscar todos os itens da fila de uma vez (single query, no composite index)
   const allItems = await getQueueItems(queueId)
 
-  // Contar ligações atualmente ativas
+  // ===== STUCK CALL DETECTION =====
+  // Auto-fail chamadas que ficaram em calling/in_progress por mais de 15 minutos
+  // Isso acontece quando o webhook do VAPI não retorna (timeout, erro de rede, etc.)
+  const now = Date.now()
+  const stuckItems = allItems.filter(i => {
+    if (i.status !== 'calling' && i.status !== 'in_progress') return false
+    const updatedAt = new Date(i.updatedAt || i.startedAt || i.createdAt).getTime()
+    return !isNaN(updatedAt) && (now - updatedAt) > STUCK_CALL_TIMEOUT_MS
+  })
+
+  if (stuckItems.length > 0) {
+    console.log(`[CALL-QUEUE] Detectadas ${stuckItems.length} chamadas travadas (> ${STUCK_CALL_TIMEOUT_MS / 60000}min), marcando como failed`)
+    const nowISO = new Date().toISOString()
+    for (const item of stuckItems) {
+      await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update({
+        status: 'failed' as CallQueueItemStatus,
+        error: 'Timeout: webhook do VAPI não retornou',
+        updatedAt: nowISO,
+        endedAt: nowISO,
+      })
+
+      // Liberar cadencePendingCallResult do contato se aplicável
+      if (item.cadenceStepId) {
+        try {
+          await db.collection('clients').doc(item.clientId).update({
+            cadencePendingCallResult: false,
+          })
+        } catch { /* ignore */ }
+      }
+    }
+    // Atualizar contadores da fila
+    await db.collection(COLLECTION_QUEUE).doc(queueId).update({
+      failedItems: (queue.failedItems || 0) + stuckItems.length,
+      activeCallsCount: Math.max(0, (queue.activeCallsCount || 0) - stuckItems.length),
+      updatedAt: new Date().toISOString(),
+    })
+  }
+
+  // Contar ligações atualmente ativas (excluindo as que acabamos de marcar como failed)
+  const stuckIds = new Set(stuckItems.map(i => i.id))
   let activeCalls = allItems.filter(
-    i => i.status === 'calling' || i.status === 'in_progress'
+    i => (i.status === 'calling' || i.status === 'in_progress') && !stuckIds.has(i.id)
   ).length
 
   // Quantas vagas temos?

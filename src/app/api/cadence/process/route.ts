@@ -258,7 +258,10 @@ async function processOrg(
       (existingQueue as unknown as Record<string, unknown>).type === 'cadence'
 
     if (hasCadenceQueue) {
-      console.log(`[CADENCE] Cadence queue already running for org ${orgId}, skipping phone enqueue`)
+      // Queue já existe — chamar processQueue para avançar
+      // (detecta chamadas travadas e dispara novas se houver vagas)
+      console.log(`[CADENCE] Cadence queue already running (${existingQueue.id}), processing to unstick/advance`)
+      await processQueue(existingQueue.id)
       results.skipped += phoneEligible.length
     } else {
       // Calculate daily phone budget
