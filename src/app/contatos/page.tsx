@@ -488,13 +488,19 @@ export default function ContatosPage() {
         try {
           const text = event.target?.result as string
           const lines = text.split('\n').filter((line) => line.trim())
-          const headers = lines[0].split(',').map((h) => h.replace(/"/g, '').trim().toLowerCase())
+          // Detecta separador: tab (TSV) ou virgula (CSV)
+          const isTsv = lines[0].includes('\t')
+          const headers = isTsv
+            ? lines[0].split('\t').map((h) => h.replace(/"/g, '').trim().toLowerCase())
+            : lines[0].split(',').map((h) => h.replace(/"/g, '').trim().toLowerCase())
 
           const preview = lines.slice(1, 6).map((line) => {
-            const values = line.match(/("([^"]*)"|[^,]+)/g) || []
+            const values = isTsv
+              ? line.split('\t').map((v) => v.replace(/"/g, '').trim())
+              : (line.match(/("([^"]*)"|[^,]+)/g) || []).map((v) => v.replace(/"/g, '').trim())
             const row: Record<string, string> = {}
             headers.forEach((header, idx) => {
-              row[header] = values[idx]?.replace(/"/g, '').trim() || ''
+              row[header] = values[idx] || ''
             })
             return row
           })
@@ -518,8 +524,10 @@ export default function ContatosPage() {
       name: 'name',
       'razao social': 'name',
       'razão social': 'name',
+      razao_social: 'name',
       // Nome Fantasia → empresa
       'nome fantasia': 'company',
+      nome_fantasia: 'company',
       empresa: 'company',
       company: 'company',
       // Telefone
@@ -527,6 +535,7 @@ export default function ContatosPage() {
       phone: 'phone',
       'telefone1 completo': 'phone',
       telefone1: 'phone',
+      telefones: 'phone',
       'telefone2 completo': 'phone2',
       telefone2: 'phone2',
       // Email
@@ -536,6 +545,7 @@ export default function ContatosPage() {
       ramo: 'industry',
       industry: 'industry',
       'ramo de atividade': 'industry',
+      atividades_principal: 'industry',
       // Documento
       cnpj: 'document',
       cpf: 'document',
@@ -558,8 +568,8 @@ export default function ContatosPage() {
 
     // Colunas de endereco que serao combinadas em um unico campo 'address'
     const addressColumns = [
-      'tipo logradouro', 'logradouro', 'numero', 'número',
-      'complemento', 'bairro', 'cep', 'uf', 'municipio', 'município',
+      'tipo logradouro', 'descricao_tipo_logradouro', 'logradouro', 'numero', 'número',
+      'complemento', 'bairro', 'cep', 'uf', 'estado', 'municipio', 'município',
     ]
 
     const isExcel = importFile.name.endsWith('.xlsx') || importFile.name.endsWith('.xls')
@@ -573,12 +583,15 @@ export default function ContatosPage() {
 
           // Monta endereco a partir de colunas individuais
           const buildAddress = (addrParts: Record<string, string>): string => {
+            const tipoLogradouro = addrParts['tipo logradouro'] || addrParts['descricao_tipo_logradouro']
+            const uf = addrParts['uf'] || addrParts['estado']
+            const municipio = addrParts['municipio'] || addrParts['município']
             return [
-              [addrParts['tipo logradouro'], addrParts['logradouro']].filter(Boolean).join(' '),
+              [tipoLogradouro, addrParts['logradouro']].filter(Boolean).join(' '),
               addrParts['numero'] || addrParts['número'] ? `${addrParts['numero'] || addrParts['número']}` : '',
               addrParts['complemento'],
               addrParts['bairro'],
-              [addrParts['municipio'] || addrParts['município'], addrParts['uf']].filter(Boolean).join('/'),
+              [municipio, uf].filter(Boolean).join('/'),
               addrParts['cep'] ? `CEP ${addrParts['cep']}` : '',
             ].filter(Boolean).join(', ')
           }
@@ -592,6 +605,14 @@ export default function ContatosPage() {
               const normalizedKey = key.toLowerCase().trim()
               const val = String(value ?? '').trim()
               if (!val) return
+
+              // Coluna 'telefones' pode ter multiplos numeros separados por ; ou /
+              if (normalizedKey === 'telefones') {
+                const phones = val.split(/[;/]/).map((p) => p.trim()).filter(Boolean)
+                if (phones[0] && !mapped['phone']) mapped['phone'] = phones[0]
+                if (phones[1] && !mapped['phone2']) mapped['phone2'] = phones[1]
+                return
+              }
 
               const field = fieldMap[normalizedKey]
               if (field) {
@@ -623,13 +644,19 @@ export default function ContatosPage() {
           } else {
             const text = event.target?.result as string
             const lines = text.split('\n').filter((line) => line.trim())
-            const headers = lines[0].split(',').map((h) => h.replace(/"/g, '').trim())
+            // Detecta separador: tab (TSV) ou virgula (CSV)
+            const isTsv = lines[0].includes('\t')
+            const headers = isTsv
+              ? lines[0].split('\t').map((h) => h.replace(/"/g, '').trim())
+              : lines[0].split(',').map((h) => h.replace(/"/g, '').trim())
 
             for (let i = 1; i < lines.length; i++) {
-              const values = lines[i].match(/("([^"]*)"|[^,]+)/g) || []
+              const values = isTsv
+                ? lines[i].split('\t').map((v) => v.replace(/"/g, '').trim())
+                : (lines[i].match(/("([^"]*)"|[^,]+)/g) || []).map((v) => v.replace(/"/g, '').trim())
               const entries: [string, unknown][] = headers.map((header, idx) => [
                 header,
-                values[idx]?.replace(/"/g, '').trim() || '',
+                values[idx] || '',
               ])
               rows.push(mapRow(entries))
             }
@@ -2602,7 +2629,7 @@ export default function ContatosPage() {
                 }`}>
                   <input
                     type="file"
-                    accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                    accept=".csv,.tsv,.txt,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                     onChange={handleImportFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
