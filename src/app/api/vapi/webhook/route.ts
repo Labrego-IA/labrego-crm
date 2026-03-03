@@ -364,10 +364,31 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
         console.error('[VAPI WEBHOOK] Error adding follow-up:', followupError)
       }
 
-      // 2. Mover lead para próxima etapa
+      // 2. Mover lead para próxima etapa (respeitar cadência)
       try {
-        const nextStage = getTargetStageForOutcome(classification)
-        await updateFunnelStage(clientId, nextStage)
+        const db = getAdminDb()
+        const clientDoc = await db.collection('clients').doc(clientId).get()
+        const clientData = clientDoc.data()
+        const isInCadence = !!clientData?.currentCadenceStepId
+
+        if (isInCadence) {
+          // Contato em cadência — NÃO mover automaticamente
+          if (classification !== 'TELEFONE_INDISPONIVEL') {
+            // Houve conversa — marcar como respondeu + salvar dados para IA decidir etapa
+            await db.collection('clients').doc(clientId).update({
+              lastCadenceStepResponded: true,
+              lastCadenceOutcome: classification,
+              lastCadenceCallSummary: (summary || transcript).slice(0, 500),
+            })
+            console.log(`[VAPI WEBHOOK] Cadence contact responded: ${classification} — IA will decide stage`)
+          } else {
+            console.log(`[VAPI WEBHOOK] Cadence contact not reached (${endedReason}) — cadence continues`)
+          }
+        } else {
+          // Fora de cadência — comportamento legado (hardcoded)
+          const nextStage = getTargetStageForOutcome(classification)
+          await updateFunnelStage(clientId, nextStage)
+        }
       } catch (stageError) {
         console.error('[VAPI WEBHOOK] Error moving stage:', stageError)
       }

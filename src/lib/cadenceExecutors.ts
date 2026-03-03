@@ -115,6 +115,89 @@ async function executeMeetingStep(step: CadenceStep, contact: Contact, orgId: st
 }
 
 /**
+ * Use AI to determine the best funnel stage for a contact that responded to cadence.
+ */
+export async function determineBestStage(
+  outcome: string,
+  callSummary: string,
+  availableStages: { id: string; name: string }[]
+): Promise<string> {
+  if (availableStages.length === 0) return ''
+
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+  if (!OPENAI_API_KEY) {
+    return fallbackStageSelection(outcome, availableStages)
+  }
+
+  const stageList = availableStages
+    .map(s => `- "${s.name}" (ID: ${s.id})`)
+    .join('\n')
+
+  const prompt = `Você é um assistente de CRM de vendas. Com base no resultado da ligação, determine a etapa mais adequada do funil para mover o contato.
+
+Resultado da ligação: ${outcome}
+Resumo da conversa: ${callSummary || 'Não disponível'}
+
+Etapas disponíveis no funil:
+${stageList}
+
+Regras:
+- REUNIAO_AGENDADA → etapa de reunião/briefing/demo
+- ENVIAR_EMAIL → etapa de envio de material/apresentação
+- SEM_INTERESSE → etapa de sem interesse/descartado/perdido
+- Se nenhuma etapa parecer adequada, escolha a mais próxima
+
+Responda APENAS com o ID da etapa escolhida, nada mais.`
+
+  try {
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        temperature: 0,
+        max_tokens: 50,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    })
+    const data = await resp.json()
+    const answer = (data.choices?.[0]?.message?.content || '').trim()
+
+    // Validate the returned ID exists in available stages
+    const validStage = availableStages.find(s => answer.includes(s.id))
+    if (validStage) return validStage.id
+
+    console.warn(`[CADENCE-AI] Invalid stage ID from AI: "${answer}", using fallback`)
+    return fallbackStageSelection(outcome, availableStages)
+  } catch (err) {
+    console.error('[CADENCE-AI] OpenAI error, using fallback:', err)
+    return fallbackStageSelection(outcome, availableStages)
+  }
+}
+
+function fallbackStageSelection(
+  outcome: string,
+  stages: { id: string; name: string }[]
+): string {
+  const matchByKeywords = (keywords: string[]) =>
+    stages.find(s => keywords.some(k => s.name.toLowerCase().includes(k)))
+
+  switch (outcome) {
+    case 'REUNIAO_AGENDADA':
+      return matchByKeywords(['reunião', 'reuniao', 'briefing', 'demo', 'qualificado'])?.id || stages[0]?.id || ''
+    case 'ENVIAR_EMAIL':
+      return matchByKeywords(['email', 'apresentação', 'apresentacao', 'material', 'enviar'])?.id || stages[0]?.id || ''
+    case 'SEM_INTERESSE':
+      return matchByKeywords(['sem interesse', 'descartado', 'perdido', 'inativo'])?.id || stages[0]?.id || ''
+    default:
+      return stages[0]?.id || ''
+  }
+}
+
+/**
  * Log a cadence execution in the contact's activity log.
  */
 export async function logCadenceExecution(

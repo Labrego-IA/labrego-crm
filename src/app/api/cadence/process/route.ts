@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { getAutomationConfig, getTodayActionCount } from '@/lib/automationConfig'
-import { executeCadenceStep, logCadenceExecution } from '@/lib/cadenceExecutors'
+import { executeCadenceStep, logCadenceExecution, determineBestStage } from '@/lib/cadenceExecutors'
 import type { CadenceStep, CadenceExecutionLog } from '@/types/cadence'
 
 const BATCH_SIZE = 20
@@ -196,8 +196,13 @@ async function processOrg(
     const stepId = contact.currentCadenceStepId as string
     if (!stepId) continue
 
-    // Check if responded
-    if (contact.lastCadenceStepResponded) continue
+    // Check if responded — AI determines best stage
+    if (contact.lastCadenceStepResponded) {
+      await handleRespondedContact(db, orgId, contact, stageMap)
+      results.processed++
+      results.success++
+      continue
+    }
 
     const step = stepMap.get(stepId)
     if (!step || !step.isActive) continue
@@ -280,6 +285,71 @@ async function processOrg(
       await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS))
     }
   }
+}
+
+/**
+ * Handle a contact that responded to a cadence step.
+ * Uses AI to determine the best funnel stage and moves the contact there.
+ */
+async function handleRespondedContact(
+  db: FirebaseFirestore.Firestore,
+  orgId: string,
+  contact: { id: string } & Record<string, unknown>,
+  stageMap: Map<string, { id: string; name: string; funnelId: string }>
+) {
+  const outcome = (contact.lastCadenceOutcome as string) || ''
+  const callSummary = (contact.lastCadenceCallSummary as string) || ''
+  const currentFunnelId = contact.funnelId as string
+
+  // Get stages for the contact's current funnel
+  const funnelStages = Array.from(stageMap.values())
+    .filter(s => s.funnelId === currentFunnelId)
+
+  if (funnelStages.length === 0) {
+    console.warn(`[CADENCE] No stages found for funnel ${currentFunnelId}, clearing cadence`)
+    await db.collection('clients').doc(contact.id).update({
+      currentCadenceStepId: '',
+      lastCadenceActionAt: new Date().toISOString(),
+      lastCadenceStepResponded: false,
+      lastCadenceOutcome: '',
+      lastCadenceCallSummary: '',
+    })
+    return
+  }
+
+  // AI determines the best stage
+  const bestStageId = await determineBestStage(outcome, callSummary, funnelStages)
+  const bestStage = stageMap.get(bestStageId)
+
+  const clientRef = db.collection('clients').doc(contact.id)
+  await clientRef.update({
+    funnelStage: bestStageId || contact.funnelStage,
+    funnelId: bestStage?.funnelId || currentFunnelId,
+    funnelStageUpdatedAt: new Date().toISOString(),
+    currentCadenceStepId: '',
+    lastCadenceActionAt: new Date().toISOString(),
+    lastCadenceStepResponded: false,
+    lastCadenceOutcome: '',
+    lastCadenceCallSummary: '',
+  })
+
+  // Log the AI-driven move
+  await db.collection('clients').doc(contact.id).collection('logs').add({
+    action: 'cadence_ai_stage_move',
+    message: `Cadência: contato respondeu (${outcome}) — IA moveu para ${bestStage?.name || 'etapa'}`,
+    type: 'cadence',
+    author: 'Sistema (Cadência IA)',
+    metadata: {
+      outcome,
+      bestStageId: bestStageId || '',
+      bestStageName: bestStage?.name || '',
+      callSummary: callSummary.slice(0, 100),
+    },
+    createdAt: new Date().toISOString(),
+    orgId,
+  })
+
+  console.log(`[CADENCE] AI moved contact ${contact.id} to stage "${bestStage?.name}" (outcome: ${outcome})`)
 }
 
 async function advanceToNextStep(
