@@ -782,6 +782,60 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
 
   const successToday = todayLogs.filter(l => l.status === 'success')
   const failedRecent = logs.filter(l => l.status === 'failed' || l.status === 'retry_failed')
+
+  // Calculate next cron run (every 15 minutes, respecting work hours)
+  const nextCronRun = useMemo(() => {
+    const now = new Date()
+    // Next 15-minute mark
+    const next = new Date(now)
+    const mins = next.getMinutes()
+    const nextMins = Math.ceil((mins + 1) / 15) * 15
+    next.setMinutes(nextMins, 0, 0)
+    if (nextMins >= 60) {
+      next.setMinutes(0, 0, 0)
+      next.setHours(next.getHours() + 1)
+    }
+
+    // Parse work hours
+    const [startH, startM] = (autoConfig.workHoursStart || '08:00').split(':').map(Number)
+    const [endH, endM] = (autoConfig.workHoursEnd || '18:00').split(':').map(Number)
+    const startMinutes = startH * 60 + startM
+    const endMinutes = endH * 60 + endM
+
+    const nextMinutes = next.getHours() * 60 + next.getMinutes()
+
+    if (!autoConfig.enabled) {
+      return { time: null, label: 'Automação pausada' }
+    }
+
+    if (nextMinutes >= startMinutes && nextMinutes <= endMinutes) {
+      // Within work hours
+      const diffMs = next.getTime() - now.getTime()
+      const diffMins = Math.max(1, Math.ceil(diffMs / 60000))
+      return {
+        time: next,
+        label: `${next.getHours().toString().padStart(2, '0')}:${next.getMinutes().toString().padStart(2, '0')}`,
+        subtitle: `em ${diffMins} min`,
+      }
+    }
+
+    // Outside work hours — next run is at work start
+    const nextWork = new Date(now)
+    if (nextMinutes > endMinutes) {
+      // After work hours — next day
+      nextWork.setDate(nextWork.getDate() + 1)
+    }
+    nextWork.setHours(startH, startM, 0, 0)
+    // Align to 15-min interval
+    const wMins = nextWork.getMinutes()
+    nextWork.setMinutes(Math.ceil(wMins / 15) * 15, 0, 0)
+
+    return {
+      time: nextWork,
+      label: `${nextWork.getHours().toString().padStart(2, '0')}:${nextWork.getMinutes().toString().padStart(2, '0')}`,
+      subtitle: nextWork.getDate() !== now.getDate() ? 'amanhã' : 'hoje',
+    }
+  }, [autoConfig.enabled, autoConfig.workHoursStart, autoConfig.workHoursEnd])
   const totalActive = Object.values(activeCounts).reduce((a, b) => a + b, 0)
 
   const channelCounts = useMemo(() => {
@@ -806,6 +860,15 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${autoConfig.enabled ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
           {autoConfig.enabled ? <><PauseIcon className="w-4 h-4" /> Pausar toda automação</> : <><PlayIcon className="w-4 h-4" /> Retomar automação</>}
         </button>
+        <div className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-xl border ${autoConfig.enabled ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+          <ClockIcon className="w-4 h-4" />
+          <span className="font-medium">Próximo cron:</span>
+          {nextCronRun.time ? (
+            <span>{nextCronRun.label} <span className="text-xs opacity-70">({nextCronRun.subtitle})</span></span>
+          ) : (
+            <span className="text-xs">{nextCronRun.label}</span>
+          )}
+        </div>
       </div>
 
       {/* KPI cards */}
