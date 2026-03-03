@@ -251,116 +251,114 @@ async function processOrg(
   const nonPhoneEligible = eligible.filter(e => e.step.contactMethod !== 'phone')
 
   // ---- PHONE: Power Dialer via CallQueue ----
-  if (phoneEligible.length > 0) {
-    // Check if a cadence queue is already running for this org
-    const existingQueue = await getCallQueue(undefined, orgId)
-    const hasCadenceQueue = existingQueue && existingQueue.status === 'running' &&
-      (existingQueue as unknown as Record<string, unknown>).type === 'cadence'
+  // SEMPRE verificar se há fila running para avançar (independente de novos elegíveis)
+  const existingQueue = await getCallQueue(undefined, orgId)
+  const hasCadenceQueue = existingQueue && existingQueue.status === 'running' &&
+    (existingQueue as unknown as Record<string, unknown>).type === 'cadence'
 
-    if (hasCadenceQueue) {
-      // Queue já existe — chamar processQueue para avançar
-      // (detecta chamadas travadas e dispara novas se houver vagas)
-      console.log(`[CADENCE] Cadence queue already running (${existingQueue.id}), processing to unstick/advance`)
-      await processQueue(existingQueue.id)
+  if (hasCadenceQueue) {
+    // Queue já existe — chamar processQueue para avançar
+    // (detecta chamadas travadas e dispara novas se houver vagas)
+    console.log(`[CADENCE] Cadence queue already running (${existingQueue.id}), processing to unstick/advance`)
+    await processQueue(existingQueue.id)
+    results.skipped += phoneEligible.length
+  } else if (phoneEligible.length > 0) {
+    // Calculate daily phone budget
+    const todayPhoneCount = await getTodayPhoneCallCount(orgId)
+    const maxPhoneDaily = config.maxCallsPerDay ?? 300
+    const phoneBudget = Math.max(0, maxPhoneDaily - todayPhoneCount)
+
+    if (phoneBudget === 0) {
+      console.log(`[CADENCE] Daily phone limit reached (${todayPhoneCount}/${maxPhoneDaily}), skipping phone steps`)
       results.skipped += phoneEligible.length
     } else {
-      // Calculate daily phone budget
-      const todayPhoneCount = await getTodayPhoneCallCount(orgId)
-      const maxPhoneDaily = config.maxCallsPerDay ?? 300
-      const phoneBudget = Math.max(0, maxPhoneDaily - todayPhoneCount)
+      // Limit to daily budget
+      const phonesToEnqueue = phoneEligible.slice(0, Math.min(phoneBudget, actionsLeft))
+      const skippedCount = phoneEligible.length - phonesToEnqueue.length
 
-      if (phoneBudget === 0) {
-        console.log(`[CADENCE] Daily phone limit reached (${todayPhoneCount}/${maxPhoneDaily}), skipping phone steps`)
-        results.skipped += phoneEligible.length
-      } else {
-        // Limit to daily budget
-        const phonesToEnqueue = phoneEligible.slice(0, Math.min(phoneBudget, actionsLeft))
-        const skippedCount = phoneEligible.length - phonesToEnqueue.length
+      // Build contacts for queue
+      const queueContacts = phonesToEnqueue.map(({ contact, step }) => {
+        const cadenceOverrides = (step.vapiSystemPrompt || step.vapiFirstMessage)
+          ? {
+              systemPrompt: step.vapiSystemPrompt || undefined,
+              firstMessage: step.vapiFirstMessage || undefined,
+            }
+          : undefined
 
-        // Build contacts for queue
-        const queueContacts = phonesToEnqueue.map(({ contact, step }) => {
-          const cadenceOverrides = (step.vapiSystemPrompt || step.vapiFirstMessage)
-            ? {
-                systemPrompt: step.vapiSystemPrompt || undefined,
-                firstMessage: step.vapiFirstMessage || undefined,
-              }
-            : undefined
-
-          return {
-            id: contact.id,
-            name: (contact.name as string) || '',
-            phone: (contact.phone as string) || '',
-            company: (contact.company as string) || undefined,
-            industry: (contact.industry as string) || undefined,
-            partners: (contact.partners as string) || undefined,
-            cadenceStepId: step.id,
-            cadenceOverrides,
-          }
-        })
-
-        // Create queue and start processing
-        const maxConcurrent = config.maxConcurrentCalls ?? 10
-        const { queueId, totalItems } = await createCadenceCallQueue({
-          contacts: queueContacts,
-          maxConcurrent,
-          orgId,
-        })
-
-        // Mark all enqueued contacts as pending call result
-        const nowStr = new Date().toISOString()
-        for (let i = 0; i < phonesToEnqueue.length; i += 450) {
-          const writeBatch = db.batch()
-          const chunk = phonesToEnqueue.slice(i, i + 450)
-          for (const { contact } of chunk) {
-            writeBatch.update(db.collection('clients').doc(contact.id), {
-              cadencePendingCallResult: true,
-              lastCadenceActionAt: nowStr,
-            })
-          }
-          await writeBatch.commit()
+        return {
+          id: contact.id,
+          name: (contact.name as string) || '',
+          phone: (contact.phone as string) || '',
+          company: (contact.company as string) || undefined,
+          industry: (contact.industry as string) || undefined,
+          partners: (contact.partners as string) || undefined,
+          cadenceStepId: step.id,
+          cadenceOverrides,
         }
+      })
 
-        // Log cadence executions for enqueued contacts
-        for (const { contact, step, stage } of phonesToEnqueue) {
-          await logCadenceExecution(db, orgId, contact.id, {
-            stepId: step.id,
-            stepName: step.name,
-            channel: 'phone',
-            stageId: stage.id,
-            stageName: stage.name,
-            success: true,
-            error: '',
-            templatePreview: step.name.slice(0, 100),
+      // Create queue and start processing
+      const maxConcurrent = config.maxConcurrentCalls ?? 10
+      const { queueId, totalItems } = await createCadenceCallQueue({
+        contacts: queueContacts,
+        maxConcurrent,
+        orgId,
+      })
+
+      // Mark all enqueued contacts as pending call result
+      const nowStr = new Date().toISOString()
+      for (let i = 0; i < phonesToEnqueue.length; i += 450) {
+        const writeBatch = db.batch()
+        const chunk = phonesToEnqueue.slice(i, i + 450)
+        for (const { contact } of chunk) {
+          writeBatch.update(db.collection('clients').doc(contact.id), {
+            cadencePendingCallResult: true,
+            lastCadenceActionAt: nowStr,
           })
-
-          const logEntry: Omit<CadenceExecutionLog, 'id'> = {
-            orgId,
-            clientId: contact.id,
-            clientName: (contact.name as string) || '',
-            stepId: step.id,
-            stepName: step.name,
-            stageId: stage.id,
-            stageName: stage.name,
-            channel: 'phone',
-            status: 'success',
-            error: '',
-            executedAt: now.toISOString(),
-            retryCount: 0,
-          }
-          await db.collection('organizations').doc(orgId).collection('cadenceExecutionLog').add(logEntry)
         }
-
-        results.processed += totalItems
-        results.success += totalItems
-        actionsLeft -= totalItems
-        results.skipped += skippedCount
-
-        // Start the power dialer — fills maxConcurrent slots immediately
-        // Subsequent calls are triggered by webhook → onCallCompleted → processQueue
-        await processQueue(queueId)
-
-        console.log(`[CADENCE] Power dialer started: queue ${queueId} with ${totalItems} contacts, ${maxConcurrent} concurrent, ${skippedCount} deferred`)
+        await writeBatch.commit()
       }
+
+      // Log cadence executions for enqueued contacts
+      for (const { contact, step, stage } of phonesToEnqueue) {
+        await logCadenceExecution(db, orgId, contact.id, {
+          stepId: step.id,
+          stepName: step.name,
+          channel: 'phone',
+          stageId: stage.id,
+          stageName: stage.name,
+          success: true,
+          error: '',
+          templatePreview: step.name.slice(0, 100),
+        })
+
+        const logEntry: Omit<CadenceExecutionLog, 'id'> = {
+          orgId,
+          clientId: contact.id,
+          clientName: (contact.name as string) || '',
+          stepId: step.id,
+          stepName: step.name,
+          stageId: stage.id,
+          stageName: stage.name,
+          channel: 'phone',
+          status: 'success',
+          error: '',
+          executedAt: now.toISOString(),
+          retryCount: 0,
+        }
+        await db.collection('organizations').doc(orgId).collection('cadenceExecutionLog').add(logEntry)
+      }
+
+      results.processed += totalItems
+      results.success += totalItems
+      actionsLeft -= totalItems
+      results.skipped += skippedCount
+
+      // Start the power dialer — fills maxConcurrent slots immediately
+      // Subsequent calls are triggered by webhook → onCallCompleted → processQueue
+      await processQueue(queueId)
+
+      console.log(`[CADENCE] Power dialer started: queue ${queueId} with ${totalItems} contacts, ${maxConcurrent} concurrent, ${skippedCount} deferred`)
     }
   }
 
