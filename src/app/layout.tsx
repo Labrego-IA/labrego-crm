@@ -19,6 +19,7 @@ import { getScreenLabel } from '@/lib/screenLabels'
 import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
+import { useCredits } from '@/hooks/useCredits'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const pathname = usePathname()
   const lastLoggedRouteRef = useRef<string | null>(null)
   const isLoginPage = pathname === '/login'
+  const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined)
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {
@@ -322,10 +324,36 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       <span className="text-sm font-medium text-primary-600">{orgName}</span>
                     </>
                   )}
+                  {!creditsLoading && orgId && (
+                    <>
+                      <span className="text-slate-300">|</span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                        actionBalance <= 0 || minuteBalance <= 0
+                          ? 'bg-red-100 text-red-700'
+                          : actionBalance < 200 || minuteBalance < 50
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        {actionBalance} ações · {minuteBalance} min
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* Right side */}
                 <div className="flex items-center gap-3">
+                  {!creditsLoading && orgId && (
+                    <span className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                      actionBalance <= 0 || minuteBalance <= 0
+                        ? 'bg-red-100 text-red-700'
+                        : actionBalance < 200 || minuteBalance < 50
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-emerald-100 text-emerald-700'
+                    }`}>
+                      {actionBalance} · {minuteBalance}m
+                    </span>
+                  )}
                   <span className="hidden md:inline text-sm text-slate-500">{formatDateTime(currentTime)}</span>
                   <div className="relative" ref={userMenuRef}>
                     <button
