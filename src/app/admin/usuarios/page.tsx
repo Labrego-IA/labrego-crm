@@ -203,7 +203,11 @@ export default function UsuariosPage() {
 
   const openEditModal = (member: OrgMember) => {
     setEditMember(member)
-    setEditRole(member.role as RolePreset)
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    const role = validRoles.includes(member.role as RolePreset)
+      ? (member.role as RolePreset)
+      : 'viewer'
+    setEditRole(role)
     setEditPermissions({
       pages: [...(member.permissions?.pages || [])],
       actions: { ...defaultActions(), ...(member.permissions?.actions || {}) },
@@ -239,6 +243,11 @@ export default function UsuariosPage() {
 
   const handleSaveEdit = async () => {
     if (!orgId || !editMember) return
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    if (!editRole || !validRoles.includes(editRole)) {
+      toast.error('Selecione um cargo valido')
+      return
+    }
     setEditLoading(true)
     try {
       await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
