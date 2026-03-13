@@ -377,32 +377,32 @@ export default function DisparoPage() {
     <div className="h-full bg-slate-50 flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-          {/* Left: back + title (fixed width) */}
-          <div className="flex items-center gap-4 flex-shrink-0 w-56">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          {/* Left: back + title */}
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 sm:w-56">
             <Link
               href="/ligacoes/configuracao"
               className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors"
             >
               <ArrowLeftIcon className="w-4 h-4 text-slate-600" />
             </Link>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <RocketLaunchIcon className="w-5 h-5 text-green-600" />
-                Disparo Massivo de Ligacoes
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+                <RocketLaunchIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <span className="truncate">Disparo Massivo de Ligacoes</span>
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 truncate">
                 Dispare e acompanhe ligacoes em massa
               </p>
             </div>
           </div>
 
-          {/* Center: Tabs (fills remaining space, centered) */}
-          <div className="flex-1 flex justify-center">
-            <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 p-1 rounded-lg overflow-x-auto">
+          {/* Center: Tabs */}
+          <div className="flex-1 flex sm:justify-center">
+            <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 p-1 rounded-lg w-full sm:w-auto">
               <button
                 onClick={() => setActiveTab('trigger')}
-                className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap ${
                   activeTab === 'trigger'
                     ? 'bg-white text-slate-800 shadow-sm'
                     : 'text-slate-600 hover:text-slate-800'
@@ -413,7 +413,7 @@ export default function DisparoPage() {
               </button>
               <button
                 onClick={() => setActiveTab('reports')}
-                className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
+                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap ${
                   activeTab === 'reports'
                     ? 'bg-white text-slate-800 shadow-sm'
                     : 'text-slate-600 hover:text-slate-800'
@@ -425,8 +425,8 @@ export default function DisparoPage() {
             </div>
           </div>
 
-          {/* Right: spacer to balance layout */}
-          <div className="flex-shrink-0 w-56 flex justify-end">
+          {/* Right: spacer to balance layout (hidden on mobile) */}
+          <div className="hidden sm:flex flex-shrink-0 w-56 justify-end">
             <div />
           </div>
         </div>
