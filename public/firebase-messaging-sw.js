@@ -11,6 +11,8 @@ if (!config) {
 
   if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
     console.error('[FCM] firebaseConfig vazio. Abortando inicialização do service worker');
+  } else if (!firebaseConfig.projectId) {
+    console.error('[FCM] projectId ausente no firebaseConfig. Verifique se NEXT_PUBLIC_FIREBASE_PROJECT_ID está definida. Abortando inicialização do service worker');
   } else {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);

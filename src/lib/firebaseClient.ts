@@ -13,6 +13,13 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
 }
 
+const requiredFields = ['apiKey', 'projectId', 'appId'] as const
+for (const field of requiredFields) {
+  if (!firebaseConfig[field]) {
+    console.error(`[Firebase] Variável de ambiente ausente: NEXT_PUBLIC_FIREBASE_${field.replace(/([A-Z])/g, '_$1').toUpperCase()}. Firebase não será inicializado corretamente.`)
+  }
+}
+
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig)
 
 export const db = getFirestore(app)
