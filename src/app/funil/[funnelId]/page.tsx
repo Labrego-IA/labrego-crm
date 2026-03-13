@@ -403,12 +403,14 @@ export default function FunilDetailPage() {
   const [newStageConversionType, setNewStageConversionType] = useState<'positive' | 'negative' | 'neutral' | 'final_conversion'>('neutral')
   const [savingStage, setSavingStage] = useState(false)
   const [deletingStageId, setDeletingStageId] = useState<string | null>(null)
+  const [newStageError, setNewStageError] = useState('')
 
   // Macro Stage settings state
   const [editingMacroStage, setEditingMacroStage] = useState<MacroStage | null>(null)
   const [newMacroStageName, setNewMacroStageName] = useState('')
   const [newMacroStageColor, setNewMacroStageColor] = useState(0)
   const [savingMacroStage, setSavingMacroStage] = useState(false)
+  const [newMacroStageError, setNewMacroStageError] = useState('')
   const [deletingMacroStageId, setDeletingMacroStageId] = useState<string | null>(null)
 
 
@@ -1714,7 +1716,11 @@ export default function FunilDetailPage() {
 
   // Add new stage
   const handleAddStage = async () => {
-    if (!newStageName.trim()) return
+    if (!newStageName.trim()) {
+      setNewStageError('Nome da etapa é obrigatório')
+      return
+    }
+    setNewStageError('')
     setSavingStage(true)
     try {
       const stageData: Record<string, unknown> = {
@@ -1812,7 +1818,11 @@ export default function FunilDetailPage() {
 
   // Add new macro stage
   const handleAddMacroStage = async () => {
-    if (!newMacroStageName.trim()) return
+    if (!newMacroStageName.trim()) {
+      setNewMacroStageError('Nome da macro etapa é obrigatório')
+      return
+    }
+    setNewMacroStageError('')
     setSavingMacroStage(true)
     try {
       await addDoc(collection(db, 'macroStages'), {
@@ -5434,10 +5444,14 @@ export default function FunilDetailPage() {
                       <input
                         type="text"
                         value={newMacroStageName}
-                        onChange={(e) => setNewMacroStageName(e.target.value)}
+                        onChange={(e) => {
+                          setNewMacroStageName(e.target.value)
+                          if (newMacroStageError) setNewMacroStageError('')
+                        }}
                         placeholder="Ex: Qualificacao"
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-all ${newMacroStageError ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
                       />
+                      {newMacroStageError && <p className="mt-1 text-xs text-red-500">{newMacroStageError}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">Cor da Borda</label>
@@ -5765,10 +5779,14 @@ export default function FunilDetailPage() {
                       <input
                         type="text"
                         value={newStageName}
-                        onChange={(e) => setNewStageName(e.target.value)}
+                        onChange={(e) => {
+                          setNewStageName(e.target.value)
+                          if (newStageError) setNewStageError('')
+                        }}
                         placeholder="Ex: Qualificação"
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white"
+                        className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 transition-all bg-white ${newStageError ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
                       />
+                      {newStageError && <p className="mt-1 text-xs text-red-500">{newStageError}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1">Cor</label>
@@ -8149,7 +8167,7 @@ export default function FunilDetailPage() {
                   <div className="relative">
                     <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
-                      type="email"
+                      type="text"
                       value={newContactForm.email}
                       onChange={(e) => {
                         setNewContactForm({ ...newContactForm, email: e.target.value })
