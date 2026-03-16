@@ -36,6 +36,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import MemberSelector from '@/components/MemberSelector'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 
 // Types
@@ -199,6 +200,8 @@ export default function ContatosPage() {
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [initialForm, setInitialForm] = useState(emptyForm)
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
 
   // Delete state
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -1028,10 +1031,41 @@ export default function ContatosPage() {
     setQuickFunnelFilter('all')
   }
 
+  // Check if form has unsaved changes
+  const hasUnsavedChanges = useCallback(() => {
+    if (photoFile) return true
+    return Object.keys(emptyForm).some(
+      (key) => form[key as keyof typeof form] !== initialForm[key as keyof typeof initialForm]
+    )
+  }, [form, initialForm, photoFile])
+
+  // Safe close modal (checks for unsaved changes)
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowModal(false)
+      setForm(emptyForm)
+      setPhotoFile(null)
+      setPhotoPreview(null)
+      setEditingId(null)
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = () => {
+    setShowConfirmClose(false)
+    setShowModal(false)
+    setForm(emptyForm)
+    setPhotoFile(null)
+    setPhotoPreview(null)
+    setEditingId(null)
+  }
+
   // Open new contact modal
   const openNewModal = () => {
     setEditingId(null)
     setForm(emptyForm)
+    setInitialForm(emptyForm)
     setPhotoFile(null)
     setPhotoPreview(null)
     setShowModal(true)
@@ -1040,7 +1074,7 @@ export default function ContatosPage() {
   // Open edit modal
   const openEditModal = (client: Cliente) => {
     setEditingId(client.id)
-    setForm({
+    const formData = {
       name: client.name || '',
       phone: client.phone || '',
       company: client.company || '',
@@ -1056,7 +1090,9 @@ export default function ContatosPage() {
       costCenterId: client.costCenterId || '',
       assignedTo: client.assignedTo || '',
       assignedToName: client.assignedToName || '',
-    })
+    }
+    setForm(formData)
+    setInitialForm(formData)
     setPhotoPreview(client.photoUrl || null)
     setShowModal(true)
     setOpenActionsId(null)
@@ -1881,7 +1917,7 @@ export default function ContatosPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowModal(false)}
+            onClick={handleCloseModal}
           />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
@@ -1898,7 +1934,7 @@ export default function ContatosPage() {
                 </div>
               </div>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <Cross2Icon className="w-5 h-5 text-slate-500" />
@@ -2114,7 +2150,7 @@ export default function ContatosPage() {
             {/* Footer */}
             <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancelar
@@ -2140,6 +2176,13 @@ export default function ContatosPage() {
           </div>
         </div>
       )}
+
+      {/* Dialog de confirmação de dados não salvos */}
+      <ConfirmCloseDialog
+        isOpen={showConfirmClose}
+        onConfirm={confirmCloseModal}
+        onCancel={() => setShowConfirmClose(false)}
+      />
 
       {/* Modal de Confirmação de Exclusão */}
       {deleteId && (
