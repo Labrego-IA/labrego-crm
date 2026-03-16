@@ -244,7 +244,7 @@ export default function ContatosPage() {
   const [exporting, setExporting] = useState(false)
   const [importFunnelId, setImportFunnelId] = useState('')
   const [importStageId, setImportStageId] = useState('')
-  const [importResult, setImportResult] = useState<{ success: boolean; count: number } | null>(null)
+  const [importResult, setImportResult] = useState<{ success: boolean; count: number; skipped?: number } | null>(null)
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null)
   const { funnels } = useVisibleFunnels()
 
@@ -669,8 +669,36 @@ export default function ContatosPage() {
           const total = validRows.length
           setImportProgress({ current: 0, total })
 
+          // Build sets of existing names and documents for duplicate detection
+          const existingNames = new Set(
+            clients.map((c) => c.name.trim().toLowerCase())
+          )
+          const existingDocs = new Set(
+            clients
+              .filter((c) => c.document)
+              .map((c) => c.document!.replace(/\D/g, ''))
+              .filter((d) => d.length > 0)
+          )
+
           let imported = 0
+          let skipped = 0
           for (const contact of validRows) {
+            // Skip contacts with duplicate name
+            const contactName = contact.name.trim().toLowerCase()
+            if (existingNames.has(contactName)) {
+              skipped++
+              setImportProgress({ current: imported + skipped, total })
+              continue
+            }
+
+            // Skip contacts with duplicate CPF/CNPJ
+            const contactDoc = contact.document?.replace(/\D/g, '') || ''
+            if (contactDoc && existingDocs.has(contactDoc)) {
+              skipped++
+              setImportProgress({ current: imported + skipped, total })
+              continue
+            }
+
             const contactRef = doc(collection(db, 'clients'))
             await setDoc(contactRef, {
               ...contact,
@@ -683,8 +711,13 @@ export default function ContatosPage() {
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             })
+
+            // Track newly imported names and documents to avoid duplicates within the import itself
+            existingNames.add(contactName)
+            if (contactDoc) existingDocs.add(contactDoc)
+
             imported++
-            setImportProgress({ current: imported, total })
+            setImportProgress({ current: imported + skipped, total })
           }
 
           setShowImportModal(false)
@@ -693,7 +726,7 @@ export default function ContatosPage() {
           setImportFunnelId('')
           setImportStageId('')
           setImportProgress(null)
-          setImportResult({ success: true, count: imported })
+          setImportResult({ success: true, count: imported, skipped })
         } catch (error) {
           console.error('Erro ao importar:', error)
           setShowImportModal(false)
@@ -1103,6 +1136,32 @@ export default function ContatosPage() {
     if (!form.name.trim() || !form.phone.trim()) {
       alert('Nome e telefone são obrigatórios')
       return
+    }
+
+    // Check for duplicate name
+    const trimmedName = form.name.trim().toLowerCase()
+    const duplicateName = clients.find(
+      (c) => c.name.trim().toLowerCase() === trimmedName && c.id !== editingId
+    )
+    if (duplicateName) {
+      alert('Já existe um contato com este nome. Por favor, use um nome diferente.')
+      return
+    }
+
+    // Check for duplicate CPF/CNPJ
+    const trimmedDoc = form.document.trim()
+    if (trimmedDoc) {
+      const normalizedDoc = trimmedDoc.replace(/\D/g, '')
+      const duplicateDoc = clients.find(
+        (c) =>
+          c.document &&
+          c.document.replace(/\D/g, '') === normalizedDoc &&
+          c.id !== editingId
+      )
+      if (duplicateDoc) {
+        alert('Já existe um contato com este CPF/CNPJ. Por favor, verifique o documento informado.')
+        return
+      }
     }
 
     setSaving(true)
@@ -2834,6 +2893,11 @@ export default function ContatosPage() {
                   <p className="text-sm text-slate-500">
                     <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
                   </p>
+                  {importResult.skipped && importResult.skipped > 0 && (
+                    <p className="text-sm text-amber-600 mt-1">
+                      {importResult.skipped} contato{importResult.skipped !== 1 ? 's' : ''} ignorado{importResult.skipped !== 1 ? 's' : ''} por nome ou CPF/CNPJ duplicado.
+                    </p>
+                  )}
                 </>
               ) : (
                 <>
