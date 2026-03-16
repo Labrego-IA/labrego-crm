@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, getDoc, setDoc, addDoc, getDocs, query, where, orderBy, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -14,7 +15,7 @@ function EditorPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const templateId = searchParams.get('templateId')
-  const { orgId, userUid, userEmail } = useCrmUser()
+  const { orgId, orgLoading, userUid, userEmail } = useCrmUser()
 
   const [initialBlocks, setInitialBlocks] = useState<EmailBlockData[]>([])
   const [initialSubject, setInitialSubject] = useState('')
@@ -157,6 +158,8 @@ function EditorPageContent() {
       toast.error('Erro ao excluir template')
     }
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

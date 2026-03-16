@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import PlanGate from '@/components/PlanGate'
 import {
   ChatBubbleLeftRightIcon,
@@ -130,7 +131,7 @@ export default function CadenciaPage() {
 }
 
 function CadenciaDashboard() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const searchParams = useSearchParams()
   const funnelIdParam = searchParams.get('funnelId')
   const [mainTab, setMainTab] = useState<MainTab>('config')
@@ -190,6 +191,8 @@ function CadenciaDashboard() {
     if (!selectedFunnel) return stages
     return stages.filter(s => s.funnelId === selectedFunnel)
   }, [stages, selectedFunnel])
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (!orgId) return null
 

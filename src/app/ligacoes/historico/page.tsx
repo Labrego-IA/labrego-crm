@@ -13,6 +13,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   PhoneIcon,
   ArrowLeftIcon,
@@ -49,7 +50,7 @@ interface Filters {
 }
 
 export default function HistoricoLigacoesPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [calls, setCalls] = useState<CallRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [funnels, setFunnels] = useState<FunnelOption[]>([])
@@ -333,6 +334,8 @@ export default function HistoricoLigacoesPage() {
   }
 
   const hasActiveFilters = filters.search || filters.dateFrom || filters.dateTo || filters.funnelId
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="h-full bg-slate-50 flex flex-col">

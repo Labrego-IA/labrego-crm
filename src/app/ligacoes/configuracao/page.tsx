@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -94,7 +95,7 @@ function ExpandableTextarea({
 }
 
 export default function ConfiguracaoPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [activeTab, setActiveTab] = useState<TabType>('config')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -269,6 +270,8 @@ export default function ConfiguracaoPage() {
       : [...currentDays, day].sort()
     updateConfig('schedule.workDays', newDays)
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

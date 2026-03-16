@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -53,7 +54,7 @@ const TYPE_OPTIONS: { value: CampaignType | ''; label: string }[] = [
 
 function CampanhasContent() {
   const router = useRouter()
-  const { orgId, member } = useCrmUser()
+  const { orgId, orgLoading, member } = useCrmUser()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -146,6 +147,8 @@ function CampanhasContent() {
   }, [searchQuery, statusFilter, typeFilter])
 
   /* ================================= Render ================================= */
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="p-4 md:p-6 space-y-6">

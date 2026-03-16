@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   ChartBarIcon,
   ArrowPathIcon,
@@ -222,7 +223,7 @@ const ACTION_TYPE_CONFIG: Record<ActionType, { label: string; icon: React.Compon
 }
 
 export default function ProdutividadePage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [entries, setEntries] = useState<ProductivityEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -399,6 +400,10 @@ export default function ProdutividadePage() {
     }
     return totals
   }, [breakdownAuthors, typeBreakdown])
+
+  if (!orgLoading && !orgId) {
+    return <NoOrgState />
+  }
 
   if (loading) {
     return (

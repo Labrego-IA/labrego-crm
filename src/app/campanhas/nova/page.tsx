@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import {
   collection,
@@ -94,7 +95,7 @@ const STATUS_OPTIONS = [
 
 function NovasCampanhasContent() {
   const router = useRouter()
-  const { orgId, member } = useCrmUser()
+  const { orgId, orgLoading, member } = useCrmUser()
 
   /* ----------------------------- Wizard State -------------------------------- */
 
@@ -552,6 +553,8 @@ function NovasCampanhasContent() {
   }, [currentStep, selectedIds.size, campaignName, subject, body, sendType, scheduledDate, scheduledTime, recurrenceTime])
 
   /* ================================= Render ================================= */
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="p-4 md:p-6 space-y-6">

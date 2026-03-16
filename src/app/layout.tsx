@@ -42,6 +42,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [orgName, setOrgName] = useState<string | null>(null)
   const [orgPlan, setOrgPlan] = useState<PlanId | null>(null)
   const [member, setMember] = useState<OrgMember | null>(null)
+  const [orgLoading, setOrgLoading] = useState(true)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
@@ -140,6 +141,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           if (err?.message?.includes('indexes')) {
             console.error('[layout] CREATE THIS INDEX:', err.message)
           }
+        } finally {
+          setOrgLoading(false)
         }
       })()
     })
@@ -151,6 +154,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setOrgName(null)
       setOrgPlan(null)
       setMember(null)
+      setOrgLoading(true)
       unsub()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -409,7 +413,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-              <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} member={member}>
+              <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} member={member} orgLoading={orgLoading}>
                 {children}
               </CrmUserProvider>
             </div>

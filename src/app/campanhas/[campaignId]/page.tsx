@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -36,7 +37,7 @@ function CampaignDetailsContent() {
   const router = useRouter()
   const params = useParams()
   const campaignId = params.campaignId as string
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -183,6 +184,8 @@ function CampaignDetailsContent() {
   }
 
   /* ================================= Render ================================= */
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

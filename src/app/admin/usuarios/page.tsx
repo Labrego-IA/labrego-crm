@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import { db } from '@/lib/firebaseClient'
@@ -97,7 +98,7 @@ const ui = {
 /* ============================== Component =============================== */
 
 export default function UsuariosPage() {
-  const { orgId, userUid, userEmail } = useCrmUser()
+  const { orgId, orgLoading, userUid, userEmail } = useCrmUser()
   const { can } = usePermissions()
   const { limits } = usePlan()
 
@@ -295,6 +296,8 @@ export default function UsuariosPage() {
   const atLimit = memberCount >= maxUsers
 
   /* ============================== Render ================================ */
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <PermissionGate

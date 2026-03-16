@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { usePermissions } from '@/hooks/usePermissions'
 import { toast } from 'sonner'
 import {
@@ -54,7 +55,7 @@ const EMPTY_FORM: CostCenterForm = {
 }
 
 export default function AdminCentrosCustoPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const { can } = usePermissions()
 
   const [costCenters, setCostCenters] = useState<CostCenter[]>([])
@@ -183,6 +184,8 @@ export default function AdminCentrosCustoPage() {
       setDeleting(false)
     }
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (!can('canManageFunnels') && !can('canManageSettings')) {
     return (

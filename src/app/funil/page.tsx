@@ -9,6 +9,7 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import UpgradePrompt from '@/components/UpgradePrompt'
+import NoOrgState from '@/components/NoOrgState'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
 import {
@@ -50,7 +51,7 @@ type ClientBasic = {
 
 export default function FunnelHubPage() {
   const router = useRouter()
-  const { orgId, member } = useCrmUser()
+  const { orgId, orgLoading, member } = useCrmUser()
   const { funnels, loading: loadingFunnels } = useVisibleFunnels()
   const { can } = usePermissions()
   const { limits } = usePlan()
@@ -344,6 +345,8 @@ export default function FunnelHubPage() {
   }
 
   const loading = loadingFunnels || loadingData
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   // Loading state
   if (loading) {

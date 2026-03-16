@@ -12,6 +12,7 @@ interface CrmUserContextType {
   orgName: string | null
   orgPlan: PlanId | null
   member: OrgMember | null
+  orgLoading: boolean
 }
 
 const CrmUserContext = createContext<CrmUserContextType>({
@@ -22,6 +23,7 @@ const CrmUserContext = createContext<CrmUserContextType>({
   orgName: null,
   orgPlan: null,
   member: null,
+  orgLoading: true,
 })
 
 export function CrmUserProvider({
@@ -33,9 +35,10 @@ export function CrmUserProvider({
   orgName = null,
   orgPlan = null,
   member = null,
+  orgLoading = true,
 }: CrmUserContextType & { children: ReactNode }) {
   return (
-    <CrmUserContext.Provider value={{ userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member }}>
+    <CrmUserContext.Provider value={{ userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member, orgLoading }}>
       {children}
     </CrmUserContext.Provider>
   )

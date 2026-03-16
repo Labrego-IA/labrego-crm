@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import PlanGate from '@/components/PlanGate'
 import {
   ArrowPathIcon,
@@ -68,7 +69,7 @@ function generateId() {
 /* ═══════════════════════════════════════════════════════════ */
 
 function ReengajamentoContent() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [tab, setTab] = useState<Tab>('config')
   const [config, setConfig] = useState<ReengagementConfig | null>(null)
   const [enrollments, setEnrollments] = useState<ReengagementEnrollment[]>([])
@@ -162,6 +163,8 @@ function ReengajamentoContent() {
       setSaving(false)
     }
   }, [config, orgId])
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (!orgId || loading) {
     return (

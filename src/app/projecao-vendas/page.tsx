@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -70,7 +71,7 @@ function formatCurrencyShort(value: number): string {
 }
 
 export default function ProjecaoVendasPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
 
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [stages, setStages] = useState<FunnelStage[]>([])
@@ -270,6 +271,8 @@ export default function ProjecaoVendasPage() {
       <ChevronDownIcon className="w-3 h-3 inline ml-1" />
     )
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return <div className="p-8 text-center text-neutral-400">Carregando projeção de vendas...</div>

@@ -28,6 +28,7 @@ import {
 import { db, storage } from '@/lib/firebaseClient'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { useCredits } from '@/hooks/useCredits'
 import type { OrgMember } from '@/types/organization'
 import { usePermissions } from '@/hooks/usePermissions'
@@ -261,7 +262,7 @@ export default function FunilDetailPage() {
   const router = useRouter()
   const params = useParams()
   const funnelId = params.funnelId as string
-  const { userEmail, orgId, member } = useCrmUser()
+  const { userEmail, orgId, orgLoading, member } = useCrmUser()
   const credits = useCredits(orgId || undefined)
   const { viewScope, can } = usePermissions()
   const { filterStages } = useVisibleStages(funnelId)
@@ -3296,6 +3297,8 @@ export default function FunilDetailPage() {
       date.getFullYear() === today.getFullYear()
     )
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   // Funnel not found or no access
   if (funnelNotFound) {

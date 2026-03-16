@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import {
   doc,
@@ -53,7 +54,7 @@ function formatDate(dateStr: string): string {
 type CreditFilter = 'all' | 'minutes' | 'actions'
 
 export default function CreditsPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
 
   const [balance, setBalance] = useState<CreditBalance | null>(null)
   const [transactions, setTransactions] = useState<CreditTransaction[]>([])
@@ -125,6 +126,8 @@ export default function CreditsPage() {
   const filteredTransactions = filter === 'all'
     ? transactions
     : transactions.filter(tx => tx.creditType === filter)
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <PlanGate feature="voice_agent">

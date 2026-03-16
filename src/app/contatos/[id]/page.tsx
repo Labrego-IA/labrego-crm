@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { db, storage } from '@/lib/firebaseClient'
 import { formatDate, formatCurrency, formatDateTime, formatWhatsAppNumber } from '@/lib/format'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   collection,
   doc,
@@ -240,7 +241,7 @@ const paymentStatusColors: Record<string, string> = {
 export default function ContactDetailsPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
-  const { userEmail, orgId } = useCrmUser()
+  const { userEmail, orgId, orgLoading } = useCrmUser()
   const id = params?.id
 
   // Data states
@@ -940,6 +941,8 @@ export default function ContactDetailsPage() {
     ].filter(Boolean)
     return parts.length > 0 ? parts.join(', ') : null
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

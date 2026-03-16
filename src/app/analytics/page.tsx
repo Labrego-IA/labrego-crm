@@ -9,6 +9,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
 import {
@@ -228,7 +229,7 @@ export default function AnalyticsPage() {
 }
 
 function AnalyticsDashboard() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
 
   /* ─── State ─── */
   const [activeTab, setActiveTab] = useState<TabId>('overview')
@@ -718,6 +719,8 @@ function AnalyticsDashboard() {
   }, [activeTab, filteredClients, filteredStages, periodStart])
 
   /* ─── Render ─── */
+  if (!orgLoading && !orgId) return <NoOrgState />
+
   if (!orgId) {
     return (
       <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">

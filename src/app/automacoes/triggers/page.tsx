@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -31,7 +32,7 @@ import {
 /* ======================== Component ======================== */
 
 function TriggersPageContent() {
-  const { orgId, userUid, userEmail } = useCrmUser()
+  const { orgId, orgLoading, userUid, userEmail } = useCrmUser()
 
   const [triggers, setTriggers] = useState<AutomationTrigger[]>([])
   const [logs, setLogs] = useState<AutomationLog[]>([])
@@ -169,6 +170,8 @@ function TriggersPageContent() {
   }
 
   /* ======================== Render ======================== */
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

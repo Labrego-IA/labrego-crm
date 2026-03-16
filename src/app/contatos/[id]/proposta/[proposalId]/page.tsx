@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   collection,
   getDocs,
@@ -60,7 +61,7 @@ export default function EditProposalCRMPage() {
   const params = useParams<{ id: string; proposalId: string }>()
   const clientId = params?.id
   const proposalId = params?.proposalId
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const { branding } = useProposalBranding()
   const { structure } = useProposalStructure()
   const { fields: customFields } = useProposalCustomFields()
@@ -341,6 +342,8 @@ export default function EditProposalCRMPage() {
   }
 
   const statusColor = statusOptions.find(s => s.value === currentStatus)?.color || 'bg-slate-100 text-slate-700'
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

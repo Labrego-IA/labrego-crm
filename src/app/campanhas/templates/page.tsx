@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -118,7 +119,7 @@ const SYSTEM_TEMPLATES: Omit<EmailTemplate, 'orgId' | 'createdAt' | 'updatedAt' 
 
 function TemplatesLibraryContent() {
   const router = useRouter()
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
 
   const [orgTemplates, setOrgTemplates] = useState<EmailTemplate[]>([])
   const [loading, setLoading] = useState(true)
@@ -172,6 +173,8 @@ function TemplatesLibraryContent() {
       router.push(`/campanhas/editor?templateId=${tmpl.id}`)
     }
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="p-4 md:p-6 space-y-6">

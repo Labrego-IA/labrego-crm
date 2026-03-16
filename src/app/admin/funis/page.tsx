@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { collection, query, where, onSnapshot, doc, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { usePermissions } from '@/hooks/usePermissions'
 import { toast } from 'sonner'
 import {
@@ -43,7 +44,7 @@ type StageItem = {
 }
 
 export default function AdminFunisPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const { can } = usePermissions()
 
   const [members, setMembers] = useState<MemberRow[]>([])
@@ -258,6 +259,8 @@ export default function AdminFunisPage() {
       </div>
     )
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

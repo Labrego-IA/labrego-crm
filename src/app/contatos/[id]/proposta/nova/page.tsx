@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   collection,
   addDoc,
@@ -51,7 +52,7 @@ export default function NewProposalCRMPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const clientId = params?.id
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const { branding } = useProposalBranding()
   const { structure } = useProposalStructure()
   const { fields: customFields } = useProposalCustomFields()
@@ -290,6 +291,8 @@ export default function NewProposalCRMPage() {
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

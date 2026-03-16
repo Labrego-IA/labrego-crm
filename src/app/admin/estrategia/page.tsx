@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   BookOpenIcon,
   BuildingOfficeIcon,
@@ -106,7 +107,7 @@ const SECTIONS: PlaybookSection[] = [
 type PlaybookData = Record<string, string>
 
 export default function EstrategiaComercialPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [data, setData] = useState<PlaybookData>({})
   const [savedData, setSavedData] = useState<PlaybookData>({})
   const [loading, setLoading] = useState(true)
@@ -168,6 +169,8 @@ export default function EstrategiaComercialPage() {
   }
 
   const filledCount = SECTIONS.filter((s) => data[s.key]?.trim()).length
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (

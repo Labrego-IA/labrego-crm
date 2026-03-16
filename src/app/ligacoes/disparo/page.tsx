@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import {
   ReloadIcon,
   PlayIcon,
@@ -22,7 +23,7 @@ import {
 type TabType = 'trigger' | 'reports'
 
 export default function DisparoPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const [activeTab, setActiveTab] = useState<TabType>('trigger')
 
   // Trigger state (queue-based)
@@ -372,6 +373,8 @@ export default function DisparoPage() {
       setReportLoading(false)
     }
   }
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="h-full bg-slate-50 flex flex-col">

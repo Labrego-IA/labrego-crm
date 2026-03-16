@@ -6,6 +6,7 @@ import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, addDoc, quer
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { db, storage } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { leadSourceOptions, leadSourceIcons, leadTypeOptions } from '@/lib/leadSources'
 import Image from 'next/image'
 import Skeleton from '@/components/shared/Skeleton'
@@ -179,7 +180,7 @@ type CostCenter = {
 export default function ContatosPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { userEmail, orgId } = useCrmUser()
+  const { userEmail, orgId, orgLoading } = useCrmUser()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
   const [costCenters, setCostCenters] = useState<CostCenter[]>([])
@@ -1252,6 +1253,8 @@ export default function ContatosPage() {
   ]
 
   const hasActiveFilters = Object.values(columnFilters).some((v) => v) || quickFunnelFilter !== 'all'
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   return (
     <div className="p-6">

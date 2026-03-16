@@ -11,6 +11,7 @@ import {
   getDocs,
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import NoOrgState from '@/components/NoOrgState'
 import { db } from '@/lib/firebaseClient'
 import {
   FunnelIcon,
@@ -237,7 +238,7 @@ function ConversionTable({
 // ═══════════════════════════════════════════════════════════
 
 export default function ConversaoPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, orgLoading } = useCrmUser()
   const pageRef = useRef<HTMLDivElement>(null)
 
   // ── State ──────────────────────────────────────────────
@@ -545,6 +546,8 @@ export default function ConversaoPage() {
   // ═════════════════════════════════════════════════════════
   // RENDER
   // ═════════════════════════════════════════════════════════
+
+  if (!orgLoading && !orgId) return <NoOrgState />
 
   if (loading) {
     return (
