@@ -523,24 +523,127 @@ export default function ConversaoPage() {
 
   // ── Export Excel ────────────────────────────────────────
   const handleExportExcel = useCallback(async () => {
-    const XLSX = await import('xlsx')
-    const data = activeFunnelStages.map(stage => {
+    const XLSX = await import('xlsx-js-style')
+
+    // App design colors
+    const primaryDark = '0BBDD6'
+    const headerFontColor = 'FFFFFF'
+    const lightBg = 'F0FDFF'
+    const borderColor = 'D1D5DB'
+
+    const headerStyle = {
+      font: { bold: true, color: { rgb: headerFontColor }, sz: 11, name: 'Calibri' },
+      fill: { fgColor: { rgb: primaryDark } },
+      alignment: { horizontal: 'center' as const, vertical: 'center' as const, wrapText: true },
+      border: {
+        top: { style: 'thin' as const, color: { rgb: primaryDark } },
+        bottom: { style: 'thin' as const, color: { rgb: primaryDark } },
+        left: { style: 'thin' as const, color: { rgb: primaryDark } },
+        right: { style: 'thin' as const, color: { rgb: primaryDark } },
+      },
+    }
+
+    const cellBorder = {
+      top: { style: 'thin' as const, color: { rgb: borderColor } },
+      bottom: { style: 'thin' as const, color: { rgb: borderColor } },
+      left: { style: 'thin' as const, color: { rgb: borderColor } },
+      right: { style: 'thin' as const, color: { rgb: borderColor } },
+    }
+
+    const cellStyleEven = {
+      font: { sz: 10, name: 'Calibri', color: { rgb: '333333' } },
+      alignment: { vertical: 'center' as const, wrapText: true },
+      border: cellBorder,
+    }
+
+    const cellStyleOdd = {
+      ...cellStyleEven,
+      fill: { fgColor: { rgb: lightBg } },
+    }
+
+    // Build headers: Etapa + period columns + totals
+    const headers = [
+      'Etapa',
+      ...periodKeys.map(pk => getPeriodLabel(pk, periodType)),
+      'Total %',
+      'Convertidos',
+      'Total Saídas',
+    ]
+
+    const styledHeaders = headers.map(h => ({ v: h, s: headerStyle }))
+
+    // Build data rows with alternating colors
+    const dataRows = activeFunnelStages.map((stage, idx) => {
       const total = getTotalData(stage.id)
-      const row: Record<string, string | number> = { 'Etapa': stage.name }
-      periodKeys.forEach(pk => {
-        const cell = getCellData(stage.id, pk)
-        row[getPeriodLabel(pk, periodType)] = cell.total > 0 ? `${cell.rate.toFixed(1)}% (${cell.positive}/${cell.total})` : '-'
-      })
-      row['Total %'] = total.total > 0 ? `${total.rate.toFixed(1)}%` : '-'
-      row['Convertidos'] = total.positive
-      row['Total Saidas'] = total.total
-      return row
+      const style = idx % 2 === 0 ? cellStyleEven : cellStyleOdd
+      const centerStyle = { ...style, alignment: { ...style.alignment, horizontal: 'center' as const } }
+
+      return [
+        { v: stage.name, s: style },
+        ...periodKeys.map(pk => {
+          const cell = getCellData(stage.id, pk)
+          return { v: cell.total > 0 ? `${cell.rate.toFixed(1)}% (${cell.positive}/${cell.total})` : '-', s: centerStyle }
+        }),
+        { v: total.total > 0 ? `${total.rate.toFixed(1)}%` : '-', s: centerStyle },
+        { v: total.positive, s: centerStyle },
+        { v: total.total, s: centerStyle },
+      ]
     })
-    const ws = XLSX.utils.json_to_sheet(data)
+
+    // Title rows
+    const funnelLabel = selectedFunnelId === 'all'
+      ? 'Todos os funis'
+      : (funnels.find(f => f.id === selectedFunnelId)?.name || 'Funil')
+
+    const titleRow = [{
+      v: `Conversão de Funil — ${funnelLabel}`,
+      s: { font: { bold: true, sz: 14, color: { rgb: primaryDark }, name: 'Calibri' }, alignment: { horizontal: 'left' as const, vertical: 'center' as const } },
+    }]
+
+    const dateRow = [{
+      v: `Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+      s: { font: { sz: 10, color: { rgb: '666666' }, italic: true, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+    }]
+
+    const totalRow = [{
+      v: `Total de etapas: ${activeFunnelStages.length}`,
+      s: { font: { sz: 10, bold: true, color: { rgb: '444444' }, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+    }]
+
+    // Assemble sheet
+    const sheetData = [titleRow, dateRow, totalRow, [], styledHeaders, ...dataRows]
+    const ws = XLSX.utils.aoa_to_sheet(sheetData)
+
+    // Merge title rows across all columns
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } },
+      { s: { r: 2, c: 0 }, e: { r: 2, c: headers.length - 1 } },
+    ]
+
+    // Column widths
+    ws['!cols'] = [
+      { wch: 28 }, // Etapa
+      ...periodKeys.map(() => ({ wch: 20 })), // Period columns
+      { wch: 14 }, // Total %
+      { wch: 14 }, // Convertidos
+      { wch: 14 }, // Total Saídas
+    ]
+
+    // Row heights
+    ws['!rows'] = [
+      { hpt: 30 }, // Title
+      { hpt: 18 }, // Date
+      { hpt: 18 }, // Total
+      { hpt: 10 }, // Blank spacer
+      { hpt: 28 }, // Headers
+      ...dataRows.map(() => ({ hpt: 22 })),
+    ]
+
     const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Conversao')
-    XLSX.writeFile(wb, 'conversao-funil.xlsx')
-  }, [activeFunnelStages, periodKeys, periodType, getCellData, getTotalData])
+    XLSX.utils.book_append_sheet(wb, ws, 'Conversão')
+    XLSX.writeFile(wb, `conversao-funil-${new Date().toISOString().slice(0, 10)}.xlsx`)
+  }, [activeFunnelStages, periodKeys, periodType, getCellData, getTotalData, selectedFunnelId, funnels])
 
   // ═════════════════════════════════════════════════════════
   // RENDER

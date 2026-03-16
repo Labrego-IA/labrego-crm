@@ -32,11 +32,11 @@ export default function ConfirmCloseDialog({
   if (!isOpen || !mounted) return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"
-        onClick={onCancel}
-      />
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      onClick={onCancel}
+    >
+      <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" />
       <div
         className="relative bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={e => e.stopPropagation()}
@@ -45,8 +45,12 @@ export default function ConfirmCloseDialog({
           <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
             <ExclamationTriangleIcon className="w-6 h-6 text-amber-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-          <p className="text-sm text-white/60 mb-6">{message}</p>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {title}
+          </h3>
+          <p className="text-sm text-white/60 mb-6">
+            {message}
+          </p>
           <div className="flex gap-3 w-full">
             <button
               onClick={onCancel}
