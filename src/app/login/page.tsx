@@ -273,17 +273,9 @@ export default function LoginPage() {
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label htmlFor="login-password" className="block text-sm font-medium text-slate-300">
-                        Senha
-                      </label>
-                      <Link
-                        href="/reset-password"
-                        className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                      >
-                        Esqueci minha senha
-                      </Link>
-                    </div>
+                    <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 mb-2">
+                      Senha
+                    </label>
                     <div className="relative">
                       <input
                         id="login-password"
@@ -302,6 +294,14 @@ export default function LoginPage() {
                       >
                         {showLoginPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
                       </button>
+                    </div>
+                    <div className="flex justify-end mt-2">
+                      <Link
+                        href="/reset-password"
+                        className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                      >
+                        Esqueci minha senha
+                      </Link>
                     </div>
                   </div>
 
@@ -360,14 +360,17 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                  <button
-                    type="button"
-                    onClick={() => switchTab('cadastro')}
-                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                  >
-                    Criar conta
-                  </button>
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-slate-400">
+                    Não tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => switchTab('cadastro')}
+                      className="text-[#13DEFC]/80 hover:text-[#13DEFC] font-semibold transition-colors"
+                    >
+                      Cadastre-se
+                    </button>
+                  </p>
                 </div>
               </>
             )}
@@ -535,14 +538,17 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                  <button
-                    type="button"
-                    onClick={() => switchTab('login')}
-                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                  >
-                    Já tenho uma conta
-                  </button>
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-slate-400">
+                    Já tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => switchTab('login')}
+                      className="text-[#13DEFC]/80 hover:text-[#13DEFC] font-semibold transition-colors"
+                    >
+                      Entre
+                    </button>
+                  </p>
                 </div>
               </>
             )}
