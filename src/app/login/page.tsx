@@ -8,6 +8,8 @@ import {
   updateProfile,
   sendPasswordResetEmail,
   signInWithPopup,
+  signOut,
+  unlink,
   GoogleAuthProvider,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
@@ -103,35 +105,34 @@ export default function LoginPage() {
     setGoogleLoading(true)
 
     try {
-      console.log('[GoogleLogin] Iniciando login com Google...')
-      console.log('[GoogleLogin] Firebase Auth config:', {
-        apiKey: auth.app.options.apiKey ? '✓ definida' : '✗ VAZIA',
-        authDomain: auth.app.options.authDomain || '✗ VAZIO',
-        projectId: auth.app.options.projectId || '✗ VAZIO',
-      })
       const provider = new GoogleAuthProvider()
-      console.log('[GoogleLogin] Provider criado, abrindo popup...')
       const result = await signInWithPopup(auth, provider)
-      console.log('[GoogleLogin] Login bem-sucedido!', {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-      })
+      const user = result.user
+
+      // Se a conta foi criada com email/senha, não permitir login com Google
+      const hasPasswordProvider = user.providerData.some(
+        (p) => p.providerId === 'password'
+      )
+
+      if (hasPasswordProvider) {
+        // Desfazer o vínculo do Google para restaurar o estado original
+        try {
+          await unlink(user, 'google.com')
+        } catch {
+          // Se falhar o unlink, ainda assim fazer sign out
+        }
+        await signOut(auth)
+        setLoginError('Esta conta foi criada com e-mail e senha. Por favor, faça login com seu e-mail e senha.')
+        return
+      }
+
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
-      const message = err?.message || ''
-      console.error('[GoogleLogin] Erro no login com Google:', {
-        code,
-        message,
-        fullError: err,
-        customData: err?.customData,
-      })
       if (code === 'auth/popup-closed-by-user') {
-        console.log('[GoogleLogin] Usuário fechou o popup')
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setLoginError('Já existe uma conta com esse e-mail usando outro método de login.')
+        setLoginError('Já existe uma conta com esse e-mail usando outro método de login. Faça login com e-mail e senha.')
       } else if (code === 'auth/popup-blocked') {
         setLoginError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
@@ -147,35 +148,33 @@ export default function LoginPage() {
     setGoogleCadastroLoading(true)
 
     try {
-      console.log('[GoogleCadastro] Iniciando cadastro com Google...')
-      console.log('[GoogleCadastro] Firebase Auth config:', {
-        apiKey: auth.app.options.apiKey ? '✓ definida' : '✗ VAZIA',
-        authDomain: auth.app.options.authDomain || '✗ VAZIO',
-        projectId: auth.app.options.projectId || '✗ VAZIO',
-      })
       const provider = new GoogleAuthProvider()
-      console.log('[GoogleCadastro] Provider criado, abrindo popup...')
       const result = await signInWithPopup(auth, provider)
-      console.log('[GoogleCadastro] Cadastro bem-sucedido!', {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-      })
+      const user = result.user
+
+      // Se a conta já existe com email/senha, não permitir cadastro com Google
+      const hasPasswordProvider = user.providerData.some(
+        (p) => p.providerId === 'password'
+      )
+
+      if (hasPasswordProvider) {
+        try {
+          await unlink(user, 'google.com')
+        } catch {
+          // Se falhar o unlink, ainda assim fazer sign out
+        }
+        await signOut(auth)
+        setCadastroError('Já existe uma conta com esse e-mail criada com senha. Por favor, faça login com e-mail e senha na aba "Entrar".')
+        return
+      }
+
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
-      const message = err?.message || ''
-      console.error('[GoogleCadastro] Erro no cadastro com Google:', {
-        code,
-        message,
-        fullError: err,
-        customData: err?.customData,
-      })
       if (code === 'auth/popup-closed-by-user') {
-        console.log('[GoogleCadastro] Usuário fechou o popup')
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setCadastroError('Já existe uma conta com esse e-mail usando outro método de login.')
+        setCadastroError('Já existe uma conta com esse e-mail usando outro método de login. Faça login com e-mail e senha.')
       } else if (code === 'auth/popup-blocked') {
         setCadastroError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
