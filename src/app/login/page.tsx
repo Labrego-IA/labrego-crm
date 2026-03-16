@@ -297,7 +297,7 @@ export default function LoginPage() {
                     </div>
                     <div className="flex justify-end mt-2">
                       <Link
-                        href="/reset-password"
+                        href="/auth/forgot-password"
                         className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
                       >
                         Esqueci minha senha
