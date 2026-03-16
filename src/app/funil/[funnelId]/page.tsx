@@ -36,6 +36,7 @@ import { leadSourceOptions, leadSourceIcons, leadTypeOptions } from '@/lib/leadS
 import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import AudioPlayer from '@/components/AudioPlayer'
 import RichTextEditor from '@/components/RichTextEditor'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import {
   Cross2Icon,
   PlusIcon,
@@ -500,6 +501,30 @@ export default function FunilDetailPage() {
   const [showCallConfirm, setShowCallConfirm] = useState(false)
   const [callingContact, setCallingContact] = useState(false)
   const pendingCallConfirmRef = useRef(false)
+
+  // Unsaved changes confirmation
+  const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false)
+  const pendingCloseActionRef = useRef<(() => void) | null>(null)
+
+  const guardedClose = useCallback((hasChanges: boolean, closeAction: () => void) => {
+    if (hasChanges) {
+      pendingCloseActionRef.current = closeAction
+      setShowUnsavedConfirm(true)
+    } else {
+      closeAction()
+    }
+  }, [])
+
+  const handleConfirmUnsavedClose = useCallback(() => {
+    setShowUnsavedConfirm(false)
+    pendingCloseActionRef.current?.()
+    pendingCloseActionRef.current = null
+  }, [])
+
+  const handleCancelUnsavedClose = useCallback(() => {
+    setShowUnsavedConfirm(false)
+    pendingCloseActionRef.current = null
+  }, [])
 
   // Proposals by client (Story 11.2)
   const [proposalsByClient, setProposalsByClient] = useState<Record<string, { total: number; status: string; count: number }>>({})
@@ -6322,7 +6347,10 @@ export default function FunilDetailPage() {
         <div className="fixed inset-0 z-50 flex">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setSelectedClient(null)}
+            onClick={() => guardedClose(
+              !!(newNote.trim() || (editingComments && contactComments !== (selectedClient?.needsDetail || ''))),
+              () => { setSelectedClient(null); setNewNote(''); setEditingComments(false) }
+            )}
           />
           <div className="relative ml-auto w-full max-w-6xl bg-white shadow-2xl flex h-full">
             {/* Left side - Client Info */}
@@ -6554,7 +6582,10 @@ export default function FunilDetailPage() {
                       <TrashIcon className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
                     </button>
                     <button
-                      onClick={() => setSelectedClient(null)}
+                      onClick={() => guardedClose(
+                        !!(newNote.trim() || (editingComments && contactComments !== (selectedClient?.needsDetail || ''))),
+                        () => { setSelectedClient(null); setNewNote(''); setEditingComments(false) }
+                      )}
                       className="p-2 rounded-xl hover:bg-white/50 transition-colors"
                     >
                       <Cross2Icon className="w-5 h-5 text-slate-500" />
@@ -7401,7 +7432,10 @@ export default function FunilDetailPage() {
       {/* Quick Follow-up Modal */}
       {quickFollowUpClient && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setQuickFollowUpClient(null)} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => guardedClose(
+            !!quickFollowUpText.trim(),
+            () => { setQuickFollowUpClient(null); setQuickFollowUpText('') }
+          )} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
@@ -7422,10 +7456,10 @@ export default function FunilDetailPage() {
             />
             <div className="flex items-center justify-end gap-3">
               <button
-                onClick={() => {
-                  setQuickFollowUpClient(null)
-                  setQuickFollowUpText('')
-                }}
+                onClick={() => guardedClose(
+                  !!quickFollowUpText.trim(),
+                  () => { setQuickFollowUpClient(null); setQuickFollowUpText('') }
+                )}
                 className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancelar
@@ -7531,10 +7565,10 @@ export default function FunilDetailPage() {
       {/* Schedule Return Modal */}
       {schedulingReturnClient && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => {
-            setSchedulingReturnClient(null)
-            setSelectedReturnDate('')
-          }} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => guardedClose(
+            !!selectedReturnDate,
+            () => { setSchedulingReturnClient(null); setSelectedReturnDate('') }
+          )} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -7631,10 +7665,10 @@ export default function FunilDetailPage() {
 
             <div className="flex items-center justify-end gap-3 mt-6">
               <button
-                onClick={() => {
-                  setSchedulingReturnClient(null)
-                  setSelectedReturnDate('')
-                }}
+                onClick={() => guardedClose(
+                  !!selectedReturnDate,
+                  () => { setSchedulingReturnClient(null); setSelectedReturnDate('') }
+                )}
                 className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancelar
@@ -8853,7 +8887,10 @@ export default function FunilDetailPage() {
                 <h3 className="text-lg font-semibold text-slate-800">Enviar WhatsApp</h3>
               </div>
               <button
-                onClick={() => { setShowWhatsAppModal(false); setWhatsappMessage('') }}
+                onClick={() => guardedClose(
+                  !!whatsappMessage.trim(),
+                  () => { setShowWhatsAppModal(false); setWhatsappMessage('') }
+                )}
                 className="p-1 rounded-lg hover:bg-green-100 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-500" />
@@ -8876,7 +8913,10 @@ export default function FunilDetailPage() {
               </div>
               <div className="flex gap-2 justify-end">
                 <button
-                  onClick={() => { setShowWhatsAppModal(false); setWhatsappMessage('') }}
+                  onClick={() => guardedClose(
+                    !!whatsappMessage.trim(),
+                    () => { setShowWhatsAppModal(false); setWhatsappMessage('') }
+                  )}
                   className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   Cancelar
@@ -8904,7 +8944,10 @@ export default function FunilDetailPage() {
                 <h3 className="text-lg font-semibold text-slate-800">Enviar Email</h3>
               </div>
               <button
-                onClick={() => { setShowEmailModal(false); setEmailSubject(''); setEmailBody('') }}
+                onClick={() => guardedClose(
+                  !!(emailSubject.trim() || emailBody.trim()),
+                  () => { setShowEmailModal(false); setEmailSubject(''); setEmailBody('') }
+                )}
                 className="p-1 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-500" />
@@ -8992,7 +9035,10 @@ export default function FunilDetailPage() {
               </button>
               <div className="flex gap-2">
                 <button
-                  onClick={() => { setShowEmailModal(false); setEmailSubject(''); setEmailBody('') }}
+                  onClick={() => guardedClose(
+                    !!(emailSubject.trim() || emailBody.trim()),
+                    () => { setShowEmailModal(false); setEmailSubject(''); setEmailBody('') }
+                  )}
                   className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                 >
                   Cancelar
@@ -9009,6 +9055,13 @@ export default function FunilDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <ConfirmCloseDialog
+        isOpen={showUnsavedConfirm}
+        onConfirm={handleConfirmUnsavedClose}
+        onCancel={handleCancelUnsavedClose}
+      />
     </div>
   )
 }
