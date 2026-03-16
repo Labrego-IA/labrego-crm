@@ -11,6 +11,7 @@ import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
 import { Inter } from 'next/font/google'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import CrmSidebar from '@/components/CrmSidebar'
 import Loading from '@/components/Loading'
