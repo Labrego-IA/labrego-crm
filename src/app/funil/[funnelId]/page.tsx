@@ -3524,7 +3524,21 @@ export default function FunilDetailPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              {/* Search - full width on mobile, first row */}
+              <div className="relative order-1 sm:order-2 w-full sm:w-auto">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por nome, telefone, CNPJ, sócios..."
+                  className="w-full sm:w-64 lg:w-80 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
+                />
+              </div>
+
+              {/* Controls row - second row on mobile */}
+              <div className="flex items-center gap-2 order-2 sm:order-1 sm:contents">
               {/* View Mode Dropdown */}
               <div className="relative">
                 <select
@@ -3540,25 +3554,12 @@ export default function FunilDetailPage() {
                 <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
 
-              {/* Search, Period Filters, and Export */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar por nome, telefone, CNPJ, sócios..."
-                    className="w-48 sm:w-64 lg:w-80 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
-                  />
-                </div>
-
                 {/* Responsible filter for admin/manager */}
                 {viewScope === 'all' && (
                   <select
                     value={filterAssignedTo}
                     onChange={(e) => setFilterAssignedTo(e.target.value)}
-                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 max-w-[160px]"
                   >
                     <option value="">Todos responsáveis</option>
                     <option value="__none__">Sem responsável</option>
@@ -3880,7 +3881,6 @@ export default function FunilDetailPage() {
                 </div>
 
                 {/* Period filter and export buttons moved to Report Modal (menu + > Gerar Relatório) */}
-              </div>
 
               {/* Actions Menu */}
               <div className="relative">
@@ -4030,6 +4030,7 @@ export default function FunilDetailPage() {
                     </div>
                   </>
                 )}
+              </div>
               </div>
             </div>
           </div>
