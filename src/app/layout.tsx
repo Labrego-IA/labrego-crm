@@ -5,7 +5,7 @@ import '@/polyfills'
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc, collectionGroup, query, where, getDocs } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, collectionGroup, query, where, getDocs } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebaseClient'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
@@ -118,6 +118,15 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 bestDoc = sorted[0]
               }
               const memberData = { id: bestDoc.id, ...bestDoc.data() } as OrgMember
+              // Auto-activate invited members on login
+              if (memberData.status === 'invited') {
+                try {
+                  await updateDoc(bestDoc.ref, { status: 'active' })
+                  memberData.status = 'active'
+                } catch (e) {
+                  console.error('[layout] Failed to activate member:', e)
+                }
+              }
               // O path é organizations/{orgId}/members/{memberId}
               const orgRef = bestDoc.ref.parent.parent
               if (orgRef) {
