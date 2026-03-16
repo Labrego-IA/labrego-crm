@@ -33,36 +33,38 @@ export default function ConfirmCloseDialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
+      className="fixed inset-0 z-[100] flex items-center justify-center"
       onClick={onCancel}
     >
+      <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" />
       <div
-        className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 animate-in fade-in zoom-in-95 duration-200"
+        className="relative bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-            <ExclamationTriangleIcon className="w-5 h-5 text-amber-600" />
+        <div className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
+            <ExclamationTriangleIcon className="w-6 h-6 text-amber-400" />
           </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
-            <p className="mt-2 text-sm text-slate-600">{message}</p>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {title}
+          </h3>
+          <p className="text-sm text-white/60 mb-6">
+            {message}
+          </p>
+          <div className="flex gap-3 w-full">
+            <button
+              onClick={onCancel}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white/70 bg-slate-700 hover:bg-slate-600 transition-colors duration-200"
+            >
+              {cancelText}
+            </button>
+            <button
+              onClick={onConfirm}
+              className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors duration-200"
+            >
+              {confirmText}
+            </button>
           </div>
-        </div>
-
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
-          >
-            {confirmText}
-          </button>
         </div>
       </div>
     </div>,
