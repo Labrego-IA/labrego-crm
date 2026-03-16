@@ -394,20 +394,20 @@ const adminSections: GuideSection[] = [
 ]
 
 function GuideCard({ section }: { section: GuideSection }) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(true)
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-5 flex items-start gap-4"
+        className="w-full text-left p-6 flex items-start gap-4"
       >
-        <div className={`${section.color} w-11 h-11 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-sm`}>
+        <div className={`${section.color} w-12 h-12 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-sm`}>
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-slate-800 mb-1">{section.title}</h3>
-          <p className="text-sm text-slate-500 leading-relaxed">{section.summary}</p>
+          <h3 className="text-lg font-semibold text-slate-800 mb-1.5">{section.title}</h3>
+          <p className="text-base text-slate-600 leading-relaxed">{section.summary}</p>
         </div>
         <div className="flex-shrink-0 mt-1">
           {expanded ? (
@@ -419,13 +419,13 @@ function GuideCard({ section }: { section: GuideSection }) {
       </button>
 
       {expanded && (
-        <div className="px-5 pb-5 pt-0">
+        <div className="px-6 pb-6 pt-0">
           <div className="border-t border-slate-100 pt-4">
             <h4 className="text-sm font-semibold text-slate-700 mb-3">Como funciona:</h4>
-            <ul className="space-y-2 mb-4">
+            <ul className="space-y-2.5 mb-4">
               {section.details.map((detail, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#13DEFC] flex-shrink-0 mt-2" />
+                <li key={i} className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed">
+                  <span className="w-2 h-2 rounded-full bg-[#13DEFC] flex-shrink-0 mt-1.5" />
                   {detail}
                 </li>
               ))}
@@ -453,37 +453,37 @@ function GuideCard({ section }: { section: GuideSection }) {
 
 export default function GuiaPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-8">
       {/* Header */}
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#13DEFC] to-[#09B00F] flex items-center justify-center shadow-lg">
-            <QuestionMarkCircleIcon className="w-7 h-7 text-white" />
+      <div className="mb-12">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#13DEFC] to-[#09B00F] flex items-center justify-center shadow-lg">
+            <QuestionMarkCircleIcon className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Guia do Voxium</h1>
-            <p className="text-sm text-slate-500">Entenda tudo sobre cada pagina do sistema</p>
+            <h1 className="text-3xl font-bold text-slate-800">Guia do Voxium</h1>
+            <p className="text-base text-slate-500">Entenda tudo sobre cada pagina do sistema</p>
           </div>
         </div>
-        <div className="bg-gradient-to-r from-[#13DEFC]/10 to-[#09B00F]/10 rounded-2xl p-5 border border-[#13DEFC]/20">
-          <p className="text-sm text-slate-700 leading-relaxed">
+        <div className="bg-gradient-to-r from-[#13DEFC]/10 to-[#09B00F]/10 rounded-2xl p-6 border border-[#13DEFC]/20">
+          <p className="text-base text-slate-700 leading-relaxed">
             Bem-vindo ao guia do Voxium! Aqui voce vai encontrar uma explicacao simples e direta de cada parte do sistema.
-            Clique em qualquer secao abaixo para ver mais detalhes sobre o que ela faz e como usar.
+            Clique em qualquer secao para expandir ou recolher os detalhes.
             Nao se preocupe com termos tecnicos — explicamos tudo de um jeito facil de entender! 😊
           </p>
         </div>
       </div>
 
       {/* Módulos Principais */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-6 rounded-full bg-[#13DEFC]" />
-          <h2 className="text-lg font-bold text-slate-800">Modulos Principais</h2>
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-1.5 h-7 rounded-full bg-[#13DEFC]" />
+          <h2 className="text-xl font-bold text-slate-800">Modulos Principais</h2>
         </div>
-        <p className="text-sm text-slate-500 mb-5 ml-3">
+        <p className="text-base text-slate-500 mb-6 ml-4">
           Essas sao as ferramentas do dia a dia. E aqui que voce vai passar a maior parte do tempo.
         </p>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {moduleSections.map((section) => (
             <GuideCard key={section.id} section={section} />
           ))}
@@ -491,15 +491,15 @@ export default function GuiaPage() {
       </div>
 
       {/* Agentes de Voz */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-6 rounded-full bg-[#09B00F]" />
-          <h2 className="text-lg font-bold text-slate-800">Agentes de Voz (IA)</h2>
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-1.5 h-7 rounded-full bg-[#09B00F]" />
+          <h2 className="text-xl font-bold text-slate-800">Agentes de Voz (IA)</h2>
         </div>
-        <p className="text-sm text-slate-500 mb-5 ml-3">
+        <p className="text-base text-slate-500 mb-6 ml-4">
           Aqui fica tudo relacionado ao assistente virtual que faz ligacoes por voce usando inteligencia artificial.
         </p>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {agentSections.map((section) => (
             <GuideCard key={section.id} section={section} />
           ))}
@@ -507,15 +507,15 @@ export default function GuiaPage() {
       </div>
 
       {/* Administração */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-6 rounded-full bg-amber-500" />
-          <h2 className="text-lg font-bold text-slate-800">Administracao</h2>
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-1.5 h-7 rounded-full bg-amber-500" />
+          <h2 className="text-xl font-bold text-slate-800">Administracao</h2>
         </div>
-        <p className="text-sm text-slate-500 mb-5 ml-3">
+        <p className="text-base text-slate-500 mb-6 ml-4">
           Essa area e mais para quem cuida das configuracoes do sistema. Se voce e administrador ou gestor, aqui e onde voce ajusta tudo.
         </p>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {adminSections.map((section) => (
             <GuideCard key={section.id} section={section} />
           ))}
