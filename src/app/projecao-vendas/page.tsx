@@ -327,16 +327,28 @@ export default function ProjecaoVendasPage() {
     }
   }
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field || !sortDir) {
-      return <ChevronUpIcon className="w-3 h-3 inline ml-1 opacity-0 group-hover:opacity-30" />
-    }
-    return sortDir === 'asc' ? (
-      <ChevronUpIcon className="w-3 h-3 inline ml-1 text-primary-600" />
-    ) : (
-      <ChevronDownIcon className="w-3 h-3 inline ml-1 text-primary-600" />
-    )
-  }
+  const SortIcon = ({ field }: { field: SortField }) => (
+    <svg
+      className={`h-3.5 w-3.5 inline ml-1 transition-colors ${
+        sortField === field ? 'text-primary-600' : 'text-gray-300'
+      }`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      {sortField === field && sortDir === 'asc' ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+      ) : sortField === field && sortDir === 'desc' ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      ) : (
+        <>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+        </>
+      )}
+    </svg>
+  )
 
   // Pagination helpers
   const getFunnelPage = (funnelId: string) => funnelPages[funnelId] || 0
