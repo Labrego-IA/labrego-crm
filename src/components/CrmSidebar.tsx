@@ -28,6 +28,7 @@ import {
   ClockIcon,
   BookOpenIcon,
   EnvelopeIcon,
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { signOut } from 'firebase/auth'
@@ -423,8 +424,33 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
         )}
       </div>
 
-      {/* Logout */}
-      <div className="px-3 py-3 border-t border-white/10">
+      {/* Guia + Logout */}
+      <div className="px-3 py-3 border-t border-white/10 space-y-1">
+        <Link
+          href="/guia"
+          onClick={() => onNavigate?.()}
+          className={`
+            w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
+            ${collapsed ? 'justify-center' : ''}
+            ${pathname === '/guia'
+              ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+            }
+          `}
+        >
+          {pathname === '/guia' && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+          )}
+          <QuestionMarkCircleIcon className={`w-5 h-5 ${pathname === '/guia' ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}`} />
+          {!collapsed && (
+            <span className="font-medium text-sm">Guia</span>
+          )}
+          {collapsed && (
+            <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+              Guia
+            </span>
+          )}
+        </Link>
         <button
           onClick={() => setShowLogoutConfirm(true)}
           className={`
