@@ -414,29 +414,34 @@ export const ProposalPdf = forwardRef<ProposalPdfHandle, ProposalPdfProps>(
         await Promise.all(
           images.map(async img => {
             if (!img.src || img.src.startsWith('data:')) return
-            try {
-              // Tenta primeiro via fetch direto
-              const res = await fetch(img.src, { cache: 'no-store' })
-              const blob = await res.blob()
-              const reader = new FileReader()
-              const dataUrl: string = await new Promise(resolve => {
-                reader.onloadend = () => resolve(reader.result as string)
-                reader.readAsDataURL(blob)
-              })
-              img.src = dataUrl
-            } catch {
-              // Se falhar (CORS), usa a API proxy
+            const useProxyFirst = img.src.includes('firebasestorage.googleapis.com')
+
+            if (!useProxyFirst) {
               try {
-                const proxyRes = await fetch(`/api/image-proxy?url=${encodeURIComponent(img.src)}`)
-                if (proxyRes.ok) {
-                  const { dataUrl } = await proxyRes.json()
-                  if (dataUrl) {
-                    img.src = dataUrl
-                  }
-                }
-              } catch (proxyErr) {
-                console.error('Erro ao carregar imagem via proxy', img.src, proxyErr)
+                const res = await fetch(img.src, { cache: 'no-store' })
+                const blob = await res.blob()
+                const reader = new FileReader()
+                const dataUrl: string = await new Promise(resolve => {
+                  reader.onloadend = () => resolve(reader.result as string)
+                  reader.readAsDataURL(blob)
+                })
+                img.src = dataUrl
+                return
+              } catch {
+                // Fallback para proxy abaixo
               }
+            }
+
+            try {
+              const proxyRes = await fetch(`/api/image-proxy?url=${encodeURIComponent(img.src)}`)
+              if (proxyRes.ok) {
+                const { dataUrl } = await proxyRes.json()
+                if (dataUrl) {
+                  img.src = dataUrl
+                }
+              }
+            } catch (proxyErr) {
+              console.error('Erro ao carregar imagem via proxy', img.src, proxyErr)
             }
           })
         )
