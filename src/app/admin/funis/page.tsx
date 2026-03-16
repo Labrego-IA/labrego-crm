@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { collection, query, where, onSnapshot, doc, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -12,6 +12,29 @@ import {
   ChevronRightIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
+
+/* -------------------------------- Helpers -------------------------------- */
+
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admin',
+  manager: 'Gerente',
+  seller: 'Vendedor',
+  viewer: 'Visualizador',
+}
+
+const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
+
+type SortColumn = 'name' | 'role' | 'summary'
+type SortDirection = 'asc' | 'desc'
+
+/* -------------------------------- Types --------------------------------- */
 
 type MemberRow = {
   id: string
@@ -51,6 +74,11 @@ export default function AdminFunisPage() {
   const [stages, setStages] = useState<StageItem[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+
+  // Search & sort
+  const [search, setSearch] = useState('')
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null)
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // Editable state: memberId -> funnelId -> { enabled, allStages, stageIds }
   const [accessMap, setAccessMap] = useState<Record<string, Record<string, { enabled: boolean; allStages: boolean; stageIds: string[] }>>>({})
@@ -120,6 +148,78 @@ export default function AdminFunisPage() {
     }
     return grouped
   }, [funnels, stages])
+
+  /* ---------------------- Search & Sort -------------------------------- */
+
+  const handleSort = useCallback((column: SortColumn) => {
+    setSortColumn((prev) => {
+      if (prev === column) {
+        if (sortDirection === 'asc') {
+          setSortDirection('desc')
+          return prev
+        }
+        setSortDirection('asc')
+        return null
+      }
+      setSortDirection('asc')
+      return column
+    })
+  }, [sortDirection])
+
+  const getAccessCount = useCallback((memberId: string) => {
+    if (members.find((m) => m.id === memberId)?.role === 'admin') return { funnelCount: funnels.length, stageCount: 999 }
+    const memberAccess = accessMap[memberId] || {}
+    let funnelCount = 0
+    let stageCount = 0
+    for (const funnel of funnels) {
+      const access = memberAccess[funnel.id]
+      if (access?.enabled) {
+        funnelCount++
+        const fStages = stagesByFunnel[funnel.id] || []
+        stageCount += access.allStages ? fStages.length : access.stageIds.length
+      }
+    }
+    return { funnelCount, stageCount }
+  }, [members, funnels, accessMap, stagesByFunnel])
+
+  const filteredMembers = useMemo(() => {
+    const term = normalize(search.trim())
+
+    let result = members
+    if (term) {
+      result = members.filter((m) => {
+        const name = normalize(m.displayName || '')
+        const email = normalize(m.email || '')
+        const role = normalize(ROLE_LABELS[m.role] || m.role || '')
+        return name.includes(term) || email.includes(term) || role.includes(term)
+      })
+    }
+
+    if (sortColumn) {
+      result = [...result].sort((a, b) => {
+        let cmp = 0
+        switch (sortColumn) {
+          case 'name':
+            cmp = normalize(a.displayName || '').localeCompare(normalize(b.displayName || ''))
+            break
+          case 'role':
+            cmp = (ROLE_ORDER[a.role] ?? 4) - (ROLE_ORDER[b.role] ?? 4)
+            break
+          case 'summary': {
+            const aCount = getAccessCount(a.id)
+            const bCount = getAccessCount(b.id)
+            cmp = aCount.funnelCount - bCount.funnelCount || aCount.stageCount - bCount.stageCount
+            break
+          }
+        }
+        return sortDirection === 'asc' ? cmp : -cmp
+      })
+    }
+
+    return result
+  }, [members, search, sortColumn, sortDirection, getAccessCount])
+
+  /* ---------------------- Access toggles -------------------------------- */
 
   const toggleFunnelAccess = (memberId: string, funnelId: string) => {
     setAccessMap((prev) => ({
@@ -284,12 +384,90 @@ export default function AdminFunisPage() {
         </button>
       </div>
 
+      {/* Search bar */}
+      <div className="relative mb-4">
+        <svg
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Pesquisar por nome, email ou cargo..."
+          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 pl-9 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300"
+        />
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {filteredMembers.length === 0 && !loading ? (
+        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+            <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 017.533-2.493M9 19.128a5.972 5.972 0 01.786-3.07m4.428 0a9.36 9.36 0 00-4.428 0M12 10.5a3 3 0 100-6 3 3 0 000 6z" />
+            </svg>
+          </div>
+          <h3 className="text-base font-semibold text-gray-900">
+            {members.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            {members.length === 0 ? 'Nenhum membro ativo na organização.' : 'Tente ajustar os termos da pesquisa.'}
+          </p>
+        </div>
+      ) : (
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-56">Membro</th>
+                {([
+                  { key: 'name' as SortColumn, label: 'Membro', align: 'left' },
+                ] as const).map((col) => (
+                  <th key={col.key} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-56">
+                    <button
+                      type="button"
+                      onClick={() => handleSort(col.key)}
+                      className="inline-flex items-center gap-1 hover:text-slate-900 transition"
+                    >
+                      {col.label}
+                      <svg
+                        className={`h-3.5 w-3.5 transition-colors ${
+                          sortColumn === col.key ? 'text-primary-600' : 'text-gray-300'
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        {sortColumn === col.key && sortDirection === 'asc' ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                        ) : sortColumn === col.key && sortDirection === 'desc' ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        ) : (
+                          <>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+                          </>
+                        )}
+                      </svg>
+                    </button>
+                  </th>
+                ))}
                 {funnels.map((f) => (
                   <th key={f.id} className="text-center px-3 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider min-w-[100px]">
                     <div className="flex items-center justify-center gap-1.5">
@@ -298,11 +476,39 @@ export default function AdminFunisPage() {
                     </div>
                   </th>
                 ))}
-                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Resumo</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <button
+                    type="button"
+                    onClick={() => handleSort('summary')}
+                    className="inline-flex items-center gap-1 hover:text-slate-900 transition ml-auto"
+                  >
+                    Resumo
+                    <svg
+                      className={`h-3.5 w-3.5 transition-colors ${
+                        sortColumn === 'summary' ? 'text-primary-600' : 'text-gray-300'
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      {sortColumn === 'summary' && sortDirection === 'asc' ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                      ) : sortColumn === 'summary' && sortDirection === 'desc' ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      ) : (
+                        <>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+                        </>
+                      )}
+                    </svg>
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => {
+              {filteredMembers.map((member) => {
                 const isAdmin = member.role === 'admin'
                 const expandedFunnel = expandedRows[member.id] || null
 
@@ -393,6 +599,7 @@ export default function AdminFunisPage() {
           </table>
         </div>
       </div>
+      )}
     </div>
   )
 }
