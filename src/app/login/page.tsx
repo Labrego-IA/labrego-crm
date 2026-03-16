@@ -248,17 +248,9 @@ export default function LoginPage() {
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label htmlFor="login-password" className="block text-sm font-medium text-slate-300">
-                        Senha
-                      </label>
-                      <Link
-                        href="/reset-password"
-                        className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                      >
-                        Esqueci minha senha
-                      </Link>
-                    </div>
+                    <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 mb-2">
+                      Senha
+                    </label>
                     <div className="relative">
                       <input
                         id="login-password"
@@ -277,6 +269,14 @@ export default function LoginPage() {
                       >
                         {showLoginPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
                       </button>
+                    </div>
+                    <div className="flex justify-end mt-2">
+                      <Link
+                        href="/reset-password"
+                        className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                      >
+                        Esqueci minha senha
+                      </Link>
                     </div>
                   </div>
 
