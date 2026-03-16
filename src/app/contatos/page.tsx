@@ -242,6 +242,7 @@ export default function ContatosPage() {
   const [importFile, setImportFile] = useState<File | null>(null)
   const [importPreview, setImportPreview] = useState<Array<Record<string, string>>>([])
   const [exporting, setExporting] = useState(false)
+  const [showExportMenu, setShowExportMenu] = useState(false)
   const [importFunnelId, setImportFunnelId] = useState('')
   const [importStageId, setImportStageId] = useState('')
   const [importResult, setImportResult] = useState<{ success: boolean; count: number; skipped?: number } | null>(null)
@@ -469,7 +470,37 @@ export default function ContatosPage() {
           const data = event.target?.result
           const workbook = XLSX.read(data, { type: 'array' })
           const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-          const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: '' })
+
+          // Try default parsing
+          let rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: '' })
+
+          // Check if first row has known headers — if not, scan for header row (styled template)
+          const knownTemplateHeaders = ['nome', 'telefone', 'email', 'empresa', 'ramo', 'cnpj/cpf', 'endereço', 'origem']
+          const firstRowKeys = rows.length > 0 ? Object.keys(rows[0]).map(k => k.toLowerCase().trim()) : []
+          const hasKnownHeaders = firstRowKeys.some(k => knownTemplateHeaders.includes(k))
+
+          if (!hasKnownHeaders && rows.length > 0) {
+            const allRows = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1, defval: '' }) as string[][]
+            let headerRowIdx = -1
+            for (let i = 0; i < Math.min(allRows.length, 10); i++) {
+              const row = allRows[i]
+              if (!row || row.length === 0) continue
+              const hasMatch = row.some(cell => knownTemplateHeaders.includes(String(cell).toLowerCase().trim()))
+              if (hasMatch) { headerRowIdx = i; break }
+            }
+
+            if (headerRowIdx >= 0) {
+              const headers = allRows[headerRowIdx].map(h => String(h).trim())
+              rows = []
+              for (let i = headerRowIdx + 1; i < allRows.length; i++) {
+                const row = allRows[i]
+                if (!row || row.every(cell => !String(cell).trim())) continue
+                const obj: Record<string, unknown> = {}
+                headers.forEach((h, idx) => { obj[h] = row[idx] ?? '' })
+                rows.push(obj)
+              }
+            }
+          }
 
           const preview = rows.slice(0, 5).map((row) => {
             const mapped: Record<string, string> = {}
@@ -541,6 +572,7 @@ export default function ContatosPage() {
       telefones: 'phone',
       'telefone2 completo': 'phone2',
       telefone2: 'phone2',
+      'telefone 2': 'phone2',
       // Email
       email: 'email',
       'e-mail': 'email',
@@ -554,10 +586,18 @@ export default function ContatosPage() {
       cpf: 'document',
       'cnpj/cpf': 'document',
       document: 'document',
+      // Endereco
+      'endereço': 'address',
+      endereco: 'address',
+      address: 'address',
       // Origem
       origem: 'leadSource',
       leadsource: 'leadSource',
       source: 'leadSource',
+      // Tipo Lead
+      'tipo lead': 'leadType',
+      'tipo de lead': 'leadType',
+      leadtype: 'leadType',
       // Socios
       'socio(s)': 'partners',
       'sócio(s)': 'partners',
@@ -567,6 +607,8 @@ export default function ContatosPage() {
       // Responsavel
       'usuario responsavel': 'assignedToName',
       'usuário responsável': 'assignedToName',
+      'responsável': 'assignedToName',
+      responsavel: 'assignedToName',
     }
 
     // Colunas de endereco que serao combinadas em um unico campo 'address'
@@ -642,7 +684,47 @@ export default function ContatosPage() {
             const data = event.target?.result
             const workbook = XLSX.read(data, { type: 'array' })
             const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-            const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: '' })
+
+            // Detect if file uses our styled template (title rows before headers)
+            // Try sheet_to_json with default (row 0 as header) first
+            let rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: '' })
+
+            // Check if first row looks like a title (not real data headers)
+            // by seeing if any known field names exist in the column keys
+            const firstRowKeys = rawRows.length > 0 ? Object.keys(rawRows[0]).map(k => k.toLowerCase().trim()) : []
+            const knownHeaders = Object.keys(fieldMap)
+            const hasKnownHeaders = firstRowKeys.some(k => knownHeaders.includes(k))
+
+            if (!hasKnownHeaders && rawRows.length > 0) {
+              // Likely a styled template — scan for the header row
+              const allRows = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1, defval: '' }) as string[][]
+              let headerRowIdx = -1
+              for (let i = 0; i < Math.min(allRows.length, 10); i++) {
+                const row = allRows[i]
+                if (!row || row.length === 0) continue
+                const hasMatch = row.some(cell => {
+                  const normalized = String(cell).toLowerCase().trim()
+                  return knownHeaders.includes(normalized)
+                })
+                if (hasMatch) {
+                  headerRowIdx = i
+                  break
+                }
+              }
+
+              if (headerRowIdx >= 0) {
+                const headers = allRows[headerRowIdx].map(h => String(h).trim())
+                rawRows = []
+                for (let i = headerRowIdx + 1; i < allRows.length; i++) {
+                  const row = allRows[i]
+                  if (!row || row.every(cell => !String(cell).trim())) continue
+                  const obj: Record<string, unknown> = {}
+                  headers.forEach((h, idx) => { obj[h] = row[idx] ?? '' })
+                  rawRows.push(obj)
+                }
+              }
+            }
+
             rows = rawRows.map((row) => mapRow(Object.entries(row)))
           } else {
             const text = event.target?.result as string
@@ -807,39 +889,231 @@ export default function ContatosPage() {
     return result
   }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels])
 
-  // Export contacts to CSV
-  const handleExport = useCallback(() => {
+  // ── Excel style helpers ────────────────────────────────────
+  const getExcelStyles = useCallback(() => {
+    const primaryDark = '0BBDD6'
+    const headerFontColor = 'FFFFFF'
+    const lightBg = 'F0FDFF'
+    const borderColor = 'D1D5DB'
+
+    const cellBorder = {
+      top: { style: 'thin' as const, color: { rgb: borderColor } },
+      bottom: { style: 'thin' as const, color: { rgb: borderColor } },
+      left: { style: 'thin' as const, color: { rgb: borderColor } },
+      right: { style: 'thin' as const, color: { rgb: borderColor } },
+    }
+
+    return {
+      primaryDark,
+      headerStyle: {
+        font: { bold: true, color: { rgb: headerFontColor }, sz: 11, name: 'Calibri' },
+        fill: { fgColor: { rgb: primaryDark } },
+        alignment: { horizontal: 'center' as const, vertical: 'center' as const, wrapText: true },
+        border: {
+          top: { style: 'thin' as const, color: { rgb: primaryDark } },
+          bottom: { style: 'thin' as const, color: { rgb: primaryDark } },
+          left: { style: 'thin' as const, color: { rgb: primaryDark } },
+          right: { style: 'thin' as const, color: { rgb: primaryDark } },
+        },
+      },
+      cellStyleEven: {
+        font: { sz: 10, name: 'Calibri', color: { rgb: '333333' } },
+        alignment: { vertical: 'center' as const, wrapText: true },
+        border: cellBorder,
+      },
+      cellStyleOdd: {
+        font: { sz: 10, name: 'Calibri', color: { rgb: '333333' } },
+        alignment: { vertical: 'center' as const, wrapText: true },
+        border: cellBorder,
+        fill: { fgColor: { rgb: lightBg } },
+      },
+    }
+  }, [])
+
+  // Export contacts to Excel
+  const handleExport = useCallback(async () => {
     setExporting(true)
     try {
-      const headers = ['Nome', 'Telefone', 'Email', 'Empresa', 'Ramo', 'CNPJ/CPF', 'Origem', 'Etapa', 'Data Cadastro']
-      const rows = filteredClients.map((c) => [
-        c.name || '',
-        c.phone || '',
-        c.email || '',
-        c.company || '',
-        c.industry || '',
-        c.document || '',
-        c.leadSource || '',
-        getStageName(c.funnelStage) || '',
-        c.createdAt ? new Date(c.createdAt).toLocaleDateString('pt-BR') : '',
-      ])
+      const XLSXStyled = await import('xlsx-js-style')
+      const styles = getExcelStyles()
 
-      const csvContent = [headers, ...rows]
-        .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-        .join('\n')
+      const headers = ['Nome', 'Telefone', 'Telefone 2', 'Email', 'Empresa', 'Ramo', 'CNPJ/CPF', 'Endereço', 'Origem', 'Tipo Lead', 'Sócios', 'Responsável', 'Etapa', 'Status', 'Data Cadastro']
+      const styledHeaders = headers.map(h => ({ v: h, s: styles.headerStyle }))
 
-      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = `contatos_${new Date().toISOString().split('T')[0]}.csv`
-      link.click()
+      const dataRows = filteredClients.map((c, idx) => {
+        const style = idx % 2 === 0 ? styles.cellStyleEven : styles.cellStyleOdd
+        return [
+          { v: c.name || '', s: style },
+          { v: c.phone || '', s: style },
+          { v: c.phone2 || '', s: style },
+          { v: c.email || '', s: style },
+          { v: c.company || '', s: style },
+          { v: c.industry || '', s: style },
+          { v: c.document || '', s: style },
+          { v: c.address || '', s: style },
+          { v: c.leadSource || '', s: style },
+          { v: c.leadType || '', s: style },
+          { v: c.partners || '', s: style },
+          { v: c.assignedToName || '', s: style },
+          { v: getStageName(c.funnelStage) || '', s: style },
+          { v: c.status || '', s: style },
+          { v: c.createdAt ? new Date(c.createdAt).toLocaleDateString('pt-BR') : '', s: style },
+        ]
+      })
+
+      // Title rows
+      const titleRow = [{
+        v: 'Contatos — Labrego CRM',
+        s: { font: { bold: true, sz: 14, color: { rgb: styles.primaryDark }, name: 'Calibri' }, alignment: { horizontal: 'left' as const, vertical: 'center' as const } },
+      }]
+      const dateRow = [{
+        v: `Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+        s: { font: { sz: 10, color: { rgb: '666666' }, italic: true, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+      }]
+      const totalRow = [{
+        v: `Total de contatos: ${filteredClients.length}`,
+        s: { font: { sz: 10, bold: true, color: { rgb: '444444' }, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+      }]
+
+      const sheetData = [titleRow, dateRow, totalRow, [], styledHeaders, ...dataRows]
+      const ws = XLSXStyled.utils.aoa_to_sheet(sheetData)
+
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: headers.length - 1 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: headers.length - 1 } },
+      ]
+
+      ws['!cols'] = [
+        { wch: 30 }, // Nome
+        { wch: 18 }, // Telefone
+        { wch: 18 }, // Telefone 2
+        { wch: 28 }, // Email
+        { wch: 25 }, // Empresa
+        { wch: 20 }, // Ramo
+        { wch: 20 }, // CNPJ/CPF
+        { wch: 35 }, // Endereço
+        { wch: 18 }, // Origem
+        { wch: 14 }, // Tipo Lead
+        { wch: 25 }, // Sócios
+        { wch: 20 }, // Responsável
+        { wch: 18 }, // Etapa
+        { wch: 16 }, // Status
+        { wch: 16 }, // Data Cadastro
+      ]
+
+      ws['!rows'] = [
+        { hpt: 30 },
+        { hpt: 18 },
+        { hpt: 18 },
+        { hpt: 10 },
+        { hpt: 28 },
+        ...dataRows.map(() => ({ hpt: 22 })),
+      ]
+
+      const wb = XLSXStyled.utils.book_new()
+      XLSXStyled.utils.book_append_sheet(wb, ws, 'Contatos')
+      XLSXStyled.writeFile(wb, `contatos_${new Date().toISOString().slice(0, 10)}.xlsx`)
     } catch (error) {
       console.error('Erro ao exportar:', error)
       alert('Erro ao exportar contatos')
     } finally {
       setExporting(false)
     }
-  }, [filteredClients, getStageName])
+  }, [filteredClients, getStageName, getExcelStyles])
+
+  // Download import template
+  const handleDownloadTemplate = useCallback(async () => {
+    try {
+      const XLSXStyled = await import('xlsx-js-style')
+      const styles = getExcelStyles()
+
+      const primaryDark = styles.primaryDark
+      const templateHeaders = ['Nome', 'Telefone', 'Telefone 2', 'Email', 'Empresa', 'Ramo', 'CNPJ/CPF', 'Endereço', 'Origem', 'Tipo Lead', 'Sócios', 'Responsável']
+      const styledHeaders = templateHeaders.map(h => ({ v: h, s: styles.headerStyle }))
+
+      // Title rows
+      const titleRow = [{
+        v: 'Modelo de Importação — Contatos',
+        s: { font: { bold: true, sz: 14, color: { rgb: primaryDark }, name: 'Calibri' }, alignment: { horizontal: 'left' as const, vertical: 'center' as const } },
+      }]
+      const subtitleRow = [{
+        v: 'Preencha os dados abaixo e importe este arquivo na página de Contatos',
+        s: { font: { sz: 10, color: { rgb: '666666' }, italic: true, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+      }]
+      const requiredRow = [{
+        v: 'Campos obrigatórios: Nome e Telefone',
+        s: { font: { sz: 10, bold: true, color: { rgb: 'E74C3C' }, name: 'Calibri' }, alignment: { horizontal: 'left' as const } },
+      }]
+
+      // Example row
+      const exampleStyle = {
+        font: { sz: 10, name: 'Calibri', color: { rgb: '999999' }, italic: true },
+        alignment: { vertical: 'center' as const, wrapText: true },
+        border: {
+          top: { style: 'thin' as const, color: { rgb: 'D1D5DB' } },
+          bottom: { style: 'thin' as const, color: { rgb: 'D1D5DB' } },
+          left: { style: 'thin' as const, color: { rgb: 'D1D5DB' } },
+          right: { style: 'thin' as const, color: { rgb: 'D1D5DB' } },
+        },
+        fill: { fgColor: { rgb: 'FFFDE7' } },
+      }
+      const exampleRow = [
+        { v: 'João da Silva', s: exampleStyle },
+        { v: '(11) 99999-9999', s: exampleStyle },
+        { v: '(11) 98888-8888', s: exampleStyle },
+        { v: 'joao@email.com', s: exampleStyle },
+        { v: 'Empresa ABC', s: exampleStyle },
+        { v: 'Tecnologia', s: exampleStyle },
+        { v: '12.345.678/0001-90', s: exampleStyle },
+        { v: 'Rua Exemplo, 123, Centro, São Paulo/SP', s: exampleStyle },
+        { v: 'Google', s: exampleStyle },
+        { v: 'Inbound', s: exampleStyle },
+        { v: 'Maria Silva, Pedro Santos', s: exampleStyle },
+        { v: 'Ana Costa', s: exampleStyle },
+      ]
+
+      const sheetData = [titleRow, subtitleRow, requiredRow, [], styledHeaders, exampleRow]
+      const ws = XLSXStyled.utils.aoa_to_sheet(sheetData)
+
+      ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: templateHeaders.length - 1 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: templateHeaders.length - 1 } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: templateHeaders.length - 1 } },
+      ]
+
+      ws['!cols'] = [
+        { wch: 30 }, // Nome
+        { wch: 18 }, // Telefone
+        { wch: 18 }, // Telefone 2
+        { wch: 28 }, // Email
+        { wch: 25 }, // Empresa
+        { wch: 20 }, // Ramo
+        { wch: 20 }, // CNPJ/CPF
+        { wch: 35 }, // Endereço
+        { wch: 18 }, // Origem
+        { wch: 14 }, // Tipo Lead
+        { wch: 25 }, // Sócios
+        { wch: 20 }, // Responsável
+      ]
+
+      ws['!rows'] = [
+        { hpt: 30 },
+        { hpt: 18 },
+        { hpt: 18 },
+        { hpt: 10 },
+        { hpt: 28 },
+        { hpt: 22 },
+      ]
+
+      const wb = XLSXStyled.utils.book_new()
+      XLSXStyled.utils.book_append_sheet(wb, ws, 'Modelo')
+      XLSXStyled.writeFile(wb, 'modelo-importacao-contatos.xlsx')
+    } catch (error) {
+      console.error('Erro ao baixar modelo:', error)
+      alert('Erro ao baixar modelo')
+    }
+  }, [getExcelStyles])
 
   // Helper to normalize CNPJ (remove formatting)
   const normalizeCnpj = (cnpj: string): string => {
@@ -1385,20 +1659,54 @@ export default function ContatosPage() {
               </button>
             )}
 
-            {/* Export Button */}
-            <button
-              onClick={handleExport}
-              disabled={exporting || filteredClients.length === 0}
-              className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              title="Exportar contatos"
-            >
-              {exporting ? (
-                <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
-              ) : (
-                <ArrowDownTrayIcon className="w-4 h-4" />
+            {/* Export Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                disabled={exporting}
+                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                title="Exportar contatos"
+              >
+                {exporting ? (
+                  <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                ) : (
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                )}
+                <span className="hidden sm:inline">Exportar</span>
+                <ChevronDownIcon className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+              {showExportMenu && (
+                <>
+                  <div className="fixed inset-0 z-[100]" onClick={() => setShowExportMenu(false)} />
+                  <div className="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-xl shadow-xl z-[101] overflow-hidden">
+                    <button
+                      onClick={() => { setShowExportMenu(false); handleExport() }}
+                      disabled={filteredClients.length === 0}
+                      className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ArrowDownTrayIcon className="w-4 h-4 text-emerald-600" />
+                      <div className="text-left">
+                        <p className="font-medium">Exportar Excel</p>
+                        <p className="text-xs text-slate-400">{filteredClients.length} contato{filteredClients.length !== 1 ? 's' : ''}</p>
+                      </div>
+                    </button>
+                    <div className="border-t border-slate-100" />
+                    <button
+                      onClick={() => { setShowExportMenu(false); handleDownloadTemplate() }}
+                      className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <div className="text-left">
+                        <p className="font-medium">Baixar Modelo</p>
+                        <p className="text-xs text-slate-400">Template para importação</p>
+                      </div>
+                    </button>
+                  </div>
+                </>
               )}
-              <span className="hidden sm:inline">Exportar</span>
-            </button>
+            </div>
 
             {/* Import Button */}
             <button
@@ -2829,7 +3137,7 @@ export default function ContatosPage() {
                 </div>
               )}
 
-              {/* Info */}
+              {/* Info + Template download */}
               <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -2837,13 +3145,20 @@ export default function ContatosPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <div className="text-xs text-blue-700">
+                  <div className="text-xs text-blue-700 flex-1">
                     <p className="font-semibold mb-1">Dicas para importação</p>
                     <ul className="list-disc list-inside space-y-0.5 text-blue-600">
                       <li>Use a primeira linha como cabeçalho</li>
                       <li>Campos obrigatórios: Nome e Telefone</li>
                       <li>Encoding: UTF-8 para caracteres especiais</li>
                     </ul>
+                    <button
+                      onClick={handleDownloadTemplate}
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                      Baixar Modelo de Importação
+                    </button>
                   </div>
                 </div>
               </div>
