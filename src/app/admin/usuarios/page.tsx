@@ -122,7 +122,7 @@ export default function UsuariosPage() {
 
   // Search & sort
   const [search, setSearch] = useState('')
-  const [sortColumn, setSortColumn] = useState<SortColumn>('name')
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // Add modal
@@ -374,13 +374,18 @@ export default function UsuariosPage() {
   const handleSort = useCallback((column: SortColumn) => {
     setSortColumn((prev) => {
       if (prev === column) {
-        setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'))
-        return prev
+        if (sortDirection === 'asc') {
+          setSortDirection('desc')
+          return prev
+        }
+        // desc → neutral: clear sort
+        setSortDirection('asc')
+        return null
       }
       setSortDirection('asc')
       return column
     })
-  }, [])
+  }, [sortDirection])
 
   const filteredMembers = useMemo(() => {
     const term = normalize(search.trim())
@@ -396,27 +401,29 @@ export default function UsuariosPage() {
       })
     }
 
-    result = [...result].sort((a, b) => {
-      let cmp = 0
-      switch (sortColumn) {
-        case 'name':
-          cmp = normalize(a.displayName || '').localeCompare(normalize(b.displayName || ''))
-          break
-        case 'email':
-          cmp = normalize(a.email || '').localeCompare(normalize(b.email || ''))
-          break
-        case 'role':
-          cmp = (ROLE_ORDER[a.role] ?? 4) - (ROLE_ORDER[b.role] ?? 4)
-          break
-        case 'status':
-          cmp = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
-          break
-        case 'joinedAt':
-          cmp = (a.joinedAt || '').localeCompare(b.joinedAt || '')
-          break
-      }
-      return sortDirection === 'asc' ? cmp : -cmp
-    })
+    if (sortColumn) {
+      result = [...result].sort((a, b) => {
+        let cmp = 0
+        switch (sortColumn) {
+          case 'name':
+            cmp = normalize(a.displayName || '').localeCompare(normalize(b.displayName || ''))
+            break
+          case 'email':
+            cmp = normalize(a.email || '').localeCompare(normalize(b.email || ''))
+            break
+          case 'role':
+            cmp = (ROLE_ORDER[a.role] ?? 4) - (ROLE_ORDER[b.role] ?? 4)
+            break
+          case 'status':
+            cmp = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
+            break
+          case 'joinedAt':
+            cmp = (a.joinedAt || '').localeCompare(b.joinedAt || '')
+            break
+        }
+        return sortDirection === 'asc' ? cmp : -cmp
+      })
+    }
 
     return result
   }, [members, search, sortColumn, sortDirection])
@@ -584,10 +591,15 @@ export default function UsuariosPage() {
                               stroke="currentColor"
                               strokeWidth={2}
                             >
-                              {sortColumn === col.key && sortDirection === 'desc' ? (
+                              {sortColumn === col.key && sortDirection === 'asc' ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                              ) : sortColumn === col.key && sortDirection === 'desc' ? (
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                               ) : (
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                                <>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+                                </>
                               )}
                             </svg>
                           </button>
