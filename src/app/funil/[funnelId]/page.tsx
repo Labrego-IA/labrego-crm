@@ -6357,21 +6357,21 @@ export default function FunilDetailPage() {
         </div>
       )}
 
-      {/* Client Detail Panel */}
+      {/* Client Detail Modal */}
       {selectedClient && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => guardedClose(
               !!(newNote.trim() || (editingComments && contactComments !== (selectedClient?.needsDetail || ''))),
               () => { setSelectedClient(null); setNewNote(''); setEditingComments(false) }
             )}
           />
-          <div className="relative ml-auto w-full max-w-6xl bg-white shadow-2xl flex flex-col lg:flex-row h-full overflow-y-auto lg:overflow-hidden">
+          <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col lg:flex-row max-h-[92vh] overflow-y-auto lg:overflow-hidden animate-scale-in" onClick={(e) => e.stopPropagation()}>
             {/* Left side - Client Info */}
-            <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
+            <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col lg:max-h-[92vh] overflow-visible lg:overflow-hidden">
               {/* Client Header */}
-              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-tl-2xl lg:rounded-tr-none rounded-tr-2xl">
                 <div className="flex items-center gap-4">
                   {selectedClient.photoUrl ? (
                     <Image
@@ -7143,7 +7143,7 @@ export default function FunilDetailPage() {
             </div>
 
             {/* Right side - Proposals, Comments & Notes */}
-            <div className="w-full lg:w-1/2 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
+            <div className="w-full lg:w-1/2 flex flex-col lg:max-h-[92vh] overflow-visible lg:overflow-hidden">
               {/* Proposals Section (Story 11.3) */}
               <div className="p-4 sm:p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between mb-3">
