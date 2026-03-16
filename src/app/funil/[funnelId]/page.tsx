@@ -3549,7 +3549,21 @@ export default function FunilDetailPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+              {/* Search - full width on mobile, first row */}
+              <div className="relative order-1 sm:order-2 w-full sm:w-auto">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por nome, telefone, CNPJ, sócios..."
+                  className="w-full sm:w-64 lg:w-80 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
+                />
+              </div>
+
+              {/* Controls row - second row on mobile */}
+              <div className="flex items-center gap-2 order-2 sm:order-1 sm:contents">
               {/* View Mode Dropdown */}
               <div className="relative">
                 <select
@@ -3565,25 +3579,12 @@ export default function FunilDetailPage() {
                 <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
 
-              {/* Search, Period Filters, and Export */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar por nome, telefone, CNPJ, sócios..."
-                    className="w-48 sm:w-64 lg:w-80 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
-                  />
-                </div>
-
                 {/* Responsible filter for admin/manager */}
                 {viewScope === 'all' && (
                   <select
                     value={filterAssignedTo}
                     onChange={(e) => setFilterAssignedTo(e.target.value)}
-                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 max-w-[160px]"
                   >
                     <option value="">Todos responsáveis</option>
                     <option value="__none__">Sem responsável</option>
@@ -3613,35 +3614,50 @@ export default function FunilDetailPage() {
                     )}
                   </button>
 
-                  {/* Advanced Filters Panel */}
+                  {/* Advanced Filters Modal */}
                   {showAdvancedFilters && (
-                      <div className="absolute right-0 top-12 z-50 w-[420px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                        {/* Panel Header */}
-                        <div className="p-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
+                    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
+                      {/* Backdrop */}
+                      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
+
+                      {/* Modal */}
+                      <div className="relative w-full sm:max-w-lg sm:mx-4 max-h-[90vh] sm:max-h-[80vh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-200">
+                        {/* Modal Header */}
+                        <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-t-2xl">
+                          {/* Mobile drag handle */}
+                          <div className="sm:hidden w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
-                                <FunnelIcon className="w-4 h-4 text-primary-600" />
+                              <div className="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center">
+                                <FunnelIcon className="w-4.5 h-4.5 text-primary-600" />
                               </div>
                               <div>
-                                <h4 className="text-sm font-bold text-slate-800">Filtros Avançados</h4>
+                                <h4 className="text-base font-bold text-slate-800">Filtros Avançados</h4>
                                 <p className="text-xs text-slate-500">Filtre contatos por qualquer campo</p>
                               </div>
                             </div>
-                            {activeAdvancedFiltersCount > 0 && (
+                            <div className="flex items-center gap-2">
+                              {activeAdvancedFiltersCount > 0 && (
+                                <button
+                                  onClick={clearAdvancedFilters}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                                >
+                                  <Cross2Icon className="w-3.5 h-3.5" />
+                                  Limpar
+                                </button>
+                              )}
                               <button
-                                onClick={clearAdvancedFilters}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                                onClick={() => setShowAdvancedFilters(false)}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 text-slate-400 hover:text-slate-600 transition-colors"
                               >
-                                <Cross2Icon className="w-3.5 h-3.5" />
-                                Limpar
+                                <XMarkIcon className="w-5 h-5" />
                               </button>
-                            )}
+                            </div>
                           </div>
                         </div>
 
-                        {/* Panel Content */}
-                        <div className="p-4 max-h-[60vh] overflow-y-auto space-y-4">
+                        {/* Modal Content */}
+                        <div className="flex-1 overflow-y-auto p-5 space-y-5">
                           {/* Capital Social Range */}
                           <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -3656,7 +3672,7 @@ export default function FunilDetailPage() {
                                   ...prev,
                                   capitalSocialMin: Number(e.target.value) || 0
                                 }))}
-                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                               />
                               <span className="text-slate-400 text-sm">até</span>
                               <input
@@ -3667,7 +3683,7 @@ export default function FunilDetailPage() {
                                   ...prev,
                                   capitalSocialMax: Number(e.target.value) || 0
                                 }))}
-                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                               />
                             </div>
                             {advancedFilterOptions.maxCapitalSocial > 0 && (
@@ -3709,8 +3725,8 @@ export default function FunilDetailPage() {
                             </div>
                           )}
 
-                          {/* Two column grid for dropdowns */}
-                          <div className="grid grid-cols-2 gap-3">
+                          {/* Dropdowns grid - 1 col mobile, 2 cols desktop */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {/* Estado */}
                             {advancedFilterOptions.estadoOptions.length > 0 && (
                               <div>
@@ -3718,7 +3734,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.estado}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, estado: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todos</option>
                                   {advancedFilterOptions.estadoOptions.map((e) => (
@@ -3735,7 +3751,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.municipio}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, municipio: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todas</option>
                                   {advancedFilterOptions.municipioOptions.map((m) => (
@@ -3752,7 +3768,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.tipo}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, tipo: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todos</option>
                                   {advancedFilterOptions.tipoOptions.map((t) => (
@@ -3769,7 +3785,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.naturezaJuridica}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, naturezaJuridica: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todas</option>
                                   {advancedFilterOptions.naturezaJuridicaOptions.map((n) => (
@@ -3786,7 +3802,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.situacao}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, situacao: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todas</option>
                                   {advancedFilterOptions.situacaoOptions.map((s) => (
@@ -3803,7 +3819,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.industry}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, industry: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todos</option>
                                   {advancedFilterOptions.industryOptions.map((i) => (
@@ -3819,7 +3835,7 @@ export default function FunilDetailPage() {
                             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Filtros de Lead</p>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {/* Origem do Lead */}
                             {advancedFilterOptions.leadSourceOptions.length > 0 && (
                               <div>
@@ -3827,7 +3843,7 @@ export default function FunilDetailPage() {
                                 <select
                                   value={advancedFilters.leadSource}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadSource: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todas</option>
                                   {advancedFilterOptions.leadSourceOptions.map((ls) => (
@@ -3843,7 +3859,7 @@ export default function FunilDetailPage() {
                               <select
                                 value={advancedFilters.leadType}
                                 onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadType: e.target.value as '' | 'Inbound' | 'Outbound' }))}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                               >
                                 <option value="">Todos</option>
                                 <option value="Inbound">Inbound</option>
@@ -3852,12 +3868,12 @@ export default function FunilDetailPage() {
                             </div>
 
                             {/* Etapa do Funil */}
-                            <div className="col-span-2">
+                            <div className="sm:col-span-2">
                               <label className="block text-xs font-medium text-slate-600 mb-1.5">Etapa do Funil</label>
                               <select
                                 value={advancedFilters.funnelStage}
                                 onChange={(e) => setAdvancedFilters(prev => ({ ...prev, funnelStage: e.target.value }))}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                               >
                                 <option value="">Todas</option>
                                 <option value="unassigned">Sem etapa</option>
@@ -3869,12 +3885,12 @@ export default function FunilDetailPage() {
 
                             {/* Centro de Custos */}
                             {costCenters.length > 0 && (
-                              <div className="col-span-2">
+                              <div className="sm:col-span-2">
                                 <label className="block text-xs font-medium text-slate-600 mb-1.5">Centro de Custos</label>
                                 <select
                                   value={advancedFilters.costCenterId}
                                   onChange={(e) => setAdvancedFilters(prev => ({ ...prev, costCenterId: e.target.value }))}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 >
                                   <option value="">Todos</option>
                                   {costCenters.map((cc) => (
@@ -3886,26 +3902,26 @@ export default function FunilDetailPage() {
                           </div>
                         </div>
 
-                        {/* Panel Footer */}
-                        <div className="p-4 border-t border-slate-100 bg-slate-50">
+                        {/* Modal Footer */}
+                        <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-none sm:rounded-b-2xl">
                           <div className="flex items-center justify-between">
                             <p className="text-sm text-slate-600">
-                              <span className="font-medium">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
+                              <span className="font-semibold">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
                             </p>
                             <button
                               onClick={() => setShowAdvancedFilters(false)}
-                              className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
+                              className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
                             >
                               Aplicar
                             </button>
                           </div>
                         </div>
                       </div>
+                    </div>
                   )}
                 </div>
 
                 {/* Period filter and export buttons moved to Report Modal (menu + > Gerar Relatório) */}
-              </div>
 
               {/* Actions Menu */}
               <div className="relative">
@@ -4055,6 +4071,7 @@ export default function FunilDetailPage() {
                     </div>
                   </>
                 )}
+              </div>
               </div>
             </div>
           </div>
