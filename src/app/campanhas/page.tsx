@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
@@ -49,6 +49,33 @@ const TYPE_OPTIONS: { value: CampaignType | ''; label: string }[] = [
   { value: 'recurring', label: 'Recorrente' },
 ]
 
+/* -------------------------------- Helpers -------------------------------- */
+
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+type SortColumn = 'name' | 'status' | 'type' | 'totalRecipients' | 'sentCount' | 'failedCount' | 'createdAt' | 'lastSentAt'
+type SortDirection = 'asc' | 'desc'
+
+const CAMPAIGN_STATUS_ORDER: Record<string, number> = {
+  draft: 0,
+  scheduled: 1,
+  sending: 2,
+  completed: 3,
+  partial_failure: 4,
+  cancelled: 5,
+}
+
+const CAMPAIGN_TYPE_ORDER: Record<string, number> = {
+  immediate: 0,
+  scheduled: 1,
+  recurring: 2,
+}
+
 /* ================================= Component ================================= */
 
 function CampanhasContent() {
@@ -64,6 +91,10 @@ function CampanhasContent() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | ''>('')
   const [typeFilter, setTypeFilter] = useState<CampaignType | ''>('')
+
+  // Sort
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null)
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
@@ -95,14 +126,38 @@ function CampanhasContent() {
     return () => unsub()
   }, [orgId])
 
+  /* ---------------------- Sort handler --------------------------------- */
+
+  const handleSort = useCallback((column: SortColumn) => {
+    setSortColumn((prev) => {
+      if (prev === column) {
+        if (sortDirection === 'asc') {
+          setSortDirection('desc')
+          return prev
+        }
+        // desc → neutral: clear sort
+        setSortDirection('asc')
+        return null
+      }
+      setSortDirection('asc')
+      return column
+    })
+  }, [sortDirection])
+
   /* ----------------------------- Derived -------------------------------- */
 
   const filtered = useMemo(() => {
     let result = campaigns
 
     if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter((c) => c.name.toLowerCase().includes(q))
+      const q = normalize(searchQuery.trim())
+      result = result.filter((c) => {
+        const name = normalize(c.name || '')
+        const subject = normalize(c.subject || '')
+        const status = normalize(CAMPAIGN_STATUS_LABELS[c.status] || '')
+        const type = normalize(CAMPAIGN_TYPE_LABELS[c.type] || '')
+        return name.includes(q) || subject.includes(q) || status.includes(q) || type.includes(q)
+      })
     }
 
     if (statusFilter) {
@@ -113,8 +168,41 @@ function CampanhasContent() {
       result = result.filter((c) => c.type === typeFilter)
     }
 
+    if (sortColumn) {
+      result = [...result].sort((a, b) => {
+        let cmp = 0
+        switch (sortColumn) {
+          case 'name':
+            cmp = normalize(a.name || '').localeCompare(normalize(b.name || ''))
+            break
+          case 'status':
+            cmp = (CAMPAIGN_STATUS_ORDER[a.status] ?? 99) - (CAMPAIGN_STATUS_ORDER[b.status] ?? 99)
+            break
+          case 'type':
+            cmp = (CAMPAIGN_TYPE_ORDER[a.type] ?? 99) - (CAMPAIGN_TYPE_ORDER[b.type] ?? 99)
+            break
+          case 'totalRecipients':
+            cmp = a.totalRecipients - b.totalRecipients
+            break
+          case 'sentCount':
+            cmp = a.sentCount - b.sentCount
+            break
+          case 'failedCount':
+            cmp = a.failedCount - b.failedCount
+            break
+          case 'createdAt':
+            cmp = (a.createdAt || '').localeCompare(b.createdAt || '')
+            break
+          case 'lastSentAt':
+            cmp = (a.lastSentAt || a.scheduledAt || '').localeCompare(b.lastSentAt || b.scheduledAt || '')
+            break
+        }
+        return sortDirection === 'asc' ? cmp : -cmp
+      })
+    }
+
     return result
-  }, [campaigns, searchQuery, statusFilter, typeFilter])
+  }, [campaigns, searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
@@ -140,10 +228,10 @@ function CampanhasContent() {
     return { totalCampaignsMonth, totalSentMonth, failureRate, nextScheduled }
   }, [campaigns])
 
-  // Reset page when filters change
+  // Reset page when filters or sort change
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery, statusFilter, typeFilter])
+  }, [searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
 
   /* ================================= Render ================================= */
 
@@ -268,14 +356,51 @@ function CampanhasContent() {
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Nome</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Tipo</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Destinatários</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Enviados</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Falhos</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Criado em</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Envio</th>
+                  {([
+                    { key: 'name' as SortColumn, label: 'Nome', align: 'left' },
+                    { key: 'status' as SortColumn, label: 'Status', align: 'left' },
+                    { key: 'type' as SortColumn, label: 'Tipo', align: 'left' },
+                    { key: 'totalRecipients' as SortColumn, label: 'Destinatários', align: 'right' },
+                    { key: 'sentCount' as SortColumn, label: 'Enviados', align: 'right' },
+                    { key: 'failedCount' as SortColumn, label: 'Falhos', align: 'right' },
+                    { key: 'createdAt' as SortColumn, label: 'Criado em', align: 'left' },
+                    { key: 'lastSentAt' as SortColumn, label: 'Envio', align: 'left' },
+                  ]).map((col) => (
+                    <th
+                      key={col.key}
+                      className={`px-4 py-3 text-${col.align} text-xs font-semibold text-slate-500 uppercase tracking-wider`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleSort(col.key)}
+                        className={`inline-flex items-center gap-1 hover:text-slate-900 transition ${
+                          col.align === 'right' ? 'ml-auto' : col.align === 'center' ? 'mx-auto' : ''
+                        }`}
+                      >
+                        {col.label}
+                        <svg
+                          className={`h-3.5 w-3.5 transition-colors ${
+                            sortColumn === col.key ? 'text-primary-600' : 'text-slate-300'
+                          }`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          {sortColumn === col.key && sortDirection === 'asc' ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                          ) : sortColumn === col.key && sortDirection === 'desc' ? (
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          ) : (
+                            <>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+                            </>
+                          )}
+                        </svg>
+                      </button>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
