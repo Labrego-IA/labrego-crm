@@ -58,7 +58,7 @@ type Funnel = {
 type SortField = 'name' | 'stage' | 'probability' | 'dealValue' | 'expectedValue' | 'daysInStage' | 'lastContact'
 type SortDir = 'asc' | 'desc' | null
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 30
 
 function getClientProbability(client: { closingProbability?: number }, stage?: { probability?: number }): number {
   if (client.closingProbability != null) return client.closingProbability
