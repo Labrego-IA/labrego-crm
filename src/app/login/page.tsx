@@ -335,14 +335,17 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                  <button
-                    type="button"
-                    onClick={() => switchTab('cadastro')}
-                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                  >
-                    Criar conta
-                  </button>
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-slate-400">
+                    Não tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => switchTab('cadastro')}
+                      className="text-[#13DEFC]/80 hover:text-[#13DEFC] font-semibold transition-colors"
+                    >
+                      Cadastre-se
+                    </button>
+                  </p>
                 </div>
               </>
             )}
@@ -480,14 +483,17 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                <div className="mt-6 text-center">
-                  <button
-                    type="button"
-                    onClick={() => switchTab('login')}
-                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                  >
-                    Já tenho uma conta
-                  </button>
+                <div className="mt-8 text-center">
+                  <p className="text-sm text-slate-400">
+                    Já tem uma conta?{' '}
+                    <button
+                      type="button"
+                      onClick={() => switchTab('login')}
+                      className="text-[#13DEFC]/80 hover:text-[#13DEFC] font-semibold transition-colors"
+                    >
+                      Entre
+                    </button>
+                  </p>
                 </div>
               </>
             )}
