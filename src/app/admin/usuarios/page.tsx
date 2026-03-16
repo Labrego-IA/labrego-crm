@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
@@ -11,6 +11,7 @@ import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organi
 import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -108,8 +109,11 @@ export default function UsuariosPage() {
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState({ email: '', displayName: '', role: 'seller' as RolePreset })
+  const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset }
+  const [addForm, setAddForm] = useState(addFormDefault)
   const [addLoading, setAddLoading] = useState(false)
+
+  const addHasChanges = addForm.email !== '' || addForm.displayName !== '' || addForm.role !== 'seller'
 
   // Edit modal
   const [editMember, setEditMember] = useState<OrgMember | null>(null)
@@ -117,6 +121,24 @@ export default function UsuariosPage() {
   const [editRole, setEditRole] = useState<RolePreset>('viewer')
   const [editPermissions, setEditPermissions] = useState<MemberPermissions>(defaultPermissions())
   const [editLoading, setEditLoading] = useState(false)
+
+  // Snapshot of edit modal initial values for dirty detection
+  const editInitialRef = useRef<{
+    displayName: string
+    role: RolePreset
+    permissions: MemberPermissions
+  } | null>(null)
+
+  const editHasChanges = (() => {
+    if (!editMember || !editInitialRef.current) return false
+    const ini = editInitialRef.current
+    if (editDisplayName !== ini.displayName) return true
+    if (editRole !== ini.role) return true
+    if (editPermissions.viewScope !== ini.permissions.viewScope) return true
+    if (JSON.stringify([...editPermissions.pages].sort()) !== JSON.stringify([...ini.permissions.pages].sort())) return true
+    if (JSON.stringify(editPermissions.actions) !== JSON.stringify(ini.permissions.actions)) return true
+    return false
+  })()
 
   // Delete confirmation
   const [deleteMember, setDeleteMember] = useState<OrgMember | null>(null)
@@ -204,17 +226,28 @@ export default function UsuariosPage() {
 
   const openEditModal = (member: OrgMember) => {
     setEditMember(member)
-    setEditDisplayName(member.displayName || '')
+    const name = member.displayName || ''
+    setEditDisplayName(name)
     const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
     const role = validRoles.includes(member.role as RolePreset)
       ? (member.role as RolePreset)
       : 'viewer'
     setEditRole(role)
-    setEditPermissions({
+    const perms: MemberPermissions = {
       pages: [...(member.permissions?.pages || [])],
       actions: { ...defaultActions(), ...(member.permissions?.actions || {}) },
       viewScope: member.permissions?.viewScope || 'own',
-    })
+    }
+    setEditPermissions(perms)
+    editInitialRef.current = {
+      displayName: name,
+      role,
+      permissions: {
+        pages: [...perms.pages],
+        actions: { ...perms.actions },
+        viewScope: perms.viewScope,
+      },
+    }
   }
 
   const handleRoleChange = (role: RolePreset) => {
@@ -287,6 +320,40 @@ export default function UsuariosPage() {
       setDeleteLoading(false)
     }
   }
+
+  /* ---------------------- Modal close handlers ------------------------- */
+
+  // Unsaved changes confirmation state
+  const [showAddConfirm, setShowAddConfirm] = useState(false)
+  const [showEditConfirm, setShowEditConfirm] = useState(false)
+
+  const closeAddModal = useCallback(() => {
+    setShowAddModal(false)
+    setShowAddConfirm(false)
+    setAddForm({ email: '', displayName: '', role: 'seller' })
+  }, [])
+
+  const closeEditModal = useCallback(() => {
+    setEditMember(null)
+    setShowEditConfirm(false)
+    editInitialRef.current = null
+  }, [])
+
+  const requestCloseAddModal = useCallback(() => {
+    if (addHasChanges) {
+      setShowAddConfirm(true)
+    } else {
+      closeAddModal()
+    }
+  }, [addHasChanges, closeAddModal])
+
+  const requestCloseEditModal = useCallback(() => {
+    if (editHasChanges) {
+      setShowEditConfirm(true)
+    } else {
+      closeEditModal()
+    }
+  }, [editHasChanges, closeEditModal])
 
   /* ---------------------- Computed values ------------------------------- */
 
@@ -564,7 +631,7 @@ export default function UsuariosPage() {
 
         {/* =================== Add Member Modal =================== */}
         {showAddModal && (
-          <Modal isOpen onClose={() => setShowAddModal(false)} size="md" centered>
+          <Modal isOpen onClose={requestCloseAddModal} size="md" centered>
             <div className="space-y-5">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Adicionar membro</h3>
@@ -625,7 +692,7 @@ export default function UsuariosPage() {
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-                <button type="button" onClick={() => setShowAddModal(false)} className={ui.btn}>
+                <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
                 <button
@@ -650,7 +717,7 @@ export default function UsuariosPage() {
 
         {/* =================== Edit Permissions Modal =================== */}
         {editMember && (
-          <Modal isOpen onClose={() => setEditMember(null)} size="xl" centered>
+          <Modal isOpen onClose={requestCloseEditModal} size="xl" centered>
             <div className="space-y-5">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
@@ -765,7 +832,7 @@ export default function UsuariosPage() {
 
               {/* Footer */}
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-                <button type="button" onClick={() => setEditMember(null)} className={ui.btn}>
+                <button type="button" onClick={requestCloseEditModal} className={ui.btn}>
                   Cancelar
                 </button>
                 <button
@@ -831,6 +898,17 @@ export default function UsuariosPage() {
             </div>
           </Modal>
         )}
+        {/* =================== Unsaved Changes Dialogs =================== */}
+        <ConfirmCloseDialog
+          isOpen={showAddConfirm}
+          onConfirm={closeAddModal}
+          onCancel={() => setShowAddConfirm(false)}
+        />
+        <ConfirmCloseDialog
+          isOpen={showEditConfirm}
+          onConfirm={closeEditModal}
+          onCancel={() => setShowEditConfirm(false)}
+        />
       </div>
     </PermissionGate>
   )
