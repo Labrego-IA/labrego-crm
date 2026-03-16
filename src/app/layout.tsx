@@ -49,7 +49,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const lastLoggedRouteRef = useRef<string | null>(null)
-  const isLoginPage = pathname === '/login'
+  const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/reset-password'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined)
 
   // Fechar menu do usuario ao clicar fora
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
   // Autenticação
   useEffect(() => {
-    if (isLoginPage) {
+    if (isPublicPage) {
       setCheckingAuth(false)
       return
     }
@@ -200,7 +200,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   }, [checkingAuth, userEmail, userUid])
 
   // Login: renderiza só o conteúdo, sem sidebar/header
-  if (isLoginPage) {
+  if (isPublicPage) {
     return (
       <html lang="pt-BR" className={`${inter.className}`}>
         <head>
