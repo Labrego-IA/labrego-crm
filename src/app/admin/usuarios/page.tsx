@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
@@ -53,6 +53,19 @@ function formatJoinedDate(iso: string): string {
     return '--'
   }
 }
+
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+type SortColumn = 'name' | 'email' | 'role' | 'status' | 'joinedAt'
+type SortDirection = 'asc' | 'desc'
+
+const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
+const STATUS_ORDER: Record<string, number> = { active: 0, invited: 1, suspended: 2 }
 
 function defaultActions(): MemberActions {
   return {
@@ -107,6 +120,11 @@ export default function UsuariosPage() {
   const [members, setMembers] = useState<OrgMember[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Search & sort
+  const [search, setSearch] = useState('')
+  const [sortColumn, setSortColumn] = useState<SortColumn>('name')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false)
   const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset }
@@ -156,10 +174,6 @@ export default function UsuariosPage() {
           id: d.id,
           ...d.data(),
         })) as OrgMember[]
-        items.sort((a, b) => {
-          const roleOrder: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
-          return (roleOrder[a.role] ?? 4) - (roleOrder[b.role] ?? 4)
-        })
         setMembers(items)
         setLoading(false)
       },
@@ -355,6 +369,58 @@ export default function UsuariosPage() {
     }
   }, [editHasChanges, closeEditModal])
 
+  /* ---------------------- Search, filter & sort ------------------------ */
+
+  const handleSort = useCallback((column: SortColumn) => {
+    setSortColumn((prev) => {
+      if (prev === column) {
+        setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'))
+        return prev
+      }
+      setSortDirection('asc')
+      return column
+    })
+  }, [])
+
+  const filteredMembers = useMemo(() => {
+    const term = normalize(search.trim())
+
+    let result = members
+    if (term) {
+      result = members.filter((m) => {
+        const name = normalize(m.displayName || '')
+        const email = normalize(m.email || '')
+        const role = normalize(ROLE_LABELS[m.role as RolePreset] || m.role || '')
+        const status = normalize(STATUS_LABELS[m.status] || m.status || '')
+        return name.includes(term) || email.includes(term) || role.includes(term) || status.includes(term)
+      })
+    }
+
+    result = [...result].sort((a, b) => {
+      let cmp = 0
+      switch (sortColumn) {
+        case 'name':
+          cmp = normalize(a.displayName || '').localeCompare(normalize(b.displayName || ''))
+          break
+        case 'email':
+          cmp = normalize(a.email || '').localeCompare(normalize(b.email || ''))
+          break
+        case 'role':
+          cmp = (ROLE_ORDER[a.role] ?? 4) - (ROLE_ORDER[b.role] ?? 4)
+          break
+        case 'status':
+          cmp = (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4)
+          break
+        case 'joinedAt':
+          cmp = (a.joinedAt || '').localeCompare(b.joinedAt || '')
+          break
+      }
+      return sortDirection === 'asc' ? cmp : -cmp
+    })
+
+    return result
+  }, [members, search, sortColumn, sortDirection])
+
   /* ---------------------- Computed values ------------------------------- */
 
   const memberCount = members.length
@@ -430,20 +496,57 @@ export default function UsuariosPage() {
           )}
         </div>
 
+        {/* =================== Search bar =================== */}
+        <div className="relative">
+          <svg
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Pesquisar por nome, email, cargo ou status..."
+            className={`${ui.input} pl-9`}
+          />
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+
         {/* =================== Member list =================== */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
           </div>
-        ) : members.length === 0 ? (
+        ) : filteredMembers.length === 0 ? (
           <div className={`${ui.card} p-12 text-center`}>
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
               <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 017.533-2.493M9 19.128a5.972 5.972 0 01.786-3.07m4.428 0a9.36 9.36 0 00-4.428 0M12 10.5a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
             </div>
-            <h3 className="text-base font-semibold text-gray-900">Nenhum membro encontrado</h3>
-            <p className="text-sm text-gray-500 mt-1">Adicione o primeiro membro da organizacao.</p>
+            <h3 className="text-base font-semibold text-gray-900">
+              {members.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              {members.length === 0
+                ? 'Adicione o primeiro membro da organizacao.'
+                : 'Tente ajustar os termos da pesquisa.'}
+            </p>
           </div>
         ) : (
           <>
@@ -453,16 +556,48 @@ export default function UsuariosPage() {
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b border-gray-100 bg-slate-50/80">
-                      <th className="px-5 py-3 text-left font-medium text-gray-600">Membro</th>
-                      <th className="px-5 py-3 text-left font-medium text-gray-600">Email</th>
-                      <th className="px-5 py-3 text-center font-medium text-gray-600">Cargo</th>
-                      <th className="px-5 py-3 text-center font-medium text-gray-600">Status</th>
-                      <th className="px-5 py-3 text-center font-medium text-gray-600">Entrada</th>
+                      {([
+                        { key: 'name' as SortColumn, label: 'Membro', align: 'left' },
+                        { key: 'email' as SortColumn, label: 'Email', align: 'left' },
+                        { key: 'role' as SortColumn, label: 'Cargo', align: 'center' },
+                        { key: 'status' as SortColumn, label: 'Status', align: 'center' },
+                        { key: 'joinedAt' as SortColumn, label: 'Entrada', align: 'center' },
+                      ]).map((col) => (
+                        <th
+                          key={col.key}
+                          className={`px-5 py-3 text-${col.align} font-medium text-gray-600`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => handleSort(col.key)}
+                            className={`inline-flex items-center gap-1 hover:text-gray-900 transition ${
+                              col.align === 'center' ? 'mx-auto' : ''
+                            }`}
+                          >
+                            {col.label}
+                            <svg
+                              className={`h-3.5 w-3.5 transition-colors ${
+                                sortColumn === col.key ? 'text-primary-600' : 'text-gray-300'
+                              }`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              {sortColumn === col.key && sortDirection === 'desc' ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                              ) : (
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                              )}
+                            </svg>
+                          </button>
+                        </th>
+                      ))}
                       <th className="px-5 py-3 text-center font-medium text-gray-600">Acoes</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {members.map((m) => {
+                    {filteredMembers.map((m) => {
                       const initials = (m.displayName || '')
                         .split(/\s+/)
                         .slice(0, 2)
@@ -552,7 +687,7 @@ export default function UsuariosPage() {
 
             {/* Mobile cards */}
             <div className="sm:hidden space-y-3">
-              {members.map((m) => {
+              {filteredMembers.map((m) => {
                 const initials = (m.displayName || '')
                   .split(/\s+/)
                   .slice(0, 2)
