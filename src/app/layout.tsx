@@ -48,7 +48,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const lastLoggedRouteRef = useRef<string | null>(null)
-  const isLoginPage = pathname === '/login'
+  const isLoginPage = pathname === '/login' || pathname === '/cadastro'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined)
 
   // Fechar menu do usuario ao clicar fora

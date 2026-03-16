@@ -279,6 +279,17 @@ export default function LoginPage() {
               </form>
           </div>
 
+          {/* Link para cadastro */}
+          <p className="text-center text-sm text-slate-400 mt-6">
+            Não tem uma conta?{' '}
+            <Link
+              href="/cadastro"
+              className="text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+            >
+              Cadastre-se
+            </Link>
+          </p>
+
           {/* Footer */}
           <p className="text-center text-xs text-slate-600 mt-8">
             &copy; {new Date().getFullYear()} Voxium. Todos os direitos reservados.
