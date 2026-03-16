@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
   collection,
   query,
@@ -22,6 +22,11 @@ import {
   UsersIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from '@heroicons/react/24/outline'
 
 type Cliente = {
@@ -51,7 +56,9 @@ type Funnel = {
 }
 
 type SortField = 'name' | 'stage' | 'probability' | 'dealValue' | 'expectedValue' | 'daysInStage' | 'lastContact'
-type SortDir = 'asc' | 'desc'
+type SortDir = 'asc' | 'desc' | null
+
+const ITEMS_PER_PAGE = 10
 
 function getClientProbability(client: { closingProbability?: number }, stage?: { probability?: number }): number {
   if (client.closingProbability != null) return client.closingProbability
@@ -76,8 +83,20 @@ export default function ProjecaoVendasPage() {
   const [stages, setStages] = useState<FunnelStage[]>([])
   const [clients, setClients] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
-  const [sortField, setSortField] = useState<SortField>('expectedValue')
-  const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const [sortField, setSortField] = useState<SortField | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>(null)
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterStage, setFilterStage] = useState<string>('all')
+  const [filterMinValue, setFilterMinValue] = useState<string>('')
+  const [filterMaxValue, setFilterMaxValue] = useState<string>('')
+  const [filterMinProb, setFilterMinProb] = useState<string>('')
+  const [filterMaxProb, setFilterMaxProb] = useState<string>('')
+  const [showFilters, setShowFilters] = useState(false)
+
+  // Pagination state per funnel
+  const [funnelPages, setFunnelPages] = useState<Record<string, number>>({})
 
   // Load funnels
   useEffect(() => {
@@ -124,14 +143,44 @@ export default function ProjecaoVendasPage() {
     return () => unsub()
   }, [orgId])
 
-  // Filter clients: dealValue > 0 OR probability > 0
+  // Filter clients: dealValue > 0 OR probability > 0, then apply user filters
   const eligibleClients = useMemo(() => {
     return clients.filter(c => {
       const stage = stages.find(s => s.id === c.funnelStage)
       const prob = getClientProbability(c, stage)
-      return (c.dealValue && c.dealValue > 0) || prob > 0
+      const isEligible = (c.dealValue && c.dealValue > 0) || prob > 0
+      if (!isEligible) return false
+
+      // Search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase()
+        if (!c.name.toLowerCase().includes(term)) return false
+      }
+
+      // Stage filter
+      if (filterStage !== 'all' && c.funnelStage !== filterStage) return false
+
+      // Value range filter
+      const minVal = filterMinValue ? parseFloat(filterMinValue) : null
+      const maxVal = filterMaxValue ? parseFloat(filterMaxValue) : null
+      const dealVal = c.dealValue || 0
+      if (minVal !== null && dealVal < minVal) return false
+      if (maxVal !== null && dealVal > maxVal) return false
+
+      // Probability range filter
+      const minProb = filterMinProb ? parseFloat(filterMinProb) : null
+      const maxProb = filterMaxProb ? parseFloat(filterMaxProb) : null
+      if (minProb !== null && prob < minProb) return false
+      if (maxProb !== null && prob > maxProb) return false
+
+      return true
     })
-  }, [clients, stages])
+  }, [clients, stages, searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb])
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setFunnelPages({})
+  }, [searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb, sortField, sortDir])
 
   // Group by funnel
   const clientsByFunnel = useMemo(() => {
@@ -145,7 +194,8 @@ export default function ProjecaoVendasPage() {
   }, [eligibleClients])
 
   // Sort function
-  const sortClients = (arr: Cliente[]) => {
+  const sortClients = useCallback((arr: Cliente[]) => {
+    if (!sortField || !sortDir) return arr
     return [...arr].sort((a, b) => {
       const stageA = stages.find(s => s.id === a.funnelStage)
       const stageB = stages.find(s => s.id === b.funnelStage)
@@ -192,18 +242,33 @@ export default function ProjecaoVendasPage() {
       if (valA > valB) return sortDir === 'asc' ? 1 : -1
       return 0
     })
-  }
+  }, [stages, sortField, sortDir])
 
+  // 3-state sort: null → asc → desc → null
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')
-    } else {
+    if (sortField !== field) {
       setSortField(field)
+      setSortDir('asc')
+    } else if (sortDir === 'asc') {
       setSortDir('desc')
+    } else {
+      setSortField(null)
+      setSortDir(null)
     }
   }
 
-  // Global totals
+  const hasActiveFilters = searchTerm || filterStage !== 'all' || filterMinValue || filterMaxValue || filterMinProb || filterMaxProb
+
+  const clearFilters = () => {
+    setSearchTerm('')
+    setFilterStage('all')
+    setFilterMinValue('')
+    setFilterMaxValue('')
+    setFilterMinProb('')
+    setFilterMaxProb('')
+  }
+
+  // Global totals (based on filtered results)
   const globalTotals = useMemo(() => {
     let totalDeal = 0
     let totalExpected = 0
@@ -263,12 +328,20 @@ export default function ProjecaoVendasPage() {
   }
 
   const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null
+    if (sortField !== field || !sortDir) {
+      return <ChevronUpIcon className="w-3 h-3 inline ml-1 opacity-0 group-hover:opacity-30" />
+    }
     return sortDir === 'asc' ? (
-      <ChevronUpIcon className="w-3 h-3 inline ml-1" />
+      <ChevronUpIcon className="w-3 h-3 inline ml-1 text-primary-600" />
     ) : (
-      <ChevronDownIcon className="w-3 h-3 inline ml-1" />
+      <ChevronDownIcon className="w-3 h-3 inline ml-1 text-primary-600" />
     )
+  }
+
+  // Pagination helpers
+  const getFunnelPage = (funnelId: string) => funnelPages[funnelId] || 0
+  const setFunnelPage = (funnelId: string, page: number) => {
+    setFunnelPages(prev => ({ ...prev, [funnelId]: page }))
   }
 
   if (loading) {
@@ -322,26 +395,156 @@ export default function ProjecaoVendasPage() {
         </div>
       </div>
 
+      {/* Filters Bar */}
+      <div className="mb-6 space-y-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Search */}
+          <div className="relative flex-1 min-w-[200px] max-w-md">
+            <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+            <input
+              type="text"
+              placeholder="Buscar por nome..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            />
+          </div>
+
+          {/* Stage filter */}
+          <select
+            value={filterStage}
+            onChange={(e) => setFilterStage(e.target.value)}
+            className="px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="all">Todas as etapas</option>
+            {stages.map(s => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+
+          {/* Toggle advanced filters */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors ${
+              showFilters || hasActiveFilters
+                ? 'bg-primary-50 border-primary-200 text-primary-700'
+                : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+            }`}
+          >
+            <FunnelIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">Filtros</span>
+            {hasActiveFilters && (
+              <span className="w-2 h-2 rounded-full bg-primary-500" />
+            )}
+          </button>
+
+          {/* Clear filters */}
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-1 px-3 py-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <XMarkIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Limpar</span>
+            </button>
+          )}
+        </div>
+
+        {/* Advanced Filters Panel */}
+        {showFilters && (
+          <div className="bg-white border border-neutral-200 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label className="text-xs text-neutral-500 mb-1 block">Valor mín. (R$)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0"
+                value={filterMinValue}
+                onChange={(e) => setFilterMinValue(e.target.value)}
+                className="w-full px-3 py-1.5 text-sm bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-neutral-500 mb-1 block">Valor máx. (R$)</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Sem limite"
+                value={filterMaxValue}
+                onChange={(e) => setFilterMaxValue(e.target.value)}
+                className="w-full px-3 py-1.5 text-sm bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-neutral-500 mb-1 block">Prob. mín. (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                placeholder="0"
+                value={filterMinProb}
+                onChange={(e) => setFilterMinProb(e.target.value)}
+                className="w-full px-3 py-1.5 text-sm bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-neutral-500 mb-1 block">Prob. máx. (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                placeholder="100"
+                value={filterMaxProb}
+                onChange={(e) => setFilterMaxProb(e.target.value)}
+                className="w-full px-3 py-1.5 text-sm bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Empty state */}
       {eligibleClients.length === 0 && (
         <div className="text-center py-16 border-2 border-dashed border-neutral-200 rounded-2xl">
           <ChartBarIcon className="w-12 h-12 mx-auto text-neutral-300 mb-4" />
-          <h3 className="text-lg font-semibold text-neutral-700 mb-2">Nenhum contato com projeção</h3>
+          <h3 className="text-lg font-semibold text-neutral-700 mb-2">
+            {hasActiveFilters ? 'Nenhum contato encontrado' : 'Nenhum contato com projeção'}
+          </h3>
           <p className="text-sm text-neutral-500 max-w-md mx-auto">
-            Adicione valor de negócio ou probabilidade aos seus contatos para visualizar a projeção de vendas.
+            {hasActiveFilters
+              ? 'Tente ajustar os filtros para ver mais resultados.'
+              : 'Adicione valor de negócio ou probabilidade aos seus contatos para visualizar a projeção de vendas.'}
           </p>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 px-4 py-2 text-sm text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+            >
+              Limpar filtros
+            </button>
+          )}
         </div>
       )}
 
       {/* Tables per funnel */}
       {funnels.filter(f => clientsByFunnel[f.id]?.length > 0).map(funnel => {
-        const funnelClients = sortClients(clientsByFunnel[funnel.id] || [])
+        const allFunnelClients = sortClients(clientsByFunnel[funnel.id] || [])
         const funnelStages = stages.filter(s => s.funnelId === funnel.id)
-        const totalDeal = funnelClients.reduce((sum, c) => sum + (c.dealValue || 0), 0)
-        const totalExpected = funnelClients.reduce((sum, c) => {
+        const totalDeal = allFunnelClients.reduce((sum, c) => sum + (c.dealValue || 0), 0)
+        const totalExpected = allFunnelClients.reduce((sum, c) => {
           const stage = stages.find(s => s.id === c.funnelStage)
           return sum + ((c.dealValue || 0) * getClientProbability(c, stage) / 100)
         }, 0)
+
+        // Pagination
+        const currentPage = getFunnelPage(funnel.id)
+        const totalPages = Math.ceil(allFunnelClients.length / ITEMS_PER_PAGE)
+        const needsPagination = allFunnelClients.length > ITEMS_PER_PAGE
+        const paginatedClients = needsPagination
+          ? allFunnelClients.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE)
+          : allFunnelClients
 
         return (
           <div key={funnel.id} className="mb-8">
@@ -350,7 +553,7 @@ export default function ProjecaoVendasPage() {
               <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: funnel.color || '#6366f1' }} />
               <h2 className="text-base md:text-lg font-semibold text-neutral-900 truncate">{funnel.name}</h2>
               <span className="text-[10px] md:text-xs bg-neutral-100 text-neutral-600 px-1.5 md:px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
-                {funnelClients.length} contato{funnelClients.length !== 1 ? 's' : ''}
+                {allFunnelClients.length} contato{allFunnelClients.length !== 1 ? 's' : ''}
               </span>
             </div>
 
@@ -360,13 +563,20 @@ export default function ProjecaoVendasPage() {
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs text-neutral-500">Ordenar:</span>
                 <select
-                  value={sortField}
+                  value={sortField || ''}
                   onChange={(e) => {
-                    setSortField(e.target.value as SortField)
-                    setSortDir('desc')
+                    const val = e.target.value
+                    if (!val) {
+                      setSortField(null)
+                      setSortDir(null)
+                    } else {
+                      setSortField(val as SortField)
+                      setSortDir('asc')
+                    }
                   }}
                   className="text-xs bg-neutral-50 border border-neutral-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary-500"
                 >
+                  <option value="">Padrão</option>
                   <option value="expectedValue">Valor Esperado</option>
                   <option value="dealValue">Valor Negócio</option>
                   <option value="probability">Probabilidade</option>
@@ -374,15 +584,22 @@ export default function ProjecaoVendasPage() {
                   <option value="daysInStage">Dias na Etapa</option>
                   <option value="lastContact">Último Contato</option>
                 </select>
-                <button
-                  onClick={() => setSortDir(prev => prev === 'asc' ? 'desc' : 'asc')}
-                  className="p-1 rounded border border-neutral-200 bg-neutral-50"
-                >
-                  {sortDir === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />}
-                </button>
+                {sortField && (
+                  <button
+                    onClick={() => {
+                      if (sortDir === 'asc') setSortDir('desc')
+                      else if (sortDir === 'desc') { setSortField(null); setSortDir(null) }
+                      else setSortDir('asc')
+                    }}
+                    className="p-1 rounded border border-neutral-200 bg-neutral-50"
+                    title={sortDir === 'asc' ? 'Crescente' : sortDir === 'desc' ? 'Decrescente' : 'Sem ordenação'}
+                  >
+                    {sortDir === 'asc' ? <ChevronUpIcon className="w-3 h-3" /> : <ChevronDownIcon className="w-3 h-3" />}
+                  </button>
+                )}
               </div>
 
-              {funnelClients.map(client => {
+              {paginatedClients.map(client => {
                 const stage = stages.find(s => s.id === client.funnelStage)
                 const prob = getClientProbability(client, stage)
                 const expected = (client.dealValue || 0) * prob / 100
@@ -464,116 +681,213 @@ export default function ProjecaoVendasPage() {
                   <p className="text-xs text-neutral-500">Esperado: <span className="font-bold text-emerald-700">{formatCurrencyShort(totalExpected)}</span></p>
                 </div>
               </div>
+
+              {/* Mobile Pagination */}
+              {needsPagination && (
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={allFunnelClients.length}
+                  onPageChange={(page) => setFunnelPage(funnel.id, page)}
+                />
+              )}
             </div>
 
             {/* Desktop Table */}
-            <div className="hidden md:block bg-white rounded-xl border border-neutral-200 overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-neutral-100 bg-neutral-50/50">
-                    <th className="text-left px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('name')}>
-                      Nome <SortIcon field="name" />
-                    </th>
-                    <th className="text-left px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('stage')}>
-                      Etapa <SortIcon field="stage" />
-                    </th>
-                    <th className="text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('probability')}>
-                      Prob. (%) <SortIcon field="probability" />
-                    </th>
-                    <th className="text-right px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('dealValue')}>
-                      Valor (R$) <SortIcon field="dealValue" />
-                    </th>
-                    <th className="text-right px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('expectedValue')}>
-                      Esperado (R$) <SortIcon field="expectedValue" />
-                    </th>
-                    <th className="text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('daysInStage')}>
-                      Dias na Etapa <SortIcon field="daysInStage" />
-                    </th>
-                    <th className="text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900" onClick={() => handleSort('lastContact')}>
-                      Último Contato <SortIcon field="lastContact" />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {funnelClients.map(client => {
-                    const stage = stages.find(s => s.id === client.funnelStage)
-                    const prob = getClientProbability(client, stage)
-                    const expected = (client.dealValue || 0) * prob / 100
-                    const daysInStage = client.funnelStageUpdatedAt
-                      ? Math.floor((Date.now() - new Date(client.funnelStageUpdatedAt).getTime()) / 86400000)
-                      : null
-                    const lastContact = client.lastFollowUpAt
-                      ? new Date(client.lastFollowUpAt).toLocaleDateString('pt-BR')
-                      : 'Sem contato'
+            <div className="hidden md:block bg-white rounded-xl border border-neutral-200 overflow-hidden">
+              <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 z-10">
+                    <tr className="border-b border-neutral-100 bg-neutral-50/95 backdrop-blur-sm">
+                      <th className="group text-left px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('name')}>
+                        Nome <SortIcon field="name" />
+                      </th>
+                      <th className="group text-left px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('stage')}>
+                        Etapa <SortIcon field="stage" />
+                      </th>
+                      <th className="group text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('probability')}>
+                        Prob. (%) <SortIcon field="probability" />
+                      </th>
+                      <th className="group text-right px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('dealValue')}>
+                        Valor (R$) <SortIcon field="dealValue" />
+                      </th>
+                      <th className="group text-right px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('expectedValue')}>
+                        Esperado (R$) <SortIcon field="expectedValue" />
+                      </th>
+                      <th className="group text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('daysInStage')}>
+                        Dias na Etapa <SortIcon field="daysInStage" />
+                      </th>
+                      <th className="group text-center px-4 py-3 font-medium text-neutral-600 cursor-pointer hover:text-neutral-900 select-none" onClick={() => handleSort('lastContact')}>
+                        Último Contato <SortIcon field="lastContact" />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedClients.map(client => {
+                      const stage = stages.find(s => s.id === client.funnelStage)
+                      const prob = getClientProbability(client, stage)
+                      const expected = (client.dealValue || 0) * prob / 100
+                      const daysInStage = client.funnelStageUpdatedAt
+                        ? Math.floor((Date.now() - new Date(client.funnelStageUpdatedAt).getTime()) / 86400000)
+                        : null
+                      const lastContact = client.lastFollowUpAt
+                        ? new Date(client.lastFollowUpAt).toLocaleDateString('pt-BR')
+                        : 'Sem contato'
 
-                    return (
-                      <tr key={client.id} className="border-b border-neutral-50 hover:bg-neutral-50/50">
-                        <td className="px-4 py-3">
-                          <Link href={`/contatos/${client.id}`} className="text-primary-600 hover:underline font-medium">
-                            {client.name}
-                          </Link>
-                        </td>
-                        <td className="px-4 py-3">
-                          <select
-                            defaultValue={client.funnelStage || ''}
-                            key={`stage-${client.id}`}
-                            onChange={(e) => handleInlineStageChange(client.id, e.target.value, funnel.id)}
-                            className="px-2 py-1 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                          >
-                            {funnelStages.map(s => (
-                              <option key={s.id} value={s.id}>{s.name}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            defaultValue={client.closingProbability ?? stage?.probability ?? 0}
-                            key={`prob-${client.id}`}
-                            onBlur={(e) => handleInlineProbability(client.id, e.target.value)}
-                            className="w-16 px-2 py-1 text-xs text-center bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            defaultValue={client.dealValue ?? ''}
-                            key={`deal-${client.id}`}
-                            onBlur={(e) => handleInlineDealValue(client.id, e.target.value)}
-                            className="w-28 px-2 py-1 text-xs text-right bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                          />
-                        </td>
-                        <td className="px-4 py-3 text-right font-medium text-emerald-700">
-                          {formatCurrency(expected)}
-                        </td>
-                        <td className="px-4 py-3 text-center text-neutral-500">
-                          {daysInStage !== null ? `${daysInStage}d` : '-'}
-                        </td>
-                        <td className="px-4 py-3 text-center text-neutral-500">
-                          {lastContact}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-                {/* Footer totals */}
-                <tfoot>
-                  <tr className="bg-neutral-50 font-semibold">
-                    <td className="px-4 py-3 text-neutral-700" colSpan={3}>Total</td>
-                    <td className="px-4 py-3 text-right text-neutral-700">{formatCurrency(totalDeal)}</td>
-                    <td className="px-4 py-3 text-right text-emerald-700">{formatCurrency(totalExpected)}</td>
-                    <td colSpan={2} />
-                  </tr>
-                </tfoot>
-              </table>
+                      return (
+                        <tr key={client.id} className="border-b border-neutral-50 hover:bg-neutral-50/50">
+                          <td className="px-4 py-3">
+                            <Link href={`/contatos/${client.id}`} className="text-primary-600 hover:underline font-medium">
+                              {client.name}
+                            </Link>
+                          </td>
+                          <td className="px-4 py-3">
+                            <select
+                              defaultValue={client.funnelStage || ''}
+                              key={`stage-${client.id}`}
+                              onChange={(e) => handleInlineStageChange(client.id, e.target.value, funnel.id)}
+                              className="px-2 py-1 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            >
+                              {funnelStages.map(s => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                              ))}
+                            </select>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              defaultValue={client.closingProbability ?? stage?.probability ?? 0}
+                              key={`prob-${client.id}`}
+                              onBlur={(e) => handleInlineProbability(client.id, e.target.value)}
+                              className="w-16 px-2 py-1 text-xs text-center bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              defaultValue={client.dealValue ?? ''}
+                              key={`deal-${client.id}`}
+                              onBlur={(e) => handleInlineDealValue(client.id, e.target.value)}
+                              className="w-28 px-2 py-1 text-xs text-right bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right font-medium text-emerald-700">
+                            {formatCurrency(expected)}
+                          </td>
+                          <td className="px-4 py-3 text-center text-neutral-500">
+                            {daysInStage !== null ? `${daysInStage}d` : '-'}
+                          </td>
+                          <td className="px-4 py-3 text-center text-neutral-500">
+                            {lastContact}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                  {/* Footer totals */}
+                  <tfoot className="sticky bottom-0">
+                    <tr className="bg-neutral-50 font-semibold">
+                      <td className="px-4 py-3 text-neutral-700" colSpan={3}>Total</td>
+                      <td className="px-4 py-3 text-right text-neutral-700">{formatCurrency(totalDeal)}</td>
+                      <td className="px-4 py-3 text-right text-emerald-700">{formatCurrency(totalExpected)}</td>
+                      <td colSpan={2} />
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Desktop Pagination */}
+              {needsPagination && (
+                <div className="border-t border-neutral-200">
+                  <PaginationControls
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={allFunnelClients.length}
+                    onPageChange={(page) => setFunnelPage(funnel.id, page)}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )
       })}
+    </div>
+  )
+}
+
+function PaginationControls({
+  currentPage,
+  totalPages,
+  totalItems,
+  onPageChange,
+}: {
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  onPageChange: (page: number) => void
+}) {
+  const startItem = currentPage * ITEMS_PER_PAGE + 1
+  const endItem = Math.min((currentPage + 1) * ITEMS_PER_PAGE, totalItems)
+
+  // Generate page numbers to show
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = []
+    if (totalPages <= 7) {
+      for (let i = 0; i < totalPages; i++) pages.push(i)
+    } else {
+      pages.push(0)
+      if (currentPage > 2) pages.push('ellipsis')
+      const start = Math.max(1, currentPage - 1)
+      const end = Math.min(totalPages - 2, currentPage + 1)
+      for (let i = start; i <= end; i++) pages.push(i)
+      if (currentPage < totalPages - 3) pages.push('ellipsis')
+      pages.push(totalPages - 1)
+    }
+    return pages
+  }
+
+  return (
+    <div className="flex items-center justify-between px-4 py-3">
+      <span className="text-xs text-neutral-500">
+        {startItem}-{endItem} de {totalItems}
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 0}
+          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeftIcon className="w-4 h-4" />
+        </button>
+        {getPageNumbers().map((page, i) =>
+          page === 'ellipsis' ? (
+            <span key={`ellipsis-${i}`} className="px-1 text-neutral-400 text-xs">...</span>
+          ) : (
+            <button
+              key={page}
+              onClick={() => onPageChange(page)}
+              className={`min-w-[32px] h-8 rounded-lg text-xs font-medium transition-colors ${
+                page === currentPage
+                  ? 'bg-primary-600 text-white'
+                  : 'text-neutral-600 hover:bg-neutral-100'
+              }`}
+            >
+              {page + 1}
+            </button>
+          )
+        )}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages - 1}
+          className="p-1.5 rounded-lg border border-neutral-200 text-neutral-600 hover:bg-neutral-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronRightIcon className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   )
 }
