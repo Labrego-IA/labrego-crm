@@ -484,18 +484,18 @@ export default function ProdutividadePage() {
       </div>
 
       {/* Action Type Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+      <div className="flex gap-3 mb-6 overflow-x-auto pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-5">
         {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
           const config = ACTION_TYPE_CONFIG[type]
           const Icon = config.icon
           const count = globalTypeCounts[type]
           return (
-            <div key={type} className={`${config.bgColor} rounded-2xl border ${config.borderColor} p-4`}>
-              <div className={`flex items-center gap-2 ${config.color} mb-2`}>
+            <div key={type} className={`${config.bgColor} rounded-2xl border ${config.borderColor} p-3 sm:p-4 min-w-[130px] sm:min-w-0 flex-shrink-0 sm:flex-shrink`}>
+              <div className={`flex items-center gap-2 ${config.color} mb-1 sm:mb-2`}>
                 <Icon className="w-4 h-4" />
-                <span className="text-xs font-medium">{config.label}</span>
+                <span className="text-xs font-medium whitespace-nowrap">{config.label}</span>
               </div>
-              <p className={`text-2xl font-bold ${config.color}`}>{count}</p>
+              <p className={`text-xl sm:text-2xl font-bold ${config.color}`}>{count}</p>
             </div>
           )
         })}
@@ -516,92 +516,133 @@ export default function ProdutividadePage() {
             <p className="text-slate-600 font-medium">Nenhuma atividade encontrada</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-slate-50">
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 min-w-[180px]">
-                    Usuário
-                  </th>
-                  {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
-                    const config = ACTION_TYPE_CONFIG[type]
-                    const Icon = config.icon
-                    return (
-                      <th key={type} className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[90px]">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <Icon className="w-3.5 h-3.5" />
-                          <span className="hidden md:inline">{config.label}</span>
+          <>
+            {/* Mobile: Card layout */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {breakdownAuthors.map((author) => {
+                const data = typeBreakdown[author]
+                return (
+                  <div key={author} className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                          {author.charAt(0).toUpperCase()}
                         </div>
-                      </th>
-                    )
-                  })}
-                  <th className="text-center px-4 py-3 text-sm font-bold text-primary-700 bg-primary-50 min-w-[80px]">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {breakdownAuthors.map((author, idx) => {
-                  const data = typeBreakdown[author]
-                  return (
-                    <tr
-                      key={author}
-                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                            {author.charAt(0).toUpperCase()}
-                          </div>
-                          <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
-                            {author}
-                          </span>
-                        </div>
-                      </td>
+                        <span className="font-medium text-slate-700 truncate max-w-[150px]" title={author}>
+                          {author}
+                        </span>
+                      </div>
+                      <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-bold text-sm">
+                        {data.total}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
                       {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
                         const count = data[type]
                         const config = ACTION_TYPE_CONFIG[type]
+                        const Icon = config.icon
                         return (
-                          <td key={type} className="text-center px-3 py-3">
-                            <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm ${
-                              count === 0
-                                ? 'bg-slate-100 text-slate-400'
-                                : `${config.bgColor} ${config.color}`
-                            }`}>
-                              {count}
-                            </span>
-                          </td>
+                          <div key={type} className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${count === 0 ? 'bg-slate-50 text-slate-400' : `${config.bgColor} ${config.color}`}`}>
+                            <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                            <span className="text-xs font-medium truncate">{config.label}</span>
+                            <span className="font-bold text-sm ml-auto">{count}</span>
+                          </div>
                         )
                       })}
-                      <td className="text-center px-4 py-3 bg-primary-50/50">
-                        <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-100 text-primary-700 font-bold text-sm">
-                          {data.total}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Desktop: Table layout */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 min-w-[180px]">
+                      Usuário
+                    </th>
+                    {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
+                      const config = ACTION_TYPE_CONFIG[type]
+                      const Icon = config.icon
+                      return (
+                        <th key={type} className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[90px]">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <Icon className="w-3.5 h-3.5" />
+                            <span>{config.label}</span>
+                          </div>
+                        </th>
+                      )
+                    })}
+                    <th className="text-center px-4 py-3 text-sm font-bold text-primary-700 bg-primary-50 min-w-[80px]">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {breakdownAuthors.map((author, idx) => {
+                    const data = typeBreakdown[author]
+                    return (
+                      <tr
+                        key={author}
+                        className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                      >
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                              {author.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
+                              {author}
+                            </span>
+                          </div>
+                        </td>
+                        {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
+                          const count = data[type]
+                          const config = ACTION_TYPE_CONFIG[type]
+                          return (
+                            <td key={type} className="text-center px-3 py-3">
+                              <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm ${
+                                count === 0
+                                  ? 'bg-slate-100 text-slate-400'
+                                  : `${config.bgColor} ${config.color}`
+                              }`}>
+                                {count}
+                              </span>
+                            </td>
+                          )
+                        })}
+                        <td className="text-center px-4 py-3 bg-primary-50/50">
+                          <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-100 text-primary-700 font-bold text-sm">
+                            {data.total}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {/* Totals row */}
+                  <tr className="border-t-2 border-slate-200 bg-slate-100">
+                    <td className="px-4 py-3">
+                      <span className="font-bold text-slate-700">Total</span>
+                    </td>
+                    {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => (
+                      <td key={type} className="text-center px-3 py-3">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
+                          {breakdownTotals[type]}
                         </span>
                       </td>
-                    </tr>
-                  )
-                })}
-                {/* Totals row */}
-                <tr className="border-t-2 border-slate-200 bg-slate-100">
-                  <td className="px-4 py-3">
-                    <span className="font-bold text-slate-700">Total</span>
-                  </td>
-                  {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => (
-                    <td key={type} className="text-center px-3 py-3">
-                      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
-                        {breakdownTotals[type]}
+                    ))}
+                    <td className="text-center px-4 py-3 bg-primary-100">
+                      <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-600 text-white font-bold text-sm">
+                        {breakdownTotals.total}
                       </span>
                     </td>
-                  ))}
-                  <td className="text-center px-4 py-3 bg-primary-100">
-                    <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-600 text-white font-bold text-sm">
-                      {breakdownTotals.total}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -623,99 +664,153 @@ export default function ProdutividadePage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto pb-4">
-            <table className="w-full" style={{ overflow: 'visible' }}>
-              <thead>
-                <tr className="bg-slate-50">
-                  <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 sticky left-0 bg-slate-50 z-10 min-w-[180px]">
-                    Usuário
-                  </th>
-                  {last7Days.map((day) => (
-                    <th
-                      key={day}
-                      className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[80px]"
-                    >
-                      {formatDateDisplay(day)}
-                    </th>
-                  ))}
-                  <th className="text-center px-4 py-3 text-sm font-bold text-primary-700 bg-primary-50 min-w-[80px]">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {authors.map((author, idx) => (
-                  <tr
-                    key={author}
-                    className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
-                  >
-                    <td className={`px-4 py-3 sticky left-0 z-10 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                          {author.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
-                          {author}
-                        </span>
+          <>
+            {/* Mobile: Card layout */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {authors.map((author) => (
+                <div key={author} className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                        {author.charAt(0).toUpperCase()}
                       </div>
-                    </td>
+                      <span className="font-medium text-slate-700 truncate max-w-[150px]" title={author}>
+                        {author}
+                      </span>
+                    </div>
+                    <span className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-primary-100 text-primary-700 font-bold text-sm">
+                      {totalsByAuthor[author]}
+                    </span>
+                  </div>
+                  <div className="flex gap-1.5 overflow-x-auto">
                     {last7Days.map((day) => {
                       const count = productivity[author]?.[day] || 0
                       const clientDetails = details[`${author}|${day}`] || []
                       return (
-                        <td key={day} className="text-center px-3 py-3">
-                          <button
-                            onClick={() => {
-                              if (clientDetails.length > 0) {
-                                setPopup({ author, date: day, clients: clientDetails })
-                              }
-                            }}
-                            className={`
-                              inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm transition-transform
-                              ${clientDetails.length > 0 ? 'cursor-pointer hover:scale-110' : 'cursor-default'}
-                              ${count === 0
-                                ? 'bg-slate-100 text-slate-400'
-                                : count <= 2
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : count <= 5
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : 'bg-primary-100 text-primary-700'
-                              }
-                            `}
-                          >
+                        <button
+                          key={day}
+                          onClick={() => {
+                            if (clientDetails.length > 0) {
+                              setPopup({ author, date: day, clients: clientDetails })
+                            }
+                          }}
+                          className={`flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg min-w-[52px] flex-1 ${clientDetails.length > 0 ? 'cursor-pointer active:scale-95' : 'cursor-default'}`}
+                        >
+                          <span className="text-[10px] text-slate-500 font-medium">{formatDateDisplay(day).split(' ')[0]}</span>
+                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg font-semibold text-sm ${
+                            count === 0
+                              ? 'bg-slate-100 text-slate-400'
+                              : count <= 2
+                                ? 'bg-amber-100 text-amber-700'
+                                : count <= 5
+                                  ? 'bg-emerald-100 text-emerald-700'
+                                  : 'bg-primary-100 text-primary-700'
+                          }`}>
                             {count}
-                          </button>
-                        </td>
+                          </span>
+                        </button>
                       )
                     })}
-                    <td className="text-center px-4 py-3 bg-primary-50/50">
-                      <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-100 text-primary-700 font-bold text-sm">
-                        {totalsByAuthor[author]}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Table layout */}
+            <div className="hidden md:block overflow-x-auto pb-4">
+              <table className="w-full" style={{ overflow: 'visible' }}>
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 sticky left-0 bg-slate-50 z-10 min-w-[180px]">
+                      Usuário
+                    </th>
+                    {last7Days.map((day) => (
+                      <th
+                        key={day}
+                        className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[80px]"
+                      >
+                        {formatDateDisplay(day)}
+                      </th>
+                    ))}
+                    <th className="text-center px-4 py-3 text-sm font-bold text-primary-700 bg-primary-50 min-w-[80px]">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {authors.map((author, idx) => (
+                    <tr
+                      key={author}
+                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                    >
+                      <td className={`px-4 py-3 sticky left-0 z-10 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                            {author.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
+                            {author}
+                          </span>
+                        </div>
+                      </td>
+                      {last7Days.map((day) => {
+                        const count = productivity[author]?.[day] || 0
+                        const clientDetails = details[`${author}|${day}`] || []
+                        return (
+                          <td key={day} className="text-center px-3 py-3">
+                            <button
+                              onClick={() => {
+                                if (clientDetails.length > 0) {
+                                  setPopup({ author, date: day, clients: clientDetails })
+                                }
+                              }}
+                              className={`
+                                inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm transition-transform
+                                ${clientDetails.length > 0 ? 'cursor-pointer hover:scale-110' : 'cursor-default'}
+                                ${count === 0
+                                  ? 'bg-slate-100 text-slate-400'
+                                  : count <= 2
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : count <= 5
+                                      ? 'bg-emerald-100 text-emerald-700'
+                                      : 'bg-primary-100 text-primary-700'
+                                }
+                              `}
+                            >
+                              {count}
+                            </button>
+                          </td>
+                        )
+                      })}
+                      <td className="text-center px-4 py-3 bg-primary-50/50">
+                        <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-100 text-primary-700 font-bold text-sm">
+                          {totalsByAuthor[author]}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {/* Totals row */}
+                  <tr className="border-t-2 border-slate-200 bg-slate-100">
+                    <td className="px-4 py-3 sticky left-0 bg-slate-100 z-10">
+                      <span className="font-bold text-slate-700">Total/Dia</span>
+                    </td>
+                    {last7Days.map((day) => (
+                      <td key={day} className="text-center px-3 py-3">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
+                          {totalsByDay[day]}
+                        </span>
+                      </td>
+                    ))}
+                    <td className="text-center px-4 py-3 bg-primary-100">
+                      <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-600 text-white font-bold text-sm">
+                        {grandTotal}
                       </span>
                     </td>
                   </tr>
-                ))}
-                {/* Totals row */}
-                <tr className="border-t-2 border-slate-200 bg-slate-100">
-                  <td className="px-4 py-3 sticky left-0 bg-slate-100 z-10">
-                    <span className="font-bold text-slate-700">Total/Dia</span>
-                  </td>
-                  {last7Days.map((day) => (
-                    <td key={day} className="text-center px-3 py-3">
-                      <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
-                        {totalsByDay[day]}
-                      </span>
-                    </td>
-                  ))}
-                  <td className="text-center px-4 py-3 bg-primary-100">
-                    <span className="inline-flex items-center justify-center w-12 h-10 rounded-xl bg-primary-600 text-white font-bold text-sm">
-                      {grandTotal}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
