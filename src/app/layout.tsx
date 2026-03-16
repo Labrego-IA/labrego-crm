@@ -82,7 +82,6 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     }
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        setCheckingAuth(false)
         router.replace('/login')
         return
       }
