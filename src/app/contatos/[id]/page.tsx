@@ -1563,40 +1563,42 @@ export default function ContactDetailsPage() {
             {/* Tabs */}
             <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
               {/* Tab Headers */}
-              <div className="flex border-b border-slate-200/60">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon
-                  const isActive = activeTab === tab.id
-                  const count = tab.id === 'propostas'
-                    ? proposals.length
-                    : tab.id === 'financeiro'
-                    ? billings.length
-                    : tab.id === 'historico'
-                    ? followUps.length
-                    : folders.length + files.length + contracts.length
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium transition-all relative ${
-                        isActive
-                          ? 'text-primary-600'
-                          : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50/50'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.label}</span>
-                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                        isActive ? 'bg-primary-100 text-primary-600' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {count}
-                      </span>
-                      {isActive && (
-                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600" />
-                      )}
-                    </button>
-                  )
-                })}
+              <div className="overflow-x-auto scrollbar-hide border-b border-slate-200/60">
+                <div className="flex min-w-max">
+                  {tabs.map((tab) => {
+                    const Icon = tab.icon
+                    const isActive = activeTab === tab.id
+                    const count = tab.id === 'propostas'
+                      ? proposals.length
+                      : tab.id === 'financeiro'
+                      ? billings.length
+                      : tab.id === 'historico'
+                      ? followUps.length
+                      : folders.length + files.length + contracts.length
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium transition-all relative whitespace-nowrap ${
+                          isActive
+                            ? 'text-primary-600'
+                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50/50'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{tab.label}</span>
+                        <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                          isActive ? 'bg-primary-100 text-primary-600' : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {count}
+                        </span>
+                        {isActive && (
+                          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
               {/* Tab Content */}
@@ -1605,13 +1607,13 @@ export default function ContactDetailsPage() {
                 {activeTab === 'propostas' && (
                   <div>
                     {/* Header with create button */}
-                    <div className="flex items-center justify-between mb-4">
-                      <p className="text-sm text-slate-500">
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <p className="text-sm text-slate-500 whitespace-nowrap">
                         {proposals.length} {proposals.length === 1 ? 'proposta' : 'propostas'} encontradas
                       </p>
                       <Link
                         href={`/contatos/${id}/proposta/nova`}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl font-medium text-sm hover:bg-primary-700 transition-colors shadow-lg shadow-primary-200"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl font-medium text-sm hover:bg-primary-700 transition-colors shadow-lg shadow-primary-200 whitespace-nowrap shrink-0"
                       >
                         <PlusIcon className="w-4 h-4" />
                         Nova Proposta
@@ -1632,10 +1634,10 @@ export default function ContactDetailsPage() {
                             <button
                               key={proposal.id}
                               onClick={() => handleOpenProposal(proposal)}
-                              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-slate-50/80 to-slate-50/40 rounded-xl hover:from-primary-50/80 hover:to-primary-50/40 hover:border-primary-200 transition-all group border border-slate-100 cursor-pointer text-left"
+                              className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-slate-50/80 to-slate-50/40 rounded-xl hover:from-primary-50/80 hover:to-primary-50/40 hover:border-primary-200 transition-all group border border-slate-100 cursor-pointer text-left"
                             >
-                              <div className="flex items-center gap-4">
-                                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm ${
+                              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shadow-sm shrink-0 ${
                                   proposal.status === 'Aprovada' ? 'bg-emerald-100' :
                                   proposal.status === 'Recusada' ? 'bg-red-100' :
                                   proposal.status === 'Cancelada' ? 'bg-rose-100' :
@@ -1650,8 +1652,8 @@ export default function ContactDetailsPage() {
                                     'text-primary-600'
                                   }`} />
                                 </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-slate-800 group-hover:text-primary-700 transition-colors">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-slate-800 group-hover:text-primary-700 transition-colors truncate">
                                     {proposal.projectName || `Proposta #${proposal.number || proposal.id.slice(0, 6)}`}
                                   </p>
                                   <p className="text-xs text-slate-500 mt-0.5">
@@ -1659,14 +1661,14 @@ export default function ContactDetailsPage() {
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-3 sm:gap-4 pl-13 sm:pl-0">
                                 <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${statusColor}`}>
                                   {proposal.status || 'Pendente'}
                                 </span>
                                 <span className="text-base font-bold text-slate-800">
                                   {formatCurrency(proposal.total || 0)}
                                 </span>
-                                <ChevronRightIcon className="w-4 h-4 text-slate-300 group-hover:text-primary-400 transition-colors" />
+                                <ChevronRightIcon className="w-4 h-4 text-slate-300 group-hover:text-primary-400 transition-colors ml-auto sm:ml-0" />
                               </div>
                             </button>
                           )
@@ -1686,15 +1688,15 @@ export default function ContactDetailsPage() {
                         description="Os lançamentos financeiros aparecerão aqui"
                       />
                     ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
+                      <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">
+                        <table className="w-full min-w-[540px]">
                           <thead>
                             <tr className="text-left">
-                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Competência</th>
-                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Vencimento</th>
-                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Valor</th>
-                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Status</th>
-                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide">Pagamento</th>
+                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Competência</th>
+                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Vencimento</th>
+                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Valor</th>
+                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Status</th>
+                              <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Pagamento</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-slate-100">
@@ -1713,17 +1715,17 @@ export default function ContactDetailsPage() {
 
                               return (
                                 <tr key={billing.id} className="group hover:bg-slate-50/50">
-                                  <td className="py-3.5 text-sm text-slate-700 font-medium">{billing.competence || '-'}</td>
-                                  <td className="py-3.5 text-sm text-slate-600">{formatDate(billing.expectedDate)}</td>
-                                  <td className="py-3.5 text-sm font-bold text-slate-800">
+                                  <td className="py-3.5 text-sm text-slate-700 font-medium whitespace-nowrap">{billing.competence || '-'}</td>
+                                  <td className="py-3.5 text-sm text-slate-600 whitespace-nowrap">{formatDate(billing.expectedDate)}</td>
+                                  <td className="py-3.5 text-sm font-bold text-slate-800 whitespace-nowrap">
                                     {formatCurrency(billing.amount)}
                                   </td>
-                                  <td className="py-3.5">
+                                  <td className="py-3.5 whitespace-nowrap">
                                     <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-semibold ${statusColor}`}>
                                       {displayStatus}
                                     </span>
                                   </td>
-                                  <td className="py-3.5 text-sm text-slate-600">
+                                  <td className="py-3.5 text-sm text-slate-600 whitespace-nowrap">
                                     {billing.paymentDate ? formatDate(billing.paymentDate) : '-'}
                                   </td>
                                 </tr>
