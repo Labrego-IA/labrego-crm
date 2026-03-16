@@ -813,8 +813,8 @@ export default function EditProposalCRMPage() {
 
       {/* Full Preview Modal */}
       {showFullPreview && (
-        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center">
-          <div className="bg-white w-full max-w-4xl h-[90vh] overflow-auto rounded-2xl">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4 sm:p-6 md:p-10">
+          <div className="bg-white w-full max-w-4xl max-h-full overflow-auto rounded-2xl">
             <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b border-slate-200">
               <span className="font-semibold text-slate-700">Preview da Proposta</span>
               <button
