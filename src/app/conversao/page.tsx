@@ -661,7 +661,7 @@ export default function ConversaoPage() {
   }
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6">
+    <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6 overflow-x-hidden">
 
       {/* ── HEADER ─────────────────────────────────────── */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -798,13 +798,13 @@ export default function ConversaoPage() {
       />
 
       {/* ── SEGMENTATION ──────────────────────────────── */}
-      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 p-5">
+      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 p-5 overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <h2 className="text-base font-semibold text-slate-800">Segmentacao</h2>
+          <h2 className="text-base font-semibold text-slate-800 shrink-0">Segmentacao</h2>
           <select
             value={selectedSegment}
             onChange={e => setSelectedSegment(e.target.value as SegmentKey | '')}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 bg-white min-w-[200px]"
+            className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 bg-white w-full sm:w-auto sm:min-w-[200px] sm:max-w-[280px] truncate"
           >
             <option value="">Selecione uma segmentacao...</option>
             {(Object.keys(SEGMENT_LABELS) as SegmentKey[]).map(key => (
