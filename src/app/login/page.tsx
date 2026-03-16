@@ -6,11 +6,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
-  sendPasswordResetEmail,
   signInWithPopup,
-  signOut,
   GoogleAuthProvider,
-  fetchSignInMethodsForEmail,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import Link from 'next/link'
@@ -46,28 +43,12 @@ export default function LoginPage() {
     setLoginLoading(true)
 
     try {
-      // Verificar se o email foi cadastrado com Google (não permite login por email/senha)
-      const methods = await fetchSignInMethodsForEmail(auth, loginEmail)
-      if (methods.includes('google.com') && !methods.includes('password')) {
-        setLoginError('Esta conta foi cadastrada com Google. Use o botão "Entrar com Google".')
-        setLoginLoading(false)
-        return
-      }
-
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        // Fallback: verificar métodos caso fetchSignInMethodsForEmail tenha retornado vazio (email enumeration protection)
-        try {
-          const methods = await fetchSignInMethodsForEmail(auth, loginEmail)
-          if (methods.includes('google.com') && !methods.includes('password')) {
-            setLoginError('Esta conta foi cadastrada com Google. Use o botão "Entrar com Google".')
-            return
-          }
-        } catch { /* ignore fallback errors */ }
-        setLoginError('E-mail ou senha incorretos.')
+        setLoginError('E-mail ou senha incorretos. Se você cadastrou com Google, use o botão "Entrar com Google".')
       } else if (code === 'auth/too-many-requests') {
         setLoginError('Muitas tentativas. Tente novamente em alguns minutos.')
       } else {
@@ -95,14 +76,6 @@ export default function LoginPage() {
     setCadastroLoading(true)
 
     try {
-      // Verificar se o email já foi cadastrado com Google
-      const methods = await fetchSignInMethodsForEmail(auth, cadastroEmail)
-      if (methods.includes('google.com')) {
-        setCadastroError('Este e-mail já está cadastrado com Google. Faça login com Google.')
-        setCadastroLoading(false)
-        return
-      }
-
       const userCredential = await createUserWithEmailAndPassword(auth, cadastroEmail, cadastroPassword)
       await updateProfile(userCredential.user, {
         displayName: nome.trim(),
@@ -111,15 +84,7 @@ export default function LoginPage() {
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/email-already-in-use') {
-        // Fallback: verificar se foi cadastrado via Google
-        try {
-          const methods = await fetchSignInMethodsForEmail(auth, cadastroEmail)
-          if (methods.includes('google.com')) {
-            setCadastroError('Este e-mail já está cadastrado com Google. Faça login com Google.')
-            return
-          }
-        } catch { /* ignore fallback errors */ }
-        setCadastroError('Já existe uma conta com esse e-mail.')
+        setCadastroError('Já existe uma conta com esse e-mail. Tente fazer login.')
       } else if (code === 'auth/invalid-email') {
         setCadastroError('E-mail inválido.')
       } else if (code === 'auth/weak-password') {
@@ -138,27 +103,18 @@ export default function LoginPage() {
 
     try {
       const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-
-      // Verificar se o usuário cadastrou por email/senha (não deve permitir login com Google)
-      const hasPasswordProvider = result.user.providerData.some(p => p.providerId === 'password')
-      if (hasPasswordProvider) {
-        await signOut(auth)
-        setLoginError('Esta conta foi cadastrada com e-mail e senha. Use o formulário de login.')
-        return
-      }
-
+      await signInWithPopup(auth, provider)
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/popup-closed-by-user') {
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setLoginError('Esta conta foi cadastrada com e-mail e senha. Use o formulário de login.')
+        setLoginError('Já existe uma conta com esse e-mail usando outro método. Tente fazer login com e-mail e senha.')
       } else if (code === 'auth/popup-blocked') {
         setLoginError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
-        setLoginError(`Erro ao fazer login com Google. Tente novamente. (${code || 'sem código'})`)
+        setLoginError('Erro ao fazer login com Google. Tente novamente.')
       }
     } finally {
       setGoogleLoading(false)
@@ -171,27 +127,18 @@ export default function LoginPage() {
 
     try {
       const provider = new GoogleAuthProvider()
-      const result = await signInWithPopup(auth, provider)
-
-      // Verificar se o usuário já cadastrou por email/senha (não deve permitir cadastro com Google)
-      const hasPasswordProvider = result.user.providerData.some(p => p.providerId === 'password')
-      if (hasPasswordProvider) {
-        await signOut(auth)
-        setCadastroError('Este e-mail já está cadastrado com e-mail e senha. Faça login com e-mail e senha.')
-        return
-      }
-
+      await signInWithPopup(auth, provider)
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/popup-closed-by-user') {
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setCadastroError('Este e-mail já está cadastrado com e-mail e senha. Faça login com e-mail e senha.')
+        setCadastroError('Este e-mail já está cadastrado com outro método. Tente fazer login.')
       } else if (code === 'auth/popup-blocked') {
         setCadastroError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
-        setCadastroError(`Erro ao cadastrar com Google. Tente novamente. (${code || 'sem código'})`)
+        setCadastroError('Erro ao cadastrar com Google. Tente novamente.')
       }
     } finally {
       setGoogleCadastroLoading(false)
