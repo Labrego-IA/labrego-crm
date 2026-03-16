@@ -16,6 +16,7 @@ import {
   doc,
 } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 
@@ -117,6 +118,7 @@ function NovasCampanhasContent() {
   const [showSaveSegment, setShowSaveSegment] = useState(false)
   const [segmentName, setSegmentName] = useState('')
   const [savingSegment, setSavingSegment] = useState(false)
+  const [showConfirmCloseSegment, setShowConfirmCloseSegment] = useState(false)
 
   /* ------------------- Step 2: Composition State ----------------------- */
 
@@ -1290,8 +1292,28 @@ function NovasCampanhasContent() {
 
       {/* Save Segment Modal */}
       {showSaveSegment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-sm mx-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => {
+            if (segmentName.trim()) {
+              setShowConfirmCloseSegment(true)
+            } else {
+              setShowSaveSegment(false)
+              setSegmentName('')
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              if (segmentName.trim()) {
+                setShowConfirmCloseSegment(true)
+              } else {
+                setShowSaveSegment(false)
+                setSegmentName('')
+              }
+            }
+          }}
+        >
+          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-slate-900 mb-3">Salvar Segmento</h3>
             <input
               type="text"
@@ -1304,8 +1326,12 @@ function NovasCampanhasContent() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => {
-                  setShowSaveSegment(false)
-                  setSegmentName('')
+                  if (segmentName.trim()) {
+                    setShowConfirmCloseSegment(true)
+                  } else {
+                    setShowSaveSegment(false)
+                    setSegmentName('')
+                  }
                 }}
                 className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
               >
@@ -1322,6 +1348,17 @@ function NovasCampanhasContent() {
           </div>
         </div>
       )}
+
+      {/* Confirm close segment modal */}
+      <ConfirmCloseDialog
+        isOpen={showConfirmCloseSegment}
+        onConfirm={() => {
+          setShowConfirmCloseSegment(false)
+          setShowSaveSegment(false)
+          setSegmentName('')
+        }}
+        onCancel={() => setShowConfirmCloseSegment(false)}
+      />
     </div>
   )
 }
