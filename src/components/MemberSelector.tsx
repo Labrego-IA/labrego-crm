@@ -42,7 +42,7 @@ export default function MemberSelector({
   useEffect(() => {
     if (!orgId) return
     const unsub = onSnapshot(
-      query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active')),
+      query(collection(db, 'organizations', orgId, 'members'), where('status', 'in', ['active', 'invited'])),
       (snap) => {
         setMembers(
           snap.docs.map((d) => {
