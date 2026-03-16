@@ -218,36 +218,11 @@ export default function LoginPage() {
 
           {/* Glass card */}
           <div className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 shadow-[0_0_60px_rgba(19,222,252,0.06)]">
-            {/* Tabs */}
-            <div className="flex mb-8 bg-white/[0.04] rounded-xl p-1">
-              <button
-                type="button"
-                onClick={() => switchTab('login')}
-                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === 'login'
-                    ? 'bg-gradient-to-r from-[#13DEFC] to-[#09B00F] text-slate-950'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Entrar
-              </button>
-              <button
-                type="button"
-                onClick={() => switchTab('cadastro')}
-                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all ${
-                  activeTab === 'cadastro'
-                    ? 'bg-gradient-to-r from-[#13DEFC] to-[#09B00F] text-slate-950'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Cadastrar
-              </button>
-            </div>
 
             {/* LOGIN FORM */}
             {activeTab === 'login' && (
               <>
-                <div className="mb-6">
+                <div className="mb-8">
                   <h2 className="text-2xl font-bold text-white">
                     Bem-vindo de volta
                   </h2>
@@ -359,6 +334,16 @@ export default function LoginPage() {
                     Entrar com Google
                   </button>
                 </form>
+
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => switchTab('cadastro')}
+                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                  >
+                    Criar conta
+                  </button>
+                </div>
               </>
             )}
 
@@ -494,6 +479,16 @@ export default function LoginPage() {
                     )}
                   </button>
                 </form>
+
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => switchTab('login')}
+                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                  >
+                    Já tenho uma conta
+                  </button>
+                </div>
               </>
             )}
           </div>
