@@ -78,6 +78,21 @@ export default function Modal({
     setShowConfirmDialog(false)
   }, [])
 
+  // Handle ESC key
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        handleCloseRequest()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, handleCloseRequest])
+
   useEffect(() => {
     if (!isOpen) return
 
