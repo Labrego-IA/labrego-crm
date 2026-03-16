@@ -3616,16 +3616,14 @@ export default function FunilDetailPage() {
 
                   {/* Advanced Filters Modal */}
                   {showAdvancedFilters && (
-                    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center" role="dialog" aria-modal="true">
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
                       {/* Backdrop */}
                       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
 
                       {/* Modal */}
-                      <div className="relative w-full sm:max-w-lg sm:mx-4 max-h-[90vh] sm:max-h-[80vh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-200">
+                      <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200">
                         {/* Modal Header */}
                         <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-t-2xl">
-                          {/* Mobile drag handle */}
-                          <div className="sm:hidden w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4" />
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                               <div className="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center">
@@ -3903,7 +3901,7 @@ export default function FunilDetailPage() {
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-none sm:rounded-b-2xl">
+                        <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-2xl">
                           <div className="flex items-center justify-between">
                             <p className="text-sm text-slate-600">
                               <span className="font-semibold">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
