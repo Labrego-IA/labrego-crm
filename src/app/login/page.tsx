@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import Link from 'next/link'
 
@@ -34,30 +34,6 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!resetEmail.trim()) return
-    setResetLoading(true)
-
-    try {
-      await sendPasswordResetEmail(auth, resetEmail.trim())
-      toast.success('E-mail de recuperação enviado! Verifique sua caixa de entrada.')
-      setShowReset(false)
-      setResetEmail('')
-    } catch (err: any) {
-      const code = err?.code || ''
-      if (code === 'auth/user-not-found') {
-        toast.error('Nenhuma conta encontrada com esse e-mail.')
-      } else if (code === 'auth/too-many-requests') {
-        toast.error('Muitas tentativas. Aguarde alguns minutos.')
-      } else {
-        toast.error('Erro ao enviar e-mail. Tente novamente.')
-      }
-    } finally {
-      setResetLoading(false)
     }
   }
 
