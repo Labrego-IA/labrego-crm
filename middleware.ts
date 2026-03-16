@@ -9,6 +9,7 @@ const BYPASS_PATHS = [
   '/api/health',
   '/login',
   '/auth/forgot-password',
+  '/auth/reset-password',
   '/reset-password',
 ]
 
