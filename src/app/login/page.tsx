@@ -2,43 +2,103 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendPasswordResetEmail,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import Link from 'next/link'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [activeTab, setActiveTab] = useState<'login' | 'cadastro'>('login')
+
+  // Login state
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [loginLoading, setLoginLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [loginError, setLoginError] = useState<string | null>(null)
+
+  // Cadastro state
+  const [nome, setNome] = useState('')
+  const [cadastroEmail, setCadastroEmail] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [cadastroPassword, setCadastroPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showCadastroPassword, setShowCadastroPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [cadastroLoading, setCadastroLoading] = useState(false)
+  const [cadastroError, setCadastroError] = useState<string | null>(null)
+
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError(null)
-    setLoading(true)
+    setLoginError(null)
+    setLoginLoading(true)
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        setError('E-mail ou senha incorretos.')
+        setLoginError('E-mail ou senha incorretos.')
       } else if (code === 'auth/too-many-requests') {
-        setError('Muitas tentativas. Tente novamente em alguns minutos.')
+        setLoginError('Muitas tentativas. Tente novamente em alguns minutos.')
       } else {
-        setError('Erro ao fazer login. Tente novamente.')
+        setLoginError('Erro ao fazer login. Tente novamente.')
       }
     } finally {
-      setLoading(false)
+      setLoginLoading(false)
+    }
+  }
+
+  const handleCadastro = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCadastroError(null)
+
+    if (cadastroPassword !== confirmPassword) {
+      setCadastroError('As senhas não coincidem.')
+      return
+    }
+
+    if (cadastroPassword.length < 6) {
+      setCadastroError('A senha deve ter pelo menos 6 caracteres.')
+      return
+    }
+
+    setCadastroLoading(true)
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, cadastroEmail, cadastroPassword)
+      await updateProfile(userCredential.user, {
+        displayName: nome.trim(),
+      })
+      router.replace('/contatos')
+    } catch (err: any) {
+      const code = err?.code || ''
+      if (code === 'auth/email-already-in-use') {
+        setCadastroError('Já existe uma conta com esse e-mail.')
+      } else if (code === 'auth/invalid-email') {
+        setCadastroError('E-mail inválido.')
+      } else if (code === 'auth/weak-password') {
+        setCadastroError('A senha é muito fraca. Use pelo menos 6 caracteres.')
+      } else {
+        setCadastroError('Erro ao criar conta. Tente novamente.')
+      }
+    } finally {
+      setCadastroLoading(false)
     }
   }
 
   const handleGoogleLogin = async () => {
-    setError(null)
+    setLoginError(null)
     setGoogleLoading(true)
 
     try {
@@ -50,16 +110,44 @@ export default function LoginPage() {
       if (code === 'auth/popup-closed-by-user') {
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setError('Já existe uma conta com esse e-mail usando outro método de login.')
+        setLoginError('Já existe uma conta com esse e-mail usando outro método de login.')
       } else if (code === 'auth/popup-blocked') {
-        setError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
+        setLoginError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
-        setError('Erro ao fazer login com Google. Tente novamente.')
+        setLoginError('Erro ao fazer login com Google. Tente novamente.')
       }
     } finally {
       setGoogleLoading(false)
     }
   }
+
+  const formatTelefone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11)
+    if (digits.length <= 2) return digits
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+  }
+
+  const switchTab = (tab: 'login' | 'cadastro') => {
+    setActiveTab(tab)
+    setLoginError(null)
+    setCadastroError(null)
+  }
+
+  const EyeOpenIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+
+  const EyeClosedIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+      <line x1="1" y1="1" x2="23" y2="23" />
+    </svg>
+  )
 
   return (
     <div className="min-h-screen flex bg-slate-950 relative overflow-hidden">
@@ -117,7 +205,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Right side — Login form */}
+      {/* Right side — Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 relative">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
@@ -130,129 +218,279 @@ export default function LoginPage() {
 
           {/* Glass card */}
           <div className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 shadow-[0_0_60px_rgba(19,222,252,0.06)]">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-white">
-                Bem-vindo de volta
-              </h2>
-              <p className="text-sm text-slate-400 mt-1">
-                Entre na sua conta para continuar
-              </p>
-            </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                    E-mail
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
-                    placeholder="seu@email.com"
-                  />
+            {/* LOGIN FORM */}
+            {activeTab === 'login' && (
+              <>
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-white">
+                    Bem-vindo de volta
+                  </h2>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Entre na sua conta para continuar
+                  </p>
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="password" className="block text-sm font-medium text-slate-300">
-                      Senha
+                <form onSubmit={handleLogin} className="space-y-5">
+                  <div>
+                    <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 mb-2">
+                      E-mail
                     </label>
-                    <Link
-                      href="/reset-password"
-                      className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
-                    >
-                      Esqueci minha senha
-                    </Link>
-                  </div>
-                  <div className="relative">
                     <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
+                      id="login-email"
+                      type="email"
                       required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
-                      placeholder="Sua senha"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                      placeholder="seu@email.com"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
-                      aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-                    >
-                      {showPassword ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-                          <line x1="1" y1="1" x2="23" y2="23" />
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
-                      )}
-                    </button>
                   </div>
-                </div>
 
-                {error && (
-                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
-                    {error}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label htmlFor="login-password" className="block text-sm font-medium text-slate-300">
+                        Senha
+                      </label>
+                      <Link
+                        href="/reset-password"
+                        className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                      >
+                        Esqueci minha senha
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <input
+                        id="login-password"
+                        type={showLoginPassword ? 'text' : 'password'}
+                        required
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                        placeholder="Sua senha"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                        aria-label={showLoginPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      >
+                        {showLoginPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                      </button>
+                    </div>
                   </div>
-                )}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#13DEFC] to-[#09B00F] hover:from-[#11c8e3] hover:to-[#089e0d] disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#13DEFC]/10 hover:shadow-[#13DEFC]/20"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
+                  {loginError && (
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
+                      {loginError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loginLoading}
+                    className="w-full bg-gradient-to-r from-[#13DEFC] to-[#09B00F] hover:from-[#11c8e3] hover:to-[#089e0d] disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#13DEFC]/10 hover:shadow-[#13DEFC]/20"
+                  >
+                    {loginLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Entrando...
+                      </span>
+                    ) : (
+                      'Entrar'
+                    )}
+                  </button>
+
+                  {/* Separador */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-white/10" />
+                    <span className="text-xs text-slate-500">ou</span>
+                    <div className="flex-1 h-px bg-white/10" />
+                  </div>
+
+                  {/* Botão Login com Google */}
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={googleLoading}
+                    className="w-full flex items-center justify-center gap-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all"
+                  >
+                    {googleLoading ? (
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Entrando...
-                    </span>
-                  ) : (
-                    'Entrar'
-                  )}
-                </button>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                        <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
+                        <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+                      </svg>
+                    )}
+                    Entrar com Google
+                  </button>
+                </form>
 
-                {/* Separador */}
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-px bg-white/10" />
-                  <span className="text-xs text-slate-500">ou</span>
-                  <div className="flex-1 h-px bg-white/10" />
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => switchTab('cadastro')}
+                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                  >
+                    Criar conta
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* CADASTRO FORM */}
+            {activeTab === 'cadastro' && (
+              <>
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-white">
+                    Crie sua conta
+                  </h2>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Preencha os dados abaixo para começar
+                  </p>
                 </div>
 
-                {/* Botão Login com Google */}
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={googleLoading}
-                  className="w-full flex items-center justify-center gap-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all"
-                >
-                  {googleLoading ? (
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-                      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-                      <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-                      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-                    </svg>
+                <form onSubmit={handleCadastro} className="space-y-4">
+                  <div>
+                    <label htmlFor="cadastro-nome" className="block text-sm font-medium text-slate-300 mb-2">
+                      Nome completo
+                    </label>
+                    <input
+                      id="cadastro-nome"
+                      type="text"
+                      required
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                      placeholder="Seu nome completo"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="cadastro-email" className="block text-sm font-medium text-slate-300 mb-2">
+                      E-mail
+                    </label>
+                    <input
+                      id="cadastro-email"
+                      type="email"
+                      required
+                      value={cadastroEmail}
+                      onChange={(e) => setCadastroEmail(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                      placeholder="seu@email.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="cadastro-telefone" className="block text-sm font-medium text-slate-300 mb-2">
+                      Telefone
+                    </label>
+                    <input
+                      id="cadastro-telefone"
+                      type="tel"
+                      required
+                      value={telefone}
+                      onChange={(e) => setTelefone(formatTelefone(e.target.value))}
+                      className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                      placeholder="(11) 99999-9999"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="cadastro-password" className="block text-sm font-medium text-slate-300 mb-2">
+                      Senha
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="cadastro-password"
+                        type={showCadastroPassword ? 'text' : 'password'}
+                        required
+                        value={cadastroPassword}
+                        onChange={(e) => setCadastroPassword(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                        placeholder="Mínimo 6 caracteres"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCadastroPassword(!showCadastroPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                        aria-label={showCadastroPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      >
+                        {showCadastroPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="cadastro-confirm-password" className="block text-sm font-medium text-slate-300 mb-2">
+                      Confirmar senha
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="cadastro-confirm-password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 pr-11 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                        placeholder="Repita sua senha"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors"
+                        aria-label={showConfirmPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      >
+                        {showConfirmPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {cadastroError && (
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
+                      {cadastroError}
+                    </div>
                   )}
-                  Entrar com Google
-                </button>
-              </form>
+
+                  <button
+                    type="submit"
+                    disabled={cadastroLoading}
+                    className="w-full bg-gradient-to-r from-[#13DEFC] to-[#09B00F] hover:from-[#11c8e3] hover:to-[#089e0d] disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#13DEFC]/10 hover:shadow-[#13DEFC]/20"
+                  >
+                    {cadastroLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Criando conta...
+                      </span>
+                    ) : (
+                      'Criar conta'
+                    )}
+                  </button>
+                </form>
+
+                <div className="mt-6 text-center">
+                  <button
+                    type="button"
+                    onClick={() => switchTab('login')}
+                    className="text-xs text-[#13DEFC]/80 hover:text-[#13DEFC] font-medium transition-colors"
+                  >
+                    Já tenho uma conta
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Footer */}
