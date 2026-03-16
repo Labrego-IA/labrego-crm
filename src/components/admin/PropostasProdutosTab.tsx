@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import {
@@ -17,6 +17,16 @@ import { toast } from 'sonner'
 import type { Product, ProductScheduleEntry } from '@/types/product'
 import { EMPTY_PRODUCT } from '@/types/product'
 
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
+type SortColumn = 'name' | 'price' | 'hourValue' | 'margin' | 'tax' | 'schedule'
+type SortDirection = 'asc' | 'desc'
+
 export default function PropostasProdutosTab() {
   const { orgId } = useCrmUser()
   const [products, setProducts] = useState<Product[]>([])
@@ -25,6 +35,9 @@ export default function PropostasProdutosTab() {
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState(EMPTY_PRODUCT)
+  const [search, setSearch] = useState('')
+  const [sortColumn, setSortColumn] = useState<SortColumn | null>(null)
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   useEffect(() => {
     if (!orgId) return
@@ -140,6 +153,63 @@ export default function PropostasProdutosTab() {
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+
+  const handleSort = useCallback((column: SortColumn) => {
+    setSortColumn((prev) => {
+      if (prev === column) {
+        if (sortDirection === 'asc') {
+          setSortDirection('desc')
+          return prev
+        }
+        setSortDirection('asc')
+        return null
+      }
+      setSortDirection('asc')
+      return column
+    })
+  }, [sortDirection])
+
+  const filteredProducts = useMemo(() => {
+    const term = normalize(search.trim())
+
+    let result = products
+    if (term) {
+      result = products.filter((p) => {
+        const name = normalize(p.name || '')
+        const description = normalize(p.description || '')
+        return name.includes(term) || description.includes(term)
+      })
+    }
+
+    if (sortColumn) {
+      result = [...result].sort((a, b) => {
+        let cmp = 0
+        switch (sortColumn) {
+          case 'name':
+            cmp = normalize(a.name || '').localeCompare(normalize(b.name || ''))
+            break
+          case 'price':
+            cmp = (a.price || 0) - (b.price || 0)
+            break
+          case 'hourValue':
+            cmp = (a.hourValue || 0) - (b.hourValue || 0)
+            break
+          case 'margin':
+            cmp = (a.margin || 0) - (b.margin || 0)
+            break
+          case 'tax':
+            cmp = (a.tax || 0) - (b.tax || 0)
+            break
+          case 'schedule':
+            cmp = (a.schedule?.length || 0) - (b.schedule?.length || 0)
+            break
+        }
+        return sortDirection === 'asc' ? cmp : -cmp
+      })
+    }
+
+    return result
+  }, [products, search, sortColumn, sortDirection])
 
   if (loading) {
     return (
@@ -300,11 +370,37 @@ export default function PropostasProdutosTab() {
     )
   }
 
+  const renderSortIcon = (column: SortColumn) => (
+    <svg
+      className={`h-3.5 w-3.5 transition-colors ${
+        sortColumn === column ? 'text-primary-600' : 'text-gray-300'
+      }`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      {sortColumn === column && sortDirection === 'asc' ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+      ) : sortColumn === column && sortDirection === 'desc' ? (
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      ) : (
+        <>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 14l4 4 4-4" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4-4 4 4" />
+        </>
+      )}
+    </svg>
+  )
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">
-          {products.length} produto{products.length !== 1 ? 's' : ''} cadastrado{products.length !== 1 ? 's' : ''}
+          {filteredProducts.length === products.length
+            ? <>{products.length} produto{products.length !== 1 ? 's' : ''} cadastrado{products.length !== 1 ? 's' : ''}</>
+            : <>{filteredProducts.length} de {products.length} produto{products.length !== 1 ? 's' : ''}</>
+          }
         </p>
         <button
           onClick={openNew}
@@ -312,6 +408,37 @@ export default function PropostasProdutosTab() {
         >
           + Novo Produto
         </button>
+      </div>
+
+      {/* Search bar */}
+      <div className="relative">
+        <svg
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Pesquisar por nome ou descricao..."
+          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+        />
+        {search && (
+          <button
+            type="button"
+            onClick={() => setSearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {products.length === 0 ? (
@@ -324,22 +451,50 @@ export default function PropostasProdutosTab() {
             Criar primeiro produto
           </button>
         </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
+          <p className="text-gray-400 text-sm">Nenhum resultado encontrado.</p>
+          <button
+            onClick={() => setSearch('')}
+            className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            Limpar pesquisa
+          </button>
+        </div>
       ) : (
         <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Nome</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">Preco</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600 hidden sm:table-cell">Valor/Hora</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600 hidden md:table-cell">Margem</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600 hidden md:table-cell">Imposto</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">Etapas</th>
+                {([
+                  { key: 'name' as SortColumn, label: 'Nome', align: 'left', responsive: '' },
+                  { key: 'price' as SortColumn, label: 'Preco', align: 'right', responsive: '' },
+                  { key: 'hourValue' as SortColumn, label: 'Valor/Hora', align: 'right', responsive: 'hidden sm:table-cell' },
+                  { key: 'margin' as SortColumn, label: 'Margem', align: 'right', responsive: 'hidden md:table-cell' },
+                  { key: 'tax' as SortColumn, label: 'Imposto', align: 'right', responsive: 'hidden md:table-cell' },
+                  { key: 'schedule' as SortColumn, label: 'Etapas', align: 'right', responsive: '' },
+                ]).map((col) => (
+                  <th
+                    key={col.key}
+                    className={`px-4 py-3 text-${col.align} font-medium text-gray-600 ${col.responsive}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleSort(col.key)}
+                      className={`inline-flex items-center gap-1 hover:text-gray-900 transition ${
+                        col.align === 'right' ? 'ml-auto' : ''
+                      }`}
+                    >
+                      {col.label}
+                      {renderSortIcon(col.key)}
+                    </button>
+                  </th>
+                ))}
                 <th className="px-4 py-3 text-right font-medium text-gray-600">Acoes</th>
               </tr>
             </thead>
             <tbody>
-              {products.map(p => (
+              {filteredProducts.map(p => (
                 <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                   <td className="px-4 py-3">
                     <div className="font-medium text-gray-900">{p.name}</div>
