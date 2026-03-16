@@ -6367,11 +6367,11 @@ export default function FunilDetailPage() {
               () => { setSelectedClient(null); setNewNote(''); setEditingComments(false) }
             )}
           />
-          <div className="relative ml-auto w-full max-w-6xl bg-white shadow-2xl flex h-full">
+          <div className="relative ml-auto w-full max-w-6xl bg-white shadow-2xl flex flex-col lg:flex-row h-full overflow-y-auto lg:overflow-hidden">
             {/* Left side - Client Info */}
-            <div className="w-1/2 border-r border-slate-200 flex flex-col h-full overflow-hidden">
+            <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
               {/* Client Header */}
-              <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
+              <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
                 <div className="flex items-center gap-4">
                   {selectedClient.photoUrl ? (
                     <Image
@@ -6610,7 +6610,7 @@ export default function FunilDetailPage() {
               </div>
 
               {/* Client Details */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-visible lg:overflow-y-auto p-4 sm:p-6 space-y-4">
                 {/* Contact Info */}
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Contato</h4>
@@ -6654,7 +6654,7 @@ export default function FunilDetailPage() {
                   )}
 
                   {/* Quick Action Buttons */}
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex flex-col sm:flex-row gap-2 mt-3">
                     <button
                       onClick={() => setShowWhatsAppModal(true)}
                       disabled={!selectedClient.phone}
@@ -6678,7 +6678,7 @@ export default function FunilDetailPage() {
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Informações</h4>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {selectedClient.industry && (
                       <div className="p-3 bg-slate-50 rounded-xl">
                         <p className="text-xs text-slate-500">Ramo</p>
@@ -7143,9 +7143,9 @@ export default function FunilDetailPage() {
             </div>
 
             {/* Right side - Proposals, Comments & Notes */}
-            <div className="w-1/2 flex flex-col h-full overflow-hidden">
+            <div className="w-full lg:w-1/2 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
               {/* Proposals Section (Story 11.3) */}
-              <div className="p-6 border-b border-slate-100">
+              <div className="p-4 sm:p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <DocumentDuplicateIcon className="w-4 h-4 text-primary-500" />
@@ -7218,7 +7218,7 @@ export default function FunilDetailPage() {
               </div>
 
               {/* Comments Section */}
-              <div className="p-6 border-b border-slate-100">
+              <div className="p-4 sm:p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <DocumentTextIcon className="w-4 h-4 text-amber-500" />
@@ -7275,8 +7275,8 @@ export default function FunilDetailPage() {
               </div>
 
               {/* Notes Section */}
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-100">
+              <div className="flex-1 flex flex-col overflow-visible lg:overflow-hidden">
+                <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
                   <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-3">
                     <ChatBubbleIcon className="w-4 h-4 text-primary-500" />
                     Anotações & Follow-ups
@@ -7306,7 +7306,7 @@ export default function FunilDetailPage() {
                 </div>
 
                 {/* New Note Input */}
-                <div className="px-6 py-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100">
+                <div className="px-4 sm:px-6 py-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100">
                   <textarea
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
@@ -7331,7 +7331,7 @@ export default function FunilDetailPage() {
                 </div>
 
                 {/* Notes List */}
-                <div className="flex-1 overflow-y-auto p-6">
+                <div className="flex-1 overflow-visible lg:overflow-y-auto p-4 sm:p-6">
                   {loadingFollowUps ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="w-6 h-6 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
