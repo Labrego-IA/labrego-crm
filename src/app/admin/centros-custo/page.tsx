@@ -200,18 +200,28 @@ export default function AdminCentrosCustoPage() {
           <h1 className="text-2xl font-bold text-neutral-900">
             Centros de Custo
           </h1>
-          <p className="text-sm text-neutral-500 mt-1">
+          <p className="text-sm text-neutral-500 mt-1 hidden md:block">
             Gerencie os centros de custo para categorizar e organizar seus clientes
           </p>
         </div>
+        {/* Desktop: botão inline no header */}
         <button
           onClick={openCreate}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary hidden md:inline-flex items-center gap-2"
         >
           <PlusIcon className="w-4 h-4" />
-          Novo Centro de Custo
+          Novo
         </button>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={openCreate}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Novo centro de custo"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
 
       {/* Loading */}
       {loading && (
