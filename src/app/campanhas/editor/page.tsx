@@ -6,6 +6,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, getDoc, setDoc, addDoc, getDocs, query, where, orderBy, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import EmailEditor from '@/components/email-editor/EmailEditor'
 import { type EmailBlockData, type EmailTemplate, blocksToHtml } from '@/types/emailTemplate'
 import { toast } from 'sonner'
@@ -31,6 +32,7 @@ function EditorPageContent() {
 
   // Pending save data (from editor)
   const [pendingSave, setPendingSave] = useState<{ blocks: EmailBlockData[]; html: string; subject: string } | null>(null)
+  const [showConfirmCloseSave, setShowConfirmCloseSave] = useState(false)
 
   /* Load template from Firestore or sessionStorage */
   useEffect(() => {
@@ -199,8 +201,19 @@ function EditorPageContent() {
 
       {/* Save Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => {
+            const hasChanges = saveName.trim() !== (currentTemplateName || '').trim()
+            if (hasChanges) {
+              setShowConfirmCloseSave(true)
+            } else {
+              setShowSaveModal(false)
+              setPendingSave(null)
+            }
+          }}
+        >
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Salvar template</h3>
             <label className="block mb-4">
               <span className="text-sm text-slate-600">Nome do template</span>
@@ -211,11 +224,30 @@ function EditorPageContent() {
                 placeholder="Ex: Newsletter Semanal"
                 className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
                 autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    const hasChanges = saveName.trim() !== (currentTemplateName || '').trim()
+                    if (hasChanges) {
+                      setShowConfirmCloseSave(true)
+                    } else {
+                      setShowSaveModal(false)
+                      setPendingSave(null)
+                    }
+                  }
+                }}
               />
             </label>
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => { setShowSaveModal(false); setPendingSave(null) }}
+                onClick={() => {
+                  const hasChanges = saveName.trim() !== (currentTemplateName || '').trim()
+                  if (hasChanges) {
+                    setShowConfirmCloseSave(true)
+                  } else {
+                    setShowSaveModal(false)
+                    setPendingSave(null)
+                  }
+                }}
                 className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancelar
@@ -231,6 +263,17 @@ function EditorPageContent() {
           </div>
         </div>
       )}
+
+      {/* Confirm close save modal */}
+      <ConfirmCloseDialog
+        isOpen={showConfirmCloseSave}
+        onConfirm={() => {
+          setShowConfirmCloseSave(false)
+          setShowSaveModal(false)
+          setPendingSave(null)
+        }}
+        onCancel={() => setShowConfirmCloseSave(false)}
+      />
 
       {/* Load Modal */}
       {showLoadModal && (
