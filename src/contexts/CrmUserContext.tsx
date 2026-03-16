@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, useMemo, ReactNode } from 'react'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
 
@@ -34,8 +34,12 @@ export function CrmUserProvider({
   orgPlan = null,
   member = null,
 }: CrmUserContextType & { children: ReactNode }) {
+  const value = useMemo(
+    () => ({ userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member }),
+    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member],
+  )
   return (
-    <CrmUserContext.Provider value={{ userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member }}>
+    <CrmUserContext.Provider value={value}>
       {children}
     </CrmUserContext.Provider>
   )

@@ -88,7 +88,6 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setUserEmail(user.email)
       setUserUid(user.uid)
       setUserPhoto(user.photoURL)
-      setCheckingAuth(false)
       ;(async () => {
         try {
           const snap = await getDoc(doc(db, 'users', user.email!))
@@ -150,6 +149,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           if (err?.message?.includes('indexes')) {
             console.error('[layout] CREATE THIS INDEX:', err.message)
           }
+        } finally {
+          setCheckingAuth(false)
         }
       })()
     })
