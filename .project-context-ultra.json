@@ -1,0 +1,522 @@
+{
+  "_note": "Auto-generated project context. Agents read this instead of exploring codebase.",
+  "generatedAt": "2026-03-17T21:08:54.429Z",
+  "projectDir": "/root/projetos/labrego-crm",
+  "stack": "Next.js",
+  "designSystem": {
+    "import": "import { ui, cx } from '@/ui'",
+    "classes": "ui.btn, ui.btnPrimary, ui.btnDanger, ui.input, ui.textarea, ui.card, ui.statPill, ui.statPillPrimary, ui.statGood, ui.statWarn, ui.statBad"
+  },
+  "routes": {
+    "admin": "0 pages",
+    "client": "0 pages",
+    "projetos": "0 pages",
+    "crmAi": "0 pages",
+    "api": "44 endpoints",
+    "total": "40 pages + 44 APIs"
+  },
+  "collections": [
+    "automationConfig",
+    "automationLogs",
+    "automationTriggers",
+    "billings",
+    "cadenceExecutionLog",
+    "cadenceSteps",
+    "callOutcomes",
+    "callQueues",
+    "callRoutingConfig",
+    "callScripts",
+    "calls",
+    "campaigns",
+    "clients",
+    "columns",
+    "contracts",
+    "creditTransactions",
+    "credits",
+    "emailEvents",
+    "emailLogs",
+    "emailProviderConfigs",
+    "emailProviderLogs",
+    "emailQueue",
+    "emailTemplates",
+    "fcmTokens",
+    "followups",
+    "funnelStages",
+    "funnels",
+    "icpProfiles",
+    "logos",
+    "logs",
+    "macroStages",
+    "members",
+    "notificationPreferences",
+    "notifications",
+    "organizations",
+    "products",
+    "projects",
+    "proposals",
+    "prospectionAlerts",
+    "recipients",
+    "reengagementConfigs",
+    "reengagementEnrollments",
+    "reengagementLogs",
+    "roleConfigs",
+    "serverNotificationLogs",
+    "userRoles"
+  ],
+  "libs": [
+    {
+      "file": "activityLogger.ts",
+      "exports": [
+        "logActivity"
+      ]
+    },
+    {
+      "file": "analyticsCalculations.ts",
+      "exports": [
+        "calcAgingMatrix",
+        "calcConversionByDimension",
+        "calcOverviewKPIs",
+        "calcTemporalEvolution",
+        "calcDistribution",
+        "calcTopOpportunities",
+        "calcBottleneckStages",
+        "calcFunnelData"
+      ]
+    },
+    {
+      "file": "automationConfig.ts",
+      "exports": [
+        "getAutomationConfig",
+        "updateAutomationConfig",
+        "isAutomationEnabled",
+        "isWithinWorkHours",
+        "getTodayActionCount",
+        "getTodayPhoneCallCount",
+        "getTodayPhoneCallCountByStage"
+      ]
+    },
+    {
+      "file": "cadenceExecutors.ts",
+      "exports": [
+        "executeCadenceStep",
+        "determineBestStage",
+        "logCadenceExecution"
+      ]
+    },
+    {
+      "file": "callQueue.ts",
+      "exports": [
+        "createCallQueue",
+        "createCadenceCallQueue",
+        "getCallQueue",
+        "getQueueItems",
+        "getQueueItemByCallId",
+        "processQueue",
+        "onCallCompleted",
+        "onCallFailed"
+      ]
+    },
+    {
+      "file": "callRouting.ts",
+      "exports": [
+        "getVapiApiKey",
+        "getTwilioCredentials",
+        "getCallRoutingConfig",
+        "saveCallRoutingConfig",
+        "getActiveCallScript",
+        "getCallOutcomes",
+        "saveCallRecord",
+        "formatSlotForSpeech"
+      ]
+    },
+    {
+      "file": "campaignRecipients.ts",
+      "exports": [
+        "addRecipients",
+        "getRecipients",
+        "updateRecipientStatus",
+        "getRecipientCounts",
+        "getFailedRecipients",
+        "resetFailedRecipients"
+      ]
+    },
+    {
+      "file": "campaigns.ts",
+      "exports": [
+        "createCampaign",
+        "getCampaigns",
+        "getCampaign",
+        "updateCampaign",
+        "deleteCampaign",
+        "getScheduledCampaigns"
+      ]
+    },
+    {
+      "file": "credits.ts",
+      "exports": [
+        "getCreditBalance",
+        "hasCredits",
+        "hasActionCredits",
+        "canMakeCall",
+        "canSendWhatsApp",
+        "deductCredits",
+        "deductAction",
+        "addCredits"
+      ]
+    },
+    {
+      "file": "email.ts",
+      "exports": [
+        "getGmailCredentials",
+        "hasGmailCredentials",
+        "sendEmail"
+      ]
+    },
+    {
+      "file": "extensionAuth.ts",
+      "exports": [
+        "verifyExtensionAuth"
+      ]
+    },
+    {
+      "file": "featureGate.ts",
+      "exports": [
+        "planHasFeature",
+        "orgHasFeature",
+        "getRequiredFeatureForRoute",
+        "getRequiredFeatureForApi"
+      ]
+    },
+    {
+      "file": "firebaseAdmin.ts",
+      "exports": [
+        "getAdminDb",
+        "getAdminAuth",
+        "getAdminStorage"
+      ]
+    },
+    {
+      "file": "firebaseClient.ts",
+      "exports": [
+        "getFirebaseMessaging"
+      ]
+    },
+    {
+      "file": "firebaseMessaging.ts",
+      "exports": [
+        "initFirebaseMessaging",
+        "requestNotificationPermission"
+      ]
+    },
+    {
+      "file": "format.ts",
+      "exports": [
+        "formatDate",
+        "formatDateTime",
+        "getWeekNumber",
+        "formatMonth",
+        "formatCurrency",
+        "formatDuration",
+        "formatHoursWithMinutes",
+        "formatDurationMs"
+      ]
+    },
+    {
+      "file": "funnels.ts",
+      "exports": [
+        "getFunnels",
+        "getFunnel",
+        "getDefaultFunnel",
+        "createFunnel",
+        "updateFunnel",
+        "deleteFunnel",
+        "getColumns",
+        "createColumn"
+      ]
+    },
+    {
+      "file": "imageUtils.ts",
+      "exports": [
+        "urlToBase64",
+        "convertLogosToBase64"
+      ]
+    },
+    {
+      "file": "knownRoutes.ts",
+      "exports": [
+        "normalizeRoutePath",
+        "isKnownRoute",
+        "filterKnownRoutes"
+      ]
+    },
+    {
+      "file": "orgMembers.ts",
+      "exports": [
+        "getMembers",
+        "getMemberByEmail",
+        "findMemberOrgByEmail",
+        "addMember",
+        "updateMember",
+        "removeMember",
+        "updateMemberPermissions"
+      ]
+    },
+    {
+      "file": "orgResolver.ts",
+      "exports": [
+        "resolveOrgByEmail",
+        "getOrgIdFromHeaders"
+      ]
+    },
+    {
+      "file": "organization.ts",
+      "exports": [
+        "getOrgRef",
+        "getOrganization",
+        "getOrganizationBySlug",
+        "createOrganization",
+        "updateOrganization",
+        "listOrganizations"
+      ]
+    },
+    {
+      "file": "promptAssembler.ts",
+      "exports": [
+        "calculateAgentStrength",
+        "migrateKnowledgeToWizard",
+        "assemblePromptFromWizard"
+      ]
+    },
+    {
+      "file": "requireAdmin.ts",
+      "exports": [
+        "getUserRole",
+        "getRoleConfig",
+        "canViewAllForScreen",
+        "canEditForScreen",
+        "requireAdminApi",
+        "requireAdminPage"
+      ]
+    },
+    {
+      "file": "screenLabels.ts",
+      "exports": [
+        "getScreenLabel",
+        "getFallbackScreen"
+      ]
+    }
+  ],
+  "types": [
+    {
+      "file": "automation.ts",
+      "types": [
+        "TriggerEventType",
+        "TriggerActionType",
+        "TriggerCondition",
+        "TriggerAction",
+        "AutomationTrigger",
+        "AutomationLog"
+      ]
+    },
+    {
+      "file": "cadence.ts",
+      "types": [
+        "ContactMethod",
+        "CadenceType",
+        "CadenceStep",
+        "ReengagementConfig",
+        "ReengagementStep",
+        "ReengagementEnrollment",
+        "CadenceExecutionLog",
+        "CadenceExhaustedAction",
+        "StageAutomationConfig",
+        "AutomationConfig"
+      ]
+    },
+    {
+      "file": "callRouting.ts",
+      "types": [
+        "AgentWizardAnswers",
+        "CallRoutingSchedule",
+        "CallRoutingVoiceAgent",
+        "CallAgentObjection",
+        "CallAgentFAQ",
+        "CallAgentKnowledge",
+        "IntegrationStatus",
+        "OrgIntegrations",
+        "CallRoutingCalendar",
+        "CallRoutingNotifications"
+      ]
+    },
+    {
+      "file": "campaign.ts",
+      "types": [
+        "CampaignStatus",
+        "CampaignType",
+        "RecurrenceFrequency",
+        "CampaignFilters",
+        "CampaignRecurrence",
+        "Campaign",
+        "CampaignRecipient",
+        "SavedSegment"
+      ]
+    },
+    {
+      "file": "credits.ts",
+      "types": [
+        "CreditBalance",
+        "CreditTransaction"
+      ]
+    },
+    {
+      "file": "email.ts",
+      "types": [
+        "EmailEventType",
+        "EmailEvent",
+        "CampaignEngagement"
+      ]
+    },
+    {
+      "file": "emailTemplate.ts",
+      "types": [
+        "BlockType",
+        "EmailBlockData",
+        "TemplateCategory",
+        "EmailTemplate"
+      ]
+    },
+    {
+      "file": "funnel.ts",
+      "types": [
+        "Funnel",
+        "FunnelColumn"
+      ]
+    },
+    {
+      "file": "icp.ts",
+      "types": [
+        "IcpCriteria",
+        "IcpProfile"
+      ]
+    },
+    {
+      "file": "organization.ts",
+      "types": [
+        "Organization",
+        "OrgSettings",
+        "OrgLimits",
+        "OrgMember",
+        "MemberPermissions",
+        "MemberActions",
+        "FunnelAccessConfig"
+      ]
+    },
+    {
+      "file": "permissions.ts",
+      "types": [
+        "RolePreset"
+      ]
+    },
+    {
+      "file": "plan.ts",
+      "types": [
+        "PlanCategory",
+        "PlanId",
+        "FeatureKey",
+        "Plan",
+        "PlanLimits",
+        "OveragePricing"
+      ]
+    },
+    {
+      "file": "product.ts",
+      "types": [
+        "ProductScheduleEntry",
+        "Product"
+      ]
+    },
+    {
+      "file": "proposal.ts",
+      "types": [
+        "ProposalItem",
+        "ProposalScheduleEntry",
+        "ProposalProduct",
+        "ProposalMonthlyFee",
+        "ProposalFormData",
+        "ProposalClient"
+      ]
+    },
+    {
+      "file": "proposalBranding.ts",
+      "types": [
+        "ProposalBranding"
+      ]
+    },
+    {
+      "file": "proposalConfig.ts",
+      "types": [
+        "ProposalConfig"
+      ]
+    },
+    {
+      "file": "proposalCustomField.ts",
+      "types": [
+        "ProposalCustomFieldType",
+        "ProposalCustomFieldPosition",
+        "ProposalCustomField"
+      ]
+    },
+    {
+      "file": "proposalStructure.ts",
+      "types": [
+        "PdfSection",
+        "ProposalStructure"
+      ]
+    }
+  ],
+  "componentDirs": [
+    "components",
+    "components/admin",
+    "components/email-editor",
+    "components/ligacoes",
+    "components/shared"
+  ],
+  "keyDeps": [
+    "@hello-pangea/dnd",
+    "@heroicons/react",
+    "@radix-ui/react-icons",
+    "@react-email/components",
+    "@react-email/render",
+    "@tailwindcss/typography",
+    "@tiptap/extension-bubble-menu",
+    "@tiptap/extension-color",
+    "@tiptap/extension-dropcursor",
+    "@tiptap/extension-highlight",
+    "@tiptap/extension-image",
+    "@tiptap/extension-link",
+    "@tiptap/extension-placeholder",
+    "@tiptap/extension-text-style",
+    "@tiptap/extension-underline",
+    "@tiptap/react",
+    "@tiptap/starter-kit",
+    "date-fns",
+    "firebase",
+    "firebase-admin",
+    "googleapis",
+    "html2canvas-pro",
+    "jspdf",
+    "jspdf-autotable",
+    "jszip",
+    "lucide-react",
+    "next",
+    "nodemailer",
+    "react",
+    "react-dom"
+  ],
+  "patterns": {
+    "clientComponent": "'use client' + useState/useEffect + onSnapshot",
+    "apiRoute": "NextRequest/NextResponse + getDb() from @/lib/firebaseAdmin",
+    "imports": "ALWAYS @/ prefix (tsconfig: @/* → ./src/*)",
+    "timestamps": "ISO 8601 string"
+  }
+}
