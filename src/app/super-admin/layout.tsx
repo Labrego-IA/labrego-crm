@@ -69,7 +69,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 md:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 shrink-0" />
@@ -92,7 +92,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <div className="px-4 md:px-6 py-4 md:py-6">
         <nav className="flex gap-1 bg-white rounded-xl p-1 shadow-sm border border-gray-200 mb-4 sm:mb-6">
           {tabs.map((tab) => {
             const isActive =
