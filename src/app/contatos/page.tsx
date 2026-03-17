@@ -6,6 +6,7 @@ import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc, addDoc, quer
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { db, storage } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePlan } from '@/hooks/usePlan'
 import { leadSourceOptions, leadSourceIcons, leadTypeOptions } from '@/lib/leadSources'
 import Image from 'next/image'
 import Skeleton from '@/components/shared/Skeleton'
@@ -182,6 +183,7 @@ export default function ContatosPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { userEmail, orgId, member } = useCrmUser()
+  const { limits } = usePlan()
   const { viewScope } = usePermissions()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
@@ -767,6 +769,13 @@ export default function ContatosPage() {
           let imported = 0
           let skipped = 0
           for (const contact of validRows) {
+            // Check plan contact limit before each import
+            if (clients.length + imported >= limits.maxContacts) {
+              skipped += validRows.length - imported - skipped
+              setImportProgress({ current: total, total })
+              break
+            }
+
             // Skip contacts with duplicate name
             const contactName = contact.name.trim().toLowerCase()
             if (existingNames.has(contactName)) {
@@ -1416,6 +1425,12 @@ export default function ContatosPage() {
   const handleSave = async () => {
     if (!form.name.trim() || !form.phone.trim()) {
       alert('Nome e telefone são obrigatórios')
+      return
+    }
+
+    // Check plan contact limit (only for new contacts)
+    if (!editingId && clients.length >= limits.maxContacts) {
+      alert(`Limite de contatos atingido (${limits.maxContacts.toLocaleString('pt-BR')}). Faça upgrade do plano para adicionar mais contatos.`)
       return
     }
 
