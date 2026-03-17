@@ -33,12 +33,31 @@ const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-800',
   invited: 'bg-amber-100 text-amber-800',
   suspended: 'bg-red-100 text-red-800',
+  unlinked: 'bg-slate-100 text-slate-600',
 }
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
   invited: 'Convidado',
   suspended: 'Suspenso',
+  unlinked: 'Sem vinculo',
+}
+
+const PROVIDER_LABELS: Record<string, string> = {
+  'google.com': 'Google',
+  'password': 'Email',
+  'email': 'Email',
+}
+
+interface AuthUser {
+  uid: string
+  email: string
+  displayName: string | undefined
+  photoURL: string | undefined
+  provider: string
+  createdAt: string | undefined
+  lastSignIn: string | undefined
+  disabled: boolean
 }
 
 function formatJoinedDate(iso: string): string {
@@ -162,40 +181,40 @@ export default function UsuariosPage() {
   const [deleteMember, setDeleteMember] = useState<OrgMember | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
+  // Firebase Auth users state
+  const [authUsers, setAuthUsers] = useState<AuthUser[]>([])
+
   /* ---------------------- Real-time subscription ------------------------ */
 
-  // Verify which userIds still exist in Firebase Auth
-  const verifyAuthUsers = useCallback(async (items: OrgMember[]): Promise<OrgMember[]> => {
-    if (!orgId || !userEmail || items.length === 0) return items
-    const userIds = items.map((m) => m.userId).filter(Boolean)
-    if (userIds.length === 0) return items
+  // Fetch all Firebase Auth users
+  const fetchAuthUsers = useCallback(async () => {
+    if (!orgId || !userEmail) return
     try {
-      const res = await fetch('/api/admin/members/verify-auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
-        body: JSON.stringify({ orgId, userIds }),
+      const res = await fetch(`/api/admin/members/verify-auth?orgId=${encodeURIComponent(orgId)}`, {
+        headers: { 'x-user-email': userEmail },
       })
-      if (!res.ok) return items // fallback: show all if verification fails
-      const { validUserIds } = await res.json() as { validUserIds: string[] }
-      const validSet = new Set(validUserIds)
-      return items.filter((m) => !m.userId || validSet.has(m.userId))
+      if (res.ok) {
+        const { users } = await res.json() as { users: AuthUser[] }
+        setAuthUsers(users)
+      }
     } catch {
-      return items // fallback: show all if request fails
+      // silently fail - members from Firestore will still show
     }
   }, [orgId, userEmail])
 
+  // Subscribe to Firestore members + fetch auth users
   useEffect(() => {
     if (!orgId) return
+    fetchAuthUsers()
     const q = query(collection(db, 'organizations', orgId, 'members'))
     const unsub = onSnapshot(
       q,
-      async (snap) => {
+      (snap) => {
         const items: OrgMember[] = snap.docs.map((d) => ({
           id: d.id,
           ...d.data(),
         })) as OrgMember[]
-        const verified = await verifyAuthUsers(items)
-        setMembers(verified)
+        setMembers(items)
         setLoading(false)
       },
       (error) => {
@@ -205,7 +224,39 @@ export default function UsuariosPage() {
       },
     )
     return () => unsub()
-  }, [orgId, verifyAuthUsers])
+  }, [orgId, fetchAuthUsers])
+
+  // Merge: Firestore members + Firebase Auth users that are not in Firestore
+  const mergedMembers = useMemo(() => {
+    // Only keep Firestore members whose userId still exists in Firebase Auth
+    const authUidSet = new Set(authUsers.map((u) => u.uid))
+    const memberEmailSet = new Set(members.map((m) => m.email?.toLowerCase()))
+    const memberUidSet = new Set(members.map((m) => m.userId).filter(Boolean))
+
+    // Filter Firestore members: keep if no userId or userId exists in Auth
+    const validMembers = authUsers.length > 0
+      ? members.filter((m) => !m.userId || authUidSet.has(m.userId))
+      : members
+
+    // Auth-only users (not in Firestore by email or uid)
+    const authOnly: OrgMember[] = authUsers
+      .filter((u) => !memberEmailSet.has(u.email?.toLowerCase()) && !memberUidSet.has(u.uid))
+      .map((u) => ({
+        id: `auth-${u.uid}`,
+        userId: u.uid,
+        email: u.email,
+        displayName: u.displayName || u.email?.split('@')[0] || '',
+        photoUrl: u.photoURL,
+        role: '' as OrgMember['role'],
+        permissions: defaultPermissions(),
+        status: 'unlinked' as OrgMember['status'],
+        joinedAt: u.createdAt || '',
+        _provider: u.provider,
+        _lastSignIn: u.lastSignIn,
+      } as OrgMember & { _provider?: string; _lastSignIn?: string }))
+
+    return [...validMembers, ...authOnly]
+  }, [members, authUsers])
 
   /* ---------------------- Add member handler ---------------------------- */
 
@@ -216,7 +267,7 @@ export default function UsuariosPage() {
       return
     }
 
-    const emailExists = members.some(
+    const emailExists = mergedMembers.some(
       (m) => m.email.toLowerCase() === addForm.email.trim().toLowerCase(),
     )
     if (emailExists) {
@@ -411,9 +462,9 @@ export default function UsuariosPage() {
   const filteredMembers = useMemo(() => {
     const term = normalize(search.trim())
 
-    let result = members
+    let result = mergedMembers
     if (term) {
-      result = members.filter((m) => {
+      result = mergedMembers.filter((m) => {
         const name = normalize(m.displayName || '')
         const email = normalize(m.email || '')
         const role = normalize(ROLE_LABELS[m.role as RolePreset] || m.role || '')
@@ -447,11 +498,11 @@ export default function UsuariosPage() {
     }
 
     return result
-  }, [members, search, sortColumn, sortDirection])
+  }, [mergedMembers, search, sortColumn, sortDirection])
 
   /* ---------------------- Computed values ------------------------------- */
 
-  const memberCount = members.length
+  const memberCount = mergedMembers.length
   const maxUsers = limits.maxUsers
   const atLimit = memberCount >= maxUsers
 
@@ -568,10 +619,10 @@ export default function UsuariosPage() {
               </svg>
             </div>
             <h3 className="text-base font-semibold text-gray-900">
-              {members.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
+              {mergedMembers.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
             </h3>
             <p className="text-sm text-gray-500 mt-1">
-              {members.length === 0
+              {mergedMembers.length === 0
                 ? 'Adicione o primeiro membro da organizacao.'
                 : 'Tente ajustar os termos da pesquisa.'}
             </p>
@@ -665,11 +716,15 @@ export default function UsuariosPage() {
                           </td>
                           <td className="px-5 py-3 text-gray-600">{m.email}</td>
                           <td className="px-5 py-3 text-center">
-                            <span
-                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}
-                            >
-                              {ROLE_LABELS[m.role as RolePreset] || m.role}
-                            </span>
+                            {m.role ? (
+                              <span
+                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {ROLE_LABELS[m.role as RolePreset] || m.role}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">&mdash;</span>
+                            )}
                           </td>
                           <td className="px-5 py-3 text-center">
                             <span
@@ -754,9 +809,13 @@ export default function UsuariosPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}>
-                          {ROLE_LABELS[m.role as RolePreset] || m.role}
-                        </span>
+                        {m.role ? (
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}>
+                            {ROLE_LABELS[m.role as RolePreset] || m.role}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-400">&mdash;</span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-xs">
