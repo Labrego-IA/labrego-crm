@@ -5,6 +5,7 @@ import { Building2, Plus, Pencil, X, Mail } from 'lucide-react'
 import { PLAN_DISPLAY } from '@/types/plan'
 import type { Organization } from '@/types/organization'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
@@ -39,6 +40,8 @@ export default function SuperAdminPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingOrg, setEditingOrg] = useState<Organization | null>(null)
   const [form, setForm] = useState<OrgForm>(emptyForm)
+  const [initialForm, setInitialForm] = useState<OrgForm>(emptyForm)
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [error, setError] = useState('')
@@ -66,15 +69,45 @@ export default function SuperAdminPage() {
   const openCreate = () => {
     setEditingOrg(null)
     setForm(emptyForm)
+    setInitialForm(emptyForm)
     setError('')
     setShowModal(true)
   }
 
   const openEdit = (org: Organization) => {
     setEditingOrg(org)
-    setForm({ name: org.name, plan: org.plan, adminEmail: '', status: org.status })
+    const editForm = { name: org.name, plan: org.plan, adminEmail: '', status: org.status }
+    setForm(editForm)
+    setInitialForm(editForm)
     setError('')
     setShowModal(true)
+  }
+
+  const hasUnsavedChanges = useCallback(() => {
+    return Object.keys(emptyForm).some(
+      (key) => form[key as keyof OrgForm] !== initialForm[key as keyof OrgForm]
+    )
+  }, [form, initialForm])
+
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowModal(false)
+      setForm(emptyForm)
+      setInitialForm(emptyForm)
+      setEditingOrg(null)
+      setError('')
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = () => {
+    setShowConfirmClose(false)
+    setShowModal(false)
+    setForm(emptyForm)
+    setInitialForm(emptyForm)
+    setEditingOrg(null)
+    setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -249,11 +282,11 @@ export default function SuperAdminPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseModal}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">{editingOrg ? 'Editar Empresa' : 'Nova Empresa'}</h3>
-              <button onClick={() => setShowModal(false)} className="p-1 rounded-lg hover:bg-gray-100 transition">
+              <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 transition">
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
@@ -288,7 +321,7 @@ export default function SuperAdminPage() {
               )}
               {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">Cancelar</button>
+                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">Cancelar</button>
                 <button type="submit" disabled={submitting} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition">
                   {submitting ? 'Salvando...' : editingOrg ? 'Salvar' : 'Criar'}
                 </button>
@@ -297,6 +330,12 @@ export default function SuperAdminPage() {
           </div>
         </div>
       )}
+
+      <ConfirmCloseDialog
+        isOpen={showConfirmClose}
+        onConfirm={confirmCloseModal}
+        onCancel={() => setShowConfirmClose(false)}
+      />
     </div>
   )
 }
