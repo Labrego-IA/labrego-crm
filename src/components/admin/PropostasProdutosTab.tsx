@@ -404,11 +404,22 @@ export default function PropostasProdutosTab() {
         </p>
         <button
           onClick={openNew}
-          className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+          className="hidden md:inline-flex px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
         >
           + Novo Produto
         </button>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={openNew}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Novo produto"
+      >
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
 
       {/* Search bar */}
       <div className="relative">

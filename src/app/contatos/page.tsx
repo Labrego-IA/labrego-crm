@@ -1725,17 +1725,26 @@ export default function ContatosPage() {
               <span className="hidden sm:inline">Importar</span>
             </button>
 
-            {/* New Contact Button */}
+            {/* New Contact Button (desktop only) */}
             <button
               onClick={openNewModal}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 hover:shadow-xl hover:shadow-primary-300"
+              className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 hover:shadow-xl hover:shadow-primary-300"
             >
               <PlusIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Novo Contato</span>
+              Novo Contato
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={openNewModal}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Novo contato"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">

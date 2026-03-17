@@ -466,7 +466,7 @@ export default function UsuariosPage() {
             type="button"
             disabled={atLimit}
             onClick={() => setShowAddModal(true)}
-            className={`${ui.btnPrimary} ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={atLimit ? 'Limite do plano atingido' : 'Adicionar membro'}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -475,6 +475,19 @@ export default function UsuariosPage() {
             Adicionar membro
           </button>
         </div>
+
+        {/* Mobile: FAB flutuante */}
+        {!atLimit && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+            aria-label="Adicionar membro"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        )}
 
         {/* =================== Plan limit bar =================== */}
         <div className={`${ui.card} px-5 py-4`}>

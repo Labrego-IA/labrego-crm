@@ -240,12 +240,22 @@ export default function PropostasFieldsTab() {
             type="button"
             onClick={openCreate}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+            className="hidden md:inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
           >
             <PlusIcon className="h-4 w-4" />
             Novo campo
           </button>
         </div>
+
+        {/* Mobile: FAB flutuante */}
+        <button
+          onClick={openCreate}
+          disabled={saving}
+          className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all disabled:opacity-50"
+          aria-label="Novo campo"
+        >
+          <PlusIcon className="h-6 w-6" />
+        </button>
 
         {fields.length === 0 ? (
           <div className="rounded-lg border-2 border-dashed border-gray-200 p-8 text-center text-sm text-gray-400">

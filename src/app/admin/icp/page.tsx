@@ -247,12 +247,21 @@ export default function AdminIcpPage() {
         </div>
         <button
           onClick={openCreate}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary hidden md:inline-flex items-center gap-2"
         >
           <PlusIcon className="w-4 h-4" />
           Novo Perfil
         </button>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={openCreate}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Novo perfil ICP"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
 
       {/* Loading */}
       {loading && (
