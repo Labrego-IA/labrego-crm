@@ -80,6 +80,8 @@ import {
   DocumentDuplicateIcon,
   ArrowDownTrayIcon,
   BoltIcon,
+  ClockIcon as HeroClockIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
 
@@ -293,6 +295,13 @@ export default function FunilDetailPage() {
   const [funnelColor, setFunnelColor] = useState<string>('#4f46e5')
   const [funnelNotFound, setFunnelNotFound] = useState(false)
 
+  // Funnel config (card novo + reativação)
+  const [newCardHours, setNewCardHours] = useState<number>(48) // Horas para considerar card novo
+  const [reactivationIdleDays, setReactivationIdleDays] = useState<number>(30) // Dias parado para reativação
+  const [reactivationEnabled, setReactivationEnabled] = useState(false)
+  const [savingFunnelConfig, setSavingFunnelConfig] = useState(false)
+  const [settingsTab, setSettingsTab] = useState<'stages' | 'newCard' | 'reactivation'>('stages')
+
   // Data state
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
@@ -324,6 +333,10 @@ export default function FunilDetailPage() {
       setFunnelName(data.name || 'Funil')
       setFunnelColor(data.color || '#4f46e5')
       setFunnelNotFound(false)
+      // Load funnel config
+      if (data.newCardHours != null) setNewCardHours(data.newCardHours)
+      if (data.reactivationIdleDays != null) setReactivationIdleDays(data.reactivationIdleDays)
+      if (data.reactivationEnabled != null) setReactivationEnabled(data.reactivationEnabled)
     })
     return () => unsub()
   }, [orgId, funnelId, member?.id])
@@ -1740,6 +1753,102 @@ export default function FunilDetailPage() {
       console.error('Error updating client stage:', error)
     }
   }
+
+  // Save funnel config (card novo + reativação)
+  const handleSaveFunnelConfig = async () => {
+    if (!orgId || !funnelId) return
+    setSavingFunnelConfig(true)
+    try {
+      const funnelDocRef = doc(db, 'organizations', orgId, 'funnels', funnelId)
+      await updateDoc(funnelDocRef, {
+        newCardHours,
+        reactivationIdleDays,
+        reactivationEnabled,
+        updatedAt: new Date().toISOString(),
+      })
+      toast.success('Configurações salvas com sucesso!')
+    } catch (error) {
+      console.error('Error saving funnel config:', error)
+      toast.error('Erro ao salvar configurações')
+    } finally {
+      setSavingFunnelConfig(false)
+    }
+  }
+
+  // Check and auto-move idle cards to reactivation funnel
+  const checkReactivation = useCallback(async () => {
+    if (!orgId || !reactivationEnabled || !reactivationIdleDays) return
+
+    const reactivationFunnelId = 'Cg4XDDsNVJK2cvgVcx20'
+    if (funnelId === reactivationFunnelId) return // Don't move cards already in reactivation
+
+    const now = new Date()
+    const cardsToMove = clients.filter((client) => {
+      if (!client.funnelStageUpdatedAt && !client.lastFollowUpAt) return false
+      // Use the most recent activity date
+      const lastActivity = client.lastFollowUpAt || client.funnelStageUpdatedAt
+      if (!lastActivity) return false
+      const activityDate = new Date(lastActivity)
+      if (isNaN(activityDate.getTime())) return false
+      const diffDays = Math.floor((now.getTime() - activityDate.getTime()) / (1000 * 60 * 60 * 24))
+      return diffDays >= reactivationIdleDays
+    })
+
+    if (cardsToMove.length === 0) return
+
+    // Load first stage of reactivation funnel
+    const reactivationStagesSnap = await getDocs(
+      query(
+        collection(db, 'funnelStages'),
+        where('orgId', '==', orgId),
+        where('funnelId', '==', reactivationFunnelId),
+        orderBy('order', 'asc')
+      )
+    )
+    if (reactivationStagesSnap.empty) return
+    const firstReactivationStage = reactivationStagesSnap.docs[0]
+
+    const batch = writeBatch(db)
+    const nowISO = now.toISOString()
+    const authorName = member?.displayName || userEmail || 'Sistema'
+
+    for (const client of cardsToMove) {
+      const clientRef = doc(db, 'clients', client.id)
+      batch.update(clientRef, {
+        funnelId: reactivationFunnelId,
+        funnelStage: firstReactivationStage.id,
+        funnelStageUpdatedAt: nowISO,
+        updatedAt: nowISO,
+      })
+      // Create log entry
+      const logRef = doc(collection(db, 'clients', client.id, 'logs'))
+      batch.set(logRef, {
+        type: 'stage_change',
+        text: `Movido automaticamente para funil de reativação (${reactivationIdleDays} dias parado)`,
+        author: authorName,
+        createdAt: nowISO,
+        source: 'log',
+      })
+    }
+
+    try {
+      await batch.commit()
+      if (cardsToMove.length > 0) {
+        toast.info(`${cardsToMove.length} card${cardsToMove.length > 1 ? 's' : ''} movido${cardsToMove.length > 1 ? 's' : ''} para reativação`)
+      }
+    } catch (error) {
+      console.error('Error moving cards to reactivation:', error)
+    }
+  }, [orgId, funnelId, reactivationEnabled, reactivationIdleDays, clients, member?.displayName, userEmail])
+
+  // Run reactivation check periodically (every 5 minutes)
+  useEffect(() => {
+    if (!reactivationEnabled) return
+    // Run once on mount
+    checkReactivation()
+    const interval = setInterval(checkReactivation, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [reactivationEnabled, checkReactivation])
 
   // Add new stage
   const handleAddStage = async () => {
@@ -4868,6 +4977,7 @@ export default function FunilDetailPage() {
                                               icpColor={client.icpProfileId ? icpMap[client.icpProfileId]?.color : undefined}
                                               icpName={client.icpProfileId ? icpMap[client.icpProfileId]?.name : undefined}
                                               cadenceStepName={getCurrentCadenceStep(client, stage.id)?.name}
+                                              newCardHours={newCardHours}
                                               onSelect={bulkSelectMode ? () => toggleBulkSelect(client.id) : handleSelectClient}
                                             />
                                           </div>
@@ -5063,6 +5173,7 @@ export default function FunilDetailPage() {
                                 icpColor={client.icpProfileId ? icpMap[client.icpProfileId]?.color : undefined}
                                 icpName={client.icpProfileId ? icpMap[client.icpProfileId]?.name : undefined}
                                 cadenceStepName={getCurrentCadenceStep(client, stage.id)?.name}
+                                newCardHours={newCardHours}
                                 onSelect={handleSelectClient}
                               />
                             )
@@ -5275,20 +5386,66 @@ export default function FunilDetailPage() {
                   <GearIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Configurar Etapas do Funil</h3>
-                  <p className="text-xs text-slate-500">Gerencie as etapas e a régua de probabilidade</p>
+                  <h3 className="text-base font-bold text-slate-800">Configurações do Funil</h3>
+                  <p className="text-xs text-slate-500">Etapas, card novo e reativação automática</p>
                 </div>
               </div>
               <button
-                onClick={() => setShowSettings(false)}
+                onClick={() => { setShowSettings(false); setSettingsTab('stages') }}
                 className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
             </div>
 
+            {/* Tabs */}
+            <div className="flex border-b border-slate-100 px-6">
+              <button
+                onClick={() => setSettingsTab('stages')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  settingsTab === 'stages'
+                    ? 'border-primary-600 text-primary-600'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <ArrowTrendingUpIcon className="w-4 h-4" />
+                  Etapas
+                </span>
+              </button>
+              <button
+                onClick={() => setSettingsTab('newCard')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  settingsTab === 'newCard'
+                    ? 'border-primary-600 text-primary-600'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <HeroClockIcon className="w-4 h-4" />
+                  Card Novo
+                </span>
+              </button>
+              <button
+                onClick={() => setSettingsTab('reactivation')}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                  settingsTab === 'reactivation'
+                    ? 'border-primary-600 text-primary-600'
+                    : 'border-transparent text-slate-500 hover:text-slate-700'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <ArrowPathIcon className="w-4 h-4" />
+                  Reativação
+                </span>
+              </button>
+            </div>
+
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+            {/* Tab: Etapas */}
+            {settingsTab === 'stages' && (<>
               {/* Macro Stages Section */}
               <div className="p-4 bg-gradient-to-br from-primary-50 to-blue-50 rounded-xl border border-primary-100">
                 <h4 className="text-sm font-semibold text-primary-800 mb-3 flex items-center gap-2">
@@ -5963,12 +6120,197 @@ export default function FunilDetailPage() {
                   </div>
                 </div>
               </div>
+            </>)}
+
+            {/* Tab: Card Novo */}
+            {settingsTab === 'newCard' && (
+              <div className="space-y-6">
+                <div className="p-5 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-cyan-100">
+                  <h4 className="text-sm font-semibold text-cyan-800 mb-2 flex items-center gap-2">
+                    <HeroClockIcon className="w-4 h-4" />
+                    Tempo para Card Novo
+                  </h4>
+                  <p className="text-xs text-cyan-600 mb-4">
+                    Defina quantas horas um card é considerado &quot;novo&quot; após ser criado. Isso afeta a tag exibida nos cards e a contabilização dos KPIs.
+                  </p>
+
+                  <div className="bg-white rounded-lg p-4 border border-cyan-200 space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Tempo (em horas)
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          min="1"
+                          max="720"
+                          value={newCardHours}
+                          onChange={(e) => setNewCardHours(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-32 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                        />
+                        <span className="text-sm text-slate-500">
+                          = {newCardHours < 24 ? `${newCardHours} hora${newCardHours !== 1 ? 's' : ''}` : `${Math.floor(newCardHours / 24)} dia${Math.floor(newCardHours / 24) !== 1 ? 's' : ''}${newCardHours % 24 > 0 ? ` e ${newCardHours % 24}h` : ''}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-slate-50 rounded-lg">
+                      <p className="text-xs font-medium text-slate-600 mb-2">Como funciona:</p>
+                      <ul className="text-xs text-slate-500 space-y-1">
+                        <li className="flex items-start gap-1.5">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1 flex-shrink-0" />
+                          Cards criados há menos de {newCardHours}h exibem a tag &quot;Aguardando 1º contato&quot; em verde
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 mt-1 flex-shrink-0" />
+                          Após {Math.round(newCardHours * 0.25)}h a tag muda para amarelo (atenção)
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-400 mt-1 flex-shrink-0" />
+                          Após {Math.round(newCardHours * 0.75)}h a tag muda para vermelho (urgente)
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-400 mt-1 flex-shrink-0" />
+                          Após {newCardHours}h a tag desaparece — o card não é mais &quot;novo&quot;
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                      <p className="text-xs font-medium text-blue-700 mb-1">Impacto nos KPIs</p>
+                      <p className="text-xs text-blue-600">
+                        A métrica de &quot;Cards Novos&quot; e o FRT (First Response Time) usam este tempo como referência para calcular SLA e alertas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveFunnelConfig}
+                    disabled={savingFunnelConfig}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-primary-700 hover:to-blue-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50"
+                  >
+                    {savingFunnelConfig ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <CheckIcon className="w-4 h-4" />
+                    )}
+                    Salvar Configuração
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Tab: Reativação */}
+            {settingsTab === 'reactivation' && (
+              <div className="space-y-6">
+                <div className="p-5 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+                  <h4 className="text-sm font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                    <ArrowPathIcon className="w-4 h-4" />
+                    Reativação Automática
+                  </h4>
+                  <p className="text-xs text-orange-600 mb-4">
+                    Defina quanto tempo um card deve ficar parado para ser movido automaticamente ao funil de reativação.
+                  </p>
+
+                  <div className="bg-white rounded-lg p-4 border border-orange-200 space-y-4">
+                    {/* Enable toggle */}
+                    <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium text-slate-700">Ativar reativação automática</p>
+                        <p className="text-xs text-slate-500">Cards parados serão movidos automaticamente</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setReactivationEnabled(!reactivationEnabled)}
+                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                          reactivationEnabled ? 'bg-orange-500' : 'bg-slate-300'
+                        }`}
+                      >
+                        <div
+                          className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform"
+                          style={{ transform: reactivationEnabled ? 'translateX(22px)' : 'translateX(0)' }}
+                        />
+                      </button>
+                    </div>
+
+                    <div className={reactivationEnabled ? '' : 'opacity-50 pointer-events-none'}>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Tempo parado (em dias)
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={reactivationIdleDays}
+                          onChange={(e) => setReactivationIdleDays(Math.max(1, parseInt(e.target.value) || 1))}
+                          className="w-32 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                        />
+                        <span className="text-sm text-slate-500">
+                          {reactivationIdleDays === 1 ? '1 dia' : `${reactivationIdleDays} dias`}
+                          {reactivationIdleDays >= 7 && ` (≈ ${Math.round(reactivationIdleDays / 7)} semana${Math.round(reactivationIdleDays / 7) !== 1 ? 's' : ''})`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-orange-50 rounded-lg border border-orange-100">
+                      <p className="text-xs font-medium text-orange-700 mb-2">Como funciona:</p>
+                      <ul className="text-xs text-orange-600 space-y-1.5">
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-orange-400 mt-0.5">1.</span>
+                          O sistema verifica periodicamente os cards deste funil
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-orange-400 mt-0.5">2.</span>
+                          Se um card ficar {reactivationIdleDays} dia{reactivationIdleDays !== 1 ? 's' : ''} sem atividade (último follow-up ou mudança de etapa)
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-orange-400 mt-0.5">3.</span>
+                          O card é movido automaticamente para a primeira etapa do funil de Reativação
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="text-orange-400 mt-0.5">4.</span>
+                          Um log é registrado no histórico do card
+                        </li>
+                      </ul>
+                    </div>
+
+                    {reactivationEnabled && (
+                      <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <p className="text-xs text-amber-700 flex items-center gap-1.5">
+                          <ExclamationTriangleIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                          Cards parados há mais de {reactivationIdleDays} dias serão movidos automaticamente na próxima verificação.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveFunnelConfig}
+                    disabled={savingFunnelConfig}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-blue-600 text-white rounded-xl text-sm font-medium hover:from-primary-700 hover:to-blue-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50"
+                  >
+                    {savingFunnelConfig ? (
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <CheckIcon className="w-4 h-4" />
+                    )}
+                    Salvar Configuração
+                  </button>
+                </div>
+              </div>
+            )}
+
             </div>
 
             {/* Footer */}
             <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
               <button
-                onClick={() => setShowSettings(false)}
+                onClick={() => { setShowSettings(false); setSettingsTab('stages') }}
                 className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
               >
                 Fechar

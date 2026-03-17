@@ -208,6 +208,7 @@ type KanbanCardProps = {
   icpColor?: string
   icpName?: string
   cadenceStepName?: string
+  newCardHours?: number
   onSelect: (client: Cliente) => void
 }
 
@@ -224,6 +225,7 @@ export const KanbanCard = memo(function KanbanCard({
   icpColor,
   icpName,
   cadenceStepName,
+  newCardHours = 48,
   onSelect,
 }: KanbanCardProps) {
   // Último registro = lastFollowUpAt ou lastCadenceActionAt (interações reais)
@@ -421,7 +423,10 @@ export const KanbanCard = memo(function KanbanCard({
           {/* FRT Badge: Aguardando 1o contato */}
           {!client.firstContactAt && client.createdAt && (() => {
             const hoursWaiting = (Date.now() - new Date(client.createdAt).getTime()) / (1000 * 60 * 60)
-            const slaColor = hoursWaiting > 8 ? 'bg-red-100 text-red-700' : hoursWaiting > 2 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+            if (hoursWaiting > newCardHours) return null // Não é mais "novo"
+            const warningThreshold = newCardHours * 0.25
+            const urgentThreshold = newCardHours * 0.75
+            const slaColor = hoursWaiting > urgentThreshold ? 'bg-red-100 text-red-700' : hoursWaiting > warningThreshold ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
             return (
               <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium mt-2 ${slaColor}`}>
                 <ClockIcon className="w-3 h-3" />
