@@ -348,20 +348,18 @@ export default function FunnelHubPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
-            <div className="h-4 w-32 bg-slate-200 rounded mt-2 animate-pulse" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 h-44 animate-pulse">
-                <div className="h-5 w-32 bg-slate-200 rounded" />
-                <div className="h-4 w-24 bg-slate-200 rounded mt-3" />
-              </div>
-            ))}
-          </div>
+      <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+        <div className="mb-8">
+          <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
+          <div className="h-4 w-32 bg-slate-200 rounded mt-2 animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 h-44 animate-pulse">
+              <div className="h-5 w-32 bg-slate-200 rounded" />
+              <div className="h-4 w-24 bg-slate-200 rounded mt-3" />
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -370,7 +368,7 @@ export default function FunnelHubPage() {
   // Empty state
   if (funnels.length === 0) {
     return (
-      <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-10 max-w-md text-center">
           <div className="w-20 h-20 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
             <FunnelIcon className="w-10 h-10 text-primary-500" />
@@ -400,8 +398,8 @@ export default function FunnelHubPage() {
 
   // Main render - Funnel Hub
   return (
-    <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 p-6" onClick={() => setOpenMenuId(null)}>
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
+      <div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
