@@ -151,6 +151,13 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 bestDoc = sorted[0]
               }
               const memberData = { id: bestDoc.id, ...bestDoc.data() } as OrgMember
+              // Block suspended members from accessing the app
+              if (memberData.status === 'suspended') {
+                console.warn('[layout] Member is suspended, signing out:', memberData.email)
+                await signOut(auth)
+                router.replace('/login?blocked=1')
+                return
+              }
               // Auto-activate invited members on login
               if (memberData.status === 'invited') {
                 try {
