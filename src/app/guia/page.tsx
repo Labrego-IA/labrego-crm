@@ -17,7 +17,6 @@ import {
   EnvelopeIcon,
   QuestionMarkCircleIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
 } from '@heroicons/react/24/outline'
 import {
   MixerHorizontalIcon,
@@ -41,7 +40,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'contatos',
     title: 'Gestao de Contatos',
-    icon: <UserGroupIcon className="w-6 h-6" />,
+    icon: <UserGroupIcon className="w-5 h-5" />,
     color: 'bg-blue-500',
     summary:
       'Aqui e onde ficam todos os seus contatos — as pessoas e empresas que voce conversa no dia a dia do seu trabalho.',
@@ -61,7 +60,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'funil',
     title: 'Funis de Vendas',
-    icon: <MixerHorizontalIcon className="w-6 h-6" />,
+    icon: <MixerHorizontalIcon className="w-5 h-5" />,
     color: 'bg-cyan-500',
     summary:
       'O funil e como um caminho que o cliente percorre desde o primeiro contato ate fechar negocio. Aqui voce acompanha cada etapa desse caminho.',
@@ -79,7 +78,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'produtividade',
     title: 'Produtividade',
-    icon: <ActivityLogIcon className="w-6 h-6" />,
+    icon: <ActivityLogIcon className="w-5 h-5" />,
     color: 'bg-violet-500',
     summary:
       'Essa pagina mostra o quanto voce e sua equipe estao produzindo. E como um "placar" do desempenho de cada um.',
@@ -97,7 +96,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'conversao',
     title: 'Conversao do Funil',
-    icon: <FunnelIcon className="w-6 h-6" />,
+    icon: <FunnelIcon className="w-5 h-5" />,
     color: 'bg-emerald-500',
     summary:
       'Aqui voce descobre quantos dos seus contatos realmente avancam e fecham negocio. E o "raio-x" do seu funil.',
@@ -115,7 +114,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'analytics',
     title: 'Analises & Insights',
-    icon: <BarChartIcon className="w-6 h-6" />,
+    icon: <BarChartIcon className="w-5 h-5" />,
     color: 'bg-amber-500',
     summary:
       'Essa e a pagina dos graficos e relatorios mais completos. Aqui voce tem uma visao geral de como o negocio esta indo.',
@@ -133,7 +132,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'projecao',
     title: 'Projecao de Vendas',
-    icon: <PresentationChartLineIcon className="w-6 h-6" />,
+    icon: <PresentationChartLineIcon className="w-5 h-5" />,
     color: 'bg-rose-500',
     summary:
       'Aqui o sistema tenta prever quanto voce vai vender nos proximos meses, com base no que ja esta no funil.',
@@ -151,7 +150,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'automacoes',
     title: 'Automacoes IA',
-    icon: <LightningBoltIcon className="w-6 h-6" />,
+    icon: <LightningBoltIcon className="w-5 h-5" />,
     color: 'bg-purple-500',
     summary:
       'Essa area esta sendo preparada! Em breve voce vai poder criar automacoes inteligentes que fazem tarefas repetitivas por voce.',
@@ -168,7 +167,7 @@ const moduleSections: GuideSection[] = [
   {
     id: 'campanhas',
     title: 'Campanhas',
-    icon: <TargetIcon className="w-6 h-6" />,
+    icon: <TargetIcon className="w-5 h-5" />,
     color: 'bg-teal-500',
     summary:
       'Aqui voce cria e envia campanhas de email para varios contatos de uma vez. Perfeito para divulgar novidades, ofertas ou manter contato.',
@@ -189,7 +188,7 @@ const agentSections: GuideSection[] = [
   {
     id: 'agente-config',
     title: 'Configuracao do Agente',
-    icon: <Cog6ToothIcon className="w-6 h-6" />,
+    icon: <Cog6ToothIcon className="w-5 h-5" />,
     color: 'bg-indigo-500',
     summary:
       'Aqui voce configura o seu agente de voz com IA — um assistente virtual que pode fazer ligacoes por voce!',
@@ -207,7 +206,7 @@ const agentSections: GuideSection[] = [
   {
     id: 'disparo',
     title: 'Disparo Massivo',
-    icon: <PhoneArrowUpRightIcon className="w-6 h-6" />,
+    icon: <PhoneArrowUpRightIcon className="w-5 h-5" />,
     color: 'bg-orange-500',
     summary:
       'Essa pagina e para disparar ligacoes em grande quantidade usando o agente de voz. Ideal para campanhas de contato.',
@@ -225,7 +224,7 @@ const agentSections: GuideSection[] = [
   {
     id: 'historico',
     title: 'Historico de Ligacoes',
-    icon: <ClockIcon className="w-6 h-6" />,
+    icon: <ClockIcon className="w-5 h-5" />,
     color: 'bg-slate-500',
     summary:
       'Aqui fica o registro de todas as ligacoes feitas pelo agente de voz. E como um diario de chamadas.',
@@ -245,7 +244,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'usuarios',
     title: 'Usuarios',
-    icon: <UsersIcon className="w-6 h-6" />,
+    icon: <UsersIcon className="w-5 h-5" />,
     color: 'bg-blue-600',
     summary:
       'Aqui voce gerencia quem tem acesso ao sistema. Pode convidar novas pessoas, definir cargos e controlar permissoes.',
@@ -263,7 +262,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'email-config',
     title: 'Email',
-    icon: <EnvelopeIcon className="w-6 h-6" />,
+    icon: <EnvelopeIcon className="w-5 h-5" />,
     color: 'bg-pink-500',
     summary:
       'Aqui voce configura o provedor de email que o sistema vai usar para enviar mensagens e campanhas.',
@@ -279,7 +278,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'funis-admin',
     title: 'Funis',
-    icon: <FunnelIcon className="w-6 h-6" />,
+    icon: <FunnelIcon className="w-5 h-5" />,
     color: 'bg-cyan-600',
     summary:
       'Aqui voce cria e configura os funis de vendas. Voce decide quais etapas cada funil vai ter.',
@@ -296,7 +295,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'icp',
     title: 'Perfis ICP',
-    icon: <TagIcon className="w-6 h-6" />,
+    icon: <TagIcon className="w-5 h-5" />,
     color: 'bg-lime-600',
     summary:
       'ICP significa "Perfil do Cliente Ideal". Aqui voce define como e o tipo de cliente que mais combina com o seu negocio.',
@@ -312,7 +311,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'centros-custo',
     title: 'Centros de Custo',
-    icon: <CurrencyDollarIcon className="w-6 h-6" />,
+    icon: <CurrencyDollarIcon className="w-5 h-5" />,
     color: 'bg-yellow-600',
     summary:
       'Aqui voce organiza os centros de custo para acompanhar de onde vem e para onde vai o dinheiro.',
@@ -328,7 +327,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'propostas',
     title: 'Propostas',
-    icon: <DocumentTextIcon className="w-6 h-6" />,
+    icon: <DocumentTextIcon className="w-5 h-5" />,
     color: 'bg-emerald-600',
     summary:
       'Aqui voce configura tudo relacionado a propostas comerciais: marca, produtos, layout e campos personalizados.',
@@ -346,7 +345,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'creditos',
     title: 'Creditos',
-    icon: <CreditCardIcon className="w-6 h-6" />,
+    icon: <CreditCardIcon className="w-5 h-5" />,
     color: 'bg-red-500',
     summary:
       'Aqui voce ve quantos creditos (acoes e minutos) sua empresa ainda tem disponiveis e o historico de uso.',
@@ -362,7 +361,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'estrategia',
     title: 'Estrategia Comercial',
-    icon: <BookOpenIcon className="w-6 h-6" />,
+    icon: <BookOpenIcon className="w-5 h-5" />,
     color: 'bg-fuchsia-500',
     summary:
       'Aqui voce define e organiza as estrategias comerciais da sua equipe, com templates prontos para diferentes situacoes.',
@@ -378,7 +377,7 @@ const adminSections: GuideSection[] = [
   {
     id: 'plano',
     title: 'Meu Plano',
-    icon: <Cog6ToothIcon className="w-6 h-6" />,
+    icon: <Cog6ToothIcon className="w-5 h-5" />,
     color: 'bg-gray-600',
     summary:
       'Aqui voce ve qual plano sua empresa esta usando e quais funcionalidades estao disponiveis.',
@@ -393,51 +392,53 @@ const adminSections: GuideSection[] = [
   },
 ]
 
-function GuideCard({ section }: { section: GuideSection }) {
-  const [expanded, setExpanded] = useState(true)
+function GuideItem({ section, accentColor }: { section: GuideSection; accentColor: string }) {
+  const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
+    <div className="bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-6 flex items-start gap-4"
+        className="w-full text-left p-4 sm:p-5 flex items-center gap-3.5 hover:bg-slate-50/50 transition-colors duration-150"
       >
-        <div className={`${section.color} w-12 h-12 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-sm`}>
+        <div className={`${section.color} w-9 h-9 rounded-lg flex items-center justify-center text-white flex-shrink-0`}>
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-slate-800 mb-1.5">{section.title}</h3>
-          <p className="text-base text-slate-600 leading-relaxed">{section.summary}</p>
+          <h3 className="text-sm font-semibold text-slate-800">{section.title}</h3>
+          <p className="text-xs text-slate-400 mt-0.5 truncate hidden sm:block">{section.summary}</p>
         </div>
-        <div className="flex-shrink-0 mt-1">
-          {expanded ? (
-            <ChevronUpIcon className="w-5 h-5 text-slate-400" />
-          ) : (
-            <ChevronDownIcon className="w-5 h-5 text-slate-400" />
-          )}
-        </div>
+        <ChevronDownIcon
+          className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {expanded && (
-        <div className="px-6 pb-6 pt-0">
+        <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
           <div className="border-t border-slate-100 pt-4">
-            <h4 className="text-sm font-semibold text-slate-700 mb-3">Como funciona:</h4>
-            <ul className="space-y-2.5 mb-4">
-              {section.details.map((detail, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-slate-600 leading-relaxed">
-                  <span className="w-2 h-2 rounded-full bg-[#13DEFC] flex-shrink-0 mt-1.5" />
-                  {detail}
-                </li>
-              ))}
-            </ul>
+            <p className="text-sm text-slate-600 leading-relaxed mb-4">
+              {section.summary}
+            </p>
+
+            <div className="mb-4">
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Como funciona</h4>
+              <ul className="space-y-2">
+                {section.details.map((detail, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+                    <span className={`w-1.5 h-1.5 rounded-full ${accentColor} flex-shrink-0 mt-1.5`} />
+                    {detail}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {section.tips && section.tips.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-4">
-                <h4 className="text-sm font-semibold text-amber-800 mb-2">Dicas:</h4>
+              <div className="bg-amber-50/70 border border-amber-100 rounded-lg px-3.5 py-3">
+                <h4 className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Dicas</h4>
                 <ul className="space-y-1.5">
                   {section.tips.map((tip, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-amber-700 leading-relaxed">
-                      <span className="flex-shrink-0">💡</span>
+                    <li key={i} className="flex items-start gap-2 text-sm text-amber-700/90 leading-relaxed">
+                      <span className="text-amber-500 flex-shrink-0 text-xs mt-0.5">&#9679;</span>
                       {tip}
                     </li>
                   ))}
@@ -451,80 +452,82 @@ function GuideCard({ section }: { section: GuideSection }) {
   )
 }
 
+function SectionGroup({
+  title,
+  description,
+  accentColor,
+  dotColor,
+  sections,
+  count,
+}: {
+  title: string
+  description: string
+  accentColor: string
+  dotColor: string
+  sections: GuideSection[]
+  count: number
+}) {
+  return (
+    <div className="mb-10">
+      <div className="flex items-center gap-3 mb-1">
+        <div className={`w-1 h-6 rounded-full ${accentColor}`} />
+        <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{count}</span>
+      </div>
+      <p className="text-sm text-slate-500 mb-4 ml-4">{description}</p>
+      <div className="space-y-3">
+        {sections.map((section) => (
+          <GuideItem key={section.id} section={section} accentColor={dotColor} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function GuiaPage() {
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-10 py-8">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       {/* Header */}
-      <div className="mb-12">
-        <div className="flex items-center gap-4 mb-5">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#13DEFC] to-[#09B00F] flex items-center justify-center shadow-lg">
-            <QuestionMarkCircleIcon className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800">Guia do Voxium</h1>
-            <p className="text-base text-slate-500">Entenda tudo sobre cada pagina do sistema</p>
-          </div>
-        </div>
-        <div className="bg-gradient-to-r from-[#13DEFC]/10 to-[#09B00F]/10 rounded-2xl p-6 border border-[#13DEFC]/20">
-          <p className="text-base text-slate-700 leading-relaxed">
-            Bem-vindo ao guia do Voxium! Aqui voce vai encontrar uma explicacao simples e direta de cada parte do sistema.
-            Clique em qualquer secao para expandir ou recolher os detalhes.
-            Nao se preocupe com termos tecnicos — explicamos tudo de um jeito facil de entender! 😊
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Guia do Voxium</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Entenda cada parte do sistema — clique para expandir os detalhes
           </p>
         </div>
       </div>
 
-      {/* Módulos Principais */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-1.5 h-7 rounded-full bg-[#13DEFC]" />
-          <h2 className="text-xl font-bold text-slate-800">Modulos Principais</h2>
-        </div>
-        <p className="text-base text-slate-500 mb-6 ml-4">
-          Essas sao as ferramentas do dia a dia. E aqui que voce vai passar a maior parte do tempo.
-        </p>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {moduleSections.map((section) => (
-            <GuideCard key={section.id} section={section} />
-          ))}
-        </div>
-      </div>
+      {/* Sections */}
+      <SectionGroup
+        title="Modulos Principais"
+        description="Ferramentas do dia a dia para gerenciar suas vendas."
+        accentColor="bg-[#13DEFC]"
+        dotColor="bg-[#13DEFC]"
+        sections={moduleSections}
+        count={moduleSections.length}
+      />
 
-      {/* Agentes de Voz */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-1.5 h-7 rounded-full bg-[#09B00F]" />
-          <h2 className="text-xl font-bold text-slate-800">Agentes de Voz (IA)</h2>
-        </div>
-        <p className="text-base text-slate-500 mb-6 ml-4">
-          Aqui fica tudo relacionado ao assistente virtual que faz ligacoes por voce usando inteligencia artificial.
-        </p>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {agentSections.map((section) => (
-            <GuideCard key={section.id} section={section} />
-          ))}
-        </div>
-      </div>
+      <SectionGroup
+        title="Agentes de Voz (IA)"
+        description="Assistente virtual que faz ligacoes usando inteligencia artificial."
+        accentColor="bg-[#09B00F]"
+        dotColor="bg-[#09B00F]"
+        sections={agentSections}
+        count={agentSections.length}
+      />
 
-      {/* Administração */}
-      <div className="mb-12">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-1.5 h-7 rounded-full bg-amber-500" />
-          <h2 className="text-xl font-bold text-slate-800">Administracao</h2>
-        </div>
-        <p className="text-base text-slate-500 mb-6 ml-4">
-          Essa area e mais para quem cuida das configuracoes do sistema. Se voce e administrador ou gestor, aqui e onde voce ajusta tudo.
-        </p>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          {adminSections.map((section) => (
-            <GuideCard key={section.id} section={section} />
-          ))}
-        </div>
-      </div>
+      <SectionGroup
+        title="Administracao"
+        description="Configuracoes do sistema para administradores e gestores."
+        accentColor="bg-amber-500"
+        dotColor="bg-amber-500"
+        sections={adminSections}
+        count={adminSections.length}
+      />
 
       {/* Footer */}
-      <div className="text-center py-8 border-t border-slate-200/60">
-        <p className="text-sm text-slate-400">
+      <div className="text-center py-8">
+        <p className="text-xs text-slate-400">
           Ficou com duvida? Fale com o suporte da sua empresa ou com o administrador do sistema.
         </p>
       </div>
