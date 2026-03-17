@@ -31,6 +31,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useCredits } from '@/hooks/useCredits'
 import type { OrgMember } from '@/types/organization'
 import { usePermissions } from '@/hooks/usePermissions'
+import { usePlan } from '@/hooks/usePlan'
 import { useVisibleStages } from '@/hooks/useVisibleStages'
 import { leadSourceOptions, leadSourceIcons, leadTypeOptions } from '@/lib/leadSources'
 import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
@@ -265,6 +266,7 @@ export default function FunilDetailPage() {
   const { userEmail, orgId, member } = useCrmUser()
   const credits = useCredits(orgId || undefined)
   const { viewScope, can } = usePermissions()
+  const { limits } = usePlan()
   const { filterStages } = useVisibleStages(funnelId)
 
   // Responsible filter (admin/manager)
@@ -1967,6 +1969,15 @@ export default function FunilDetailPage() {
       return
     }
     setNewContactErrors({})
+
+    // Check plan contact limit
+    if (orgId) {
+      const countSnap = await getDocs(query(collection(db, 'clients'), where('orgId', '==', orgId)))
+      if (countSnap.size >= limits.maxContacts) {
+        toast.error(`Limite de contatos atingido (${limits.maxContacts.toLocaleString('pt-BR')}). Faça upgrade do plano para adicionar mais contatos.`)
+        return
+      }
+    }
 
     setSavingNewContact(true)
     try {
