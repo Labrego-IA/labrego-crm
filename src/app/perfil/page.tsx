@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { auth, db, storage } from '@/lib/firebaseClient'
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
-  updatePassword,
   deleteUser,
 } from 'firebase/auth'
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
@@ -60,6 +59,64 @@ export default function PerfilPage() {
   const [deletePassword, setDeletePassword] = useState('')
   const [deleting, setDeleting] = useState(false)
 
+  // Profile editing
+  const [editDisplayName, setEditDisplayName] = useState(member?.displayName || '')
+  const [editPhone, setEditPhone] = useState(member?.phone || '')
+  const [savingProfile, setSavingProfile] = useState(false)
+
+  // Detect query params for password change confirmation
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success') === 'senha-alterada') {
+      toast.success('Senha alterada com sucesso!')
+      window.history.replaceState({}, '', '/perfil')
+    }
+    if (params.get('error')) {
+      const errors: Record<string, string> = {
+        'token-invalido': 'Link inválido ou expirado',
+        'token-expirado': 'Link expirado',
+        'token-ja-usado': 'Este link já foi utilizado',
+        'erro-interno': 'Erro interno ao alterar senha',
+      }
+      toast.error(errors[params.get('error')!] || 'Erro desconhecido')
+      window.history.replaceState({}, '', '/perfil')
+    }
+  }, [])
+
+  // Sync edit fields when member loads
+  useEffect(() => {
+    if (member?.displayName) setEditDisplayName(member.displayName)
+    if (member?.phone) setEditPhone(member.phone)
+  }, [member?.displayName, member?.phone])
+
+  const handleSaveProfile = async () => {
+    if (!editDisplayName.trim()) {
+      toast.error('O nome não pode estar vazio')
+      return
+    }
+    setSavingProfile(true)
+    try {
+      const idToken = await auth.currentUser?.getIdToken()
+      const res = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          displayName: editDisplayName.trim(),
+          phone: editPhone.trim() || undefined,
+        }),
+      })
+      if (!res.ok) throw new Error('Erro ao salvar')
+      toast.success('Perfil atualizado com sucesso')
+    } catch {
+      toast.error('Erro ao atualizar perfil')
+    } finally {
+      setSavingProfile(false)
+    }
+  }
+
   const displayPhoto = photoPreview || userPhoto
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,36 +165,48 @@ export default function PerfilPage() {
     e.preventDefault()
     if (!auth.currentUser || !userEmail) return
 
-    if (newPassword.length < 6) {
-      toast.error('A nova senha deve ter pelo menos 6 caracteres.')
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Preencha todos os campos')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('As senhas não coincidem.')
+      toast.error('As senhas não coincidem')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('A nova senha deve ter pelo menos 6 caracteres')
       return
     }
 
     setChangingPassword(true)
     try {
-      const credential = EmailAuthProvider.credential(userEmail, currentPassword)
-      await reauthenticateWithCredential(auth.currentUser, credential)
-      await updatePassword(auth.currentUser, newPassword)
-
-      toast.success('Senha alterada com sucesso!')
+      const idToken = await auth.currentUser?.getIdToken()
+      const res = await fetch('/api/profile/request-password-change', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.error === 'senha-atual-incorreta') {
+          toast.error('Senha atual incorreta')
+        } else {
+          toast.error('Erro ao processar solicitação')
+        }
+        return
+      }
+      toast.success('Email de confirmação enviado. Verifique sua caixa de entrada.')
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
       setShowPasswordSection(false)
-    } catch (err: any) {
-      const code = err?.code || ''
-      if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        toast.error('Senha atual incorreta.')
-      } else if (code === 'auth/too-many-requests') {
-        toast.error('Muitas tentativas. Aguarde alguns minutos.')
-      } else {
-        toast.error('Erro ao alterar senha. Tente novamente.')
-      }
+    } catch {
+      toast.error('Erro ao processar solicitação')
     } finally {
       setChangingPassword(false)
     }
@@ -266,8 +335,32 @@ export default function PerfilPage() {
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InfoField label="E-mail" value={userEmail || '--'} />
-          <InfoField label="Nome" value={member?.displayName || '--'} />
+          <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">E-mail</span>
+            <input
+              readOnly
+              value={userEmail || '--'}
+              className="w-full mt-0.5 text-sm font-medium text-slate-800 bg-transparent border-none outline-none cursor-not-allowed"
+            />
+          </div>
+          <div className="p-3 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Nome</span>
+            <input
+              value={editDisplayName}
+              onChange={(e) => setEditDisplayName(e.target.value)}
+              className="w-full mt-0.5 text-sm font-medium text-slate-800 bg-transparent border-none outline-none focus:ring-0"
+              placeholder="Seu nome"
+            />
+          </div>
+          <div className="p-3 rounded-xl bg-white border border-slate-200">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Telefone</span>
+            <input
+              value={editPhone}
+              onChange={(e) => setEditPhone(e.target.value)}
+              className="w-full mt-0.5 text-sm font-medium text-slate-800 bg-transparent border-none outline-none focus:ring-0"
+              placeholder="(11) 99999-9999"
+            />
+          </div>
           <InfoField label="Organização" value={orgName || '--'} />
           <InfoField label="Cargo" value={member?.role ? (ROLE_LABELS[member.role] || member.role) : '--'} />
           <InfoField
@@ -282,6 +375,26 @@ export default function PerfilPage() {
                 : '--'
             }
           />
+        </div>
+
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleSaveProfile}
+            disabled={savingProfile}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50"
+          >
+            {savingProfile ? (
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Salvando...
+              </>
+            ) : (
+              'Salvar alterações'
+            )}
+          </button>
         </div>
       </div>
 
