@@ -109,6 +109,7 @@ function NovasCampanhasContent() {
   const [clients, setClients] = useState<Cliente[]>([])
   const [loadingClients, setLoadingClients] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [contactSearch, setContactSearch] = useState('')
 
   // Reference data
   const [funnels, setFunnels] = useState<Funnel[]>([])
@@ -325,9 +326,20 @@ function NovasCampanhasContent() {
 
   /* ==================== Derived State ==================== */
 
+  const displayedClients = useMemo(() => {
+    if (!contactSearch.trim()) return clients
+    const q = contactSearch.toLowerCase()
+    return clients.filter(
+      (c) =>
+        c.name?.toLowerCase().includes(q) ||
+        c.email?.toLowerCase().includes(q) ||
+        c.company?.toLowerCase().includes(q),
+    )
+  }, [clients, contactSearch])
+
   const selectableClients = useMemo(
-    () => clients.filter((c) => c.email && c.email.trim() !== ''),
-    [clients],
+    () => displayedClients.filter((c) => c.email && c.email.trim() !== ''),
+    [displayedClients],
   )
 
   const selectedClients = useMemo(
@@ -889,10 +901,23 @@ function NovasCampanhasContent() {
 
           {/* Results */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            {/* Search bar */}
+            <div className="px-4 pt-3 pb-2">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={contactSearch}
+                  onChange={(e) => setContactSearch(e.target.value)}
+                  placeholder="Pesquisar por nome, email ou empresa..."
+                  className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                />
+              </div>
+            </div>
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-slate-700">
-                  {clients.length} contatos encontrados
+                  {displayedClients.length} contatos encontrados
                 </span>
                 <span className="text-xs text-primary-600 font-medium">
                   {selectedIds.size} selecionados
@@ -910,7 +935,7 @@ function NovasCampanhasContent() {
               <div className="flex items-center justify-center py-12">
                 <div className="h-6 w-6 animate-spin rounded-full border-3 border-primary-200 border-t-primary-600" />
               </div>
-            ) : clients.length === 0 ? (
+            ) : displayedClients.length === 0 ? (
               <div className="py-12 text-center text-sm text-slate-400">
                 Nenhum contato encontrado com os filtros selecionados
               </div>
@@ -934,7 +959,7 @@ function NovasCampanhasContent() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
-                    {clients.map((c) => {
+                    {displayedClients.map((c) => {
                       const hasEmail = c.email && c.email.trim() !== ''
                       return (
                         <tr key={c.id} className={`${!hasEmail ? 'opacity-50' : 'hover:bg-slate-50'}`}>
