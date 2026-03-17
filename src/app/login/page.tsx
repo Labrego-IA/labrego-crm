@@ -8,7 +8,9 @@ import {
   updateProfile,
   sendPasswordResetEmail,
   signInWithPopup,
+  signOut,
   GoogleAuthProvider,
+  getAdditionalUserInfo,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import Link from 'next/link'
@@ -142,20 +144,27 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleCadastro = async () => {
+  const handleGoogleCadastro = async (forceSelectAccount = false) => {
     setCadastroError(null)
     setGoogleCadastroLoading(true)
 
     try {
       console.log('[GoogleCadastro] Iniciando cadastro com Google...')
-      console.log('[GoogleCadastro] Firebase Auth config:', {
-        apiKey: auth.app.options.apiKey ? '✓ definida' : '✗ VAZIA',
-        authDomain: auth.app.options.authDomain || '✗ VAZIO',
-        projectId: auth.app.options.projectId || '✗ VAZIO',
-      })
       const provider = new GoogleAuthProvider()
-      console.log('[GoogleCadastro] Provider criado, abrindo popup...')
+      if (forceSelectAccount) {
+        provider.setCustomParameters({ prompt: 'select_account' })
+      }
       const result = await signInWithPopup(auth, provider)
+
+      const additionalInfo = getAdditionalUserInfo(result)
+      if (!additionalInfo?.isNewUser) {
+        console.log('[GoogleCadastro] Email já cadastrado, fazendo sign out...')
+        await signOut(auth)
+        setCadastroError('Este e-mail já está cadastrado. Use outro e-mail ou faça login.')
+        setGoogleCadastroLoading(false)
+        return
+      }
+
       console.log('[GoogleCadastro] Cadastro bem-sucedido!', {
         uid: result.user.uid,
         email: result.user.email,
@@ -164,15 +173,13 @@ export default function LoginPage() {
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
-      const message = err?.message || ''
       console.error('[GoogleCadastro] Erro no cadastro com Google:', {
         code,
-        message,
+        message: err?.message || '',
         fullError: err,
         customData: err?.customData,
       })
       if (code === 'auth/popup-closed-by-user') {
-        console.log('[GoogleCadastro] Usuário fechou o popup')
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
         setCadastroError('Já existe uma conta com esse e-mail usando outro método de login.')
@@ -525,7 +532,26 @@ export default function LoginPage() {
 
                   {cadastroError && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
-                      {cadastroError}
+                      <p>{cadastroError}</p>
+                      {cadastroError.includes('já está cadastrado') && (
+                        <div className="flex gap-3 mt-3">
+                          <button
+                            type="button"
+                            onClick={() => handleGoogleCadastro(true)}
+                            className="text-xs font-semibold text-[#13DEFC]/80 hover:text-[#13DEFC] transition-colors"
+                          >
+                            Selecionar outro e-mail
+                          </button>
+                          <span className="text-slate-600">|</span>
+                          <button
+                            type="button"
+                            onClick={() => switchTab('login')}
+                            className="text-xs font-semibold text-[#13DEFC]/80 hover:text-[#13DEFC] transition-colors"
+                          >
+                            Fazer login
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
