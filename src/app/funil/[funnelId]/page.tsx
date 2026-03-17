@@ -3614,309 +3614,7 @@ export default function FunilDetailPage() {
                     )}
                   </button>
 
-                  {/* Advanced Filters Modal */}
-                  {showAdvancedFilters && (
-                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-                      {/* Backdrop */}
-                      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
-
-                      {/* Modal */}
-                      <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200">
-                        {/* Modal Header */}
-                        <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-t-2xl">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center">
-                                <FunnelIcon className="w-4.5 h-4.5 text-primary-600" />
-                              </div>
-                              <div>
-                                <h4 className="text-base font-bold text-slate-800">Filtros Avançados</h4>
-                                <p className="text-xs text-slate-500">Filtre contatos por qualquer campo</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {activeAdvancedFiltersCount > 0 && (
-                                <button
-                                  onClick={clearAdvancedFilters}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
-                                >
-                                  <Cross2Icon className="w-3.5 h-3.5" />
-                                  Limpar
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setShowAdvancedFilters(false)}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 text-slate-400 hover:text-slate-600 transition-colors"
-                              >
-                                <XMarkIcon className="w-5 h-5" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Modal Content */}
-                        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-                          {/* Capital Social Range */}
-                          <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                              Capital Social (R$)
-                            </label>
-                            <div className="flex items-center gap-3">
-                              <input
-                                type="number"
-                                placeholder="Mínimo"
-                                value={advancedFilters.capitalSocialMin || ''}
-                                onChange={(e) => setAdvancedFilters(prev => ({
-                                  ...prev,
-                                  capitalSocialMin: Number(e.target.value) || 0
-                                }))}
-                                className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                              />
-                              <span className="text-slate-400 text-sm">até</span>
-                              <input
-                                type="number"
-                                placeholder="Máximo"
-                                value={advancedFilters.capitalSocialMax || ''}
-                                onChange={(e) => setAdvancedFilters(prev => ({
-                                  ...prev,
-                                  capitalSocialMax: Number(e.target.value) || 0
-                                }))}
-                                className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                              />
-                            </div>
-                            {advancedFilterOptions.maxCapitalSocial > 0 && (
-                              <p className="text-xs text-slate-400 mt-1">
-                                Máximo na base: R$ {advancedFilterOptions.maxCapitalSocial.toLocaleString('pt-BR')}
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Porte Empresa - Multi-select */}
-                          {advancedFilterOptions.porteOptions.length > 0 && (
-                            <div>
-                              <label className="block text-sm font-medium text-slate-700 mb-2">
-                                Porte da Empresa
-                              </label>
-                              <div className="flex flex-wrap gap-2">
-                                {advancedFilterOptions.porteOptions.map((porte) => (
-                                  <button
-                                    key={porte}
-                                    type="button"
-                                    onClick={() => {
-                                      setAdvancedFilters(prev => ({
-                                        ...prev,
-                                        porteEmpresa: prev.porteEmpresa.includes(porte)
-                                          ? prev.porteEmpresa.filter(p => p !== porte)
-                                          : [...prev.porteEmpresa, porte]
-                                      }))
-                                    }}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                                      advancedFilters.porteEmpresa.includes(porte)
-                                        ? 'bg-primary-100 text-primary-700 border-2 border-primary-400'
-                                        : 'bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200'
-                                    }`}
-                                  >
-                                    {porte}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Dropdowns grid - 1 col mobile, 2 cols desktop */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {/* Estado */}
-                            {advancedFilterOptions.estadoOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Estado</label>
-                                <select
-                                  value={advancedFilters.estado}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, estado: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todos</option>
-                                  {advancedFilterOptions.estadoOptions.map((e) => (
-                                    <option key={e} value={e}>{e}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Cidade */}
-                            {advancedFilterOptions.municipioOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Cidade</label>
-                                <select
-                                  value={advancedFilters.municipio}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, municipio: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todas</option>
-                                  {advancedFilterOptions.municipioOptions.map((m) => (
-                                    <option key={m} value={m}>{m}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Tipo */}
-                            {advancedFilterOptions.tipoOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo</label>
-                                <select
-                                  value={advancedFilters.tipo}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, tipo: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todos</option>
-                                  {advancedFilterOptions.tipoOptions.map((t) => (
-                                    <option key={t} value={t}>{t}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Natureza Jurídica */}
-                            {advancedFilterOptions.naturezaJuridicaOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Natureza Jurídica</label>
-                                <select
-                                  value={advancedFilters.naturezaJuridica}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, naturezaJuridica: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todas</option>
-                                  {advancedFilterOptions.naturezaJuridicaOptions.map((n) => (
-                                    <option key={n} value={n}>{n}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Situação */}
-                            {advancedFilterOptions.situacaoOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Situação</label>
-                                <select
-                                  value={advancedFilters.situacao}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, situacao: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todas</option>
-                                  {advancedFilterOptions.situacaoOptions.map((s) => (
-                                    <option key={s} value={s}>{s}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Setor/Indústria */}
-                            {advancedFilterOptions.industryOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Setor</label>
-                                <select
-                                  value={advancedFilters.industry}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, industry: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todos</option>
-                                  {advancedFilterOptions.industryOptions.map((i) => (
-                                    <option key={i} value={i}>{i}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Divider */}
-                          <div className="border-t border-slate-100 pt-4">
-                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Filtros de Lead</p>
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {/* Origem do Lead */}
-                            {advancedFilterOptions.leadSourceOptions.length > 0 && (
-                              <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Origem</label>
-                                <select
-                                  value={advancedFilters.leadSource}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadSource: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todas</option>
-                                  {advancedFilterOptions.leadSourceOptions.map((ls) => (
-                                    <option key={ls} value={ls}>{ls}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-
-                            {/* Tipo de Lead */}
-                            <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo de Lead</label>
-                              <select
-                                value={advancedFilters.leadType}
-                                onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadType: e.target.value as '' | 'Inbound' | 'Outbound' }))}
-                                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                              >
-                                <option value="">Todos</option>
-                                <option value="Inbound">Inbound</option>
-                                <option value="Outbound">Outbound</option>
-                              </select>
-                            </div>
-
-                            {/* Etapa do Funil */}
-                            <div className="sm:col-span-2">
-                              <label className="block text-xs font-medium text-slate-600 mb-1.5">Etapa do Funil</label>
-                              <select
-                                value={advancedFilters.funnelStage}
-                                onChange={(e) => setAdvancedFilters(prev => ({ ...prev, funnelStage: e.target.value }))}
-                                className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                              >
-                                <option value="">Todas</option>
-                                <option value="unassigned">Sem etapa</option>
-                                {funnelStages.map((stage) => (
-                                  <option key={stage.id} value={stage.id}>{stage.name}</option>
-                                ))}
-                              </select>
-                            </div>
-
-                            {/* Centro de Custos */}
-                            {costCenters.length > 0 && (
-                              <div className="sm:col-span-2">
-                                <label className="block text-xs font-medium text-slate-600 mb-1.5">Centro de Custos</label>
-                                <select
-                                  value={advancedFilters.costCenterId}
-                                  onChange={(e) => setAdvancedFilters(prev => ({ ...prev, costCenterId: e.target.value }))}
-                                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
-                                >
-                                  <option value="">Todos</option>
-                                  {costCenters.map((cc) => (
-                                    <option key={cc.id} value={cc.id}>{cc.code} - {cc.name}</option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Modal Footer */}
-                        <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-2xl">
-                          <div className="flex items-center justify-between">
-                            <p className="text-sm text-slate-600">
-                              <span className="font-semibold">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
-                            </p>
-                            <button
-                              onClick={() => setShowAdvancedFilters(false)}
-                              className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
-                            >
-                              Aplicar
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {/* Advanced Filters Modal moved outside sticky header to fix centering */}
                 </div>
 
                 {/* Period filter and export buttons moved to Report Modal (menu + > Gerar Relatório) */}
@@ -8256,12 +7954,308 @@ export default function FunilDetailPage() {
         </div>
       )}
 
-      {/* Overlay para fechar filtros avançados (fora do sticky header para evitar stacking context) */}
+      {/* Advanced Filters Modal - outside sticky header to avoid backdrop-blur stacking context */}
       {showAdvancedFilters && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setShowAdvancedFilters(false)}
-        />
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+          {/* Backdrop */}
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
+
+          {/* Modal */}
+          <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200">
+            {/* Modal Header */}
+            <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center">
+                    <FunnelIcon className="w-4.5 h-4.5 text-primary-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-slate-800">Filtros Avançados</h4>
+                    <p className="text-xs text-slate-500">Filtre contatos por qualquer campo</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {activeAdvancedFiltersCount > 0 && (
+                    <button
+                      onClick={clearAdvancedFilters}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                    >
+                      <Cross2Icon className="w-3.5 h-3.5" />
+                      Limpar
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowAdvancedFilters(false)}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    <XMarkIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              {/* Capital Social Range */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Capital Social (R$)
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    placeholder="Mínimo"
+                    value={advancedFilters.capitalSocialMin || ''}
+                    onChange={(e) => setAdvancedFilters(prev => ({
+                      ...prev,
+                      capitalSocialMin: Number(e.target.value) || 0
+                    }))}
+                    className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  />
+                  <span className="text-slate-400 text-sm">até</span>
+                  <input
+                    type="number"
+                    placeholder="Máximo"
+                    value={advancedFilters.capitalSocialMax || ''}
+                    onChange={(e) => setAdvancedFilters(prev => ({
+                      ...prev,
+                      capitalSocialMax: Number(e.target.value) || 0
+                    }))}
+                    className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  />
+                </div>
+                {advancedFilterOptions.maxCapitalSocial > 0 && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    Máximo na base: R$ {advancedFilterOptions.maxCapitalSocial.toLocaleString('pt-BR')}
+                  </p>
+                )}
+              </div>
+
+              {/* Porte Empresa - Multi-select */}
+              {advancedFilterOptions.porteOptions.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Porte da Empresa
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {advancedFilterOptions.porteOptions.map((porte) => (
+                      <button
+                        key={porte}
+                        type="button"
+                        onClick={() => {
+                          setAdvancedFilters(prev => ({
+                            ...prev,
+                            porteEmpresa: prev.porteEmpresa.includes(porte)
+                              ? prev.porteEmpresa.filter(p => p !== porte)
+                              : [...prev.porteEmpresa, porte]
+                          }))
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          advancedFilters.porteEmpresa.includes(porte)
+                            ? 'bg-primary-100 text-primary-700 border-2 border-primary-400'
+                            : 'bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200'
+                        }`}
+                      >
+                        {porte}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Dropdowns grid - 1 col mobile, 2 cols desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Estado */}
+                {advancedFilterOptions.estadoOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Estado</label>
+                    <select
+                      value={advancedFilters.estado}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, estado: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todos</option>
+                      {advancedFilterOptions.estadoOptions.map((e) => (
+                        <option key={e} value={e}>{e}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Cidade */}
+                {advancedFilterOptions.municipioOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Cidade</label>
+                    <select
+                      value={advancedFilters.municipio}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, municipio: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todas</option>
+                      {advancedFilterOptions.municipioOptions.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Tipo */}
+                {advancedFilterOptions.tipoOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo</label>
+                    <select
+                      value={advancedFilters.tipo}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, tipo: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todos</option>
+                      {advancedFilterOptions.tipoOptions.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Natureza Jurídica */}
+                {advancedFilterOptions.naturezaJuridicaOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Natureza Jurídica</label>
+                    <select
+                      value={advancedFilters.naturezaJuridica}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, naturezaJuridica: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todas</option>
+                      {advancedFilterOptions.naturezaJuridicaOptions.map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Situação */}
+                {advancedFilterOptions.situacaoOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Situação</label>
+                    <select
+                      value={advancedFilters.situacao}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, situacao: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todas</option>
+                      {advancedFilterOptions.situacaoOptions.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Setor/Indústria */}
+                {advancedFilterOptions.industryOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Setor</label>
+                    <select
+                      value={advancedFilters.industry}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, industry: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todos</option>
+                      {advancedFilterOptions.industryOptions.map((i) => (
+                        <option key={i} value={i}>{i}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-slate-100 pt-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Filtros de Lead</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Origem do Lead */}
+                {advancedFilterOptions.leadSourceOptions.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Origem</label>
+                    <select
+                      value={advancedFilters.leadSource}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadSource: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todas</option>
+                      {advancedFilterOptions.leadSourceOptions.map((ls) => (
+                        <option key={ls} value={ls}>{ls}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Tipo de Lead */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo de Lead</label>
+                  <select
+                    value={advancedFilters.leadType}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadType: e.target.value as '' | 'Inbound' | 'Outbound' }))}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  >
+                    <option value="">Todos</option>
+                    <option value="Inbound">Inbound</option>
+                    <option value="Outbound">Outbound</option>
+                  </select>
+                </div>
+
+                {/* Etapa do Funil */}
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Etapa do Funil</label>
+                  <select
+                    value={advancedFilters.funnelStage}
+                    onChange={(e) => setAdvancedFilters(prev => ({ ...prev, funnelStage: e.target.value }))}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  >
+                    <option value="">Todas</option>
+                    <option value="unassigned">Sem etapa</option>
+                    {funnelStages.map((stage) => (
+                      <option key={stage.id} value={stage.id}>{stage.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Centro de Custos */}
+                {costCenters.length > 0 && (
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Centro de Custos</label>
+                    <select
+                      value={advancedFilters.costCenterId}
+                      onChange={(e) => setAdvancedFilters(prev => ({ ...prev, costCenterId: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    >
+                      <option value="">Todos</option>
+                      {costCenters.map((cc) => (
+                        <option key={cc.id} value={cc.id}>{cc.code} - {cc.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-2xl">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-slate-600">
+                  <span className="font-semibold">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
+                </p>
+                <button
+                  onClick={() => setShowAdvancedFilters(false)}
+                  className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
+                >
+                  Aplicar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modal de Relatório */}
