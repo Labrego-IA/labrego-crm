@@ -8,7 +8,6 @@ import {
   updateProfile,
   sendPasswordResetEmail,
   signInWithPopup,
-  signOut,
   GoogleAuthProvider,
   getAdditionalUserInfo,
 } from 'firebase/auth'
@@ -100,95 +99,42 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleAuth = async () => {
     setLoginError(null)
-    setGoogleLoading(true)
-
-    try {
-      console.log('[GoogleLogin] Iniciando login com Google...')
-      console.log('[GoogleLogin] Firebase Auth config:', {
-        apiKey: auth.app.options.apiKey ? '✓ definida' : '✗ VAZIA',
-        authDomain: auth.app.options.authDomain || '✗ VAZIO',
-        projectId: auth.app.options.projectId || '✗ VAZIO',
-      })
-      const provider = new GoogleAuthProvider()
-      console.log('[GoogleLogin] Provider criado, abrindo popup...')
-      const result = await signInWithPopup(auth, provider)
-      console.log('[GoogleLogin] Login bem-sucedido!', {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-      })
-      router.replace('/contatos')
-    } catch (err: any) {
-      const code = err?.code || ''
-      const message = err?.message || ''
-      console.error('[GoogleLogin] Erro no login com Google:', {
-        code,
-        message,
-        fullError: err,
-        customData: err?.customData,
-      })
-      if (code === 'auth/popup-closed-by-user') {
-        console.log('[GoogleLogin] Usuário fechou o popup')
-        // Usuário fechou o popup, não mostra erro
-      } else if (code === 'auth/account-exists-with-different-credential') {
-        setLoginError('Já existe uma conta com esse e-mail usando outro método de login.')
-      } else if (code === 'auth/popup-blocked') {
-        setLoginError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
-      } else {
-        setLoginError(`Erro ao fazer login com Google. Tente novamente. (${code || 'sem código'})`)
-      }
-    } finally {
-      setGoogleLoading(false)
-    }
-  }
-
-  const handleGoogleCadastro = async (forceSelectAccount = false) => {
     setCadastroError(null)
+    setGoogleLoading(true)
     setGoogleCadastroLoading(true)
 
     try {
-      console.log('[GoogleCadastro] Iniciando cadastro com Google...')
       const provider = new GoogleAuthProvider()
-      if (forceSelectAccount) {
-        provider.setCustomParameters({ prompt: 'select_account' })
-      }
+      provider.setCustomParameters({ prompt: 'select_account' })
       const result = await signInWithPopup(auth, provider)
 
       const additionalInfo = getAdditionalUserInfo(result)
-      if (!additionalInfo?.isNewUser) {
-        console.log('[GoogleCadastro] Email já cadastrado, fazendo sign out...')
-        await signOut(auth)
-        setCadastroError('Este e-mail já está cadastrado. Use outro e-mail ou faça login.')
-        setGoogleCadastroLoading(false)
-        return
-      }
-
-      console.log('[GoogleCadastro] Cadastro bem-sucedido!', {
+      console.log('[GoogleAuth] Autenticação bem-sucedida!', {
         uid: result.user.uid,
         email: result.user.email,
-        displayName: result.user.displayName,
+        isNewUser: additionalInfo?.isNewUser,
       })
+
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
-      console.error('[GoogleCadastro] Erro no cadastro com Google:', {
-        code,
-        message: err?.message || '',
-        fullError: err,
-        customData: err?.customData,
-      })
+      console.error('[GoogleAuth] Erro:', { code, message: err?.message || '' })
+
+      const setError = activeTab === 'login' ? setLoginError : setCadastroError
+
       if (code === 'auth/popup-closed-by-user') {
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
-        setCadastroError('Já existe uma conta com esse e-mail usando outro método de login.')
+        setError('Já existe uma conta com esse e-mail usando outro método de login.')
       } else if (code === 'auth/popup-blocked') {
-        setCadastroError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
+        setError('O popup foi bloqueado pelo navegador. Permita popups e tente novamente.')
       } else {
-        setCadastroError(`Erro ao cadastrar com Google. Tente novamente. (${code || 'sem código'})`)
+        setError(`Erro ao continuar com Google. Tente novamente. (${code || 'sem código'})`)
       }
     } finally {
+      setGoogleLoading(false)
       setGoogleCadastroLoading(false)
     }
   }
@@ -386,7 +332,7 @@ export default function LoginPage() {
                   {/* Botão Login com Google */}
                   <button
                     type="button"
-                    onClick={handleGoogleLogin}
+                    onClick={handleGoogleAuth}
                     disabled={googleLoading}
                     className="w-full flex items-center justify-center gap-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all"
                   >
@@ -532,26 +478,7 @@ export default function LoginPage() {
 
                   {cadastroError && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
-                      <p>{cadastroError}</p>
-                      {cadastroError.includes('já está cadastrado') && (
-                        <div className="flex gap-3 mt-3">
-                          <button
-                            type="button"
-                            onClick={() => handleGoogleCadastro(true)}
-                            className="text-xs font-semibold text-[#13DEFC]/80 hover:text-[#13DEFC] transition-colors"
-                          >
-                            Selecionar outro e-mail
-                          </button>
-                          <span className="text-slate-600">|</span>
-                          <button
-                            type="button"
-                            onClick={() => switchTab('login')}
-                            className="text-xs font-semibold text-[#13DEFC]/80 hover:text-[#13DEFC] transition-colors"
-                          >
-                            Fazer login
-                          </button>
-                        </div>
-                      )}
+                      {cadastroError}
                     </div>
                   )}
 
@@ -583,7 +510,7 @@ export default function LoginPage() {
                   {/* Botão Cadastro com Google */}
                   <button
                     type="button"
-                    onClick={() => handleGoogleCadastro()}
+                    onClick={handleGoogleAuth}
                     disabled={googleCadastroLoading}
                     className="w-full flex items-center justify-center gap-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all"
                   >
