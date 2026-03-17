@@ -46,13 +46,14 @@ type ClientBasic = {
   funnelId?: string
   funnelStageUpdatedAt?: string
   maxDays?: number
+  assignedTo?: string
 }
 
 export default function FunnelHubPage() {
   const router = useRouter()
   const { orgId, member } = useCrmUser()
   const { funnels, loading: loadingFunnels } = useVisibleFunnels()
-  const { can } = usePermissions()
+  const { can, viewScope } = usePermissions()
   const { limits } = usePlan()
 
   const canManage = can('canManageFunnels')
@@ -105,6 +106,7 @@ export default function FunnelHubPage() {
           funnelStage: data.funnelStage,
           funnelId: data.funnelId,
           funnelStageUpdatedAt: data.funnelStageUpdatedAt,
+          assignedTo: data.assignedTo,
         }
       }))
       setLoadingData(false)
@@ -138,6 +140,14 @@ export default function FunnelHubPage() {
   }, [icpProfiles])
 
   // Compute contacts per funnel
+  // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+  const visibleClients = useMemo(() => {
+    if (viewScope === 'own' && member?.id) {
+      return allClients.filter((c) => c.assignedTo === member.id)
+    }
+    return allClients
+  }, [allClients, viewScope, member?.id])
+
   const funnelStats = useMemo(() => {
     const stats: Record<string, { contacts: number; stages: number }> = {}
 
@@ -147,7 +157,7 @@ export default function FunnelHubPage() {
       const stageIds = new Set(allFunnelStages.map(s => s.id))
 
       // Count clients in these stages
-      const contactCount = allClients.filter(c => c.funnelStage && stageIds.has(c.funnelStage)).length
+      const contactCount = visibleClients.filter(c => c.funnelStage && stageIds.has(c.funnelStage)).length
 
       stats[funnel.id] = {
         contacts: contactCount,
@@ -156,7 +166,7 @@ export default function FunnelHubPage() {
     }
 
     return stats
-  }, [funnels, allStages, allClients])
+  }, [funnels, allStages, visibleClients])
 
   // Check plan limit
   const atFunnelLimit = funnels.length >= limits.maxFunnels
@@ -228,8 +238,8 @@ export default function FunnelHubPage() {
   const deletingFunnelContacts = useMemo(() => {
     if (!deletingFunnel) return []
     const stageIds = new Set(allStages.filter(s => s.funnelId === deletingFunnel.id).map(s => s.id))
-    return allClients.filter(c => c.funnelStage && stageIds.has(c.funnelStage))
-  }, [deletingFunnel, allStages, allClients])
+    return visibleClients.filter(c => c.funnelStage && stageIds.has(c.funnelStage))
+  }, [deletingFunnel, allStages, visibleClients])
 
   // Delete funnel
   const handleDelete = async () => {
@@ -405,7 +415,7 @@ export default function FunnelHubPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Funis de Vendas</h1>
             <p className="text-sm text-slate-500 mt-1">
-              {funnels.length} funil{funnels.length !== 1 ? 's' : ''} &middot; {allClients.length} contato{allClients.length !== 1 ? 's' : ''} no total
+              {funnels.length} funil{funnels.length !== 1 ? 's' : ''} &middot; {visibleClients.length} contato{visibleClients.length !== 1 ? 's' : ''} no total
             </p>
           </div>
           {canManage && (

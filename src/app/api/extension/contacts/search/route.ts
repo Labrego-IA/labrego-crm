@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
   if (!orgContext) {
     return NextResponse.json({ success: false, error: 'Organização não encontrada' }, { status: 403 })
   }
-  const { orgId } = orgContext
+  const { orgId, member } = orgContext
+  const viewScope = member?.permissions?.viewScope ?? 'own'
+  const isOwn = viewScope === 'own' && member?.role !== 'admin'
 
   try {
     const phone = req.nextUrl.searchParams.get('phone')
@@ -33,6 +35,10 @@ export async function GET(req: NextRequest) {
 
     const normalizedPhone = normalizePhone(phone)
     const db = getAdminDb()
+
+    // Helper: check if contact belongs to this user when viewScope is 'own'
+    const canAccess = (data: Record<string, unknown>) =>
+      !isOwn || data.assignedTo === member.id
 
     // Buscar por telefone exato primeiro (filtrado por orgId)
     let snapshot = await db
@@ -57,7 +63,7 @@ export async function GET(req: NextRequest) {
       const allContacts = await db.collection('clients').where('orgId', '==', orgId).get()
       const found = allContacts.docs.find((doc) => {
         const data = doc.data()
-        return normalizePhone(data.phone || '') === normalizedPhone
+        return normalizePhone(data.phone || '') === normalizedPhone && canAccess(data)
       })
 
       if (found) {
@@ -72,14 +78,16 @@ export async function GET(req: NextRequest) {
       }
     } else {
       const doc = snapshot.docs[0]
-      return NextResponse.json({
-        success: true,
-        found: true,
-        contact: {
-          id: doc.id,
-          ...doc.data(),
-        },
-      })
+      if (canAccess(doc.data())) {
+        return NextResponse.json({
+          success: true,
+          found: true,
+          contact: {
+            id: doc.id,
+            ...doc.data(),
+          },
+        })
+      }
     }
 
     return NextResponse.json({

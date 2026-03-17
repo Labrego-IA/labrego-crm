@@ -118,7 +118,8 @@ export async function GET(req: NextRequest) {
   if (!orgContext) {
     return NextResponse.json({ success: false, error: 'Organização não encontrada' }, { status: 403 })
   }
-  const { orgId } = orgContext
+  const { orgId, member } = orgContext
+  const viewScope = member?.permissions?.viewScope ?? 'own'
 
   try {
     const db = getAdminDb()
@@ -136,6 +137,11 @@ export async function GET(req: NextRequest) {
       id: doc.id,
       ...doc.data(),
     }))
+
+    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+    if (viewScope === 'own' && member?.role !== 'admin') {
+      contacts = contacts.filter((c: any) => c.assignedTo === member.id)
+    }
 
     // Filtrar por busca se necessário
     if (search) {

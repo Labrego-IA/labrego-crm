@@ -11,6 +11,7 @@ import {
   getDocs,
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import {
   FunnelIcon,
@@ -56,6 +57,7 @@ type Funnel = { id: string; name: string }
 
 type ClientData = {
   id: string
+  assignedTo?: string
   assignedToName?: string
   icpProfileId?: string
   industry?: string
@@ -237,7 +239,8 @@ function ConversionTable({
 // ═══════════════════════════════════════════════════════════
 
 export default function ConversaoPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, member } = useCrmUser()
+  const { viewScope } = usePermissions()
   const pageRef = useRef<HTMLDivElement>(null)
 
   // ── State ──────────────────────────────────────────────
@@ -281,10 +284,13 @@ export default function ConversaoPage() {
       const orgClientIds = new Set<string>()
       const clientMap = new Map<string, ClientData>()
       clientsSnap.docs.forEach(d => {
-        orgClientIds.add(d.id)
         const data = d.data()
+        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+        if (viewScope === 'own' && member?.id && data.assignedTo !== member.id) return
+        orgClientIds.add(d.id)
         clientMap.set(d.id, {
           id: d.id,
+          assignedTo: data.assignedTo || undefined,
           assignedToName: data.assignedToName || undefined,
           icpProfileId: data.icpProfileId || undefined,
           industry: data.industry || undefined,
@@ -326,7 +332,8 @@ export default function ConversaoPage() {
     })
 
     return () => { if (logsUnsub) logsUnsub() }
-  }, [orgId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgId, viewScope, member?.id])
 
   useEffect(() => {
     if (!orgId) return

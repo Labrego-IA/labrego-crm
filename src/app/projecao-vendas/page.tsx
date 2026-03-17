@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -39,6 +40,7 @@ type Cliente = {
   lastFollowUpAt?: string
   dealValue?: number
   closingProbability?: number
+  assignedTo?: string
 }
 
 type FunnelStage = {
@@ -77,7 +79,8 @@ function formatCurrencyShort(value: number): string {
 }
 
 export default function ProjecaoVendasPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, member } = useCrmUser()
+  const { viewScope } = usePermissions()
 
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [stages, setStages] = useState<FunnelStage[]>([])
@@ -146,6 +149,9 @@ export default function ProjecaoVendasPage() {
   // Filter clients: dealValue > 0 OR probability > 0, then apply user filters
   const eligibleClients = useMemo(() => {
     return clients.filter(c => {
+      // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+      if (viewScope === 'own' && member?.id && c.assignedTo !== member.id) return false
+
       const stage = stages.find(s => s.id === c.funnelStage)
       const prob = getClientProbability(c, stage)
       const isEligible = (c.dealValue && c.dealValue > 0) || prob > 0
@@ -175,7 +181,7 @@ export default function ProjecaoVendasPage() {
 
       return true
     })
-  }, [clients, stages, searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb])
+  }, [clients, stages, searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb, viewScope, member?.id])
 
   // Reset pagination when filters change
   useEffect(() => {

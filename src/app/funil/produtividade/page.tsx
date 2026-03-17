@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import {
   ChartBarIcon,
   ArrowPathIcon,
@@ -222,7 +223,8 @@ const ACTION_TYPE_CONFIG: Record<ActionType, { label: string; icon: React.Compon
 }
 
 export default function ProdutividadePage() {
-  const { orgId } = useCrmUser()
+  const { orgId, member } = useCrmUser()
+  const { viewScope } = usePermissions()
   const [entries, setEntries] = useState<ProductivityEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -247,6 +249,8 @@ export default function ProdutividadePage() {
       const clientsMap: { [id: string]: { name: string; stage: string } } = {}
       clientsSnap.docs.forEach((doc) => {
         const data = doc.data()
+        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+        if (viewScope === 'own' && member?.id && data.assignedTo !== member.id) return
         const stageName = data.funnelStage ? stagesMap[data.funnelStage] || 'Sem etapa' : 'Sem etapa'
         clientsMap[doc.id] = {
           name: data.name || data.empresa || 'Cliente desconhecido',
@@ -317,7 +321,7 @@ export default function ProdutividadePage() {
     if (!orgId) return
     fetchProductivityData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId])
+  }, [orgId, viewScope, member?.id])
 
   const handleRefresh = () => {
     setRefreshing(true)

@@ -38,6 +38,7 @@ import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import MemberSelector from '@/components/MemberSelector'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
+import { usePermissions } from '@/hooks/usePermissions'
 
 // Types
 type Cliente = {
@@ -180,7 +181,8 @@ type CostCenter = {
 export default function ContatosPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { userEmail, orgId } = useCrmUser()
+  const { userEmail, orgId, member } = useCrmUser()
+  const { viewScope } = usePermissions()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
   const [costCenters, setCostCenters] = useState<CostCenter[]>([])
@@ -837,6 +839,11 @@ export default function ContatosPage() {
   const filteredClients = useMemo(() => {
     let result = [...clients]
 
+    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+    if (viewScope === 'own' && member?.id) {
+      result = result.filter((c) => c.assignedTo === member.id)
+    }
+
     // Quick funnel filter — includes contacts with no stage or orphaned stage IDs
     if (quickFunnelFilter === 'no-funnel') {
       const funnelIdSet = new Set(funnels.map(f => f.id))
@@ -887,7 +894,7 @@ export default function ContatosPage() {
     }
 
     return result
-  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels])
+  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels, viewScope, member?.id])
 
   // ── Excel style helpers ────────────────────────────────────
   const getExcelStyles = useCallback(() => {
