@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -7954,9 +7955,9 @@ export default function FunilDetailPage() {
         </div>
       )}
 
-      {/* Advanced Filters Modal - outside sticky header to avoid backdrop-blur stacking context */}
-      {showAdvancedFilters && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+      {/* Advanced Filters Modal - rendered via portal to escape overflow-hidden ancestors */}
+      {showAdvancedFilters && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" role="dialog" aria-modal="true">
           {/* Backdrop */}
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
 
@@ -8255,7 +8256,8 @@ export default function FunilDetailPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modal de Relatório */}
