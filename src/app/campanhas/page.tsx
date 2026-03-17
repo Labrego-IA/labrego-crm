@@ -245,12 +245,21 @@ function CampanhasContent() {
         </div>
         <button
           onClick={() => router.push('/campanhas/nova')}
-          className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-700 transition-colors"
+          className="hidden md:flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-700 transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
           Nova Campanha
         </button>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={() => router.push('/campanhas/nova')}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Nova campanha"
+      >
+        <PlusIcon className="h-6 w-6" />
+      </button>
 
       {/* Dashboard KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

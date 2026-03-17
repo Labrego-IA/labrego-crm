@@ -183,6 +183,13 @@ export default function UsuariosPage() {
 
   // Firebase Auth users state
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([])
+  // Block confirmation
+  const [blockMember, setBlockMember] = useState<OrgMember | null>(null)
+  const [blockLoading, setBlockLoading] = useState(false)
+
+  // Actions menu
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
 
   /* ---------------------- Real-time subscription ------------------------ */
 
@@ -407,6 +414,53 @@ export default function UsuariosPage() {
     }
   }
 
+  /* ---------------------- Block/Unblock handler ------------------------- */
+
+  const handleBlock = async () => {
+    if (!orgId || !blockMember || !userEmail) return
+    const action = blockMember.status === 'suspended' ? 'unblock' : 'block'
+    setBlockLoading(true)
+    try {
+      const res = await fetch('/api/admin/members/block', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': userEmail,
+        },
+        body: JSON.stringify({ orgId, memberId: blockMember.id, action }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Erro ao atualizar status')
+      }
+      toast.success(
+        action === 'block'
+          ? `${blockMember.displayName} foi bloqueado`
+          : `${blockMember.displayName} foi desbloqueado`,
+      )
+      setBlockMember(null)
+    } catch (error) {
+      console.error('Error blocking member:', error)
+      const message = error instanceof Error ? error.message : 'Erro ao atualizar status'
+      toast.error(message)
+    } finally {
+      setBlockLoading(false)
+    }
+  }
+
+  /* ---------------------- Close actions menu on outside click ----------- */
+
+  useEffect(() => {
+    if (!openMenuId) return
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [openMenuId])
+
   /* ---------------------- Modal close handlers ------------------------- */
 
   // Unsaved changes confirmation state
@@ -538,7 +592,7 @@ export default function UsuariosPage() {
             type="button"
             disabled={atLimit}
             onClick={() => setShowAddModal(true)}
-            className={`${ui.btnPrimary} ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={atLimit ? 'Limite do plano atingido' : 'Adicionar membro'}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -547,6 +601,19 @@ export default function UsuariosPage() {
             Adicionar membro
           </button>
         </div>
+
+        {/* Mobile: FAB flutuante */}
+        {!atLimit && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+            aria-label="Adicionar membro"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        )}
 
         {/* =================== Plan limit bar =================== */}
         <div className={`${ui.card} px-5 py-4`}>
@@ -737,32 +804,73 @@ export default function UsuariosPage() {
                             {formatJoinedDate(m.joinedAt)}
                           </td>
                           <td className="px-5 py-3 text-center">
-                            <div className="inline-flex items-center gap-1">
+                            <div className="relative inline-block" ref={openMenuId === m.id ? menuRef : undefined}>
                               <button
                                 type="button"
-                                onClick={() => openEditModal(m)}
-                                className="rounded-lg p-1.5 text-gray-500 hover:bg-primary-50 hover:text-primary-700 transition"
-                                title="Editar usuario"
+                                onClick={() => setOpenMenuId(openMenuId === m.id ? null : m.id)}
+                                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
+                                title="Acoes"
                               >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                                 </svg>
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => setDeleteMember(m)}
-                                disabled={isSelf}
-                                className={`rounded-lg p-1.5 transition ${
-                                  isSelf
-                                    ? 'text-gray-300 cursor-not-allowed'
-                                    : 'text-gray-500 hover:bg-red-50 hover:text-red-600'
-                                }`}
-                                title={isSelf ? 'Voce nao pode se remover' : 'Remover membro'}
-                              >
-                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                </svg>
-                              </button>
+                              {openMenuId === m.id && (
+                                <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 animate-scale-in">
+                                  <button
+                                    type="button"
+                                    onClick={() => { openEditModal(m); setOpenMenuId(null) }}
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                  >
+                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                                    </svg>
+                                    Editar
+                                  </button>
+                                  {!isSelf && (
+                                    <button
+                                      type="button"
+                                      onClick={() => { setBlockMember(m); setOpenMenuId(null) }}
+                                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition ${
+                                        m.status === 'suspended'
+                                          ? 'text-emerald-700 hover:bg-emerald-50'
+                                          : 'text-amber-700 hover:bg-amber-50'
+                                      }`}
+                                    >
+                                      {m.status === 'suspended' ? (
+                                        <>
+                                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                          </svg>
+                                          Desbloquear
+                                        </>
+                                      ) : (
+                                        <>
+                                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                          </svg>
+                                          Bloquear
+                                        </>
+                                      )}
+                                    </button>
+                                  )}
+                                  {!isSelf && (
+                                    <>
+                                      <div className="border-t border-gray-100 my-1" />
+                                      <button
+                                        type="button"
+                                        onClick={() => { setDeleteMember(m); setOpenMenuId(null) }}
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                                      >
+                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                        </svg>
+                                        Remover
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -825,28 +933,72 @@ export default function UsuariosPage() {
                         </span>
                         <span className="text-gray-400">{formatJoinedDate(m.joinedAt)}</span>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="relative" ref={openMenuId === `mobile-${m.id}` ? menuRef : undefined}>
                         <button
                           type="button"
-                          onClick={() => openEditModal(m)}
-                          className="rounded-lg p-1.5 text-gray-500 hover:bg-primary-50 hover:text-primary-700 transition"
+                          onClick={() => setOpenMenuId(openMenuId === `mobile-${m.id}` ? null : `mobile-${m.id}`)}
+                          className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                           </svg>
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteMember(m)}
-                          disabled={isSelf}
-                          className={`rounded-lg p-1.5 transition ${
-                            isSelf ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-red-50 hover:text-red-600'
-                          }`}
-                        >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                          </svg>
-                        </button>
+                        {openMenuId === `mobile-${m.id}` && (
+                          <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 animate-scale-in">
+                            <button
+                              type="button"
+                              onClick={() => { openEditModal(m); setOpenMenuId(null) }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            >
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                              </svg>
+                              Editar
+                            </button>
+                            {!isSelf && (
+                              <button
+                                type="button"
+                                onClick={() => { setBlockMember(m); setOpenMenuId(null) }}
+                                className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition ${
+                                  m.status === 'suspended'
+                                    ? 'text-emerald-700 hover:bg-emerald-50'
+                                    : 'text-amber-700 hover:bg-amber-50'
+                                }`}
+                              >
+                                {m.status === 'suspended' ? (
+                                  <>
+                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                    Desbloquear
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                    Bloquear
+                                  </>
+                                )}
+                              </button>
+                            )}
+                            {!isSelf && (
+                              <>
+                                <div className="border-t border-gray-100 my-1" />
+                                <button
+                                  type="button"
+                                  onClick={() => { setDeleteMember(m); setOpenMenuId(null) }}
+                                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                                >
+                                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                  </svg>
+                                  Remover
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1075,6 +1227,70 @@ export default function UsuariosPage() {
                     </>
                   ) : (
                     'Salvar alteracoes'
+                  )}
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
+
+        {/* =================== Block Confirmation Modal =================== */}
+        {blockMember && (
+          <Modal isOpen onClose={() => setBlockMember(null)} size="sm" centered>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full shrink-0 ${
+                  blockMember.status === 'suspended' ? 'bg-emerald-100' : 'bg-amber-100'
+                }`}>
+                  {blockMember.status === 'suspended' ? (
+                    <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'} usuario
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {blockMember.status === 'suspended' ? (
+                      <>
+                        Deseja desbloquear{' '}
+                        <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
+                        ({blockMember.email})? O usuario podera acessar o sistema novamente.
+                      </>
+                    ) : (
+                      <>
+                        Deseja bloquear{' '}
+                        <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
+                        ({blockMember.email})? O usuario nao podera fazer login enquanto estiver bloqueado.
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+                <button type="button" onClick={() => setBlockMember(null)} className={ui.btn}>
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBlock}
+                  disabled={blockLoading}
+                  className={`${blockMember.status === 'suspended' ? ui.btnPrimary : 'inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 shadow-sm transition active:scale-[0.99]'} ${blockLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {blockLoading ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      {blockMember.status === 'suspended' ? 'Desbloqueando...' : 'Bloqueando...'}
+                    </>
+                  ) : (
+                    blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'
                   )}
                 </button>
               </div>

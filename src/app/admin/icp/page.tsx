@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   collection,
   query,
@@ -34,6 +34,7 @@ import {
   PORTE_EMPRESA_OPTIONS,
   ESTADOS_BR,
 } from '@/types/icp'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
@@ -52,6 +53,8 @@ export default function AdminIcpPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState(EMPTY_ICP_PROFILE)
+  const [initialForm, setInitialForm] = useState(EMPTY_ICP_PROFILE)
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
 
   // Delete confirmation state
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null }>({
@@ -115,13 +118,15 @@ export default function AdminIcpPage() {
 
   const openCreate = () => {
     setEditingId(null)
-    setForm({ ...EMPTY_ICP_PROFILE, criteria: { ...EMPTY_ICP_CRITERIA } })
+    const emptyForm = { ...EMPTY_ICP_PROFILE, criteria: { ...EMPTY_ICP_CRITERIA } }
+    setForm(emptyForm)
+    setInitialForm(emptyForm)
     setShowModal(true)
   }
 
   const openEdit = (profile: IcpProfile) => {
     setEditingId(profile.id)
-    setForm({
+    const editForm = {
       name: profile.name,
       description: profile.description,
       color: profile.color,
@@ -130,7 +135,9 @@ export default function AdminIcpPage() {
       productIds: [...profile.productIds],
       isActive: profile.isActive,
       priority: profile.priority,
-    })
+    }
+    setForm(editForm)
+    setInitialForm(editForm)
     setShowModal(true)
   }
 
@@ -225,6 +232,27 @@ export default function AdminIcpPage() {
     }))
   }
 
+  const hasUnsavedChanges = useCallback(() => {
+    return JSON.stringify(form) !== JSON.stringify(initialForm)
+  }, [form, initialForm])
+
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowModal(false)
+      setForm(EMPTY_ICP_PROFILE)
+      setEditingId(null)
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = () => {
+    setShowConfirmClose(false)
+    setShowModal(false)
+    setForm(EMPTY_ICP_PROFILE)
+    setEditingId(null)
+  }
+
   if (!can('canManageFunnels') && !can('canManageSettings')) {
     return (
       <div className="p-8 text-center text-neutral-500">
@@ -234,7 +262,7 @@ export default function AdminIcpPage() {
   }
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+    <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -247,12 +275,21 @@ export default function AdminIcpPage() {
         </div>
         <button
           onClick={openCreate}
-          className="btn-primary flex items-center gap-2"
+          className="btn-primary hidden md:inline-flex items-center gap-2"
         >
           <PlusIcon className="w-4 h-4" />
           Novo Perfil
         </button>
       </div>
+
+      {/* Mobile: FAB flutuante */}
+      <button
+        onClick={openCreate}
+        className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+        aria-label="Novo perfil ICP"
+      >
+        <PlusIcon className="w-6 h-6" />
+      </button>
 
       {/* Loading */}
       {loading && (
@@ -403,6 +440,13 @@ export default function AdminIcpPage() {
         </div>
       )}
 
+      {/* Confirm Close Dialog */}
+      <ConfirmCloseDialog
+        isOpen={showConfirmClose}
+        onConfirm={confirmCloseModal}
+        onCancel={() => setShowConfirmClose(false)}
+      />
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -412,7 +456,7 @@ export default function AdminIcpPage() {
                 {editingId ? 'Editar Perfil ICP' : 'Novo Perfil ICP'}
               </h2>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="p-1 text-neutral-400 hover:text-neutral-600"
               >
                 <XMarkIcon className="w-5 h-5" />
@@ -744,7 +788,7 @@ export default function AdminIcpPage() {
             {/* Footer */}
             <div className="flex justify-end gap-3 p-4 sm:p-5 border-t border-neutral-200">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-800"
               >
                 Cancelar

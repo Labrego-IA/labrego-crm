@@ -428,7 +428,7 @@ export default function FunnelHubPage() {
               ) : (
                 <button
                   onClick={(e) => { e.stopPropagation(); setShowCreateModal(true) }}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+                  className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
                 >
                   <PlusIcon className="w-4 h-4" />
                   Novo Funil
@@ -437,6 +437,17 @@ export default function FunnelHubPage() {
             </div>
           )}
         </div>
+
+        {/* Mobile: FAB flutuante */}
+        {canManage && !atFunnelLimit && (
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
+            aria-label="Novo funil"
+          >
+            <PlusIcon className="w-6 h-6" />
+          </button>
+        )}
 
         {/* Funnel Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

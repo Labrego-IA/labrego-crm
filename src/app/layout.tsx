@@ -90,7 +90,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     getDocs(query(membersRef)).then((snap) => {
       const members = snap.docs
         .map(d => ({ id: d.id, ...d.data() } as OrgMember))
-        .filter(m => m.status === 'active')
+        .filter(m => m.role !== 'admin' && m.status !== 'suspended')
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
       setOrgMembers(members)
     }).catch(err => {
@@ -151,6 +151,13 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 bestDoc = sorted[0]
               }
               const memberData = { id: bestDoc.id, ...bestDoc.data() } as OrgMember
+              // Block suspended members from accessing the app
+              if (memberData.status === 'suspended') {
+                console.warn('[layout] Member is suspended, signing out:', memberData.email)
+                await signOut(auth)
+                router.replace('/login?blocked=1')
+                return
+              }
               // Auto-activate invited members on login
               if (memberData.status === 'invited') {
                 try {
