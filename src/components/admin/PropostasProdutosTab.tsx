@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import {
@@ -16,6 +16,8 @@ import {
 import { toast } from 'sonner'
 import type { Product, ProductScheduleEntry } from '@/types/product'
 import { EMPTY_PRODUCT } from '@/types/product'
+import Modal from '@/components/Modal'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 function normalize(str: string): string {
   return str
@@ -35,6 +37,7 @@ export default function PropostasProdutosTab() {
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState(EMPTY_PRODUCT)
+  const initialFormRef = useRef(JSON.stringify(EMPTY_PRODUCT))
   const [search, setSearch] = useState('')
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
@@ -63,13 +66,15 @@ export default function PropostasProdutosTab() {
 
   const openNew = () => {
     setEditing(null)
-    setForm({ ...EMPTY_PRODUCT })
+    const empty = { ...EMPTY_PRODUCT, schedule: [] as ProductScheduleEntry[] }
+    setForm(empty)
+    initialFormRef.current = JSON.stringify(empty)
     setShowForm(true)
   }
 
   const openEdit = (product: Product) => {
     setEditing(product)
-    setForm({
+    const formData = {
       name: product.name,
       description: product.description,
       price: product.price,
@@ -77,9 +82,32 @@ export default function PropostasProdutosTab() {
       margin: product.margin,
       tax: product.tax,
       schedule: product.schedule || [],
-    })
+    }
+    setForm(formData)
+    initialFormRef.current = JSON.stringify(formData)
     setShowForm(true)
   }
+
+  const hasUnsavedChanges = useCallback(() => {
+    return JSON.stringify(form) !== initialFormRef.current
+  }, [form])
+
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
+
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowForm(false)
+      setEditing(null)
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = useCallback(() => {
+    setShowConfirmClose(false)
+    setShowForm(false)
+    setEditing(null)
+  }, [])
 
   const handleSave = async () => {
     if (!orgId) return
@@ -219,8 +247,13 @@ export default function PropostasProdutosTab() {
     )
   }
 
-  if (showForm) {
-    return (
+  const renderProductModal = () => (
+    <>
+    <Modal
+      isOpen={showForm}
+      onClose={handleCloseModal}
+      size="2xl"
+    >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">
@@ -228,14 +261,16 @@ export default function PropostasProdutosTab() {
           </h3>
           <button
             type="button"
-            onClick={() => { setShowForm(false); setEditing(null) }}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            onClick={handleCloseModal}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            Cancelar
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
-        <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
+        <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
@@ -348,12 +383,12 @@ export default function PropostasProdutosTab() {
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
           <button
             type="button"
-            onClick={() => { setShowForm(false); setEditing(null) }}
+            onClick={handleCloseModal}
             className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800"
           >
             Cancelar
@@ -367,8 +402,14 @@ export default function PropostasProdutosTab() {
           </button>
         </div>
       </div>
-    )
-  }
+    </Modal>
+    <ConfirmCloseDialog
+      isOpen={showConfirmClose}
+      onConfirm={confirmCloseModal}
+      onCancel={() => setShowConfirmClose(false)}
+    />
+    </>
+  )
 
   const renderSortIcon = (column: SortColumn) => (
     <svg
@@ -395,6 +436,7 @@ export default function PropostasProdutosTab() {
 
   return (
     <div className="space-y-4">
+      {renderProductModal()}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">
           {filteredProducts.length === products.length
