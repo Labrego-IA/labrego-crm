@@ -9,6 +9,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
 import {
@@ -228,7 +229,8 @@ export default function AnalyticsPage() {
 }
 
 function AnalyticsDashboard() {
-  const { orgId } = useCrmUser()
+  const { orgId, member } = useCrmUser()
+  const { viewScope } = usePermissions()
 
   /* ─── State ─── */
   const [activeTab, setActiveTab] = useState<TabId>('overview')
@@ -284,12 +286,16 @@ function AnalyticsDashboard() {
 
   const filteredClients = useMemo(() => {
     let list = clientsRef.current
+    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+    if (viewScope === 'own' && member?.id) {
+      list = list.filter(c => c.assignedTo === member.id)
+    }
     if (selectedFunnel !== 'all') {
       const funnelStageIds = new Set(stagesRef.current.filter(s => s.funnelId === selectedFunnel).map(s => s.id))
       list = list.filter(c => funnelStageIds.has(c.funnelStage as string))
     }
     return list
-  }, [selectedFunnel, dataVersion]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedFunnel, dataVersion, viewScope, member?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredStages = useMemo(() => {
     if (selectedFunnel === 'all') return stagesRef.current
