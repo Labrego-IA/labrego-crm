@@ -3,6 +3,7 @@
 import { createContext, useContext, useMemo, ReactNode } from 'react'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
+import { useImpersonation } from './ImpersonationContext'
 
 interface CrmUserContextType {
   userEmail: string | null
@@ -34,9 +35,19 @@ export function CrmUserProvider({
   orgPlan = null,
   member = null,
 }: CrmUserContextType & { children: ReactNode }) {
+  const { impersonatedMember, isImpersonating } = useImpersonation()
+
   const value = useMemo(
-    () => ({ userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member }),
-    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member],
+    () => ({
+      userEmail: isImpersonating ? impersonatedMember!.email : userEmail,
+      userUid: isImpersonating ? impersonatedMember!.userId : userUid,
+      userPhoto: isImpersonating ? (impersonatedMember!.photoUrl || null) : userPhoto,
+      orgId,
+      orgName,
+      orgPlan,
+      member: isImpersonating ? impersonatedMember : member,
+    }),
+    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member, impersonatedMember, isImpersonating],
   )
   return (
     <CrmUserContext.Provider value={value}>

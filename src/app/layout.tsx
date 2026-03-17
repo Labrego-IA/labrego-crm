@@ -5,10 +5,11 @@ import '@/polyfills'
 import { ReactNode, useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
-import { doc, getDoc, updateDoc, collectionGroup, query, where, getDocs } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, collectionGroup, query, where, getDocs, collection } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebaseClient'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
+import { PLAN_DISPLAY } from '@/types/plan'
 import { Inter } from 'next/font/google'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,6 +21,7 @@ import { getScreenLabel } from '@/lib/screenLabels'
 import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
+import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
 import { useCredits } from '@/hooks/useCredits'
 
 const inter = Inter({
@@ -45,6 +47,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [member, setMember] = useState<OrgMember | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [impersonateMenuOpen, setImpersonateMenuOpen] = useState(false)
+  const [orgMembers, setOrgMembers] = useState<OrgMember[]>([])
+  const impersonateMenuRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -64,6 +69,34 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [userMenuOpen])
+
+  // Fechar menu de impersonação ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (impersonateMenuRef.current && !impersonateMenuRef.current.contains(e.target as Node)) {
+        setImpersonateMenuOpen(false)
+      }
+    }
+    if (impersonateMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [impersonateMenuOpen])
+
+  // Carregar membros da organização quando admin
+  useEffect(() => {
+    if (!orgId || !member || member.role !== 'admin') return
+    const membersRef = collection(db, 'organizations', orgId, 'members')
+    getDocs(query(membersRef)).then((snap) => {
+      const members = snap.docs
+        .map(d => ({ id: d.id, ...d.data() } as OrgMember))
+        .filter(m => m.status === 'active')
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+      setOrgMembers(members)
+    }).catch(err => {
+      console.error('[layout] Failed to load org members:', err)
+    })
+  }, [orgId, member])
 
   const handleLogout = async () => {
     try {
@@ -257,7 +290,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         <link rel="apple-touch-icon" href="/icon-512.png" />
       </head>
       <body className="bg-slate-50">
-        <div className="flex h-screen overflow-hidden">
+        <ImpersonationProvider>
+        <div className="flex flex-col h-screen overflow-hidden">
+        <ImpersonationBanner orgPlan={orgPlan} />
+        <div className="flex flex-1 overflow-hidden">
           {/* Sidebar - Desktop */}
           <aside
             className={`
@@ -366,6 +402,25 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       {actionBalance} · {minuteBalance}m
                     </span>
                   )}
+
+                  {/* Impersonation button - Admin only */}
+                  {member?.role === 'admin' && orgMembers.length > 0 && (
+                    <div className="relative" ref={impersonateMenuRef}>
+                      <ImpersonateButton
+                        onClick={() => setImpersonateMenuOpen(!impersonateMenuOpen)}
+                        isOpen={impersonateMenuOpen}
+                      />
+                      {impersonateMenuOpen && (
+                        <ImpersonateDropdown
+                          members={orgMembers}
+                          currentUserEmail={userEmail}
+                          orgPlan={orgPlan}
+                          onClose={() => setImpersonateMenuOpen(false)}
+                        />
+                      )}
+                    </div>
+                  )}
+
                   <span className="hidden md:inline text-sm text-slate-500">{formatDateTime(currentTime)}</span>
                   <div className="relative" ref={userMenuRef}>
                     <button
@@ -437,8 +492,178 @@ export default function RootLayout({ children }: CrmLayoutProps) {
             </div>
           </main>
         </div>
+        </div>
+        </ImpersonationProvider>
         <Toaster />
       </body>
     </html>
+  )
+}
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admin',
+  manager: 'Gerente',
+  seller: 'Vendedor',
+  viewer: 'Visualizador',
+}
+
+function ImpersonateButton({ onClick, isOpen }: { onClick: () => void; isOpen: boolean }) {
+  const { isImpersonating } = useImpersonation()
+  return (
+    <button
+      onClick={onClick}
+      className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+        isImpersonating
+          ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+      }`}
+      title="Ver como outro usuário"
+    >
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+      {isImpersonating ? 'Visualizando como...' : 'Ver como'}
+      <svg className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  )
+}
+
+function ImpersonateDropdown({
+  members,
+  currentUserEmail,
+  orgPlan,
+  onClose,
+}: {
+  members: OrgMember[]
+  currentUserEmail: string | null
+  orgPlan: PlanId | null
+  onClose: () => void
+}) {
+  const { startImpersonation, stopImpersonation, isImpersonating, impersonatedMember } = useImpersonation()
+  const [search, setSearch] = useState('')
+
+  const planLabel = orgPlan ? PLAN_DISPLAY[orgPlan]?.displayName || orgPlan : 'Sem plano'
+
+  const filteredMembers = members.filter(m => {
+    if (!search) return true
+    const term = search.toLowerCase()
+    return m.displayName.toLowerCase().includes(term) || m.email.toLowerCase().includes(term)
+  })
+
+  return (
+    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-scale-in">
+      <div className="px-4 py-2 border-b border-slate-100">
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ver como usuário</p>
+        <p className="text-[11px] text-slate-400 mt-0.5">Plano: {planLabel}</p>
+      </div>
+
+      {isImpersonating && (
+        <button
+          onClick={() => {
+            stopImpersonation()
+            onClose()
+          }}
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors border-b border-slate-100"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Voltar para minha conta
+        </button>
+      )}
+
+      <div className="px-3 py-2">
+        <input
+          type="text"
+          placeholder="Buscar usuário..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          autoFocus
+        />
+      </div>
+
+      <div className="max-h-64 overflow-y-auto">
+        {filteredMembers.map((m) => {
+          const isCurrentUser = m.email === currentUserEmail
+          const isImpersonated = impersonatedMember?.id === m.id
+          return (
+            <button
+              key={m.id}
+              onClick={() => {
+                if (isCurrentUser) {
+                  stopImpersonation()
+                } else {
+                  startImpersonation(m)
+                }
+                onClose()
+              }}
+              disabled={isImpersonated}
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                isImpersonated
+                  ? 'bg-primary-50 text-primary-700'
+                  : 'hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-semibold text-slate-600">
+                  {m.displayName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {m.displayName}
+                  {isCurrentUser && <span className="text-xs text-slate-400 ml-1">(você)</span>}
+                </p>
+                <p className="text-xs text-slate-400 truncate">{m.email}</p>
+              </div>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
+                m.role === 'admin' ? 'bg-purple-100 text-purple-700' :
+                m.role === 'manager' ? 'bg-blue-100 text-blue-700' :
+                m.role === 'seller' ? 'bg-green-100 text-green-700' :
+                'bg-slate-100 text-slate-600'
+              }`}>
+                {ROLE_LABELS[m.role] || m.role}
+              </span>
+            </button>
+          )
+        })}
+        {filteredMembers.length === 0 && (
+          <p className="text-sm text-slate-400 text-center py-4">Nenhum usuário encontrado</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ImpersonationBanner({ orgPlan }: { orgPlan: PlanId | null }) {
+  const { isImpersonating, impersonatedMember, stopImpersonation } = useImpersonation()
+  if (!isImpersonating || !impersonatedMember) return null
+
+  const planLabel = orgPlan ? PLAN_DISPLAY[orgPlan]?.displayName || orgPlan : ''
+
+  return (
+    <div className="bg-amber-500 text-white px-4 py-1.5 text-center text-sm font-medium shadow-md z-[60]">
+      <div className="flex items-center justify-center gap-2">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <span>
+          Visualizando como <strong>{impersonatedMember.displayName}</strong>
+          {' '}({ROLE_LABELS[impersonatedMember.role] || impersonatedMember.role})
+          {planLabel && <> &middot; Plano: {planLabel}</>}
+        </span>
+        <button
+          onClick={stopImpersonation}
+          className="ml-3 px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded text-xs font-semibold transition-colors"
+        >
+          Sair
+        </button>
+      </div>
+    </div>
   )
 }
