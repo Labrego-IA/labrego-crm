@@ -164,17 +164,38 @@ export default function UsuariosPage() {
 
   /* ---------------------- Real-time subscription ------------------------ */
 
+  // Verify which userIds still exist in Firebase Auth
+  const verifyAuthUsers = useCallback(async (items: OrgMember[]): Promise<OrgMember[]> => {
+    if (!orgId || !userEmail || items.length === 0) return items
+    const userIds = items.map((m) => m.userId).filter(Boolean)
+    if (userIds.length === 0) return items
+    try {
+      const res = await fetch('/api/admin/members/verify-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
+        body: JSON.stringify({ orgId, userIds }),
+      })
+      if (!res.ok) return items // fallback: show all if verification fails
+      const { validUserIds } = await res.json() as { validUserIds: string[] }
+      const validSet = new Set(validUserIds)
+      return items.filter((m) => !m.userId || validSet.has(m.userId))
+    } catch {
+      return items // fallback: show all if request fails
+    }
+  }, [orgId, userEmail])
+
   useEffect(() => {
     if (!orgId) return
     const q = query(collection(db, 'organizations', orgId, 'members'))
     const unsub = onSnapshot(
       q,
-      (snap) => {
+      async (snap) => {
         const items: OrgMember[] = snap.docs.map((d) => ({
           id: d.id,
           ...d.data(),
         })) as OrgMember[]
-        setMembers(items)
+        const verified = await verifyAuthUsers(items)
+        setMembers(verified)
         setLoading(false)
       },
       (error) => {
@@ -184,7 +205,7 @@ export default function UsuariosPage() {
       },
     )
     return () => unsub()
-  }, [orgId])
+  }, [orgId, verifyAuthUsers])
 
   /* ---------------------- Add member handler ---------------------------- */
 
