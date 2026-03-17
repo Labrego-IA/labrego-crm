@@ -35,6 +35,45 @@ export function hasGmailCredentials(): boolean {
   return Boolean(user && pass)
 }
 
+function getHostingerCredentials() {
+  return {
+    host: process.env.HOSTINGER_SMTP_HOST?.trim() || 'smtp.hostinger.com',
+    port: parseInt(process.env.HOSTINGER_SMTP_PORT || '465', 10),
+    user: process.env.HOSTINGER_SMTP_USER?.trim(),
+    pass: process.env.HOSTINGER_SMTP_PASS?.trim(),
+    fromName: process.env.HOSTINGER_SMTP_FROM_NAME?.trim() || 'Voxium CRM',
+  }
+}
+
+export function hasHostingerCredentials(): boolean {
+  const { user, pass } = getHostingerCredentials()
+  return Boolean(user && pass)
+}
+
+function createTransporter() {
+  if (hasHostingerCredentials()) {
+    const { host, port, user, pass, fromName } = getHostingerCredentials()
+    return {
+      transporter: nodemailer.createTransport({
+        host,
+        port,
+        secure: port === 465,
+        auth: { user, pass },
+      }),
+      from: `${fromName} <${user}>`,
+    }
+  }
+  const { user, pass } = getGmailCredentials()
+  if (!user || !pass) throw new Error('Nenhuma credencial SMTP configurada.')
+  return {
+    transporter: nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass },
+    }),
+    from: `Voxium <${user}>`,
+  }
+}
+
 function normalizeRecipients(to: string | string[]): string[] {
   const list = Array.isArray(to) ? to : [to]
   return list
@@ -65,14 +104,16 @@ async function logEmailEvent(
 }
 
 export async function sendEmail({ to, subject, react }: SendEmailParams) {
-  const { user, pass } = getGmailCredentials()
   const recipients = normalizeRecipients(to)
   if (recipients.length === 0)
     throw new Error('sendEmail called without any valid recipients')
 
-  if (!user || !pass) {
+  let transport: { transporter: nodemailer.Transporter; from: string }
+  try {
+    transport = createTransporter()
+  } catch {
     console.warn(
-      '[email] Missing GMAIL_USER or GMAIL_PASS environment variables. Email delivery skipped.'
+      '[email] No SMTP credentials configured. Email delivery skipped.'
     )
     await logEmailEvent('skipped', {
       recipients,
@@ -82,16 +123,11 @@ export async function sendEmail({ to, subject, react }: SendEmailParams) {
     return
   }
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user, pass },
-  })
-
   const html = await render(react)
 
   try {
-    await transporter.sendMail({
-      from: `Voxium <${user}>`,
+    await transport.transporter.sendMail({
+      from: transport.from,
       to: 'undisclosed-recipients:;',
       bcc: recipients.join(', '),
       subject,

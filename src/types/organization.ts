@@ -30,6 +30,7 @@ export interface OrgMember {
   email: string
   role: 'admin' | 'manager' | 'seller' | 'viewer'
   displayName: string
+  phone?: string
   photoUrl?: string
   permissions: MemberPermissions
   status: 'active' | 'invited' | 'suspended'
