@@ -5171,7 +5171,10 @@ export default function FunilDetailPage() {
                         Nova Etapa
                       </h4>
                       <button
-                        onClick={() => setShowQuickAddStage(false)}
+                        onClick={() => guardedClose(
+                          !!newStageName.trim(),
+                          () => { setShowQuickAddStage(false); setNewStageName(''); setNewStageColor(0); setNewStageProbability(50) }
+                        )}
                         className="p-1 hover:bg-white/20 rounded-lg transition-colors"
                       >
                         <Cross2Icon className="w-4 h-4 text-white" />
@@ -5192,7 +5195,10 @@ export default function FunilDetailPage() {
                               handleAddStage()
                               setShowQuickAddStage(false)
                             }
-                            if (e.key === 'Escape') setShowQuickAddStage(false)
+                            if (e.key === 'Escape') guardedClose(
+                              !!newStageName.trim(),
+                              () => { setShowQuickAddStage(false); setNewStageName(''); setNewStageColor(0); setNewStageProbability(50) }
+                            )
                           }}
                         />
                       </div>
@@ -5225,7 +5231,10 @@ export default function FunilDetailPage() {
                       </div>
                       <div className="flex gap-2 pt-1">
                         <button
-                          onClick={() => setShowQuickAddStage(false)}
+                          onClick={() => guardedClose(
+                            !!newStageName.trim(),
+                            () => { setShowQuickAddStage(false); setNewStageName(''); setNewStageColor(0); setNewStageProbability(50) }
+                          )}
                           className="flex-1 px-3 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                         >
                           Cancelar
@@ -7523,7 +7532,10 @@ export default function FunilDetailPage() {
       {/* Bulk Move Modal */}
       {showBulkMoveModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={resetBulkMoveModal} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => guardedClose(
+            !!(bulkMoveFromStage || bulkMoveToStage),
+            resetBulkMoveModal
+          )} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl m-4 max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
@@ -7762,7 +7774,10 @@ export default function FunilDetailPage() {
             {/* Footer */}
             <div className="p-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
               <button
-                onClick={resetBulkMoveModal}
+                onClick={() => guardedClose(
+                  !!(bulkMoveFromStage || bulkMoveToStage),
+                  resetBulkMoveModal
+                )}
                 className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
@@ -7840,11 +7855,10 @@ export default function FunilDetailPage() {
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => {
-              setShowBulkCostCenterModal(false)
-              setBulkCostCenterStage('')
-              setBulkCostCenterId('')
-            }}
+            onClick={() => guardedClose(
+              !!(bulkCostCenterStage || bulkCostCenterId),
+              () => { setShowBulkCostCenterModal(false); setBulkCostCenterStage(''); setBulkCostCenterId('') }
+            )}
           />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4">
             {/* Header */}
@@ -7928,11 +7942,10 @@ export default function FunilDetailPage() {
             {/* Footer */}
             <div className="p-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between rounded-b-2xl">
               <button
-                onClick={() => {
-                  setShowBulkCostCenterModal(false)
-                  setBulkCostCenterStage('')
-                  setBulkCostCenterId('')
-                }}
+                onClick={() => guardedClose(
+                  !!(bulkCostCenterStage || bulkCostCenterId),
+                  () => { setShowBulkCostCenterModal(false); setBulkCostCenterStage(''); setBulkCostCenterId('') }
+                )}
                 className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
@@ -8263,7 +8276,10 @@ export default function FunilDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowReportModal(false)}
+            onClick={() => guardedClose(
+              !!(reportDateFrom || reportDateTo),
+              () => { setShowReportModal(false); setReportDateFrom(''); setReportDateTo('') }
+            )}
           />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
@@ -8277,7 +8293,10 @@ export default function FunilDetailPage() {
                 </div>
               </div>
               <button
-                onClick={() => setShowReportModal(false)}
+                onClick={() => guardedClose(
+                  !!(reportDateFrom || reportDateTo),
+                  () => { setShowReportModal(false); setReportDateFrom(''); setReportDateTo('') }
+                )}
                 className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 <XMarkIcon className="w-5 h-5 text-slate-400" />
@@ -8343,7 +8362,10 @@ export default function FunilDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => !forcingCadence && setForceCadenceStageId(null)}
+            onClick={() => !forcingCadence && guardedClose(
+              forceCadenceLimit !== 10,
+              () => { setForceCadenceStageId(null); setForceCadenceLimit(10) }
+            )}
           />
           <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-semibold text-slate-900">Forçar Cadência</h3>
@@ -8368,7 +8390,10 @@ export default function FunilDetailPage() {
               <button
                 type="button"
                 className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                onClick={() => setForceCadenceStageId(null)}
+                onClick={() => guardedClose(
+                  forceCadenceLimit !== 10,
+                  () => { setForceCadenceStageId(null); setForceCadenceLimit(10) }
+                )}
                 disabled={forcingCadence}
               >
                 Cancelar
@@ -8391,7 +8416,10 @@ export default function FunilDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowNewContactModal(false)}
+            onClick={() => guardedClose(
+              !!(newContactForm.name || newContactForm.phone || newContactForm.email || newContactForm.company || newContactForm.document || newContactForm.industry || newContactForm.description || newContactForm.birthday || newContactForm.returnAlert || newContactForm.leadSource || newContactForm.leadType || newContactForm.costCenterId || newContactPhotoFile || newContactPartners.length > 0),
+              () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
+            )}
           />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
@@ -8406,7 +8434,10 @@ export default function FunilDetailPage() {
                 </div>
               </div>
               <button
-                onClick={() => setShowNewContactModal(false)}
+                onClick={() => guardedClose(
+                  !!(newContactForm.name || newContactForm.phone || newContactForm.email || newContactForm.company || newContactForm.document || newContactForm.industry || newContactForm.description || newContactForm.birthday || newContactForm.returnAlert || newContactForm.leadSource || newContactForm.leadType || newContactForm.costCenterId || newContactPhotoFile || newContactPartners.length > 0),
+                  () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
+                )}
                 className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
               >
                 <Cross2Icon className="w-5 h-5 text-slate-500" />
@@ -8695,7 +8726,10 @@ export default function FunilDetailPage() {
             {/* Footer */}
             <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
               <button
-                onClick={() => setShowNewContactModal(false)}
+                onClick={() => guardedClose(
+                  !!(newContactForm.name || newContactForm.phone || newContactForm.email || newContactForm.company || newContactForm.document || newContactForm.industry || newContactForm.description || newContactForm.birthday || newContactForm.returnAlert || newContactForm.leadSource || newContactForm.leadType || newContactForm.costCenterId || newContactPhotoFile || newContactPartners.length > 0),
+                  () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
+                )}
                 className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancelar
@@ -8832,7 +8866,10 @@ export default function FunilDetailPage() {
       {/* Cross-Funnel Transfer Modal (Story 15.3) */}
       {showCrossFunnelModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowCrossFunnelModal(false)} />
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => guardedClose(
+            !!(crossFunnelTarget || crossFunnelTargetStage),
+            () => { setShowCrossFunnelModal(false); setCrossFunnelTarget(''); setCrossFunnelTargetStage('') }
+          )} />
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
             <h3 className="text-lg font-bold text-slate-900">Transferir para outro Funil</h3>
             <p className="text-sm text-slate-500">{bulkSelectedIds.size} contato{bulkSelectedIds.size !== 1 ? 's' : ''} selecionado{bulkSelectedIds.size !== 1 ? 's' : ''}</p>
@@ -8869,7 +8906,10 @@ export default function FunilDetailPage() {
 
             <div className="flex justify-end gap-3 pt-2">
               <button
-                onClick={() => setShowCrossFunnelModal(false)}
+                onClick={() => guardedClose(
+                  !!(crossFunnelTarget || crossFunnelTargetStage),
+                  () => { setShowCrossFunnelModal(false); setCrossFunnelTarget(''); setCrossFunnelTargetStage('') }
+                )}
                 className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 Cancelar
