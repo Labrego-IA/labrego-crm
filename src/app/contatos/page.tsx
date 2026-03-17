@@ -1630,7 +1630,7 @@ export default function ContatosPage() {
   const hasActiveFilters = Object.values(columnFilters).some((v) => v) || quickFunnelFilter !== 'all'
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -1833,8 +1833,154 @@ export default function ContatosPage() {
         </div>
       )}
 
-      {/* Table Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+      {/* Mobile Cards View */}
+      <div className="md:hidden">
+        {loading ? (
+          <Skeleton variant="table-row" count={4} className="py-4" />
+        ) : paginatedClients.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-8">
+            <div className="flex flex-col items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                <PersonIcon className="w-6 h-6 text-slate-400" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-slate-600">Nenhum contato encontrado</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  {hasActiveFilters ? 'Tente ajustar os filtros' : 'Adicione seu primeiro contato'}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {paginatedClients.map((client) => {
+              const stageColor = getStageColor(client.funnelStage)
+              const daysInStage = calculateDaysSince(client.funnelStageUpdatedAt)
+              const daysFollowUp = calculateDaysSince(client.lastFollowUpAt)
+              return (
+                <div
+                  key={client.id}
+                  onClick={() => router.push(`/contatos/${client.id}`)}
+                  className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 active:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  {/* Top: Avatar + Name + Stage */}
+                  <div className="flex items-center gap-3 mb-3">
+                    {client.photoUrl ? (
+                      <Image
+                        src={client.photoUrl}
+                        alt={client.name}
+                        width={40}
+                        height={40}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center text-primary-600 font-semibold text-sm flex-shrink-0">
+                        {client.name?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-slate-800 truncate">{client.name}</p>
+                      {client.company && (
+                        <p className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5">
+                          <BuildingOfficeIcon className="w-3 h-3 flex-shrink-0" />
+                          {client.company}
+                        </p>
+                      )}
+                    </div>
+                    {client.funnelStage && (
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium flex-shrink-0 ${stageColor.bg} ${stageColor.text}`}>
+                        {getStageName(client.funnelStage)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Info Row */}
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500">
+                    {client.phone && (
+                      <span className="flex items-center gap-1">
+                        <MobileIcon className="w-3 h-3" />
+                        {client.phone}
+                      </span>
+                    )}
+                    {client.email && (
+                      <span className="flex items-center gap-1 truncate max-w-[180px]">
+                        <EnvelopeClosedIcon className="w-3 h-3 flex-shrink-0" />
+                        {client.email}
+                      </span>
+                    )}
+                    {client.leadSource && (
+                      <span className="flex items-center gap-1">
+                        {leadSourceIcons[client.leadSource] && (
+                          <Image
+                            src={leadSourceIcons[client.leadSource]}
+                            alt={client.leadSource}
+                            width={12}
+                            height={12}
+                            className="w-3 h-3"
+                          />
+                        )}
+                        {client.leadSource}
+                      </span>
+                    )}
+                    {client.leadType && (
+                      <span className={`inline-flex items-center px-1.5 py-0 rounded-full text-[10px] font-medium border ${
+                        leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}>
+                        {client.leadType}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Bottom: Days badges */}
+                  {(daysInStage !== null || daysFollowUp !== null) && (
+                    <div className="flex gap-2 mt-2.5 pt-2.5 border-t border-slate-100">
+                      {daysInStage !== null && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getDaysBadgeColor(daysInStage)}`}>
+                          Na etapa: {formatDays(daysInStage)}
+                        </span>
+                      )}
+                      {daysFollowUp !== null && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getDaysBadgeColor(daysFollowUp)}`}>
+                          Follow-up: {formatDays(daysFollowUp)}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            {/* Mobile Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between py-3">
+                <span className="text-xs text-slate-500">
+                  {((page - 1) * perPage) + 1}-{Math.min(page * perPage, filteredClients.length)} de {filteredClients.length}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                    className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeftIcon className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm font-medium text-slate-600 px-2">{page}/{totalPages}</span>
+                  <button
+                    onClick={() => setPage(Math.min(totalPages, page + 1))}
+                    disabled={page === totalPages}
+                    className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Table Card (Desktop) */}
+      <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         {loading ? (
           <Skeleton variant="table-row" count={8} className="py-4" />
         ) : (
@@ -1999,16 +2145,24 @@ export default function ContatosPage() {
 
                         {/* Empresa */}
                         <td className="px-4 py-2.5">
-                          <span className="text-sm text-slate-600 truncate max-w-[150px] block">
-                            {client.company || '-'}
-                          </span>
+                          {client.company ? (
+                            <span className="text-sm text-slate-600 truncate max-w-[150px] block">
+                              {client.company}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-slate-300"></span>
+                          )}
                         </td>
 
                         {/* Telefone */}
                         <td className="px-4 py-2.5">
-                          <span className="text-sm text-slate-600">
-                            {client.phone || '-'}
-                          </span>
+                          {client.phone ? (
+                            <span className="text-sm text-slate-600">
+                              {client.phone}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-slate-300"></span>
+                          )}
                         </td>
 
                         {/* Origem */}
@@ -2027,7 +2181,7 @@ export default function ContatosPage() {
                               <span className="text-xs text-slate-600">{client.leadSource}</span>
                             </div>
                           ) : (
-                            <span className="text-sm text-slate-400">-</span>
+                            <span className="text-sm text-slate-300"></span>
                           )}
                         </td>
 
@@ -2040,26 +2194,27 @@ export default function ContatosPage() {
                               {client.leadType}
                             </span>
                           ) : (
-                            <span className="text-sm text-slate-400">-</span>
+                            <span className="text-sm text-slate-300"></span>
                           )}
                         </td>
 
                         {/* Etapa do Funil - COM CORES */}
                         <td className="px-4 py-2.5">
-                          {(() => {
+                          {client.funnelStage ? (() => {
                             const stageColor = getStageColor(client.funnelStage)
                             return (
                               <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${stageColor.bg} ${stageColor.text}`}>
                                 {getStageName(client.funnelStage)}
                               </span>
                             )
-                          })()}
+                          })() : null}
                         </td>
 
                         {/* Dias na Etapa */}
                         <td className="px-4 py-2.5">
                           {(() => {
                             const days = calculateDaysSince(client.funnelStageUpdatedAt)
+                            if (days === null) return null
                             const badgeColor = getDaysBadgeColor(days)
                             return (
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${badgeColor}`}>
@@ -2073,6 +2228,7 @@ export default function ContatosPage() {
                         <td className="px-4 py-2.5">
                           {(() => {
                             const days = calculateDaysSince(client.lastFollowUpAt)
+                            if (days === null) return null
                             const badgeColor = getDaysBadgeColor(days)
                             return (
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${badgeColor}`}>
