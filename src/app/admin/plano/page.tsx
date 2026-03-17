@@ -21,6 +21,7 @@ const AGENCY_PLANS: PlanId[] = ['agency_start', 'agency_pro', 'agency_scale']
 const DIRECT_PLANS: PlanId[] = ['direct_starter', 'direct_growth', 'direct_scale']
 
 const PLAN_ORDER: Record<PlanId, number> = {
+  free: -1,
   agency_start: 0, agency_pro: 1, agency_scale: 2,
   direct_starter: 0, direct_growth: 1, direct_scale: 2,
 }

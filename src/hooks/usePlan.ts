@@ -3,7 +3,7 @@
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { PLAN_FEATURES, PLAN_LIMITS, PLAN_DISPLAY, type FeatureKey, type PlanId } from '@/types/plan'
 
-const DEFAULT_PLAN: PlanId = 'direct_starter'
+const DEFAULT_PLAN: PlanId = 'free'
 
 function isValidPlan(plan: string): plan is PlanId {
   return plan in PLAN_LIMITS
