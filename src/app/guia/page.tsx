@@ -392,21 +392,21 @@ const adminSections: GuideSection[] = [
   },
 ]
 
-function GuideItem({ section }: { section: GuideSection }) {
+function GuideItem({ section, accentColor }: { section: GuideSection; accentColor: string }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="border-b border-slate-100 last:border-b-0">
+    <div className="bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left px-4 py-3.5 flex items-center gap-3 hover:bg-slate-50/80 transition-colors duration-150"
+        className="w-full text-left p-4 sm:p-5 flex items-center gap-3.5 hover:bg-slate-50/50 transition-colors duration-150"
       >
-        <div className={`${section.color} w-8 h-8 rounded-lg flex items-center justify-center text-white flex-shrink-0`}>
+        <div className={`${section.color} w-9 h-9 rounded-lg flex items-center justify-center text-white flex-shrink-0`}>
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium text-slate-800">{section.title}</span>
-          <span className="text-sm text-slate-400 ml-2 hidden sm:inline">— {section.summary.slice(0, 80)}...</span>
+          <h3 className="text-sm font-semibold text-slate-800">{section.title}</h3>
+          <p className="text-xs text-slate-400 mt-0.5 truncate hidden sm:block">{section.summary}</p>
         </div>
         <ChevronDownIcon
           className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
@@ -414,35 +414,38 @@ function GuideItem({ section }: { section: GuideSection }) {
       </button>
 
       {expanded && (
-        <div className="px-4 pb-4 pt-1 ml-11">
-          <p className="text-sm text-slate-600 leading-relaxed mb-3">
-            {section.summary}
-          </p>
+        <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
+          <div className="border-t border-slate-100 pt-4">
+            <p className="text-sm text-slate-600 leading-relaxed mb-4">
+              {section.summary}
+            </p>
 
-          <div className="mb-3">
-            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Como funciona</h4>
-            <ul className="space-y-1.5">
-              {section.details.map((detail, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-slate-600 leading-relaxed">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#13DEFC] flex-shrink-0 mt-1.5" />
-                  {detail}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {section.tips && section.tips.length > 0 && (
-            <div className="bg-amber-50/80 rounded-lg px-3 py-2.5">
-              <h4 className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-1.5">Dicas</h4>
-              <ul className="space-y-1">
-                {section.tips.map((tip, i) => (
-                  <li key={i} className="text-sm text-amber-700/90 leading-relaxed">
-                    {tip}
+            <div className="mb-4">
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Como funciona</h4>
+              <ul className="space-y-2">
+                {section.details.map((detail, i) => (
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+                    <span className={`w-1.5 h-1.5 rounded-full ${accentColor} flex-shrink-0 mt-1.5`} />
+                    {detail}
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+
+            {section.tips && section.tips.length > 0 && (
+              <div className="bg-amber-50/70 border border-amber-100 rounded-lg px-3.5 py-3">
+                <h4 className="text-xs font-semibold text-amber-700 uppercase tracking-wide mb-2">Dicas</h4>
+                <ul className="space-y-1.5">
+                  {section.tips.map((tip, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-amber-700/90 leading-relaxed">
+                      <span className="text-amber-500 flex-shrink-0 text-xs mt-0.5">&#9679;</span>
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -453,26 +456,28 @@ function SectionGroup({
   title,
   description,
   accentColor,
+  dotColor,
   sections,
   count,
 }: {
   title: string
   description: string
   accentColor: string
+  dotColor: string
   sections: GuideSection[]
   count: number
 }) {
   return (
-    <div className="mb-8">
-      <div className="flex items-center gap-2.5 mb-1.5">
-        <div className={`w-1 h-5 rounded-full ${accentColor}`} />
-        <h2 className="text-base font-semibold text-slate-800">{title}</h2>
-        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{count}</span>
+    <div className="mb-10">
+      <div className="flex items-center gap-3 mb-1">
+        <div className={`w-1 h-6 rounded-full ${accentColor}`} />
+        <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{count}</span>
       </div>
-      <p className="text-sm text-slate-400 mb-3 ml-3.5">{description}</p>
-      <div className="bg-white rounded-xl border border-slate-200/80 overflow-hidden">
+      <p className="text-sm text-slate-500 mb-4 ml-4">{description}</p>
+      <div className="space-y-3">
         {sections.map((section) => (
-          <GuideItem key={section.id} section={section} />
+          <GuideItem key={section.id} section={section} accentColor={dotColor} />
         ))}
       </div>
     </div>
@@ -481,21 +486,15 @@ function SectionGroup({
 
 export default function GuiaPage() {
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#13DEFC] to-[#09B00F] flex items-center justify-center">
-            <QuestionMarkCircleIcon className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Guia do Voxium</h1>
-            <p className="text-sm text-slate-400">Entenda cada parte do sistema</p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Guia do Voxium</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Entenda cada parte do sistema — clique para expandir os detalhes
+          </p>
         </div>
-        <p className="text-sm text-slate-500 leading-relaxed bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
-          Clique em qualquer item para ver os detalhes e dicas de uso.
-        </p>
       </div>
 
       {/* Sections */}
@@ -503,6 +502,7 @@ export default function GuiaPage() {
         title="Modulos Principais"
         description="Ferramentas do dia a dia para gerenciar suas vendas."
         accentColor="bg-[#13DEFC]"
+        dotColor="bg-[#13DEFC]"
         sections={moduleSections}
         count={moduleSections.length}
       />
@@ -511,6 +511,7 @@ export default function GuiaPage() {
         title="Agentes de Voz (IA)"
         description="Assistente virtual que faz ligacoes usando inteligencia artificial."
         accentColor="bg-[#09B00F]"
+        dotColor="bg-[#09B00F]"
         sections={agentSections}
         count={agentSections.length}
       />
@@ -519,12 +520,13 @@ export default function GuiaPage() {
         title="Administracao"
         description="Configuracoes do sistema para administradores e gestores."
         accentColor="bg-amber-500"
+        dotColor="bg-amber-500"
         sections={adminSections}
         count={adminSections.length}
       />
 
       {/* Footer */}
-      <div className="text-center pt-6 border-t border-slate-100">
+      <div className="text-center py-8">
         <p className="text-xs text-slate-400">
           Ficou com duvida? Fale com o suporte da sua empresa ou com o administrador do sistema.
         </p>
