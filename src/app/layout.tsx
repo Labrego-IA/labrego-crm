@@ -80,6 +80,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setCheckingAuth(false)
       return
     }
+    setCheckingAuth(true)
     const unsub = onAuthStateChanged(auth, (user) => {
       if (!user) {
         router.replace('/login')
@@ -165,7 +166,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       unsub()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router])
+  }, [router, isPublicPage])
 
   // Relógio
   useEffect(() => {
