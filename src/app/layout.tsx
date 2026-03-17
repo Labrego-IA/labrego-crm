@@ -90,7 +90,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     getDocs(query(membersRef)).then((snap) => {
       const members = snap.docs
         .map(d => ({ id: d.id, ...d.data() } as OrgMember))
-        .filter(m => m.role !== 'admin' && m.status !== 'suspended')
+        .filter(m => m.status !== 'suspended')
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
       setOrgMembers(members)
     }).catch(err => {
