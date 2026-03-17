@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import PermissionGate from '@/components/PermissionGate'
 import Tabs from '@/components/Tabs'
 import PropostasBrandingTab from '@/components/admin/PropostasBrandingTab'
@@ -9,18 +9,51 @@ import PropostasLogosTab from '@/components/admin/PropostasLogosTab'
 import PropostasConfigTab from '@/components/admin/PropostasConfigTab'
 import PropostasEstruturaTab from '@/components/admin/PropostasEstruturaTab'
 import PropostasFieldsTab from '@/components/admin/PropostasFieldsTab'
-
-const SUB_TABS = [
-  { key: 'branding', label: 'Branding', content: <PropostasBrandingTab /> },
-  { key: 'produtos', label: 'Produtos', content: <PropostasProdutosTab /> },
-  { key: 'logos', label: 'Logos de Clientes', content: <PropostasLogosTab /> },
-  { key: 'config', label: 'Configuracoes', content: <PropostasConfigTab /> },
-  { key: 'estrutura', label: 'Estrutura do PDF', content: <PropostasEstruturaTab /> },
-  { key: 'campos', label: 'Campos Personalizados', content: <PropostasFieldsTab /> },
-]
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 export default function PropostasConfigPage() {
   const [activeTab, setActiveTab] = useState('branding')
+  const [configDirty, setConfigDirty] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [pendingTab, setPendingTab] = useState<string | null>(null)
+  const resetConfigRef = useRef<(() => void) | null>(null)
+
+  const handleResetRef = useCallback((fn: () => void) => {
+    resetConfigRef.current = fn
+  }, [])
+
+  const handleTabChange = useCallback((key: string) => {
+    if (activeTab === 'config' && configDirty) {
+      setPendingTab(key)
+      setShowConfirm(true)
+      return
+    }
+    setActiveTab(key)
+  }, [activeTab, configDirty])
+
+  const handleConfirmLeave = useCallback(() => {
+    resetConfigRef.current?.()
+    setShowConfirm(false)
+    setConfigDirty(false)
+    if (pendingTab) {
+      setActiveTab(pendingTab)
+      setPendingTab(null)
+    }
+  }, [pendingTab])
+
+  const handleCancelLeave = useCallback(() => {
+    setShowConfirm(false)
+    setPendingTab(null)
+  }, [])
+
+  const SUB_TABS = [
+    { key: 'branding', label: 'Branding', content: <PropostasBrandingTab /> },
+    { key: 'produtos', label: 'Produtos', content: <PropostasProdutosTab /> },
+    { key: 'logos', label: 'Logos de Clientes', content: <PropostasLogosTab /> },
+    { key: 'config', label: 'Configuracoes', content: <PropostasConfigTab onDirtyChange={setConfigDirty} onResetRef={handleResetRef} /> },
+    { key: 'estrutura', label: 'Estrutura do PDF', content: <PropostasEstruturaTab /> },
+    { key: 'campos', label: 'Campos Personalizados', content: <PropostasFieldsTab /> },
+  ]
 
   return (
     <PermissionGate action="canManageSettings">
@@ -32,8 +65,18 @@ export default function PropostasConfigPage() {
           </p>
         </div>
 
-        <Tabs items={SUB_TABS} active={activeTab} onChange={setActiveTab} />
+        <Tabs items={SUB_TABS} active={activeTab} onChange={handleTabChange} />
       </div>
+
+      <ConfirmCloseDialog
+        isOpen={showConfirm}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        title="Dados nao salvos"
+        message="Voce tem alteracoes nao salvas nas configuracoes. Deseja sair sem salvar? As alteracoes serao perdidas."
+        confirmText="Sim, sair"
+        cancelText="Continuar editando"
+      />
     </PermissionGate>
   )
 }
