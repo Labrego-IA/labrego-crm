@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   collection,
   query,
@@ -22,6 +22,7 @@ import {
   XMarkIcon,
   BuildingOfficeIcon,
 } from '@heroicons/react/24/outline'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 const COST_CENTER_COLORS = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
@@ -66,6 +67,10 @@ export default function AdminCentrosCustoPage() {
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<CostCenterForm>(EMPTY_FORM)
+
+  // Close confirmation state
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
+  const [initialForm, setInitialForm] = useState<CostCenterForm>(EMPTY_FORM)
 
   // Delete confirmation modal state
   const [deleteTarget, setDeleteTarget] = useState<CostCenter | null>(null)
@@ -113,20 +118,42 @@ export default function AdminCentrosCustoPage() {
     return () => unsubs.forEach((u) => u())
   }, [orgId])
 
+  const hasUnsavedChanges = useCallback(() => {
+    return (Object.keys(EMPTY_FORM) as (keyof CostCenterForm)[]).some(
+      (key) => form[key] !== initialForm[key]
+    )
+  }, [form, initialForm])
+
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowModal(false)
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = () => {
+    setShowConfirmClose(false)
+    setShowModal(false)
+  }
+
   const openCreate = () => {
     setEditingId(null)
     setForm({ ...EMPTY_FORM })
+    setInitialForm({ ...EMPTY_FORM })
     setShowModal(true)
   }
 
   const openEdit = (cc: CostCenter) => {
     setEditingId(cc.id)
-    setForm({
+    const editForm: CostCenterForm = {
       name: cc.name,
       description: cc.description || '',
       color: cc.color,
       isActive: cc.isActive,
-    })
+    }
+    setForm(editForm)
+    setInitialForm(editForm)
     setShowModal(true)
   }
 
@@ -302,14 +329,14 @@ export default function AdminCentrosCustoPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseModal}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-neutral-200">
               <h2 className="text-lg font-semibold">
                 {editingId ? 'Editar Centro de Custo' : 'Novo Centro de Custo'}
               </h2>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="p-1 text-neutral-400 hover:text-neutral-600"
               >
                 <XMarkIcon className="w-5 h-5" />
@@ -403,7 +430,7 @@ export default function AdminCentrosCustoPage() {
             {/* Footer */}
             <div className="flex justify-end gap-3 p-5 border-t border-neutral-200">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-800"
               >
                 Cancelar
@@ -419,6 +446,13 @@ export default function AdminCentrosCustoPage() {
           </div>
         </div>
       )}
+      {/* Confirm close dialog */}
+      <ConfirmCloseDialog
+        isOpen={showConfirmClose}
+        onConfirm={confirmCloseModal}
+        onCancel={() => setShowConfirmClose(false)}
+      />
+
       {/* Delete confirmation modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
