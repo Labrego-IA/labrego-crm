@@ -405,6 +405,8 @@ export default function FunilDetailPage() {
   const [savingStage, setSavingStage] = useState(false)
   const [deletingStageId, setDeletingStageId] = useState<string | null>(null)
   const [showQuickAddStage, setShowQuickAddStage] = useState(false)
+  const [inlineEditingColumnId, setInlineEditingColumnId] = useState<string | null>(null)
+  const [inlineEditingColumnName, setInlineEditingColumnName] = useState('')
 
   // Macro Stage settings state
   const [editingMacroStage, setEditingMacroStage] = useState<MacroStage | null>(null)
@@ -1836,6 +1838,32 @@ export default function FunilDetailPage() {
       ])
     } catch (error) {
       console.error('Error reordering stages:', error)
+    }
+  }
+
+  // Inline column name editing (from Kanban header)
+  const handleInlineColumnRename = async (stageId: string, newName: string) => {
+    const trimmed = newName.trim()
+    if (!trimmed) {
+      setInlineEditingColumnId(null)
+      setInlineEditingColumnName('')
+      return
+    }
+    const stage = funnelStages.find(s => s.id === stageId)
+    if (!stage || stage.name === trimmed) {
+      setInlineEditingColumnId(null)
+      setInlineEditingColumnName('')
+      return
+    }
+    try {
+      await updateDoc(doc(db, 'funnelStages', stageId), { name: trimmed })
+      toast.success(`Coluna renomeada para "${trimmed}"`)
+    } catch (error) {
+      console.error('Error renaming column:', error)
+      toast.error('Erro ao renomear coluna')
+    } finally {
+      setInlineEditingColumnId(null)
+      setInlineEditingColumnName('')
     }
   }
 
@@ -4715,7 +4743,29 @@ export default function FunilDetailPage() {
                                   <div className={`px-4 py-3 border-b ${color.border} bg-gradient-to-r ${color.gradient} rounded-t-xl`}>
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center gap-2">
-                                        <h3 className="font-bold text-white">{stage.name}</h3>
+                                        {inlineEditingColumnId === stage.id ? (
+                                          <input
+                                            type="text"
+                                            value={inlineEditingColumnName}
+                                            onChange={(e) => setInlineEditingColumnName(e.target.value)}
+                                            onBlur={() => handleInlineColumnRename(stage.id, inlineEditingColumnName)}
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter') handleInlineColumnRename(stage.id, inlineEditingColumnName)
+                                              if (e.key === 'Escape') { setInlineEditingColumnId(null); setInlineEditingColumnName('') }
+                                            }}
+                                            autoFocus
+                                            className="font-bold text-white bg-white/20 border border-white/30 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/40 w-36"
+                                          />
+                                        ) : (
+                                          <h3
+                                            className="font-bold text-white cursor-pointer hover:bg-white/10 rounded px-1 -mx-1 transition-colors group flex items-center gap-1"
+                                            onClick={() => { setInlineEditingColumnId(stage.id); setInlineEditingColumnName(stage.name) }}
+                                            title="Clique para editar o nome da coluna"
+                                          >
+                                            {stage.name}
+                                            <Pencil1Icon className="w-3 h-3 text-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                          </h3>
+                                        )}
                                         <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs font-bold text-white">
                                           {allStageClients.length}
                                         </span>
@@ -4927,7 +4977,29 @@ export default function FunilDetailPage() {
                         <div className={`px-4 py-3 border-b ${color.border} bg-gradient-to-r ${color.gradient} rounded-t-2xl`}>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-white">{stage.name}</h3>
+                              {inlineEditingColumnId === stage.id ? (
+                                <input
+                                  type="text"
+                                  value={inlineEditingColumnName}
+                                  onChange={(e) => setInlineEditingColumnName(e.target.value)}
+                                  onBlur={() => handleInlineColumnRename(stage.id, inlineEditingColumnName)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleInlineColumnRename(stage.id, inlineEditingColumnName)
+                                    if (e.key === 'Escape') { setInlineEditingColumnId(null); setInlineEditingColumnName('') }
+                                  }}
+                                  autoFocus
+                                  className="font-bold text-white bg-white/20 border border-white/30 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/40 w-36"
+                                />
+                              ) : (
+                                <h3
+                                  className="font-bold text-white cursor-pointer hover:bg-white/10 rounded px-1 -mx-1 transition-colors group flex items-center gap-1"
+                                  onClick={() => { setInlineEditingColumnId(stage.id); setInlineEditingColumnName(stage.name) }}
+                                  title="Clique para editar o nome da coluna"
+                                >
+                                  {stage.name}
+                                  <Pencil1Icon className="w-3 h-3 text-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </h3>
+                              )}
                               <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs font-bold text-white">
                                 {allStageClients.length}
                               </span>
