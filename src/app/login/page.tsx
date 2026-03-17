@@ -583,7 +583,7 @@ export default function LoginPage() {
                   {/* Botão Cadastro com Google */}
                   <button
                     type="button"
-                    onClick={handleGoogleCadastro}
+                    onClick={() => handleGoogleCadastro()}
                     disabled={googleCadastroLoading}
                     className="w-full flex items-center justify-center gap-3 bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 hover:border-white/20 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl transition-all"
                   >
