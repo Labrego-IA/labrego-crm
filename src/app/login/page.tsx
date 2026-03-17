@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -38,6 +38,8 @@ export default function LoginPage() {
   const [cadastroError, setCadastroError] = useState<string | null>(null)
 
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isBlocked = searchParams.get('blocked') === '1'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,7 +51,9 @@ export default function LoginPage() {
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
-      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+      if (code === 'auth/user-disabled') {
+        setLoginError('Sua conta foi bloqueada. Entre em contato com o administrador.')
+      } else if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
         setLoginError('E-mail ou senha incorretos.')
       } else if (code === 'auth/too-many-requests') {
         setLoginError('Muitas tentativas. Tente novamente em alguns minutos.')
@@ -124,7 +128,9 @@ export default function LoginPage() {
 
       const setError = activeTab === 'login' ? setLoginError : setCadastroError
 
-      if (code === 'auth/popup-closed-by-user') {
+      if (code === 'auth/user-disabled') {
+        setError('Sua conta foi bloqueada. Entre em contato com o administrador.')
+      } else if (code === 'auth/popup-closed-by-user') {
         // Usuário fechou o popup, não mostra erro
       } else if (code === 'auth/account-exists-with-different-credential') {
         setError('Já existe uma conta com esse e-mail usando outro método de login.')
@@ -297,6 +303,12 @@ export default function LoginPage() {
                       </Link>
                     </div>
                   </div>
+
+                  {isBlocked && !loginError && (
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 text-sm text-amber-300">
+                      Sua conta foi bloqueada. Entre em contato com o administrador da organizacao.
+                    </div>
+                  )}
 
                   {loginError && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-300">
