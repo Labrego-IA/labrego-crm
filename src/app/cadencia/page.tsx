@@ -145,6 +145,13 @@ function CadenciaDashboard() {
   // Automation config
   const [autoConfig, setAutoConfig] = useState<AutomationConfig>(DEFAULT_AUTOMATION_CONFIG)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   // Load data
   useEffect(() => {
     if (!orgId) return

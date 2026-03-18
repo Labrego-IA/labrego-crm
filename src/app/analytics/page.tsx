@@ -246,6 +246,13 @@ function AnalyticsDashboard() {
   const funnelsRef = useRef<Funnel[]>([])
   const loadedRef = useRef(false)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   /* ─── Load data ─── */
   const loadData = useCallback(async () => {
     if (!orgId) return

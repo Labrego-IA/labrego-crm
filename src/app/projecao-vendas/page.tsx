@@ -101,6 +101,13 @@ export default function ProjecaoVendasPage() {
   // Pagination state per funnel
   const [funnelPages, setFunnelPages] = useState<Record<string, number>>({})
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   // Load funnels
   useEffect(() => {
     if (!orgId) return

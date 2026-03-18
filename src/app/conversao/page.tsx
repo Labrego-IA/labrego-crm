@@ -261,6 +261,13 @@ export default function ConversaoPage() {
   const [selectedSegment, setSelectedSegment] = useState<SegmentKey | ''>('')
   const [icpProfiles, setIcpProfiles] = useState<{ id: string; name: string }[]>([])
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   // ── Data Loading ───────────────────────────────────────
   useEffect(() => {
     if (!orgId) return

@@ -99,6 +99,13 @@ function CampanhasContent() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   /* ---------------------- Real-time subscription ------------------------ */
 
   useEffect(() => {

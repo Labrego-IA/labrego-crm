@@ -83,6 +83,13 @@ export default function FunnelHubPage() {
   const [formColor, setFormColor] = useState(FUNNEL_COLORS[0])
   const [saving, setSaving] = useState(false)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoadingData(false)
+    }
+  }, [orgId])
+
   // Load stages for counting
   useEffect(() => {
     if (!orgId) return
