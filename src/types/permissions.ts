@@ -1,6 +1,6 @@
 import type { MemberPermissions, MemberActions } from './organization'
 
-export type RolePreset = 'admin' | 'manager' | 'seller' | 'viewer'
+export type RolePreset = 'admin' | 'manager' | 'seller' | 'viewer' | 'client'
 
 export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
   admin: {
@@ -70,6 +70,23 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
       canTransferLeads: false,
     },
     viewScope: 'all',
+  },
+  client: {
+    pages: ['/dashboard', '/contatos'],
+    actions: {
+      canCreateContacts: false,
+      canEditContacts: false,
+      canDeleteContacts: false,
+      canCreateProposals: false,
+      canExportData: false,
+      canManageFunnels: false,
+      canManageUsers: false,
+      canTriggerCalls: false,
+      canViewReports: false,
+      canManageSettings: false,
+      canTransferLeads: false,
+    },
+    viewScope: 'own',
   },
 }
 

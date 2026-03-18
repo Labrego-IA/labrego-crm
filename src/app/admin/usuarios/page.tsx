@@ -20,6 +20,7 @@ const ROLE_LABELS: Record<RolePreset, string> = {
   manager: 'Gerente',
   seller: 'Vendedor',
   viewer: 'Visualizador',
+  client: 'Cliente',
 }
 
 const ROLE_BADGE: Record<RolePreset, string> = {
@@ -27,7 +28,11 @@ const ROLE_BADGE: Record<RolePreset, string> = {
   manager: 'bg-blue-100 text-blue-800',
   seller: 'bg-green-100 text-green-800',
   viewer: 'bg-gray-100 text-gray-800',
+  client: 'bg-blue-100 text-blue-800',
 }
+
+/** Roles that appear in the cargo select (client is only via checkbox) */
+const SELECTABLE_ROLES: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
 
 const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-800',
@@ -83,7 +88,7 @@ function normalize(str: string): string {
 type SortColumn = 'name' | 'email' | 'role' | 'status' | 'joinedAt'
 type SortDirection = 'asc' | 'desc'
 
-const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
+const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3, client: 4 }
 const STATUS_ORDER: Record<string, number> = { active: 0, invited: 1, suspended: 2 }
 
 function defaultActions(): MemberActions {
@@ -153,9 +158,10 @@ export default function UsuariosPage() {
   const [showAddModal, setShowAddModal] = useState(false)
   const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset }
   const [addForm, setAddForm] = useState(addFormDefault)
+  const [addAsClient, setAddAsClient] = useState(false)
   const [addLoading, setAddLoading] = useState(false)
 
-  const addHasChanges = addForm.email !== '' || addForm.displayName !== '' || addForm.role !== 'seller'
+  const addHasChanges = addForm.email !== '' || addForm.displayName !== '' || addForm.role !== 'seller' || addAsClient
 
   // Edit modal
   const [editMember, setEditMember] = useState<OrgMember | null>(null)
@@ -300,7 +306,7 @@ export default function UsuariosPage() {
           orgId,
           email: addForm.email.trim(),
           displayName: addForm.displayName.trim(),
-          role: addForm.role,
+          role: addAsClient ? 'client' : addForm.role,
         }),
       })
 
@@ -311,6 +317,7 @@ export default function UsuariosPage() {
 
       toast.success(`Convite enviado para ${addForm.email.trim()} com credenciais de acesso`)
       setAddForm({ email: '', displayName: '', role: 'seller' })
+      setAddAsClient(false)
       setShowAddModal(false)
     } catch (error: unknown) {
       console.error('Error adding member:', error)
@@ -327,7 +334,7 @@ export default function UsuariosPage() {
     setEditMember(member)
     const name = member.displayName || ''
     setEditDisplayName(name)
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'client']
     const role = validRoles.includes(member.role as RolePreset)
       ? (member.role as RolePreset)
       : 'viewer'
@@ -377,8 +384,8 @@ export default function UsuariosPage() {
 
   const handleSaveEdit = async () => {
     if (!orgId || !editMember) return
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
-    if (!editRole || !validRoles.includes(editRole)) {
+    const allValidRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'client']
+    if (!editRole || !allValidRoles.includes(editRole)) {
       toast.error('Selecione um cargo valido')
       return
     }
@@ -484,6 +491,7 @@ export default function UsuariosPage() {
     setShowAddModal(false)
     setShowAddConfirm(false)
     setAddForm({ email: '', displayName: '', role: 'seller' })
+    setAddAsClient(false)
   }, [])
 
   const closeEditModal = useCallback(() => {
@@ -1087,24 +1095,46 @@ export default function UsuariosPage() {
                   />
                 </div>
 
+                {/* Checkbox — Cadastrar como Cliente (entre Email e Cargo) */}
+                <div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={addAsClient}
+                      onChange={(e) => setAddAsClient(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Cadastrar como Cliente</span>
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1 ml-6">
+                    Marca o membro com cargo &quot;Cliente&quot; e trial de 7 dias.
+                  </p>
+                </div>
+
                 <div>
                   <label htmlFor="add-role" className={ui.label}>
                     Cargo
                   </label>
                   <select
                     id="add-role"
-                    value={addForm.role}
+                    value={addAsClient ? 'client' : addForm.role}
                     onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
-                    className={ui.select}
+                    disabled={addAsClient}
+                    className={`${ui.select} ${addAsClient ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                    {SELECTABLE_ROLES.map((role) => (
                       <option key={role} value={role}>
                         {ROLE_LABELS[role]}
                       </option>
                     ))}
+                    {addAsClient && (
+                      <option value="client">{ROLE_LABELS.client}</option>
+                    )}
                   </select>
                   <p className="text-xs text-gray-400 mt-1">
-                    As permissoes serao preenchidas com base no cargo selecionado.
+                    {addAsClient
+                      ? 'Cliente com acesso limitado e trial de 7 dias.'
+                      : 'As permissoes serao preenchidas com base no cargo selecionado.'}
                   </p>
                 </div>
               </div>
@@ -1170,7 +1200,7 @@ export default function UsuariosPage() {
                   onChange={(e) => handleRoleChange(e.target.value as RolePreset)}
                   className={ui.select}
                 >
-                  {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                  {[...SELECTABLE_ROLES, ...(editRole === 'client' ? ['client' as RolePreset] : [])].map((role) => (
                     <option key={role} value={role}>
                       {ROLE_LABELS[role]}
                     </option>
