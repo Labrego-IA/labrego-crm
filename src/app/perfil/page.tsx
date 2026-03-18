@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { auth, db, storage } from '@/lib/firebaseClient'
 import {
@@ -9,7 +9,7 @@ import {
   updatePassword,
   deleteUser,
 } from 'firebase/auth'
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -42,6 +42,27 @@ export default function PerfilPage() {
 
   // Tabs
   const [activeTab, setActiveTab] = useState('info')
+
+  // User profile data from Firestore users/{email}
+  const [userDisplayName, setUserDisplayName] = useState<string | null>(null)
+  const [userPhone, setUserPhone] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!userEmail) return
+    getDoc(doc(db, 'users', userEmail)).then((snap) => {
+      if (snap.exists()) {
+        const data = snap.data()
+        if (data.displayName) setUserDisplayName(data.displayName)
+        if (data.telefone) setUserPhone(data.telefone)
+      }
+    }).catch((err) => {
+      console.error('[perfil] Failed to load user data:', err)
+    })
+    // Also check Firebase Auth displayName as fallback
+    if (auth.currentUser?.displayName) {
+      setUserDisplayName((prev) => prev || auth.currentUser?.displayName || null)
+    }
+  }, [userEmail])
 
   // Photo upload
   const [uploading, setUploading] = useState(false)
@@ -233,7 +254,7 @@ export default function PerfilPage() {
 
             <div className="flex-1 pb-1">
               <h2 className="text-xl font-bold text-slate-900">
-                {member?.displayName || userEmail?.split('@')[0] || 'Usuário'}
+                {member?.displayName || userDisplayName || userEmail?.split('@')[0] || 'Usuário'}
               </h2>
               <div className="flex items-center gap-2 mt-1">
                 {member?.role && (
@@ -267,7 +288,19 @@ export default function PerfilPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InfoField label="E-mail" value={userEmail || '--'} />
-          <InfoField label="Nome" value={member?.displayName || '--'} />
+          <InfoField label="Nome" value={member?.displayName || userDisplayName || '--'} />
+          <InfoField
+            label="Telefone"
+            value={
+              userPhone
+                ? userPhone.length === 11
+                  ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 7)}-${userPhone.slice(7)}`
+                  : userPhone.length === 10
+                    ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 6)}-${userPhone.slice(6)}`
+                    : userPhone
+                : '--'
+            }
+          />
           <InfoField label="Organização" value={orgName || '--'} />
           <InfoField label="Cargo" value={member?.role ? (ROLE_LABELS[member.role] || member.role) : '--'} />
           <InfoField
