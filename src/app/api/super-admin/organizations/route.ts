@@ -34,8 +34,9 @@ export async function POST(req: NextRequest) {
   if (result instanceof NextResponse) return result
 
   try {
-    const { name, plan, adminEmail, status } = await req.json()
-    if (!name || !plan || !adminEmail) {
+    const { name, plan: planInput, adminEmail, status } = await req.json()
+    const plan = planInput || 'free'
+    if (!name || !adminEmail) {
       return NextResponse.json({ error: 'missing required fields' }, { status: 400 })
     }
 
