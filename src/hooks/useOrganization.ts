@@ -17,14 +17,22 @@ export function useOrganization() {
       return
     }
 
-    const unsub = onSnapshot(doc(db, 'organizations', orgId), (snap) => {
-      if (snap.exists()) {
-        setOrg({ id: snap.id, ...snap.data() } as Organization)
-      } else {
+    const unsub = onSnapshot(
+      doc(db, 'organizations', orgId),
+      (snap) => {
+        if (snap.exists()) {
+          setOrg({ id: snap.id, ...snap.data() } as Organization)
+        } else {
+          setOrg(null)
+        }
+        setLoading(false)
+      },
+      (error) => {
+        console.warn('[useOrganization] Permission error:', error.message)
         setOrg(null)
+        setLoading(false)
       }
-      setLoading(false)
-    })
+    )
 
     return () => unsub()
   }, [orgId])

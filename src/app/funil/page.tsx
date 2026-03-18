@@ -91,6 +91,8 @@ export default function FunnelHubPage() {
         const data = d.data()
         return { id: d.id, funnelId: (data.funnelId as string) || '', name: (data.name as string) || '', order: (data.order as number) ?? 0 }
       }))
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -110,6 +112,10 @@ export default function FunnelHubPage() {
         }
       }))
       setLoadingData(false)
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
+      setAllClients([])
+      setLoadingData(false)
     })
     return () => unsub()
   }, [orgId])
@@ -123,6 +129,8 @@ export default function FunnelHubPage() {
         const data = d.data()
         return { id: d.id, name: data.name, color: data.color, funnelIds: data.funnelIds || [] }
       }))
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])

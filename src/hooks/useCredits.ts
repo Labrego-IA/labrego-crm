@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { db } from '@/lib/firebaseClient'
 import { doc, onSnapshot } from 'firebase/firestore'
+import type { PlanId } from '@/types/plan'
 
 interface CreditSummary {
   actionBalance: number
@@ -13,14 +14,18 @@ interface CreditSummary {
 /**
  * Hook real-time para saldo de créditos da organização.
  * Usa onSnapshot no Firestore para atualizar automaticamente.
+ * Para plano free, retorna 0 sem consultar o Firestore.
  */
-export function useCredits(orgId: string | undefined): CreditSummary {
+export function useCredits(orgId: string | undefined, orgPlan?: PlanId | null): CreditSummary {
   const [actionBalance, setActionBalance] = useState(0)
   const [minuteBalance, setMinuteBalance] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!orgId) {
+    // Plano free não tem créditos — retorna 0 sem consultar Firestore
+    if (!orgId || orgPlan === 'free') {
+      setActionBalance(0)
+      setMinuteBalance(0)
       setLoading(false)
       return
     }
@@ -40,13 +45,15 @@ export function useCredits(orgId: string | undefined): CreditSummary {
         setLoading(false)
       },
       (error) => {
-        console.error('[useCredits] Error:', error)
+        console.warn('[useCredits] Permission error (expected for some plans):', error.message)
+        setActionBalance(0)
+        setMinuteBalance(0)
         setLoading(false)
       }
     )
 
     return () => unsubscribe()
-  }, [orgId])
+  }, [orgId, orgPlan])
 
   return { actionBalance, minuteBalance, loading }
 }

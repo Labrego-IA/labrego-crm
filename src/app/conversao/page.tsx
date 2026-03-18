@@ -271,6 +271,9 @@ export default function ConversaoPage() {
           .map((doc) => ({ id: doc.id, ...doc.data() } as FunnelStage))
           .sort((a, b) => a.order - b.order)
         setFunnelStages(stages)
+      },
+      (error) => {
+        console.warn('[ConversaoPage] Firestore error:', error.message)
       }
     )
     return () => unsub()
@@ -328,6 +331,10 @@ export default function ConversaoPage() {
         })
         setMovementLogs(logs)
         setLoading(false)
+      }, (error) => {
+        console.warn('[ConversaoPage] Firestore error:', error.message)
+        setMovementLogs([])
+        setLoading(false)
       })
     })
 
@@ -339,6 +346,8 @@ export default function ConversaoPage() {
     if (!orgId) return
     const unsub = onSnapshot(collection(db, `organizations/${orgId}/funnels`), (snap) => {
       setFunnels(snap.docs.map(doc => ({ id: doc.id, name: (doc.data().name || 'Funil sem nome') as string })))
+    }, (error) => {
+      console.warn('[ConversaoPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -348,6 +357,8 @@ export default function ConversaoPage() {
     const q = query(collection(db, 'icpProfiles'), where('orgId', '==', orgId), where('isActive', '==', true))
     const unsub = onSnapshot(q, (snap) => {
       setIcpProfiles(snap.docs.map(d => ({ id: d.id, name: (d.data().name || '') as string })))
+    }, (error) => {
+      console.warn('[ConversaoPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])

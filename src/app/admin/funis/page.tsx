@@ -93,6 +93,8 @@ export default function AdminFunisPage() {
       onSnapshot(query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active')), (snap) => {
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as MemberRow[]
         setMembers(data.sort((a, b) => a.displayName.localeCompare(b.displayName)))
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 
@@ -109,6 +111,8 @@ export default function AdminFunisPage() {
           }
         })
         setFunnels(data.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 
@@ -117,6 +121,8 @@ export default function AdminFunisPage() {
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as StageItem[]
         setStages(data.sort((a, b) => a.order - b.order))
         setLoading(false)
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 

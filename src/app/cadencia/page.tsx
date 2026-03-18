@@ -835,6 +835,9 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
       snap => {
         setLogs(snap.docs.map(d => ({ id: d.id, ...d.data() } as ExecutionLog)))
         setLoading(false)
+      },
+      (error) => {
+        console.warn('[CadenciaPage] Firestore error:', error.message)
       }
     )
 

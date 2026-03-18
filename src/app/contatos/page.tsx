@@ -274,6 +274,10 @@ export default function ContatosPage() {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Cliente[]
       setClients(data)
       setLoading(false)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
+      setClients([])
+      setLoading(false)
     })
 
     const unsubStages = onSnapshot(query(collection(db, 'funnelStages'), where('orgId', '==', orgId)), (snap) => {
@@ -292,17 +296,23 @@ export default function ContatosPage() {
         }
       })
       setStageColorMap(colorMap)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     const unsubCostCenters = onSnapshot(query(collection(db, 'organizations', orgId, 'costCenters')), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as CostCenter[]
       setCostCenters(data.sort((a, b) => a.code - b.code))
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     // Load cadence steps for auto-enrollment on bulk move
     const unsubCadence = onSnapshot(query(collection(db, 'cadenceSteps'), where('orgId', '==', orgId)), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, stageId: d.data().stageId, order: d.data().order, isActive: d.data().isActive, parentStepId: d.data().parentStepId }))
       setCadenceSteps(data)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     return () => {
