@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
@@ -10,6 +10,8 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
 } from '@heroicons/react/20/solid'
+import Modal from '@/components/Modal'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import type {
   ProposalCustomField,
   ProposalCustomFieldType,
@@ -71,6 +73,9 @@ export default function PropostasFieldsTab() {
   // Modal state
   const [showModal, setShowModal] = useState(false)
   const [editingField, setEditingField] = useState<EditingField>(EMPTY_FIELD)
+  const initialFieldRef = useRef(JSON.stringify(EMPTY_FIELD))
+  const [showConfirmClose, setShowConfirmClose] = useState(false)
+  const [deletingFieldId, setDeletingFieldId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!orgId) return
@@ -125,16 +130,36 @@ export default function PropostasFieldsTab() {
 
   const openCreate = () => {
     setEditingField(EMPTY_FIELD)
+    initialFieldRef.current = JSON.stringify(EMPTY_FIELD)
     setShowModal(true)
   }
 
   const openEdit = (field: ProposalCustomField) => {
-    setEditingField({
+    const fieldData = {
       ...field,
       optionsText: field.options?.join('\n') ?? '',
-    })
+    }
+    setEditingField(fieldData)
+    initialFieldRef.current = JSON.stringify(fieldData)
     setShowModal(true)
   }
+
+  const hasUnsavedChanges = useCallback(() => {
+    return JSON.stringify(editingField) !== initialFieldRef.current
+  }, [editingField])
+
+  const handleCloseModal = useCallback(() => {
+    if (hasUnsavedChanges()) {
+      setShowConfirmClose(true)
+    } else {
+      setShowModal(false)
+    }
+  }, [hasUnsavedChanges])
+
+  const confirmCloseModal = useCallback(() => {
+    setShowConfirmClose(false)
+    setShowModal(false)
+  }, [])
 
   const handleSaveField = async () => {
     if (!editingField.label.trim()) {
@@ -192,11 +217,13 @@ export default function PropostasFieldsTab() {
     setShowModal(false)
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    if (!deletingFieldId) return
     const updated = fields
-      .filter((f) => f.id !== id)
+      .filter((f) => f.id !== deletingFieldId)
       .map((f, i) => ({ ...f, order: i }))
     await saveFields(updated)
+    setDeletingFieldId(null)
   }
 
   const handleReorder = async (idx: number, dir: -1 | 1) => {
@@ -326,7 +353,7 @@ export default function PropostasFieldsTab() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(field.id)}
+                  onClick={() => setDeletingFieldId(field.id)}
                   disabled={saving}
                   className="text-gray-400 hover:text-red-600 disabled:opacity-50"
                 >
@@ -339,127 +366,156 @@ export default function PropostasFieldsTab() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 space-y-4">
+      <Modal
+        isOpen={showModal}
+        onClose={handleCloseModal}
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-gray-900">
               {editingField.id ? 'Editar campo' : 'Novo campo'}
             </h3>
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nome do campo *
-              </label>
-              <input
-                type="text"
-                value={editingField.label}
-                onChange={(e) =>
-                  setEditingField((prev) => ({ ...prev, label: e.target.value }))
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                placeholder="Ex: Prazo de entrega"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tipo do campo
-              </label>
-              <select
-                value={editingField.type}
-                onChange={(e) =>
-                  setEditingField((prev) => ({
-                    ...prev,
-                    type: e.target.value as ProposalCustomFieldType,
-                  }))
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              >
-                {FIELD_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {editingField.type === 'select' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Opcoes (uma por linha)
-                </label>
-                <textarea
-                  value={editingField.optionsText}
-                  onChange={(e) =>
-                    setEditingField((prev) => ({
-                      ...prev,
-                      optionsText: e.target.value,
-                    }))
-                  }
-                  rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  placeholder={"Opcao 1\nOpcao 2\nOpcao 3"}
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Posicao no formulario
-              </label>
-              <select
-                value={editingField.position}
-                onChange={(e) =>
-                  setEditingField((prev) => ({
-                    ...prev,
-                    position: e.target.value as ProposalCustomFieldPosition,
-                  }))
-                }
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-              >
-                {POSITIONS.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <label className="flex items-center gap-2 text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={editingField.required}
-                onChange={(e) =>
-                  setEditingField((prev) => ({
-                    ...prev,
-                    required: e.target.checked,
-                  }))
-                }
-                className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-              />
-              Campo obrigatorio
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nome do campo *
             </label>
+            <input
+              type="text"
+              value={editingField.label}
+              onChange={(e) =>
+                setEditingField((prev) => ({ ...prev, label: e.target.value }))
+              }
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              placeholder="Ex: Prazo de entrega"
+            />
+          </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveField}
-                disabled={saving}
-                className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
-              >
-                {saving ? 'Salvando...' : 'Salvar'}
-              </button>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tipo do campo
+            </label>
+            <select
+              value={editingField.type}
+              onChange={(e) =>
+                setEditingField((prev) => ({
+                  ...prev,
+                  type: e.target.value as ProposalCustomFieldType,
+                }))
+              }
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              {FIELD_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {editingField.type === 'select' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Opcoes (uma por linha)
+              </label>
+              <textarea
+                value={editingField.optionsText}
+                onChange={(e) =>
+                  setEditingField((prev) => ({
+                    ...prev,
+                    optionsText: e.target.value,
+                  }))
+                }
+                rows={4}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                placeholder={"Opcao 1\nOpcao 2\nOpcao 3"}
+              />
             </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Posicao no formulario
+            </label>
+            <select
+              value={editingField.position}
+              onChange={(e) =>
+                setEditingField((prev) => ({
+                  ...prev,
+                  position: e.target.value as ProposalCustomFieldPosition,
+                }))
+              }
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              {POSITIONS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={editingField.required}
+              onChange={(e) =>
+                setEditingField((prev) => ({
+                  ...prev,
+                  required: e.target.checked,
+                }))
+              }
+              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+            />
+            Campo obrigatorio
+          </label>
+
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveField}
+              disabled={saving}
+              className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
+            >
+              {saving ? 'Salvando...' : 'Salvar'}
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
+
+      <ConfirmCloseDialog
+        isOpen={showConfirmClose}
+        onConfirm={confirmCloseModal}
+        onCancel={() => setShowConfirmClose(false)}
+      />
+
+      <ConfirmCloseDialog
+        isOpen={!!deletingFieldId}
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingFieldId(null)}
+        title="Excluir campo"
+        message={`Tem certeza que deseja excluir o campo "${fields.find(f => f.id === deletingFieldId)?.label}"? Esta ação não pode ser desfeita.`}
+        confirmText="Sim, excluir"
+        cancelText="Cancelar"
+      />
     </div>
   )
 }
