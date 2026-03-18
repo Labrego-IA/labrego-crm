@@ -86,20 +86,71 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   }, [impersonateMenuOpen])
 
   // Carregar membros da organização quando admin (skip para plano free)
+  // Busca Firestore members + Firebase Auth users e faz merge (igual /admin/usuarios)
   useEffect(() => {
     if (!orgId || !member || member.role !== 'admin' || orgPlan === 'free') return
-    const membersRef = collection(db, 'organizations', orgId, 'members')
-    getDocs(query(membersRef)).then((snap) => {
-      const members = snap.docs
-        .map(d => ({ id: d.id, ...d.data() } as OrgMember))
-        .filter(m => m.status !== 'suspended')
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-      setOrgMembers(members)
-    }).catch(err => {
-      console.warn('[layout] Failed to load org members (may be expected for free plan):', err)
-      setOrgMembers([])
-    })
-  }, [orgId, member, orgPlan])
+
+    const loadMembers = async () => {
+      try {
+        // Buscar membros do Firestore
+        const membersRef = collection(db, 'organizations', orgId, 'members')
+        const snap = await getDocs(query(membersRef))
+        const firestoreMembers = snap.docs
+          .map(d => ({ id: d.id, ...d.data() } as OrgMember))
+
+        // Buscar usuários do Firebase Auth via API
+        let authUsers: { uid: string; email: string; displayName?: string; photoURL?: string; disabled: boolean; createdAt?: string }[] = []
+        try {
+          const res = await fetch(`/api/admin/members/verify-auth?orgId=${encodeURIComponent(orgId)}`, {
+            headers: { 'x-user-email': userEmail || '' },
+          })
+          if (res.ok) {
+            const data = await res.json()
+            authUsers = data.users || []
+          }
+        } catch {
+          // silently fail - Firestore members will still show
+        }
+
+        // Merge: Firestore members + Auth-only users (sem vínculo no Firestore)
+        const memberEmailSet = new Set(firestoreMembers.map(m => m.email?.toLowerCase()))
+        const memberUidSet = new Set(firestoreMembers.map(m => m.userId).filter(Boolean))
+        const authUidSet = new Set(authUsers.map(u => u.uid))
+
+        // Firestore members válidos (cujo userId existe no Auth, se temos dados de Auth)
+        const validMembers = authUsers.length > 0
+          ? firestoreMembers.filter(m => !m.userId || authUidSet.has(m.userId))
+          : firestoreMembers
+
+        // Auth-only users (não existem no Firestore)
+        const authOnlyMembers: OrgMember[] = authUsers
+          .filter(u => !memberEmailSet.has(u.email?.toLowerCase()) && !memberUidSet.has(u.uid))
+          .filter(u => !u.disabled)
+          .map(u => ({
+            id: `auth-${u.uid}`,
+            userId: u.uid,
+            email: u.email,
+            displayName: u.displayName || u.email?.split('@')[0] || '',
+            photoUrl: u.photoURL,
+            role: '' as OrgMember['role'],
+            permissions: { pages: [], actions: {} as OrgMember['permissions']['actions'], viewScope: 'own' as const },
+            status: 'active' as OrgMember['status'],
+            joinedAt: u.createdAt || '',
+          }))
+
+        const allMembers = [...validMembers, ...authOnlyMembers]
+          .filter(m => m.status !== 'suspended' && m.role !== 'admin')
+          .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''))
+
+        setOrgMembers(allMembers)
+      } catch (err) {
+        console.warn('[layout] Failed to load org members:', err)
+        setOrgMembers([])
+      }
+    }
+
+    loadMembers()
+  }, [orgId, member, orgPlan, userEmail])
 
   const handleLogout = async () => {
     try {
