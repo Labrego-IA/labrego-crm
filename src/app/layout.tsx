@@ -8,6 +8,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, getDoc, updateDoc, collectionGroup, query, where, getDocs, collection } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebaseClient'
 import type { OrgMember } from '@/types/organization'
+import { getTrialDaysLeft, isTrialActive } from '@/lib/trial'
 import type { PlanId } from '@/types/plan'
 import { PLAN_DISPLAY } from '@/types/plan'
 import { Inter } from 'next/font/google'
@@ -462,6 +463,20 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       }`}>
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         {actionBalance} ações · {minuteBalance} min
+                      </span>
+                    </>
+                  )}
+                  {member?.trialEndsAt && isTrialActive(member.trialEndsAt) && (
+                    <>
+                      <span className="text-slate-300">|</span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-700">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {(() => {
+                          const days = getTrialDaysLeft(member.trialEndsAt)
+                          if (days <= 0) return null
+                          if (days === 1) return 'Trial · Menos de 1 dia'
+                          return `Trial · ${days} dias restantes`
+                        })()}
                       </span>
                     </>
                   )}
