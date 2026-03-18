@@ -11,7 +11,8 @@ import {
   GoogleAuthProvider,
   getAdditionalUserInfo,
 } from 'firebase/auth'
-import { auth } from '@/lib/firebaseClient'
+import { auth, db } from '@/lib/firebaseClient'
+import { doc, setDoc } from 'firebase/firestore'
 import Link from 'next/link'
 
 export default function LoginPageWrapper() {
@@ -94,6 +95,10 @@ function LoginPage() {
       await updateProfile(userCredential.user, {
         displayName: nome.trim(),
       })
+      await setDoc(doc(db, 'users', cadastroEmail.toLowerCase()), {
+        displayName: nome.trim(),
+        telefone: telefone.replace(/\D/g, ''),
+      }, { merge: true })
       router.replace('/contatos')
     } catch (err: any) {
       const code = err?.code || ''
