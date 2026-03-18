@@ -12,7 +12,7 @@ import {
   ChevronRightIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -380,9 +380,8 @@ export default function AdminFunisPage() {
     )
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -615,5 +614,6 @@ export default function AdminFunisPage() {
       </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }

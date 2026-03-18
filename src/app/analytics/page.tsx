@@ -12,7 +12,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   LineChart,
   Line,
@@ -732,9 +732,9 @@ function AnalyticsDashboard() {
   }, [activeTab, filteredClients, filteredStages, periodStart])
 
   /* ─── Render ─── */
-  if (!orgId) return <NoOrgMessage />
 
   return (
+    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
@@ -1563,5 +1563,6 @@ function ConversionTab({ clients }: { clients: Client[] }) {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }

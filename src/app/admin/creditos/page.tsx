@@ -15,7 +15,7 @@ import type { CreditBalance, CreditTransaction } from '@/types/credits'
 import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 const TYPE_LABELS: Record<CreditTransaction['type'], string> = {
   purchase: 'Compra',
@@ -135,9 +135,8 @@ export default function CreditsPage() {
     ? transactions
     : transactions.filter(tx => tx.creditType === filter)
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <PlanGate feature="voice_agent">
       <PermissionGate action="canManageSettings">
         <div className="min-h-full bg-gradient-to-br from-slate-50 via-white to-primary-50">
@@ -399,5 +398,6 @@ export default function CreditsPage() {
         </div>
       </PermissionGate>
     </PlanGate>
+    </NoOrgPreviewGate>
   )
 }

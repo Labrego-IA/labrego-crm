@@ -41,7 +41,7 @@ import { useProposalBranding } from '@/hooks/useProposalBranding'
 import { useProposalStructure } from '@/hooks/useProposalStructure'
 import { useProposalCustomFields } from '@/hooks/useProposalCustomFields'
 import ProposalCustomFields from '@/components/ProposalCustomFields'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import type {
   ProposalProduct as Product,
   ProposalFormData as FormData,
@@ -305,9 +305,8 @@ export default function NewProposalCRMPage() {
     )
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary-50/30">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
@@ -810,5 +809,6 @@ export default function NewProposalCRMPage() {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }

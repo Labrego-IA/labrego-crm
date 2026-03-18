@@ -14,7 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -374,9 +374,8 @@ export default function ProjecaoVendasPage() {
     return <div className="p-8 text-center text-neutral-400">Carregando projeção de vendas...</div>
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <div className="p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
@@ -844,6 +843,7 @@ export default function ProjecaoVendasPage() {
         )
       })}
     </div>
+    </NoOrgPreviewGate>
   )
 }
 

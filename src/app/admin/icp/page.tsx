@@ -35,7 +35,7 @@ import {
   ESTADOS_BR,
 } from '@/types/icp'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
@@ -259,8 +259,6 @@ export default function AdminIcpPage() {
     setEditingId(null)
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   if (!can('canManageFunnels') && !can('canManageSettings')) {
     return (
       <div className="p-8 text-center text-neutral-500">
@@ -270,6 +268,7 @@ export default function AdminIcpPage() {
   }
 
   return (
+    <NoOrgPreviewGate>
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -813,5 +812,6 @@ export default function AdminIcpPage() {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }

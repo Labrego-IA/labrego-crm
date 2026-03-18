@@ -14,7 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   ArrowPathIcon,
   BoltIcon,
@@ -168,8 +168,6 @@ function ReengajamentoContent() {
       setSaving(false)
     }
   }, [config, orgId])
-
-  if (!orgId) return <NoOrgMessage />
 
   if (loading) {
     return (

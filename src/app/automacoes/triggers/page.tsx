@@ -27,7 +27,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* ======================== Component ======================== */
 
@@ -184,9 +184,8 @@ function TriggersPageContent() {
     )
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -526,6 +525,7 @@ function TriggersPageContent() {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }
 

@@ -29,7 +29,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { type EmailEvent, calcEngagement, EMPTY_ENGAGEMENT } from '@/types/email'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* ================================= Component ================================= */
 
@@ -198,8 +198,6 @@ function CampaignDetailsContent() {
     )
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   if (!campaign) {
     return (
       <div className="text-center py-20">
@@ -212,6 +210,7 @@ function CampaignDetailsContent() {
   }
 
   return (
+    <NoOrgPreviewGate>
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
@@ -551,6 +550,7 @@ function CampaignDetailsContent() {
         )}
       </div>
     </div>
+    </NoOrgPreviewGate>
   )
 }
 

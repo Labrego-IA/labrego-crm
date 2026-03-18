@@ -23,7 +23,7 @@ import {
   ArrowsRightLeftIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 type ActionType = 'call' | 'email' | 'whatsapp' | 'stage_change' | 'followup'
 
@@ -421,9 +421,8 @@ export default function ProdutividadePage() {
     )
   }
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
+    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
@@ -908,5 +907,6 @@ export default function ProdutividadePage() {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }

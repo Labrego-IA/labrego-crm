@@ -6,7 +6,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
+import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   type EmailTemplate,
   type EmailBlockData,
@@ -167,8 +167,6 @@ function TemplatesLibraryContent() {
     })
   }, [allTemplates, selectedCategory, search])
 
-  if (!orgId) return <NoOrgMessage />
-
   const openInEditor = (tmpl: typeof SYSTEM_TEMPLATES[0] | EmailTemplate) => {
     if (tmpl.isSystem) {
       // System templates: open editor with blocks as initialBlocks via sessionStorage
@@ -182,6 +180,7 @@ function TemplatesLibraryContent() {
   }
 
   return (
+    <NoOrgPreviewGate>
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
@@ -337,6 +336,7 @@ function TemplatesLibraryContent() {
         </div>
       )}
     </div>
+    </NoOrgPreviewGate>
   )
 }
 
