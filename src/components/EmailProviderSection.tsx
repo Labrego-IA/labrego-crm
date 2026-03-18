@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { auth } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 
@@ -87,9 +88,13 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
         setResendApiKey('')
         setSendgridApiKey('')
         await loadConfig()
+        toast.success('Configuração de email salva com sucesso!')
+      } else {
+        toast.error('Erro ao salvar configuração de email. Tente novamente.')
       }
     } catch (err) {
       console.error('Error saving email config:', err)
+      toast.error('Erro ao salvar configuração de email. Tente novamente.')
     } finally {
       setSaving(false)
     }
