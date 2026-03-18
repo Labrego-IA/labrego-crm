@@ -18,6 +18,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   ChatBubbleLeftRightIcon,
   EnvelopeIcon,
@@ -145,6 +146,13 @@ function CadenciaDashboard() {
   // Automation config
   const [autoConfig, setAutoConfig] = useState<AutomationConfig>(DEFAULT_AUTOMATION_CONFIG)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   // Load data
   useEffect(() => {
     if (!orgId) return
@@ -191,7 +199,7 @@ function CadenciaDashboard() {
     return stages.filter(s => s.funnelId === selectedFunnel)
   }, [stages, selectedFunnel])
 
-  if (!orgId) return null
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -835,6 +843,9 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
       snap => {
         setLogs(snap.docs.map(d => ({ id: d.id, ...d.data() } as ExecutionLog)))
         setLoading(false)
+      },
+      (error) => {
+        console.warn('[CadenciaPage] Firestore error:', error.message)
       }
     )
 

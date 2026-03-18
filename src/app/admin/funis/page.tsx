@@ -12,6 +12,7 @@ import {
   ChevronRightIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -84,6 +85,11 @@ export default function AdminFunisPage() {
   const [accessMap, setAccessMap] = useState<Record<string, Record<string, { enabled: boolean; allStages: boolean; stageIds: string[] }>>>({})
   const [expandedRows, setExpandedRows] = useState<Record<string, string | null>>({}) // memberId -> expanded funnelId
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
+
   // Load data
   useEffect(() => {
     if (!orgId) return
@@ -93,6 +99,8 @@ export default function AdminFunisPage() {
       onSnapshot(query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active')), (snap) => {
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as MemberRow[]
         setMembers(data.sort((a, b) => a.displayName.localeCompare(b.displayName)))
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 
@@ -109,6 +117,8 @@ export default function AdminFunisPage() {
           }
         })
         setFunnels(data.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 
@@ -117,6 +127,8 @@ export default function AdminFunisPage() {
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as StageItem[]
         setStages(data.sort((a, b) => a.order - b.order))
         setLoading(false)
+      }, (error) => {
+        console.warn('[FunisPage] Firestore error:', error.message)
       })
     )
 
@@ -367,6 +379,8 @@ export default function AdminFunisPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div>

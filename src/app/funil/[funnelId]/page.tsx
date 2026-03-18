@@ -37,6 +37,7 @@ import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import AudioPlayer from '@/components/AudioPlayer'
 import RichTextEditor from '@/components/RichTextEditor'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   Cross2Icon,
   PlusIcon,
@@ -302,6 +303,11 @@ export default function FunilDetailPage() {
   const [icpProfiles, setIcpProfiles] = useState<{ id: string; name: string; color: string }[]>([])
   const [loading, setLoading] = useState(true)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
+
   // Load funnel metadata and verify access
   useEffect(() => {
     if (!orgId || !funnelId) return
@@ -324,6 +330,8 @@ export default function FunilDetailPage() {
       setFunnelName(data.name || 'Funil')
       setFunnelColor(data.color || '#4f46e5')
       setFunnelNotFound(false)
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId, funnelId, member?.id])
@@ -334,6 +342,8 @@ export default function FunilDetailPage() {
     const q = query(collection(db, 'icpProfiles'), where('orgId', '==', orgId), where('isActive', '==', true))
     const unsub = onSnapshot(q, (snap) => {
       setIcpProfiles(snap.docs.map(d => ({ id: d.id, name: d.data().name as string, color: d.data().color as string })))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -588,6 +598,8 @@ export default function FunilDetailPage() {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Cliente[]
       setClients(data)
       setLoading(false)
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId, funnelId])
@@ -600,6 +612,9 @@ export default function FunilDetailPage() {
       (snap) => {
         const stages = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as FunnelStage[]
         setFunnelStages(stages)
+      },
+      (error) => {
+        console.warn('[FunnelDetailPage] Firestore error:', error.message)
       }
     )
     return () => unsub()
@@ -611,6 +626,8 @@ export default function FunilDetailPage() {
     const unsub = onSnapshot(query(collection(db, 'macroStages'), where('orgId', '==', orgId)), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as MacroStage[]
       setMacroStages(data.sort((a, b) => a.order - b.order))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -621,6 +638,8 @@ export default function FunilDetailPage() {
     const unsub = onSnapshot(query(collection(db, 'cadenceSteps'), where('orgId', '==', orgId)), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as CadenceStep[]
       setCadenceSteps(data.sort((a, b) => a.order - b.order))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -639,6 +658,8 @@ export default function FunilDetailPage() {
       } else {
         setAutoConfig({ enabled: false })
       }
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -660,6 +681,9 @@ export default function FunilDetailPage() {
             failedItems: (queueData.failedItems as number) || 0,
           })
         }
+      },
+      (error) => {
+        console.warn('[FunnelDetailPage] Firestore error:', error.message)
       }
     )
     return () => unsub()
@@ -671,6 +695,8 @@ export default function FunilDetailPage() {
     const unsub = onSnapshot(query(collection(db, 'organizations', orgId, 'costCenters')), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as CostCenter[]
       setCostCenters(data.sort((a, b) => a.code - b.code))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -698,6 +724,8 @@ export default function FunilDetailPage() {
         }
       })
       setProposalsByClient(grouped)
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -710,6 +738,9 @@ export default function FunilDetailPage() {
       (snap) => {
         const members = snap.docs.map(d => ({ id: d.id, ...d.data() })) as OrgMember[]
         setOrgMembers(members)
+      },
+      (error) => {
+        console.warn('[FunnelDetailPage] Firestore error:', error.message)
       }
     )
     return () => unsub()
@@ -842,6 +873,8 @@ export default function FunilDetailPage() {
     const unsub = onSnapshot(q, (snap) => {
       setClientProposals(snap.docs.map(d => ({ id: d.id, ...d.data() } as { id: string; number?: number; projectName?: string; status?: string; total?: number; createdAt?: string })))
       setLoadingProposals(false)
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return unsub
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2943,6 +2976,8 @@ export default function FunilDetailPage() {
     if (!orgId) return
     const unsub = onSnapshot(collection(db, 'organizations', orgId, 'funnels'), (snap) => {
       setAllOrgFunnels(snap.docs.map(d => ({ id: d.id, name: d.data().name as string })))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -2956,6 +2991,8 @@ export default function FunilDetailPage() {
     const q = query(collection(db, 'funnelStages'), where('orgId', '==', orgId), where('funnelId', '==', crossFunnelTarget), orderBy('order'))
     const unsub = onSnapshot(q, (snap) => {
       setCrossFunnelStages(snap.docs.map(d => ({ id: d.id, name: d.data().name as string, order: d.data().order as number })))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [crossFunnelTarget, orgId])
@@ -2969,6 +3006,8 @@ export default function FunilDetailPage() {
     const q = query(collection(db, 'funnelStages'), where('orgId', '==', orgId), where('funnelId', '==', moveFunnelTarget), orderBy('order'))
     const unsub = onSnapshot(q, (snap) => {
       setMoveFunnelStages(snap.docs.map(d => ({ id: d.id, name: d.data().name as string, order: d.data().order as number })))
+    }, (error) => {
+      console.warn('[FunnelDetailPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [moveFunnelTarget, orgId])
@@ -3349,6 +3388,8 @@ export default function FunilDetailPage() {
       date.getFullYear() === today.getFullYear()
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   // Funnel not found or no access
   if (funnelNotFound) {

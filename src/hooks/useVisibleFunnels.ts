@@ -22,16 +22,24 @@ export function useVisibleFunnels() {
       orderBy('order', 'asc')
     )
 
-    const unsub = onSnapshot(q, (snap) => {
-      const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
-      // Filter by visibility: empty visibleTo = visible to all
-      const memberId = member?.id
-      const visible = all.filter(f =>
-        f.visibleTo.length === 0 || (memberId && f.visibleTo.includes(memberId))
-      )
-      setFunnels(visible)
-      setLoading(false)
-    })
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
+        // Filter by visibility: empty visibleTo = visible to all
+        const memberId = member?.id
+        const visible = all.filter(f =>
+          f.visibleTo.length === 0 || (memberId && f.visibleTo.includes(memberId))
+        )
+        setFunnels(visible)
+        setLoading(false)
+      },
+      (error) => {
+        console.warn('[useVisibleFunnels] Permission error:', error.message)
+        setFunnels([])
+        setLoading(false)
+      }
+    )
 
     return () => unsub()
   }, [orgId, member?.id])

@@ -41,6 +41,7 @@ import { useProposalBranding } from '@/hooks/useProposalBranding'
 import { useProposalStructure } from '@/hooks/useProposalStructure'
 import { useProposalCustomFields } from '@/hooks/useProposalCustomFields'
 import ProposalCustomFields from '@/components/ProposalCustomFields'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import type {
   ProposalProduct as Product,
   ProposalFormData as FormData,
@@ -107,6 +108,11 @@ export default function NewProposalCRMPage() {
       return prev === safePages ? prev : safePages
     })
   }, [])
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load data
   useEffect(() => {
@@ -298,6 +304,8 @@ export default function NewProposalCRMPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary-50/30">

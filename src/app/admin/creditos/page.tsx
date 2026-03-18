@@ -15,6 +15,7 @@ import type { CreditBalance, CreditTransaction } from '@/types/credits'
 import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import PlanGate from '@/components/PlanGate'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 const TYPE_LABELS: Record<CreditTransaction['type'], string> = {
   purchase: 'Compra',
@@ -60,6 +61,14 @@ export default function CreditsPage() {
   const [loadingBalance, setLoadingBalance] = useState(true)
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [filter, setFilter] = useState<CreditFilter>('all')
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoadingBalance(false)
+      setLoadingTransactions(false)
+    }
+  }, [orgId])
 
   // Real-time balance listener
   useEffect(() => {
@@ -125,6 +134,8 @@ export default function CreditsPage() {
   const filteredTransactions = filter === 'all'
     ? transactions
     : transactions.filter(tx => tx.creditType === filter)
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <PlanGate feature="voice_agent">

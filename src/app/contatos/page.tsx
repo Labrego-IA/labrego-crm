@@ -181,7 +181,7 @@ type CostCenter = {
 export default function ContatosPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { userEmail, orgId, member } = useCrmUser()
+  const { userEmail, orgId, orgPlan, member } = useCrmUser()
   const { viewScope } = usePermissions()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
@@ -266,6 +266,14 @@ export default function ContatosPage() {
   const [partnersPreview, setPartnersPreview] = useState<Array<{ cnpj: string; partners: string }>>([])
   const [partnersResult, setPartnersResult] = useState<{ updated: number; notFound: string[] } | null>(null)
 
+  // When orgId is not available (no org/plan), stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+      setClients([])
+    }
+  }, [orgId])
+
   // Load clients, funnel stages, and cost centers
   useEffect(() => {
     if (!orgId) return
@@ -273,6 +281,10 @@ export default function ContatosPage() {
     const unsubClients = onSnapshot(query(collection(db, 'clients'), where('orgId', '==', orgId)), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Cliente[]
       setClients(data)
+      setLoading(false)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
+      setClients([])
       setLoading(false)
     })
 
@@ -292,17 +304,23 @@ export default function ContatosPage() {
         }
       })
       setStageColorMap(colorMap)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     const unsubCostCenters = onSnapshot(query(collection(db, 'organizations', orgId, 'costCenters')), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as CostCenter[]
       setCostCenters(data.sort((a, b) => a.code - b.code))
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     // Load cadence steps for auto-enrollment on bulk move
     const unsubCadence = onSnapshot(query(collection(db, 'cadenceSteps'), where('orgId', '==', orgId)), (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, stageId: d.data().stageId, order: d.data().order, isActive: d.data().isActive, parentStepId: d.data().parentStepId }))
       setCadenceSteps(data)
+    }, (error) => {
+      console.warn('[ContatosPage] Firestore error:', error.message)
     })
 
     return () => {
@@ -1853,9 +1871,15 @@ export default function ContatosPage() {
                 <PersonIcon className="w-6 h-6 text-slate-400" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-slate-600">Nenhum contato encontrado</p>
+                <p className="text-sm font-medium text-slate-600">
+                  {!orgId ? 'Nenhuma organização encontrada' : 'Nenhum contato encontrado'}
+                </p>
                 <p className="text-xs text-slate-400 mt-1">
-                  {hasActiveFilters ? 'Tente ajustar os filtros' : 'Adicione seu primeiro contato'}
+                  {!orgId
+                    ? 'Assine um plano para testar nossas funcionalidades'
+                    : hasActiveFilters
+                    ? 'Tente ajustar os filtros'
+                    : 'Adicione seu primeiro contato'}
                 </p>
               </div>
             </div>
@@ -2095,9 +2119,15 @@ export default function ContatosPage() {
                             <PersonIcon className="w-6 h-6 text-slate-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-600">Nenhum contato encontrado</p>
+                            <p className="text-sm font-medium text-slate-600">
+                              {!orgId ? 'Nenhuma organização encontrada' : 'Nenhum contato encontrado'}
+                            </p>
                             <p className="text-xs text-slate-400 mt-1">
-                              {hasActiveFilters ? 'Tente ajustar os filtros' : 'Adicione seu primeiro contato'}
+                              {!orgId
+                                ? 'Assine um plano para testar nossas funcionalidades'
+                                : hasActiveFilters
+                                ? 'Tente ajustar os filtros'
+                                : 'Adicione seu primeiro contato'}
                             </p>
                           </div>
                         </div>

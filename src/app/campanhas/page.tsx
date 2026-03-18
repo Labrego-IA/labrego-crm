@@ -27,6 +27,7 @@ import {
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ================================= Constants ================================= */
 
@@ -98,6 +99,13 @@ function CampanhasContent() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
 
   /* ---------------------- Real-time subscription ------------------------ */
 
@@ -234,6 +242,8 @@ function CampanhasContent() {
   }, [searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
 
   /* ================================= Render ================================= */
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="p-4 md:p-6 space-y-6">

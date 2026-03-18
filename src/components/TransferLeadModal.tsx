@@ -56,6 +56,9 @@ export default function TransferLeadModal({
             })
             .filter((m) => m.id !== currentAssignedTo)
         )
+      },
+      (error) => {
+        console.warn('[TransferLeadModal] Firestore error:', error.message)
       }
     )
     return () => unsub()

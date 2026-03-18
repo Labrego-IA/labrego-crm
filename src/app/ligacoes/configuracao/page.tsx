@@ -28,6 +28,7 @@ import { assemblePromptFromWizard } from '@/lib/promptAssembler'
 import AgentWizard from '@/components/ligacoes/AgentWizard'
 import IntegrationsPanel from '@/components/ligacoes/IntegrationsPanel'
 import VoiceSelector from '@/components/ligacoes/VoiceSelector'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 const WEEKDAYS = [
   { value: 0, label: 'Domingo' },
@@ -113,6 +114,11 @@ export default function ConfiguracaoPage() {
       return next
     })
   }, [])
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load config
   useEffect(() => {
@@ -277,6 +283,8 @@ export default function ConfiguracaoPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="h-full bg-slate-50 flex flex-col">

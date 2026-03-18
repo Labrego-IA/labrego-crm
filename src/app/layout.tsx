@@ -57,7 +57,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const pathname = usePathname()
   const lastLoggedRouteRef = useRef<string | null>(null)
   const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
-  const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined)
+  const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {
@@ -85,9 +85,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     }
   }, [impersonateMenuOpen])
 
-  // Carregar membros da organização quando admin
+  // Carregar membros da organização quando admin (skip para plano free)
   useEffect(() => {
-    if (!orgId || !member || member.role !== 'admin') return
+    if (!orgId || !member || member.role !== 'admin' || orgPlan === 'free') return
     const membersRef = collection(db, 'organizations', orgId, 'members')
     getDocs(query(membersRef)).then((snap) => {
       const members = snap.docs
@@ -96,9 +96,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
       setOrgMembers(members)
     }).catch(err => {
-      console.error('[layout] Failed to load org members:', err)
+      console.warn('[layout] Failed to load org members (may be expected for free plan):', err)
+      setOrgMembers([])
     })
-  }, [orgId, member])
+  }, [orgId, member, orgPlan])
 
   const handleLogout = async () => {
     try {
@@ -181,7 +182,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   }
                   setOrgId(orgRef.id)
                   setOrgName(orgData?.name || null)
-                  setOrgPlan((orgData?.plan as PlanId) || 'basic')
+                  setOrgPlan((orgData?.plan as PlanId) || 'free')
                   setOrgCreatedAt(orgData?.createdAt || null)
                   setMember(memberData)
                 }

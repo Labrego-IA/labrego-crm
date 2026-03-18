@@ -9,6 +9,7 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import UpgradePrompt from '@/components/UpgradePrompt'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
 import {
@@ -83,6 +84,13 @@ export default function FunnelHubPage() {
   const [formColor, setFormColor] = useState(FUNNEL_COLORS[0])
   const [saving, setSaving] = useState(false)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoadingData(false)
+    }
+  }, [orgId])
+
   // Load stages for counting
   useEffect(() => {
     if (!orgId) return
@@ -91,6 +99,8 @@ export default function FunnelHubPage() {
         const data = d.data()
         return { id: d.id, funnelId: (data.funnelId as string) || '', name: (data.name as string) || '', order: (data.order as number) ?? 0 }
       }))
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -110,6 +120,10 @@ export default function FunnelHubPage() {
         }
       }))
       setLoadingData(false)
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
+      setAllClients([])
+      setLoadingData(false)
     })
     return () => unsub()
   }, [orgId])
@@ -123,6 +137,8 @@ export default function FunnelHubPage() {
         const data = d.data()
         return { id: d.id, name: data.name, color: data.color, funnelIds: data.funnelIds || [] }
       }))
+    }, (error) => {
+      console.warn('[FunnelHubPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -374,6 +390,8 @@ export default function FunnelHubPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   // Empty state
   if (funnels.length === 0) {

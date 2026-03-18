@@ -56,6 +56,9 @@ export default function MemberSelector({
             }
           })
         )
+      },
+      (error) => {
+        console.warn('[MemberSelector] Firestore error:', error.message)
       }
     )
     return () => unsub()

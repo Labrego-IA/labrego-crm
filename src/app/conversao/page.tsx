@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import { db } from '@/lib/firebaseClient'
 import {
   FunnelIcon,
@@ -261,6 +262,13 @@ export default function ConversaoPage() {
   const [selectedSegment, setSelectedSegment] = useState<SegmentKey | ''>('')
   const [icpProfiles, setIcpProfiles] = useState<{ id: string; name: string }[]>([])
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) {
+      setLoading(false)
+    }
+  }, [orgId])
+
   // ── Data Loading ───────────────────────────────────────
   useEffect(() => {
     if (!orgId) return
@@ -271,6 +279,9 @@ export default function ConversaoPage() {
           .map((doc) => ({ id: doc.id, ...doc.data() } as FunnelStage))
           .sort((a, b) => a.order - b.order)
         setFunnelStages(stages)
+      },
+      (error) => {
+        console.warn('[ConversaoPage] Firestore error:', error.message)
       }
     )
     return () => unsub()
@@ -328,6 +339,10 @@ export default function ConversaoPage() {
         })
         setMovementLogs(logs)
         setLoading(false)
+      }, (error) => {
+        console.warn('[ConversaoPage] Firestore error:', error.message)
+        setMovementLogs([])
+        setLoading(false)
       })
     })
 
@@ -339,6 +354,8 @@ export default function ConversaoPage() {
     if (!orgId) return
     const unsub = onSnapshot(collection(db, `organizations/${orgId}/funnels`), (snap) => {
       setFunnels(snap.docs.map(doc => ({ id: doc.id, name: (doc.data().name || 'Funil sem nome') as string })))
+    }, (error) => {
+      console.warn('[ConversaoPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -348,6 +365,8 @@ export default function ConversaoPage() {
     const q = query(collection(db, 'icpProfiles'), where('orgId', '==', orgId), where('isActive', '==', true))
     const unsub = onSnapshot(q, (snap) => {
       setIcpProfiles(snap.docs.map(d => ({ id: d.id, name: (d.data().name || '') as string })))
+    }, (error) => {
+      console.warn('[ConversaoPage] Firestore error:', error.message)
     })
     return () => unsub()
   }, [orgId])
@@ -666,6 +685,8 @@ export default function ConversaoPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6 overflow-x-hidden">

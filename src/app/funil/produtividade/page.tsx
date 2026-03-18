@@ -23,6 +23,7 @@ import {
   ArrowsRightLeftIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 type ActionType = 'call' | 'email' | 'whatsapp' | 'stage_change' | 'followup'
 
@@ -230,6 +231,11 @@ export default function ProdutividadePage() {
   const [refreshing, setRefreshing] = useState(false)
   const [popup, setPopup] = useState<{ author: string; date: string; clients: ClientDetail[] } | null>(null)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
+
   const fetchProductivityData = async () => {
     try {
       const allEntries: ProductivityEntry[] = []
@@ -414,6 +420,8 @@ export default function ProdutividadePage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">

@@ -23,6 +23,7 @@ import {
   BuildingOfficeIcon,
 } from '@heroicons/react/24/outline'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 const COST_CENTER_COLORS = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
@@ -75,6 +76,11 @@ export default function AdminCentrosCustoPage() {
   // Delete confirmation modal state
   const [deleteTarget, setDeleteTarget] = useState<CostCenter | null>(null)
   const [deleting, setDeleting] = useState(false)
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load data
   useEffect(() => {
@@ -210,6 +216,8 @@ export default function AdminCentrosCustoPage() {
       setDeleting(false)
     }
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   if (!can('canManageFunnels') && !can('canManageSettings')) {
     return (
