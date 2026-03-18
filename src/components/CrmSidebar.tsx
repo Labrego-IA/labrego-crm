@@ -169,9 +169,13 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
-  const { role } = usePermissions()
+  const { role, canAccessPage } = usePermissions()
   const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+
+  // Filter nav items based on user permissions
+  const visibleNavItems = navItems.filter(item => canAccessPage(item.href))
+  const visibleAgentesItems = agentesItems.filter(item => canAccessPage(item.href))
 
   const handleLogout = async () => {
     try {
@@ -181,12 +185,12 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
       console.error('[sidebar] Logout failed:', err)
     }
   }
-  const isAgentesSubItemActive = agentesItems.some(
+  const isAgentesSubItemActive = visibleAgentesItems.some(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const [agentesOpen, setAgentesOpen] = useState(isAgentesSubItemActive)
 
-  const allNavItems = [...navItems, ...agentesItems, ...adminItems]
+  const allNavItems = [...visibleNavItems, ...visibleAgentesItems, ...adminItems]
   const isItemActive = (itemHref: string): boolean => {
     if (pathname === itemHref) return true
     const matchesPrefix = pathname.startsWith(`${itemHref}/`)
@@ -226,7 +230,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           )}
         </div>
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const isActive = isItemActive(item.href)
             const isDisabled = item.badge === 'Em breve'
 
@@ -278,8 +282,8 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               </li>
             )
           })}
-          {/* Agentes - expandable button */}
-          <li>
+          {/* Agentes - expandable button (only show if user has access to any agent page) */}
+          {visibleAgentesItems.length > 0 && <li>
             <button
               onClick={() => setAgentesOpen(!agentesOpen)}
               className={`
@@ -311,7 +315,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             </button>
             {agentesOpen && !collapsed && (
               <ul className="mt-1 ml-4 space-y-1">
-                {agentesItems.map((item) => {
+                {visibleAgentesItems.map((item) => {
                   const isActive = isItemActive(item.href)
                   return (
                     <li key={item.href}>
@@ -336,7 +340,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                 })}
               </ul>
             )}
-          </li>
+          </li>}
         </ul>
 
         {/* Administração - visível apenas para admins */}

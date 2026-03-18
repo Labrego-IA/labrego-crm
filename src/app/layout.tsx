@@ -22,6 +22,7 @@ import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
 import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
+import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 
@@ -425,25 +426,11 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 </button>
 
                 {/* Greeting - mobile */}
-                <span className="md:hidden text-sm font-semibold text-slate-700 truncate max-w-[180px]">
-                  {(() => {
-                    const h = currentTime.getHours()
-                    const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-                    const firstName = (member?.displayName || userEmail?.split('@')[0] || '').split(' ')[0]
-                    return firstName ? `${greeting}, ${firstName}` : greeting
-                  })()}
-                </span>
+                <HeaderGreeting currentTime={currentTime} className="md:hidden text-sm font-semibold text-slate-700 truncate max-w-[180px]" />
 
                 {/* Greeting - desktop */}
                 <div className="hidden md:flex items-center gap-2">
-                  <span className="text-sm text-slate-700">
-                    {(() => {
-                      const h = currentTime.getHours()
-                      const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-                      const firstName = (member?.displayName || userEmail?.split('@')[0] || '').split(' ')[0]
-                      return firstName ? `${greeting}, ${firstName}` : greeting
-                    })()}
-                  </span>
+                  <HeaderGreeting currentTime={currentTime} className="text-sm text-slate-700" />
                   {orgName && (
                     <>
                       <span className="text-slate-300">|</span>
@@ -545,64 +532,14 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   )}
 
                   <span className="hidden md:inline text-sm text-slate-500">{formatDateTime(currentTime)}</span>
-                  <div className="relative" ref={userMenuRef}>
-                    <button
-                      onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition-colors"
-                    >
-                      {userPhoto ? (
-                        <Image
-                          src={userPhoto}
-                          alt="Perfil"
-                          width={32}
-                          height={32}
-                          className="w-8 h-8 rounded-full ring-2 ring-white shadow-sm"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center ring-2 ring-white shadow-sm">
-                          <span className="text-xs font-semibold text-primary-700">
-                            {userEmail?.charAt(0).toUpperCase() || '?'}
-                          </span>
-                        </div>
-                      )}
-                      <svg className={`w-4 h-4 text-slate-400 hidden md:block transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-
-                    {/* Dropdown */}
-                    {userMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-scale-in">
-                        <div className="px-4 py-3 border-b border-slate-100">
-                          <p className="text-sm font-semibold text-slate-800 truncate">{userEmail}</p>
-                          {orgName && (
-                            <p className="text-xs text-slate-500 mt-0.5 truncate">{orgName}</p>
-                          )}
-                        </div>
-                        <div className="py-1">
-                          <Link
-                            href="/perfil"
-                            onClick={() => setUserMenuOpen(false)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            Meu Perfil
-                          </Link>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Sair
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <HeaderUserMenu
+                    menuRef={userMenuRef}
+                    isOpen={userMenuOpen}
+                    onToggle={() => setUserMenuOpen(!userMenuOpen)}
+                    onClose={() => setUserMenuOpen(false)}
+                    onLogout={handleLogout}
+                    orgName={orgName}
+                  />
                 </div>
               </div>
             </header>
@@ -759,6 +696,95 @@ function ImpersonateDropdown({
           <p className="text-sm text-slate-400 text-center py-4">Nenhum usuário encontrado</p>
         )}
       </div>
+    </div>
+  )
+}
+
+function HeaderGreeting({ currentTime, className }: { currentTime: Date; className?: string }) {
+  const { member, userEmail } = useCrmUser()
+  const h = currentTime.getHours()
+  const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
+  const firstName = (member?.displayName || userEmail?.split('@')[0] || '').split(' ')[0]
+  return (
+    <span className={className}>
+      {firstName ? `${greeting}, ${firstName}` : greeting}
+    </span>
+  )
+}
+
+function HeaderUserMenu({
+  menuRef,
+  isOpen,
+  onToggle,
+  onClose,
+  onLogout,
+  orgName,
+}: {
+  menuRef: React.RefObject<HTMLDivElement | null>
+  isOpen: boolean
+  onToggle: () => void
+  onClose: () => void
+  onLogout: () => void
+  orgName: string | null
+}) {
+  const { userEmail, userPhoto } = useCrmUser()
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={onToggle}
+        className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition-colors"
+      >
+        {userPhoto ? (
+          <Image
+            src={userPhoto}
+            alt="Perfil"
+            width={32}
+            height={32}
+            className="w-8 h-8 rounded-full ring-2 ring-white shadow-sm"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center ring-2 ring-white shadow-sm">
+            <span className="text-xs font-semibold text-primary-700">
+              {userEmail?.charAt(0).toUpperCase() || '?'}
+            </span>
+          </div>
+        )}
+        <svg className={`w-4 h-4 text-slate-400 hidden md:block transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-scale-in">
+          <div className="px-4 py-3 border-b border-slate-100">
+            <p className="text-sm font-semibold text-slate-800 truncate">{userEmail}</p>
+            {orgName && (
+              <p className="text-xs text-slate-500 mt-0.5 truncate">{orgName}</p>
+            )}
+          </div>
+          <div className="py-1">
+            <Link
+              href="/perfil"
+              onClick={onClose}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Meu Perfil
+            </Link>
+            <button
+              onClick={onLogout}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sair
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
