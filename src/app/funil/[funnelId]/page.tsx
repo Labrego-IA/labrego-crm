@@ -7,6 +7,7 @@ import Image from 'next/image'
 import {
   DragDropContext,
   Droppable,
+  Draggable,
   DropResult,
 } from '@hello-pangea/dnd'
 import { KanbanCard, UnassignedCard, TableRow, Pagination, ActivityLogView, formatCurrencyShort } from '../components'
@@ -53,6 +54,7 @@ import {
   ChatBubbleIcon,
   ExclamationTriangleIcon,
   MobileIcon,
+  DragHandleDots2Icon,
 } from '@radix-ui/react-icons'
 import {
   BuildingOfficeIcon,
@@ -1105,6 +1107,11 @@ export default function FunilDetailPage() {
     return groups
   }, [funnelStages, macroStages])
 
+  // Flat list of all stages for column drag-and-drop reordering
+  const flatStages = useMemo(() => {
+    return stageGroups.flatMap(g => g.stages)
+  }, [stageGroups])
+
   // Apply sorting to clients by stage
   const clientsByStage = useMemo(() => {
     const sorted: Record<string, Cliente[]> = {}
@@ -1692,11 +1699,44 @@ export default function FunilDetailPage() {
     return contacts
   }, [funnelStages, clientsByStage, filteredClients])
 
+  // Handle column reorder via drag and drop
+  const handleColumnReorder = useCallback(async (sourceIndex: number, destIndex: number) => {
+    const reordered = [...flatStages]
+    const [moved] = reordered.splice(sourceIndex, 1)
+    reordered.splice(destIndex, 0, moved)
+
+    // Optimistic update
+    const updatedStages = reordered.map((stage, i) => ({ ...stage, order: i }))
+    setFunnelStages(updatedStages)
+
+    // Batch update in Firestore
+    const batch = writeBatch(db)
+    updatedStages.forEach((stage, i) => {
+      batch.update(doc(db, 'funnelStages', stage.id), { order: i })
+    })
+
+    try {
+      await batch.commit()
+      toast.success('Ordem das etapas atualizada')
+    } catch (error) {
+      console.error('Error reordering stages:', error)
+      toast.error('Erro ao reordenar etapas')
+    }
+  }, [flatStages])
+
   // Handle drag and drop
   const handleDragEnd = async (result: DropResult) => {
-    const { destination, source, draggableId } = result
+    const { destination, source, draggableId, type } = result
 
     if (!destination) return
+
+    // Handle column reorder
+    if (type === 'COLUMN') {
+      if (destination.index === source.index) return
+      handleColumnReorder(source.index, destination.index)
+      return
+    }
+
     if (destination.droppableId === source.droppableId && destination.index === source.index) {
       return
     }
@@ -4722,65 +4762,48 @@ export default function FunilDetailPage() {
         ) : (
           /* Kanban View */
           <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="flex gap-4 min-w-max pb-4">
-              {stageGroups.map((group) => {
-                const macroColor = group.macroStage
-                  ? getColorByIndex(parseInt(group.macroStage.color || '0'))
-                  : null
+            <Droppable droppableId="board" type="COLUMN" direction="horizontal">
+              {(boardProvided) => (
+            <div ref={boardProvided.innerRef} {...boardProvided.droppableProps} className="flex gap-4 min-w-max pb-4">
+              {flatStages.map((stage, colIndex) => {
+                const allStageClients = clientsByStage[stage.id] || []
+                const paginatedData = paginatedClientsByStage[stage.id] || { clients: [], totalPages: 1, currentPage: 1 }
+                const color = getColorByIndex(parseInt(stage.color || '0'))
+                const stats = stageStats[stage.id]
+                const macroStage = stage.macroStageId ? macroStages.find(m => m.id === stage.macroStageId) : null
+                const macroColor = macroStage ? getColorByIndex(parseInt(macroStage.color || '0')) : null
 
-                // If this is a macro stage group with multiple stages, render with a wrapper
-                if (group.macroStage && group.stages.length > 0) {
-                  return (
-                    <div
-                      key={`macro-${group.macroStage.id}`}
-                      className={`relative rounded-2xl p-2 pt-8 border-2 ${macroColor?.border || 'border-slate-300'} bg-gradient-to-b from-${macroColor?.bg?.replace('bg-', '') || 'slate-50'} to-white/50`}
-                      style={{
-                        borderColor: macroColor ? undefined : '#cbd5e1',
-                        background: `linear-gradient(to bottom, ${
-                          macroColor?.gradient?.includes('blue') ? 'rgba(219, 234, 254, 0.5)' :
-                          macroColor?.gradient?.includes('cyan') ? 'rgba(207, 250, 254, 0.5)' :
-                          macroColor?.gradient?.includes('emerald') ? 'rgba(209, 250, 229, 0.5)' :
-                          macroColor?.gradient?.includes('amber') ? 'rgba(254, 243, 199, 0.5)' :
-                          macroColor?.gradient?.includes('orange') ? 'rgba(255, 237, 213, 0.5)' :
-                          macroColor?.gradient?.includes('violet') ? 'rgba(237, 233, 254, 0.5)' :
-                          macroColor?.gradient?.includes('pink') ? 'rgba(252, 231, 243, 0.5)' :
-                          macroColor?.gradient?.includes('red') ? 'rgba(254, 226, 226, 0.5)' :
-                          macroColor?.gradient?.includes('teal') ? 'rgba(204, 251, 241, 0.5)' :
-                          'rgba(241, 245, 249, 0.5)'
-                        }, rgba(255, 255, 255, 0.8))`
-                      }}
-                    >
-                      {/* Macro Stage Label */}
+                return (
+                  <Draggable key={`col-${stage.id}`} draggableId={`col-${stage.id}`} index={colIndex}>
+                    {(colProvided, colSnapshot) => (
                       <div
-                        className={`absolute -top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm bg-gradient-to-r ${macroColor?.gradient || 'from-slate-500 to-slate-600'} text-white whitespace-nowrap`}
+                        ref={colProvided.innerRef}
+                        {...colProvided.draggableProps}
+                        className={colSnapshot.isDragging ? 'z-50 opacity-95 [&>div]:shadow-2xl' : ''}
                       >
-                        {group.macroStage.name}
-                      </div>
-
-                      {/* Stages inside macro stage */}
-                      <div className="flex gap-3">
-                        {group.stages.map((stage) => {
-                          const allStageClients = clientsByStage[stage.id] || []
-                          const paginatedData = paginatedClientsByStage[stage.id] || { clients: [], totalPages: 1, currentPage: 1 }
-                          const color = getColorByIndex(parseInt(stage.color || '0'))
-                          const stats = stageStats[stage.id]
-
-                          return (
-                            <Droppable key={stage.id} droppableId={stage.id}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.droppableProps}
-                                  className={`w-80 flex-shrink-0 bg-white rounded-xl border flex flex-col ${
-                                    snapshot.isDraggingOver
-                                      ? `${color.border} border-2 shadow-lg`
-                                      : 'border-slate-200/60 shadow-sm'
-                                  }`}
-                                >
-                                  {/* Column Header */}
-                                  <div className={`px-4 py-3 border-b ${color.border} bg-gradient-to-r ${color.gradient} rounded-t-xl`}>
+                        <Droppable droppableId={stage.id} type="CARD">
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                              className={`w-80 flex-shrink-0 bg-white rounded-2xl border flex flex-col ${
+                                snapshot.isDraggingOver
+                                  ? `${color.border} border-2 shadow-lg`
+                                  : 'border-slate-200/60 shadow-sm'
+                              } ${colSnapshot.isDragging ? 'shadow-2xl ring-2 ring-primary-400/50' : ''}`}
+                            >
+                              {/* Column Header - Drag Handle */}
+                              <div {...colProvided.dragHandleProps} className={`px-4 py-3 border-b ${color.border} bg-gradient-to-r ${color.gradient} rounded-t-2xl cursor-grab active:cursor-grabbing`}>
+                                    {macroStage && (
+                                      <div className="flex items-center gap-1 mb-1.5">
+                                        <span className={`text-[9px] px-2 py-0.5 rounded-full bg-gradient-to-r ${macroColor?.gradient || 'from-slate-500 to-slate-600'} text-white font-semibold shadow-sm`}>
+                                          {macroStage.name}
+                                        </span>
+                                      </div>
+                                    )}
                                     <div className="flex items-center justify-between">
                                       <div className="flex items-center gap-2">
+                                        <DragHandleDots2Icon className="w-4 h-4 text-white/40 flex-shrink-0" />
                                         {inlineEditingColumnId === stage.id ? (
                                           <input
                                             type="text"
@@ -4983,227 +5006,16 @@ export default function FunilDetailPage() {
                                 </div>
                               )}
                             </Droppable>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )
-                }
-
-                // Single stage without macro stage - render normally
-                const stage = group.stages[0]
-                if (!stage) return null
-
-                const allStageClients = clientsByStage[stage.id] || []
-                const paginatedData = paginatedClientsByStage[stage.id] || { clients: [], totalPages: 1, currentPage: 1 }
-                const color = getColorByIndex(parseInt(stage.color || '0'))
-                const stats = stageStats[stage.id]
-
-                return (
-                  <Droppable key={stage.id} droppableId={stage.id}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`w-80 flex-shrink-0 bg-white rounded-2xl border flex flex-col ${
-                          snapshot.isDraggingOver
-                            ? `${color.border} border-2 shadow-lg`
-                            : 'border-slate-200/60 shadow-sm'
-                        }`}
-                      >
-                        {/* Column Header */}
-                        <div className={`px-4 py-3 border-b ${color.border} bg-gradient-to-r ${color.gradient} rounded-t-2xl`}>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              {inlineEditingColumnId === stage.id ? (
-                                <input
-                                  type="text"
-                                  value={inlineEditingColumnName}
-                                  onChange={(e) => setInlineEditingColumnName(e.target.value)}
-                                  onBlur={() => handleInlineColumnRename(stage.id, inlineEditingColumnName)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleInlineColumnRename(stage.id, inlineEditingColumnName)
-                                    if (e.key === 'Escape') { setInlineEditingColumnId(null); setInlineEditingColumnName('') }
-                                  }}
-                                  autoFocus
-                                  className="font-bold text-white bg-white/20 border border-white/30 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-white/40 w-36"
-                                />
-                              ) : (
-                                <h3
-                                  className="font-bold text-white cursor-pointer hover:bg-white/10 rounded px-1 -mx-1 transition-colors group flex items-center gap-1"
-                                  onClick={() => { setInlineEditingColumnId(stage.id); setInlineEditingColumnName(stage.name) }}
-                                  title="Clique para editar o nome da coluna"
-                                >
-                                  {stage.name}
-                                  <Pencil1Icon className="w-3 h-3 text-white/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </h3>
-                              )}
-                              <span className="px-2 py-0.5 bg-white/20 rounded-full text-xs font-bold text-white">
-                                {allStageClients.length}
-                              </span>
-                            </div>
-                            <div className="flex flex-col items-end gap-0.5">
-                              <div className="flex items-center gap-1 text-white/80 text-xs">
-                                <ChartBarIcon className="w-3.5 h-3.5" />
-                                {stage.probability || 0}%
-                              </div>
-                              {(() => {
-                                const stageTotal = allStageClients.reduce((sum, c) => sum + (c.dealValue || 0), 0)
-                                const stageExpected = allStageClients.reduce((sum, c) => sum + ((c.dealValue || 0) * getClientProbability(c, stage) / 100), 0)
-                                return stageTotal > 0 ? (
-                                  <div className="flex items-center gap-1.5 text-white/70 text-[10px]">
-                                    <span title="Valor total">{formatCurrencyShort(stageTotal)}</span>
-                                    <span className="text-white/40">&middot;</span>
-                                    <span title="Valor esperado" className="text-emerald-200">{formatCurrencyShort(stageExpected)}</span>
-                                  </div>
-                                ) : null
-                              })()}
-                            </div>
                           </div>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-white/70">
-                            <span className="flex items-center gap-1">
-                              <ClockIcon className="w-3 h-3" />
-                              Média: {stats?.avgDays || 0}d
-                            </span>
-                            {stage.maxDays && (
-                              <span className="flex items-center gap-1">
-                                Prazo: {stage.maxDays}d
-                              </span>
-                            )}
-                            {/* Cadência + Sort */}
-                            <div className="flex items-center gap-1 ml-auto">
-                              <Link
-                                href={`/cadencia?funnelId=${funnelId}`}
-                                className={`flex items-center gap-1 px-2 py-0.5 rounded-full transition-colors ${
-                                  cadenceSteps.some(s => s.stageId === stage.id && s.isActive)
-                                    ? 'bg-white/30 text-white'
-                                    : 'bg-white/10 hover:bg-white/20 text-white/80'
-                                }`}
-                                title={`Cadência: ${cadenceSteps.filter(s => s.stageId === stage.id).length} steps`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <SparklesIcon className="w-3 h-3" />
-                                {cadenceSteps.filter(s => s.stageId === stage.id).length > 0 && (
-                                  <span>{cadenceSteps.filter(s => s.stageId === stage.id).length}</span>
-                                )}
-                              </Link>
-                              {cadenceSteps.some(s => s.stageId === stage.id && s.isActive) && (
-                                <button
-                                  type="button"
-                                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/30 text-white/80 hover:text-white transition-colors"
-                                  title="Forçar cadência desta etapa"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setForceCadenceStageId(stage.id)
-                                    setForceCadenceLimit(10)
-                                  }}
-                                >
-                                  <BoltIcon className="w-3 h-3" />
-                                </button>
-                              )}
-                              {/* Sort dropdown */}
-                              <div className="relative">
-                                <button
-                                  type="button"
-                                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full transition-colors ${
-                                    sortDirection[stage.id]
-                                      ? 'bg-white/30 text-white'
-                                      : 'bg-white/10 hover:bg-white/20 text-white/80'
-                                  }`}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setSortMenuOpen(sortMenuOpen === stage.id ? null : stage.id)
-                                  }}
-                                  title="Ordenar cards"
-                                >
-                                  <ChevronUpIcon className="w-3 h-3" />
-                                  <ChevronDownIcon className="w-3 h-3 -ml-1.5" />
-                                  {sortType[stage.id] === 'lastContact' ? 'Contato' : sortType[stage.id] === 'stageTime' ? 'Etapa' : 'Ordenar'}
-                                  {sortDirection[stage.id] && (sortDirection[stage.id] === 'asc' ? ' ▲' : ' ▼')}
-                                </button>
-                                {sortMenuOpen === stage.id && (
-                                  <div
-                                    className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/10"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <button
-                                      type="button"
-                                      className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 transition-colors ${
-                                        sortType[stage.id] === 'lastContact' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
-                                      }`}
-                                      onClick={() => handleSortStage(stage.id, 'lastContact')}
-                                    >
-                                      Por último contato {sortType[stage.id] === 'lastContact' && (sortDirection[stage.id] === 'asc' ? '▲' : '▼')}
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 transition-colors ${
-                                        sortType[stage.id] === 'stageTime' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
-                                      }`}
-                                      onClick={() => handleSortStage(stage.id, 'stageTime')}
-                                    >
-                                      Por tempo na etapa {sortType[stage.id] === 'stageTime' && (sortDirection[stage.id] === 'asc' ? '▲' : '▼')}
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Cards - Paginated */}
-                        <div className="p-3 space-y-2 min-h-[200px] max-h-[calc(100vh-400px)] overflow-y-auto flex-1">
-                          {paginatedData.clients.map((client, index) => {
-                            const daysInStage = calculateDaysSince(client.funnelStageUpdatedAt)
-                            const isOverdue = stage.maxDays && daysInStage !== null && daysInStage > stage.maxDays
-                            const realIndex = ((paginatedData.currentPage - 1) * ITEMS_PER_PAGE) + index
-
-                            return (
-                              <KanbanCard
-                                key={client.id}
-                                client={client}
-                                index={realIndex}
-                                daysInStage={daysInStage}
-                                lastContactDate={client.lastFollowUpAt}
-                                isOverdue={!!isOverdue}
-                                stageColor={color}
-                                stageName={stage.name}
-                                costCenterName={costCenters.find(cc => cc.id === client.costCenterId)?.name}
-                                proposalData={proposalsByClient[client.id]}
-                                icpColor={client.icpProfileId ? icpMap[client.icpProfileId]?.color : undefined}
-                                icpName={client.icpProfileId ? icpMap[client.icpProfileId]?.name : undefined}
-                                cadenceStepName={getCurrentCadenceStep(client, stage.id)?.name}
-                                onSelect={handleSelectClient}
-                              />
-                            )
-                          })}
-                          {provided.placeholder}
-
-                          {allStageClients.length === 0 && (
-                            <div className="flex flex-col items-center justify-center py-8 text-slate-400">
-                              <UserGroupIcon className="w-8 h-8 mb-2" />
-                              <p className="text-xs">Nenhum contato</p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Pagination */}
-                        {paginatedData.totalPages > 1 && (
-                          <Pagination
-                            currentPage={paginatedData.currentPage}
-                            totalPages={paginatedData.totalPages}
-                            onPageChange={(page) => handleStagePageChange(stage.id, page)}
-                          />
                         )}
-                      </div>
-                    )}
-                  </Droppable>
-                )
-              })}
+                      </Draggable>
+                    )
+                  })}
+                  {boardProvided.placeholder}
 
               {/* Unassigned column */}
               {clientsByStage['unassigned']?.length > 0 && (
-                <Droppable droppableId="unassigned">
+                <Droppable droppableId="unassigned" type="CARD">
                   {(provided, snapshot) => {
                     const allUnassigned = clientsByStage['unassigned'] || []
                     const unassignedPaginated = paginatedClientsByStage['unassigned'] || { clients: [], totalPages: 1, currentPage: 1 }
@@ -5370,6 +5182,8 @@ export default function FunilDetailPage() {
                 )}
               </div>
             </div>
+              )}
+            </Droppable>
           </DragDropContext>
         )}
       </div>
