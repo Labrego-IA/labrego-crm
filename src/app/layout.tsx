@@ -621,6 +621,7 @@ function ImpersonateDropdown({
   const planLabel = orgPlan ? PLAN_DISPLAY[orgPlan]?.displayName || orgPlan : 'Sem plano'
 
   const filteredMembers = members.filter(m => {
+    if (m.role === 'admin') return false
     if (!search) return true
     const term = search.toLowerCase()
     return m.displayName.toLowerCase().includes(term) || m.email.toLowerCase().includes(term)
