@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db, storage } from '@/lib/firebaseClient'
 import {
@@ -27,6 +28,7 @@ export default function PropostasLogosTab() {
   const [logos, setLogos] = useState<LogoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [deletingLogo, setDeletingLogo] = useState<LogoItem | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -80,11 +82,12 @@ export default function PropostasLogosTab() {
     }
   }
 
-  const handleDelete = async (logo: LogoItem) => {
-    if (!confirm(`Excluir logo "${logo.name}"?`)) return
+  const handleDelete = async () => {
+    if (!deletingLogo) return
     try {
-      await deleteDoc(doc(db, 'logos', logo.id))
+      await deleteDoc(doc(db, 'logos', deletingLogo.id))
       toast.success('Logo excluido!')
+      setDeletingLogo(null)
       await loadLogos()
     } catch (error) {
       console.error('Delete logo error:', error)
@@ -157,7 +160,7 @@ export default function PropostasLogosTab() {
               </div>
               <p className="text-xs text-gray-500 text-center truncate w-full">{logo.name}</p>
               <button
-                onClick={() => handleDelete(logo)}
+                onClick={() => setDeletingLogo(logo)}
                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center text-xs"
               >
                 &times;
@@ -166,6 +169,16 @@ export default function PropostasLogosTab() {
           ))}
         </div>
       )}
+
+      <ConfirmCloseDialog
+        isOpen={!!deletingLogo}
+        onConfirm={handleDelete}
+        onCancel={() => setDeletingLogo(null)}
+        title="Excluir logo"
+        message={`Tem certeza que deseja excluir o logo "${deletingLogo?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Sim, excluir"
+        cancelText="Cancelar"
+      />
     </div>
   )
 }

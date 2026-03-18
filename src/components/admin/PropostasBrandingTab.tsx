@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db, storage } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
@@ -9,9 +9,15 @@ import { toast } from 'sonner'
 import type { ProposalBranding } from '@/types/proposalBranding'
 import { DEFAULT_PROPOSAL_BRANDING } from '@/types/proposalBranding'
 
-export default function PropostasBrandingTab() {
+interface PropostasBrandingTabProps {
+  onDirtyChange?: (dirty: boolean) => void
+  onResetRef?: (resetFn: () => void) => void
+}
+
+export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: PropostasBrandingTabProps) {
   const { orgId } = useCrmUser()
   const [form, setForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
+  const [initialForm, setInitialForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -19,13 +25,32 @@ export default function PropostasBrandingTab() {
   const logoInputRef = useRef<HTMLInputElement>(null)
   const watermarkInputRef = useRef<HTMLInputElement>(null)
 
+  const hasChanges = useCallback(() => {
+    return JSON.stringify(form) !== JSON.stringify(initialForm)
+  }, [form, initialForm])
+
+  const resetForm = useCallback(() => {
+    setForm(initialForm)
+    onDirtyChange?.(false)
+  }, [initialForm, onDirtyChange])
+
+  useEffect(() => {
+    onResetRef?.(resetForm)
+  }, [onResetRef, resetForm])
+
+  useEffect(() => {
+    onDirtyChange?.(hasChanges())
+  }, [form, hasChanges, onDirtyChange])
+
   useEffect(() => {
     if (!orgId) return
     const load = async () => {
       try {
         const snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalBranding'))
         if (snap.exists()) {
-          setForm({ ...DEFAULT_PROPOSAL_BRANDING, ...(snap.data() as Partial<ProposalBranding>) })
+          const loaded = { ...DEFAULT_PROPOSAL_BRANDING, ...(snap.data() as Partial<ProposalBranding>) }
+          setForm(loaded)
+          setInitialForm(loaded)
         }
       } catch (error) {
         console.error('Error loading branding:', error)
@@ -65,6 +90,8 @@ export default function PropostasBrandingTab() {
     setSaving(true)
     try {
       await setDoc(doc(db, 'organizations', orgId, 'settings', 'proposalBranding'), form, { merge: true })
+      setInitialForm(form)
+      onDirtyChange?.(false)
       toast.success('Configuracoes salvas!')
     } catch (error) {
       console.error('Save error:', error)

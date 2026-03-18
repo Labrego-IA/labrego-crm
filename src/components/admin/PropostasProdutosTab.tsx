@@ -93,6 +93,7 @@ export default function PropostasProdutosTab() {
   }, [form])
 
   const [showConfirmClose, setShowConfirmClose] = useState(false)
+  const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
 
   const handleCloseModal = useCallback(() => {
     if (hasUnsavedChanges()) {
@@ -144,11 +145,12 @@ export default function PropostasProdutosTab() {
     }
   }
 
-  const handleDelete = async (product: Product) => {
-    if (!confirm(`Excluir "${product.name}"? Esta acao nao pode ser desfeita.`)) return
+  const handleDelete = async () => {
+    if (!deletingProduct) return
     try {
-      await deleteDoc(doc(db, 'products', product.id))
+      await deleteDoc(doc(db, 'products', deletingProduct.id))
       toast.success('Produto excluido!')
+      setDeletingProduct(null)
       await loadProducts()
     } catch (error) {
       console.error('Delete product error:', error)
@@ -408,6 +410,15 @@ export default function PropostasProdutosTab() {
       onConfirm={confirmCloseModal}
       onCancel={() => setShowConfirmClose(false)}
     />
+    <ConfirmCloseDialog
+      isOpen={!!deletingProduct}
+      onConfirm={handleDelete}
+      onCancel={() => setDeletingProduct(null)}
+      title="Excluir produto"
+      message={`Tem certeza que deseja excluir "${deletingProduct?.name}"? Esta ação não pode ser desfeita.`}
+      confirmText="Sim, excluir"
+      cancelText="Cancelar"
+    />
     </>
   )
 
@@ -569,7 +580,7 @@ export default function PropostasProdutosTab() {
                         Editar
                       </button>
                       <button
-                        onClick={() => handleDelete(p)}
+                        onClick={() => setDeletingProduct(p)}
                         className="text-red-400 hover:text-red-600 text-xs font-medium"
                       >
                         Excluir
