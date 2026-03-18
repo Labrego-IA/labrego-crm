@@ -170,6 +170,19 @@ export async function POST(req: NextRequest) {
       console.error('[super-admin] Welcome email error:', emailErr)
     }
 
+    // Create welcome in-app notification (fire-and-forget)
+    if (userId) {
+      db.collection('notifications').add({
+        orgId: orgRef.id,
+        userId,
+        type: 'welcome',
+        title: 'Bem-vindo ao Voxium CRM! 🎉',
+        message: `Parabéns pelo cadastro! Estamos animados em tê-lo na plataforma. Explore os recursos e conte com nossa equipe para o que precisar.`,
+        read: false,
+        createdAt: new Date().toISOString(),
+      }).catch((err: unknown) => console.error('[super-admin] Welcome notification error:', err))
+    }
+
     return NextResponse.json({ orgId: orgRef.id })
   } catch (error: any) {
     console.error('[super-admin/organizations] POST error:', error)
