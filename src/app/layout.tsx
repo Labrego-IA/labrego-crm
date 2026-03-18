@@ -92,7 +92,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     getDocs(query(membersRef)).then((snap) => {
       const members = snap.docs
         .map(d => ({ id: d.id, ...d.data() } as OrgMember))
-        .filter(m => m.status !== 'suspended')
+        .filter(m => m.status !== 'suspended' && m.role !== 'admin')
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
       setOrgMembers(members)
     }).catch(err => {
@@ -484,7 +484,6 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       {impersonateMenuOpen && (
                         <ImpersonateDropdown
                           members={orgMembers}
-                          currentUserEmail={userEmail}
                           orgPlan={orgPlan}
                           onClose={() => setImpersonateMenuOpen(false)}
                         />
@@ -606,12 +605,10 @@ function ImpersonateButton({ onClick, isOpen }: { onClick: () => void; isOpen: b
 
 function ImpersonateDropdown({
   members,
-  currentUserEmail,
   orgPlan,
   onClose,
 }: {
   members: OrgMember[]
-  currentUserEmail: string | null
   orgPlan: PlanId | null
   onClose: () => void
 }) {
@@ -661,17 +658,12 @@ function ImpersonateDropdown({
 
       <div className="max-h-64 overflow-y-auto">
         {filteredMembers.map((m) => {
-          const isCurrentUser = m.email === currentUserEmail
           const isImpersonated = impersonatedMember?.id === m.id
           return (
             <button
               key={m.id}
               onClick={() => {
-                if (isCurrentUser) {
-                  stopImpersonation()
-                } else {
-                  startImpersonation(m)
-                }
+                startImpersonation(m)
                 onClose()
               }}
               disabled={isImpersonated}
@@ -689,7 +681,6 @@ function ImpersonateDropdown({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
                   {m.displayName}
-                  {isCurrentUser && <span className="text-xs text-slate-400 ml-1">(você)</span>}
                 </p>
                 <p className="text-xs text-slate-400 truncate">{m.email}</p>
               </div>
