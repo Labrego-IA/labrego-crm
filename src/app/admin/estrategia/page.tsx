@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -110,6 +111,7 @@ const BACKUP_KEY = 'estrategia-playbook-backup'
 
 export default function EstrategiaComercialPage() {
   const { orgId } = useCrmUser()
+  const router = useRouter()
   const [data, setData] = useState<PlaybookData>({})
   const [savedData, setSavedData] = useState<PlaybookData>({})
   const [loading, setLoading] = useState(true)
@@ -292,9 +294,9 @@ export default function EstrategiaComercialPage() {
     hasChangesRef.current = false
 
     if (destination === '__back__') {
-      window.history.back()
+      router.back()
     } else if (destination) {
-      window.location.href = destination
+      router.push(destination)
     }
   }
 
