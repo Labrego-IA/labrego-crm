@@ -14,12 +14,18 @@ import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 export default function PropostasConfigPage() {
   const [activeTab, setActiveTab] = useState('branding')
   const [configDirty, setConfigDirty] = useState(false)
+  const [brandingDirty, setBrandingDirty] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [pendingTab, setPendingTab] = useState<string | null>(null)
   const resetConfigRef = useRef<(() => void) | null>(null)
+  const resetBrandingRef = useRef<(() => void) | null>(null)
 
   const handleResetRef = useCallback((fn: () => void) => {
     resetConfigRef.current = fn
+  }, [])
+
+  const handleBrandingResetRef = useCallback((fn: () => void) => {
+    resetBrandingRef.current = fn
   }, [])
 
   const handleTabChange = useCallback((key: string) => {
@@ -28,18 +34,29 @@ export default function PropostasConfigPage() {
       setShowConfirm(true)
       return
     }
+    if (activeTab === 'branding' && brandingDirty) {
+      setPendingTab(key)
+      setShowConfirm(true)
+      return
+    }
     setActiveTab(key)
-  }, [activeTab, configDirty])
+  }, [activeTab, configDirty, brandingDirty])
 
   const handleConfirmLeave = useCallback(() => {
-    resetConfigRef.current?.()
+    if (activeTab === 'config') {
+      resetConfigRef.current?.()
+      setConfigDirty(false)
+    }
+    if (activeTab === 'branding') {
+      resetBrandingRef.current?.()
+      setBrandingDirty(false)
+    }
     setShowConfirm(false)
-    setConfigDirty(false)
     if (pendingTab) {
       setActiveTab(pendingTab)
       setPendingTab(null)
     }
-  }, [pendingTab])
+  }, [pendingTab, activeTab])
 
   const handleCancelLeave = useCallback(() => {
     setShowConfirm(false)
@@ -47,7 +64,7 @@ export default function PropostasConfigPage() {
   }, [])
 
   const SUB_TABS = [
-    { key: 'branding', label: 'Branding', content: <PropostasBrandingTab /> },
+    { key: 'branding', label: 'Branding', content: <PropostasBrandingTab onDirtyChange={setBrandingDirty} onResetRef={handleBrandingResetRef} /> },
     { key: 'produtos', label: 'Produtos', content: <PropostasProdutosTab /> },
     { key: 'logos', label: 'Logos de Clientes', content: <PropostasLogosTab /> },
     { key: 'config', label: 'Configuracoes', content: <PropostasConfigTab onDirtyChange={setConfigDirty} onResetRef={handleResetRef} /> },
