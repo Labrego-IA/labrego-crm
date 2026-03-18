@@ -116,6 +116,8 @@ export default function EstrategiaComercialPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const [showRestoreDialog, setShowRestoreDialog] = useState(false)
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null)
   const [pendingBackup, setPendingBackup] = useState<PlaybookData | null>(null)
   const hasChangesRef = useRef(false)
 
@@ -205,6 +207,47 @@ export default function EstrategiaComercialPage() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [])
 
+  // Intercept in-app navigation (Link clicks, back/forward)
+  useEffect(() => {
+    // Intercept clicks on <a> tags (Next.js Link renders as <a>)
+    const handleClick = (e: MouseEvent) => {
+      if (!hasChangesRef.current) return
+
+      const anchor = (e.target as HTMLElement).closest('a')
+      if (!anchor) return
+
+      const href = anchor.getAttribute('href')
+      if (!href || href.startsWith('http') || href.startsWith('mailto:')) return
+      if (href === window.location.pathname) return
+
+      e.preventDefault()
+      e.stopPropagation()
+      setPendingNavigation(href)
+      setShowLeaveDialog(true)
+    }
+
+    // Intercept browser back/forward buttons
+    const handlePopState = () => {
+      if (!hasChangesRef.current) return
+
+      // Push current state back to prevent leaving
+      window.history.pushState(null, '', window.location.pathname)
+      setPendingNavigation('__back__')
+      setShowLeaveDialog(true)
+    }
+
+    // Push initial state so we can catch popstate
+    window.history.pushState(null, '', window.location.pathname)
+
+    document.addEventListener('click', handleClick, true)
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      document.removeEventListener('click', handleClick, true)
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
   const handleSave = async () => {
     if (!orgId) return
     setSaving(true)
@@ -239,6 +282,25 @@ export default function EstrategiaComercialPage() {
     localStorage.removeItem(BACKUP_KEY)
     setShowRestoreDialog(false)
     setPendingBackup(null)
+  }
+
+  const handleConfirmLeave = () => {
+    setShowLeaveDialog(false)
+    const destination = pendingNavigation
+    setPendingNavigation(null)
+    // Clear the ref so handlers don't re-trigger
+    hasChangesRef.current = false
+
+    if (destination === '__back__') {
+      window.history.back()
+    } else if (destination) {
+      window.location.href = destination
+    }
+  }
+
+  const handleCancelLeave = () => {
+    setShowLeaveDialog(false)
+    setPendingNavigation(null)
   }
 
   const filledCount = SECTIONS.filter((s) => data[s.key]?.trim()).length
@@ -378,6 +440,17 @@ export default function EstrategiaComercialPage() {
           Salvar Playbook
         </button>
       </div>
+
+      {/* Dialog de confirmação ao sair da página */}
+      <ConfirmCloseDialog
+        isOpen={showLeaveDialog}
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
+        title="Dados não salvos"
+        message="Você tem alterações não salvas no playbook. Se sair agora, suas alterações serão preservadas como rascunho para quando voltar."
+        confirmText="Sair sem salvar"
+        cancelText="Continuar editando"
+      />
 
       {/* Dialog de restauração de backup */}
       <ConfirmCloseDialog
