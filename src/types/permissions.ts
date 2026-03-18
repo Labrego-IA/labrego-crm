@@ -4,7 +4,7 @@ export type RolePreset = 'admin' | 'manager' | 'seller' | 'viewer'
 
 export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
   admin: {
-    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/admin/usuarios', '/admin/creditos', '/admin/plano', '/admin/funis', '/admin/propostas'],
+    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/ligacoes/configuracao', '/ligacoes/disparo', '/ligacoes/historico', '/analytics', '/projecao-vendas', '/automacoes', '/campanhas', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia', '/admin/plano'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -80,11 +80,22 @@ export const ALL_PAGES = [
   { path: '/conversao', label: 'Conversao do Funil', feature: 'funnel' },
   { path: '/cadencia', label: 'Cadencia', feature: 'cadence' },
   { path: '/ligacoes', label: 'Agente de Ligacao', feature: 'voice_agent' },
+  { path: '/ligacoes/configuracao', label: 'Config. do Agente', feature: 'voice_agent' },
+  { path: '/ligacoes/disparo', label: 'Disparo Massivo', feature: 'voice_agent' },
+  { path: '/ligacoes/historico', label: 'Historico de Ligacoes', feature: 'voice_agent' },
+  { path: '/analytics', label: 'Analises & Insights', feature: 'analytics' },
+  { path: '/projecao-vendas', label: 'Projecao de Vendas', feature: 'funnel' },
+  { path: '/automacoes', label: 'Automacoes IA', feature: 'automation' },
+  { path: '/campanhas', label: 'Campanhas', feature: 'campaigns' },
   { path: '/admin/usuarios', label: 'Gerenciar Usuarios', feature: 'contacts' },
-  { path: '/admin/creditos', label: 'Creditos', feature: 'voice_agent' },
-  { path: '/admin/plano', label: 'Meu Plano', feature: 'contacts' },
+  { path: '/admin/email', label: 'Email', feature: 'contacts' },
   { path: '/admin/funis', label: 'Acesso a Funis', feature: 'funnel' },
+  { path: '/admin/icp', label: 'Perfis ICP', feature: 'contacts' },
+  { path: '/admin/centros-custo', label: 'Centros de Custo', feature: 'contacts' },
   { path: '/admin/propostas', label: 'Config. Propostas', feature: 'contacts' },
+  { path: '/admin/creditos', label: 'Creditos', feature: 'voice_agent' },
+  { path: '/admin/estrategia', label: 'Estrategia Comercial', feature: 'contacts' },
+  { path: '/admin/plano', label: 'Meu Plano', feature: 'contacts' },
 ] as const
 
 export const ALL_ACTIONS: { key: keyof MemberActions; label: string }[] = [
