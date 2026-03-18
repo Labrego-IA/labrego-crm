@@ -312,5 +312,6 @@ export default function EstrategiaComercialPage() {
         </button>
       </div>
     </div>
+    </NoOrgPreviewGate>
   )
 }

@@ -247,6 +247,7 @@ function CadenciaDashboard() {
         )}
       </div>
     </div>
+    </NoOrgPreviewGate>
   )
 }
 

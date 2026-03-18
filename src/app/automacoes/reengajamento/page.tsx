@@ -180,6 +180,7 @@ function ReengajamentoContent() {
   }
 
   return (
+    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
@@ -226,6 +227,7 @@ function ReengajamentoContent() {
         )}
       </div>
     </div>
+    </NoOrgPreviewGate>
   )
 }
 

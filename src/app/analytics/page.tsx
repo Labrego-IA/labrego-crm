@@ -812,6 +812,7 @@ function AnalyticsDashboard() {
         )}
       </div>
     </div>
+    </NoOrgPreviewGate>
   )
 }
 
@@ -1563,6 +1564,5 @@ function ConversionTab({ clients }: { clients: Client[] }) {
         </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }
