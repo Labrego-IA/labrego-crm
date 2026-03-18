@@ -395,7 +395,7 @@ export default function AdminFunisPage() {
 
   const getMembersWithoutAccess = useCallback((funnelId: string) => {
     const term = normalize(funnelSearch.trim())
-    return members.filter((m) => {
+    const filtered = members.filter((m) => {
       if (m.role === 'admin') return false // admins always have access
       if (accessMap[m.id]?.[funnelId]?.enabled) return false
       if (term) {
@@ -405,7 +405,33 @@ export default function AdminFunisPage() {
       }
       return true
     })
+    // Sort by role order then by name
+    return filtered.sort((a, b) => {
+      const roleA = ROLE_ORDER[a.role] ?? 4
+      const roleB = ROLE_ORDER[b.role] ?? 4
+      if (roleA !== roleB) return roleA - roleB
+      return a.displayName.localeCompare(b.displayName)
+    })
   }, [members, accessMap, funnelSearch])
+
+  // Group members by role for display
+  const groupByRole = useCallback((memberList: MemberRow[]) => {
+    const groups: { role: string; label: string; members: MemberRow[] }[] = []
+    const roleOrder = ['manager', 'seller', 'viewer'] as const
+    for (const role of roleOrder) {
+      const roleMembers = memberList.filter((m) => m.role === role)
+      if (roleMembers.length > 0) {
+        groups.push({ role, label: ROLE_LABELS[role] || role, members: roleMembers })
+      }
+    }
+    // Catch any other roles
+    const knownRoles = new Set(['admin', ...roleOrder])
+    const otherMembers = memberList.filter((m) => !knownRoles.has(m.role))
+    if (otherMembers.length > 0) {
+      groups.push({ role: 'other', label: 'Outros', members: otherMembers })
+    }
+    return groups
+  }, [])
 
   const addMemberToFunnel = (memberId: string, funnelId: string) => {
     setAccessMap((prev) => ({
@@ -762,7 +788,7 @@ export default function AdminFunisPage() {
                           className="w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-300"
                         />
                       </div>
-                      <div className="max-h-48 overflow-y-auto p-1">
+                      <div className="max-h-56 overflow-y-auto p-1">
                         {availableMembers.length === 0 ? (
                           <p className="text-xs text-slate-400 text-center py-3">
                             {members.filter((m) => m.role !== 'admin').every((m) => accessMap[m.id]?.[funnel.id]?.enabled)
@@ -770,23 +796,28 @@ export default function AdminFunisPage() {
                               : 'Nenhum membro encontrado'}
                           </p>
                         ) : (
-                          availableMembers.map((m) => (
-                            <button
-                              key={m.id}
-                              onClick={() => {
-                                addMemberToFunnel(m.id, funnel.id)
-                                setFunnelSearch('')
-                              }}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left hover:bg-slate-50 transition-colors"
-                            >
-                              <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                                <span className="text-[10px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
-                              </div>
-                              <div className="min-w-0">
-                                <div className="text-sm font-medium text-slate-700 truncate">{m.displayName}</div>
-                                <div className="text-xs text-slate-400">{ROLE_LABELS[m.role] || m.role}</div>
-                              </div>
-                            </button>
+                          groupByRole(availableMembers).map((group) => (
+                            <div key={group.role}>
+                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{group.label}s</p>
+                              {group.members.map((m) => (
+                                <button
+                                  key={m.id}
+                                  onClick={() => {
+                                    addMemberToFunnel(m.id, funnel.id)
+                                    setFunnelSearch('')
+                                  }}
+                                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-left hover:bg-slate-50 transition-colors"
+                                >
+                                  <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-[10px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="text-sm font-medium text-slate-700 truncate">{m.displayName}</div>
+                                    <div className="text-xs text-slate-400">{m.email}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
                           ))
                         )}
                       </div>
@@ -815,35 +846,39 @@ export default function AdminFunisPage() {
                 )}
 
                 {nonAdminMembers.length > 0 ? (
-                  <div>
-                    <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wider">Membros com acesso</p>
-                    <div className="flex flex-wrap gap-2">
-                      {nonAdminMembers.map((m) => {
-                        const access = accessMap[m.id]?.[funnel.id]
-                        const stageLabel = access?.allStages
-                          ? 'Todas etapas'
-                          : `${access?.stageIds.length || 0} etapa${(access?.stageIds.length || 0) !== 1 ? 's' : ''}`
-                        return (
-                          <span
-                            key={m.id}
-                            className="group inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full"
-                          >
-                            <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[9px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
-                            </div>
-                            {m.displayName}
-                            <span className="text-slate-400 font-normal">· {stageLabel}</span>
-                            <button
-                              onClick={() => removeMemberFromFunnel(m.id, funnel.id)}
-                              className="ml-0.5 p-0.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
-                              title="Remover acesso"
-                            >
-                              <XMarkIcon className="w-3.5 h-3.5" />
-                            </button>
-                          </span>
-                        )
-                      })}
-                    </div>
+                  <div className="space-y-3">
+                    {groupByRole(nonAdminMembers).map((group) => (
+                      <div key={group.role}>
+                        <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wider">{group.label}s</p>
+                        <div className="flex flex-wrap gap-2">
+                          {group.members.map((m) => {
+                            const access = accessMap[m.id]?.[funnel.id]
+                            const stageLabel = access?.allStages
+                              ? 'Todas etapas'
+                              : `${access?.stageIds.length || 0} etapa${(access?.stageIds.length || 0) !== 1 ? 's' : ''}`
+                            return (
+                              <span
+                                key={m.id}
+                                className="group inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded-full"
+                              >
+                                <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[9px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
+                                </div>
+                                {m.displayName}
+                                <span className="text-slate-400 font-normal">· {stageLabel}</span>
+                                <button
+                                  onClick={() => removeMemberFromFunnel(m.id, funnel.id)}
+                                  className="ml-0.5 p-0.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                                  title="Remover acesso"
+                                >
+                                  <XMarkIcon className="w-3.5 h-3.5" />
+                                </button>
+                              </span>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-xs text-slate-400 py-2">

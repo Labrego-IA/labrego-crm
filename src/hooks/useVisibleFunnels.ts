@@ -26,11 +26,14 @@ export function useVisibleFunnels() {
       q,
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
-        // Filter by visibility: empty visibleTo = visible to all
+        // Admins see all funnels; otherwise filter by visibleTo (empty = visible to all)
         const memberId = member?.id
-        const visible = all.filter(f =>
-          f.visibleTo.length === 0 || (memberId && f.visibleTo.includes(memberId))
-        )
+        const isAdmin = member?.role === 'admin'
+        const visible = isAdmin
+          ? all
+          : all.filter(f =>
+              f.visibleTo.length === 0 || (memberId && f.visibleTo.includes(memberId))
+            )
         setFunnels(visible)
         setLoading(false)
       },
@@ -42,7 +45,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id])
+  }, [orgId, member?.id, member?.role])
 
   return { funnels, loading }
 }
