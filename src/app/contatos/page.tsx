@@ -30,6 +30,7 @@ import {
   FunnelIcon,
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
+  ArrowsUpDownIcon,
   UserGroupIcon,
   CheckBadgeIcon,
   UsersIcon,
@@ -81,7 +82,7 @@ type FunnelStage = {
 
 type SortConfig = {
   key: keyof Cliente | 'daysInStage' | 'daysSinceFollowUp' | null
-  direction: 'asc' | 'desc'
+  direction: 'asc' | 'desc' | null
 }
 
 type ColumnFilters = {
@@ -884,7 +885,7 @@ export default function ContatosPage() {
     })
 
     // Apply sorting
-    if (sortConfig.key) {
+    if (sortConfig.key && sortConfig.direction) {
       result.sort((a, b) => {
         let aVal: string | number | null
         let bVal: string | number | null
@@ -1342,10 +1343,12 @@ export default function ContatosPage() {
 
   // Handle sort
   const handleSort = (key: keyof Cliente | 'daysInStage' | 'daysSinceFollowUp') => {
-    setSortConfig((prev) => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
-    }))
+    setSortConfig((prev) => {
+      if (prev.key !== key) return { key, direction: 'asc' }
+      if (prev.direction === 'asc') return { key, direction: 'desc' }
+      if (prev.direction === 'desc') return { key: null, direction: null }
+      return { key, direction: 'asc' }
+    })
   }
 
   // Handle filter
@@ -2057,11 +2060,13 @@ export default function ContatosPage() {
                               className="flex items-center gap-1.5 hover:text-slate-700 transition-colors group"
                             >
                               {col.label}
-                              <span className={`transition-opacity ${sortConfig.key === col.key ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
+                              <span className={`transition-opacity ${sortConfig.key === col.key && sortConfig.direction ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
                                 {sortConfig.key === col.key && sortConfig.direction === 'asc' ? (
                                   <ChevronUpIcon className="w-3.5 h-3.5" />
-                                ) : (
+                                ) : sortConfig.key === col.key && sortConfig.direction === 'desc' ? (
                                   <ChevronDownIcon className="w-3.5 h-3.5" />
+                                ) : (
+                                  <ArrowsUpDownIcon className="w-3.5 h-3.5" />
                                 )}
                               </span>
                             </button>
