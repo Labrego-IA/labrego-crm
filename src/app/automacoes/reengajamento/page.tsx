@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   ArrowPathIcon,
   BoltIcon,
@@ -75,6 +76,11 @@ function ReengajamentoContent() {
   const [logs, setLogs] = useState<ReengagementLog[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load config
   useEffect(() => {
@@ -163,7 +169,9 @@ function ReengajamentoContent() {
     }
   }, [config, orgId])
 
-  if (!orgId || loading) {
+  if (!orgId) return <NoOrgMessage />
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-slate-50/50 p-8">
         <div className="space-y-4 animate-pulse">

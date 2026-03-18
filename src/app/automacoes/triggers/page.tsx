@@ -27,6 +27,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ======================== Component ======================== */
 
@@ -50,6 +51,11 @@ function TriggersPageContent() {
   const [formFromStageId, setFormFromStageId] = useState('')
   const [formToStageId, setFormToStageId] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   /* ---- Real-time subscriptions ---- */
   useEffect(() => {
@@ -177,6 +183,8 @@ function TriggersPageContent() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="space-y-6">

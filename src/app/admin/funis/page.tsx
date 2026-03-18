@@ -12,6 +12,7 @@ import {
   ChevronRightIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -83,6 +84,11 @@ export default function AdminFunisPage() {
   // Editable state: memberId -> funnelId -> { enabled, allStages, stageIds }
   const [accessMap, setAccessMap] = useState<Record<string, Record<string, { enabled: boolean; allStages: boolean; stageIds: string[] }>>>({})
   const [expandedRows, setExpandedRows] = useState<Record<string, string | null>>({}) // memberId -> expanded funnelId
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load data
   useEffect(() => {
@@ -373,6 +379,8 @@ export default function AdminFunisPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div>

@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   PhoneIcon,
   ArrowLeftIcon,
@@ -62,6 +63,11 @@ export default function HistoricoLigacoesPage() {
     dateTo: '',
     funnelId: '',
   })
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load funnels
   useEffect(() => {
@@ -338,6 +344,8 @@ export default function HistoricoLigacoesPage() {
   }
 
   const hasActiveFilters = filters.search || filters.dateFrom || filters.dateTo || filters.funnelId
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="h-full bg-slate-50 flex flex-col">

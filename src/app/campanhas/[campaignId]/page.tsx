@@ -29,6 +29,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { type EmailEvent, calcEngagement, EMPTY_ENGAGEMENT } from '@/types/email'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ================================= Component ================================= */
 
@@ -47,6 +48,11 @@ function CampaignDetailsContent() {
   const [resending, setResending] = useState(false)
   const [emailEvents, setEmailEvents] = useState<EmailEvent[]>([])
   const [engagementTab, setEngagementTab] = useState<'metrics' | 'timeline' | 'contacts'>('metrics')
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   /* ---------------------- Real-time subscriptions ----------------------- */
 
@@ -191,6 +197,8 @@ function CampaignDetailsContent() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   if (!campaign) {
     return (

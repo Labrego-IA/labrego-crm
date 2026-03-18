@@ -18,6 +18,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   ChatBubbleLeftRightIcon,
   EnvelopeIcon,
@@ -198,7 +199,7 @@ function CadenciaDashboard() {
     return stages.filter(s => s.funnelId === selectedFunnel)
   }, [stages, selectedFunnel])
 
-  if (!orgId) return null
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50/50">

@@ -27,6 +27,7 @@ import {
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ================================= Constants ================================= */
 
@@ -241,6 +242,8 @@ function CampanhasContent() {
   }, [searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
 
   /* ================================= Render ================================= */
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="p-4 md:p-6 space-y-6">

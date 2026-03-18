@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -138,6 +139,11 @@ export default function UsuariosPage() {
 
   const [members, setMembers] = useState<OrgMember[]>([])
   const [loading, setLoading] = useState(true)
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Search & sort
   const [search, setSearch] = useState('')
@@ -561,6 +567,8 @@ export default function UsuariosPage() {
   const atLimit = memberCount >= maxUsers
 
   /* ============================== Render ================================ */
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <PermissionGate

@@ -18,6 +18,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 type PlaybookSection = {
   key: string
@@ -113,6 +114,11 @@ export default function EstrategiaComercialPage() {
   const [saving, setSaving] = useState(false)
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
 
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
+
   const loadData = useCallback(async () => {
     if (!orgId) return
     try {
@@ -179,6 +185,8 @@ export default function EstrategiaComercialPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">

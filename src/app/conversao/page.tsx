@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import { db } from '@/lib/firebaseClient'
 import {
   FunnelIcon,
@@ -684,6 +685,8 @@ export default function ConversaoPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6 overflow-x-hidden">

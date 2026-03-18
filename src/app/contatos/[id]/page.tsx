@@ -60,6 +60,7 @@ import {
   UsersIcon,
   FunnelIcon,
 } from '@heroicons/react/24/outline'
+import NoOrgMessage from '@/components/NoOrgMessage'
 
 // Types
 type Client = {
@@ -318,6 +319,11 @@ export default function ContactDetailsPage() {
   const [savingPartners, setSavingPartners] = useState(false)
   const [editingPartnerIndex, setEditingPartnerIndex] = useState<number | null>(null)
   const [editingPartnerName, setEditingPartnerName] = useState('')
+
+  // When orgId is not available, stop loading immediately
+  useEffect(() => {
+    if (!orgId) setLoading(false)
+  }, [orgId])
 
   // Load data
   useEffect(() => {
@@ -948,6 +954,8 @@ export default function ContactDetailsPage() {
       </div>
     )
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   if (!client) {
     return (

@@ -12,6 +12,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   LineChart,
   Line,
@@ -731,13 +732,7 @@ function AnalyticsDashboard() {
   }, [activeTab, filteredClients, filteredStages, periodStart])
 
   /* ─── Render ─── */
-  if (!orgId) {
-    return (
-      <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
-        <LoadingSkeleton />
-      </div>
-    )
-  }
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50/50">

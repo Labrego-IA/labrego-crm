@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import NoOrgMessage from '@/components/NoOrgMessage'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -372,6 +373,8 @@ export default function ProjecaoVendasPage() {
   if (loading) {
     return <div className="p-8 text-center text-neutral-400">Carregando projeção de vendas...</div>
   }
+
+  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="p-4 md:p-6">
