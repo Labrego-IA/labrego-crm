@@ -100,9 +100,17 @@ export default function PropostasFieldsTab() {
     if (!orgId) return
     setSaving(true)
     try {
+      // Remove undefined values to avoid Firestore errors
+      const sanitized = updated.map((field) => {
+        const clean: Record<string, unknown> = {}
+        for (const [k, v] of Object.entries(field)) {
+          if (v !== undefined) clean[k] = v
+        }
+        return clean
+      })
       await setDoc(
         doc(db, 'organizations', orgId, 'settings', 'proposalCustomFields'),
-        { fields: updated },
+        { fields: sanitized },
         { merge: true }
       )
       setFields(updated)
