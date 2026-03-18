@@ -317,6 +317,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       </head>
       <body className="bg-slate-50">
         <ImpersonationProvider>
+        <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} member={member}>
         <div className="flex flex-col h-screen overflow-hidden">
         <ImpersonationBanner orgPlan={orgPlan} />
         <div className="flex flex-1 overflow-hidden">
@@ -557,15 +558,14 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-              <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} member={member}>
                 <FreePlanExpiredGate>
                   {children}
                 </FreePlanExpiredGate>
-              </CrmUserProvider>
             </div>
           </main>
         </div>
         </div>
+        </CrmUserProvider>
         </ImpersonationProvider>
         <Toaster />
       </body>
