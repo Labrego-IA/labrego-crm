@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -18,6 +18,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
+import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 type PlaybookSection = {
   key: string
@@ -105,6 +106,8 @@ const SECTIONS: PlaybookSection[] = [
 
 type PlaybookData = Record<string, string>
 
+const BACKUP_KEY = 'estrategia-playbook-backup'
+
 export default function EstrategiaComercialPage() {
   const { orgId } = useCrmUser()
   const [data, setData] = useState<PlaybookData>({})
@@ -112,6 +115,9 @@ export default function EstrategiaComercialPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const [showRestoreDialog, setShowRestoreDialog] = useState(false)
+  const [pendingBackup, setPendingBackup] = useState<PlaybookData | null>(null)
+  const hasChangesRef = useRef(false)
 
   // When orgId is not available, stop loading immediately
   useEffect(() => {
@@ -127,6 +133,26 @@ export default function EstrategiaComercialPage() {
         const loadedData = snap.data() as PlaybookData
         setData(loadedData)
         setSavedData(loadedData)
+      }
+
+      // Check for backup after loading saved data
+      try {
+        const backupRaw = localStorage.getItem(BACKUP_KEY)
+        if (backupRaw) {
+          const backup = JSON.parse(backupRaw) as PlaybookData
+          const currentData = snap?.exists() ? (snap.data() as PlaybookData) : {}
+          const backupHasDifferences = SECTIONS.some(
+            (s) => (backup[s.key] || '') !== (currentData[s.key] || '')
+          )
+          if (backupHasDifferences) {
+            setPendingBackup(backup)
+            setShowRestoreDialog(true)
+          } else {
+            localStorage.removeItem(BACKUP_KEY)
+          }
+        }
+      } catch {
+        localStorage.removeItem(BACKUP_KEY)
       }
     } catch (error) {
       console.error('Erro ao carregar playbook:', error)
@@ -152,6 +178,33 @@ export default function EstrategiaComercialPage() {
     return false
   }, [data, savedData])
 
+  // Keep ref in sync for beforeunload handler
+  useEffect(() => {
+    hasChangesRef.current = hasChanges
+  }, [hasChanges])
+
+  // Save backup to localStorage whenever data changes (and there are unsaved changes)
+  useEffect(() => {
+    if (hasChanges) {
+      try {
+        localStorage.setItem(BACKUP_KEY, JSON.stringify(data))
+      } catch {
+        // localStorage full or unavailable — ignore
+      }
+    }
+  }, [data, hasChanges])
+
+  // Warn on page close/reload via native browser dialog
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasChangesRef.current) {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
+
   const handleSave = async () => {
     if (!orgId) return
     setSaving(true)
@@ -159,6 +212,7 @@ export default function EstrategiaComercialPage() {
       const docRef = doc(db, 'organizations', orgId, 'settings', 'playbook')
       await setDoc(docRef, { ...data, updatedAt: new Date().toISOString() }, { merge: true })
       setSavedData({ ...data })
+      localStorage.removeItem(BACKUP_KEY)
       toast.success('Playbook salvo com sucesso!')
     } catch (error) {
       console.error('Erro ao salvar playbook:', error)
@@ -170,6 +224,21 @@ export default function EstrategiaComercialPage() {
 
   const handleChange = (key: string, value: string) => {
     setData((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleRestoreBackup = () => {
+    if (pendingBackup) {
+      setData(pendingBackup)
+      setShowRestoreDialog(false)
+      setPendingBackup(null)
+      toast.success('Alterações anteriores restauradas!')
+    }
+  }
+
+  const handleDiscardBackup = () => {
+    localStorage.removeItem(BACKUP_KEY)
+    setShowRestoreDialog(false)
+    setPendingBackup(null)
   }
 
   const filledCount = SECTIONS.filter((s) => data[s.key]?.trim()).length
@@ -309,6 +378,17 @@ export default function EstrategiaComercialPage() {
           Salvar Playbook
         </button>
       </div>
+
+      {/* Dialog de restauração de backup */}
+      <ConfirmCloseDialog
+        isOpen={showRestoreDialog}
+        onConfirm={handleRestoreBackup}
+        onCancel={handleDiscardBackup}
+        title="Continuar de onde parou?"
+        message="Encontramos alterações não salvas da sua última sessão. Deseja restaurá-las ou descartar tudo?"
+        confirmText="Restaurar"
+        cancelText="Descartar"
+      />
     </div>
   )
 }
