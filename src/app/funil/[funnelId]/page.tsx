@@ -585,6 +585,13 @@ export default function FunilDetailPage() {
   const [newPartnerInput, setNewPartnerInput] = useState('')
   const [newContactErrors, setNewContactErrors] = useState<Record<string, string>>({})
 
+  // Edit contact modal
+  const [showEditContactModal, setShowEditContactModal] = useState(false)
+  const [editContactForm, setEditContactForm] = useState(emptyContactForm)
+  const [editContactPhotoFile, setEditContactPhotoFile] = useState<File | null>(null)
+  const [editContactPhotoPreview, setEditContactPhotoPreview] = useState<string | null>(null)
+  const [savingEditContact, setSavingEditContact] = useState(false)
+
   // Force cadence modal
   const [forceCadenceStageId, setForceCadenceStageId] = useState<string | null>(null)
   const [forceCadenceLimit, setForceCadenceLimit] = useState(10)
@@ -2515,6 +2522,89 @@ export default function FunilDetailPage() {
     } catch (error) {
       console.error('Error updating probability:', error)
       toast.error('Erro ao atualizar probabilidade')
+    }
+  }
+
+  // Open edit contact modal
+  const openEditContactModal = () => {
+    if (!selectedClient) return
+    setEditContactForm({
+      name: selectedClient.name || '',
+      phone: selectedClient.phone || '',
+      company: selectedClient.company || '',
+      email: selectedClient.email || '',
+      industry: selectedClient.industry || '',
+      document: selectedClient.document || '',
+      description: selectedClient.description || '',
+      birthday: (selectedClient as Record<string, unknown>).birthday as string || '',
+      returnAlert: selectedClient.returnAlert || '',
+      leadSource: selectedClient.leadSource || '',
+      leadType: selectedClient.leadType || '',
+      photoUrl: selectedClient.photoUrl || '',
+      costCenterId: selectedClient.costCenterId || '',
+    })
+    setEditContactPhotoFile(null)
+    setEditContactPhotoPreview(null)
+    setShowEditContactModal(true)
+  }
+
+  // Save edit contact
+  const handleSaveEditContact = async () => {
+    if (!selectedClient) return
+    if (!editContactForm.name.trim()) {
+      toast.error('Nome é obrigatório')
+      return
+    }
+    if (!editContactForm.phone.trim() || editContactForm.phone.replace(/\D/g, '').length < 10) {
+      toast.error('Telefone válido é obrigatório (mínimo 10 dígitos)')
+      return
+    }
+    setSavingEditContact(true)
+    try {
+      let photoUrl = editContactForm.photoUrl
+      if (editContactPhotoFile) {
+        const storageRef = ref(storage, `clients/${selectedClient.id}/photo_${Date.now()}`)
+        await uploadBytes(storageRef, editContactPhotoFile)
+        photoUrl = await getDownloadURL(storageRef)
+      }
+      const updateData: Record<string, unknown> = {
+        name: editContactForm.name.trim(),
+        phone: editContactForm.phone.trim(),
+        company: editContactForm.company.trim() || deleteField(),
+        email: editContactForm.email.trim() || deleteField(),
+        industry: editContactForm.industry.trim() || deleteField(),
+        document: editContactForm.document.trim() || deleteField(),
+        description: editContactForm.description.trim() || deleteField(),
+        birthday: editContactForm.birthday || deleteField(),
+        returnAlert: editContactForm.returnAlert || deleteField(),
+        leadSource: editContactForm.leadSource || deleteField(),
+        leadType: editContactForm.leadType || deleteField(),
+        photoUrl: photoUrl || deleteField(),
+        updatedAt: new Date().toISOString(),
+      }
+      await updateDoc(doc(db, 'clients', selectedClient.id), updateData)
+      const updated = {
+        ...selectedClient,
+        name: editContactForm.name.trim(),
+        phone: editContactForm.phone.trim(),
+        company: editContactForm.company.trim() || undefined,
+        email: editContactForm.email.trim() || undefined,
+        industry: editContactForm.industry.trim() || undefined,
+        document: editContactForm.document.trim() || undefined,
+        description: editContactForm.description.trim() || undefined,
+        returnAlert: editContactForm.returnAlert || undefined,
+        leadSource: editContactForm.leadSource || undefined,
+        leadType: (editContactForm.leadType || undefined) as 'Inbound' | 'Outbound' | undefined,
+        photoUrl: photoUrl || undefined,
+      }
+      setSelectedClient(updated)
+      setShowEditContactModal(false)
+      toast.success('Contato atualizado com sucesso')
+    } catch (error) {
+      console.error('Error saving contact edit:', error)
+      toast.error('Erro ao salvar alterações')
+    } finally {
+      setSavingEditContact(false)
     }
   }
 
@@ -6133,6 +6223,244 @@ export default function FunilDetailPage() {
       )}
 
       {/* Delete Client Confirmation */}
+      {/* Edit Contact Modal */}
+      {showEditContactModal && selectedClient && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => !savingEditContact && setShowEditContactModal(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
+                  <Pencil1Icon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">Editar Contato</h2>
+                  <p className="text-xs text-slate-500">Atualize os dados do contato</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowEditContactModal(false)}
+                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+              >
+                <Cross2Icon className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-6">
+              {/* Photo */}
+              <div className="flex items-center gap-4">
+                {editContactPhotoPreview || editContactForm.photoUrl ? (
+                  <Image
+                    src={editContactPhotoPreview || editContactForm.photoUrl}
+                    alt="Foto"
+                    width={80}
+                    height={80}
+                    className="w-20 h-20 rounded-2xl object-cover ring-4 ring-white shadow-lg"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                    <PersonIcon className="w-8 h-8 text-slate-400" />
+                  </div>
+                )}
+                <div>
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 cursor-pointer transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0] || null
+                        setEditContactPhotoFile(f)
+                        setEditContactPhotoPreview(f ? URL.createObjectURL(f) : null)
+                      }}
+                      className="sr-only"
+                    />
+                    Alterar foto
+                  </label>
+                  <p className="text-xs text-slate-500 mt-1">JPG, PNG ou GIF</p>
+                </div>
+              </div>
+
+              {/* Form fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Nome <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <PersonIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      value={editContactForm.name}
+                      onChange={(e) => setEditContactForm({ ...editContactForm, name: e.target.value })}
+                      placeholder="Nome do contato"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                    Telefone <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <MobileIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      value={editContactForm.phone}
+                      onChange={(e) => setEditContactForm({ ...editContactForm, phone: e.target.value })}
+                      placeholder="(00) 00000-0000"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                  <div className="relative">
+                    <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="email"
+                      value={editContactForm.email}
+                      onChange={(e) => setEditContactForm({ ...editContactForm, email: e.target.value })}
+                      placeholder="email@exemplo.com"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Empresa</label>
+                  <div className="relative">
+                    <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      value={editContactForm.company}
+                      onChange={(e) => setEditContactForm({ ...editContactForm, company: e.target.value })}
+                      placeholder="Nome da empresa"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">CNPJ / CPF</label>
+                  <input
+                    type="text"
+                    value={editContactForm.document}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, document: e.target.value })}
+                    placeholder="00.000.000/0000-00"
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ramo de atuação</label>
+                  <input
+                    type="text"
+                    value={editContactForm.industry}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, industry: e.target.value })}
+                    placeholder="Ex: Tecnologia, Varejo..."
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Origem do Lead</label>
+                  <select
+                    value={editContactForm.leadSource}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, leadSource: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                  >
+                    <option value="">Selecione...</option>
+                    {leadSourceOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Lead</label>
+                  <select
+                    value={editContactForm.leadType}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, leadType: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                  >
+                    <option value="">Selecione...</option>
+                    {leadTypeOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Aniversário</label>
+                  <input
+                    type="date"
+                    value={editContactForm.birthday}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, birthday: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Alerta de retorno</label>
+                  <input
+                    type="date"
+                    value={editContactForm.returnAlert}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, returnAlert: e.target.value })}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição</label>
+                  <textarea
+                    value={editContactForm.description}
+                    onChange={(e) => setEditContactForm({ ...editContactForm, description: e.target.value })}
+                    placeholder="Descrição da empresa ou notas sobre o contato..."
+                    rows={3}
+                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowEditContactModal(false)}
+                disabled={savingEditContact}
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveEditContact}
+                disabled={savingEditContact}
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingEditContact ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <CheckIcon className="w-4 h-4" />
+                    Salvar alterações
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {deletingClient && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !deletingClientLoading && setDeletingClient(null)} />
@@ -6407,6 +6735,13 @@ export default function FunilDetailPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <button
+                      onClick={openEditContactModal}
+                      className="p-2 rounded-xl hover:bg-primary-50 transition-colors group"
+                      title="Editar contato"
+                    >
+                      <Pencil1Icon className="w-5 h-5 text-slate-400 group-hover:text-primary-500" />
+                    </button>
+                    <button
                       onClick={() => setDeletingClient(selectedClient)}
                       className="p-2 rounded-xl hover:bg-red-50 transition-colors group"
                       title="Excluir contato"
@@ -6430,16 +6765,25 @@ export default function FunilDetailPage() {
               <div className="flex-1 overflow-visible lg:overflow-y-auto p-4 sm:p-6 space-y-4">
                 {/* Contact Info */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Contato</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Contato</h4>
+                    <button
+                      onClick={openEditContactModal}
+                      className="flex items-center gap-1 text-xs text-primary-500 hover:text-primary-700 transition-colors"
+                    >
+                      <Pencil1Icon className="w-3 h-3" />
+                      Editar
+                    </button>
+                  </div>
 
                   {selectedClient.phone && (
                     <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
                       <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
                         <PhoneIcon className="w-4 h-4 text-emerald-600" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 cursor-pointer" onClick={openEditContactModal}>
                         <p className="text-xs text-slate-500">Telefone</p>
-                        <p className="text-sm font-medium text-slate-700">{selectedClient.phone}</p>
+                        <p className="text-sm font-medium text-slate-700 hover:text-primary-600 transition-colors">{selectedClient.phone}</p>
                       </div>
                       <a
                         href={`https://wa.me/${formatWhatsAppNumber(selectedClient.phone)}`}
@@ -6457,9 +6801,9 @@ export default function FunilDetailPage() {
                       <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
                         <EnvelopeClosedIcon className="w-4 h-4 text-blue-600" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 cursor-pointer" onClick={openEditContactModal}>
                         <p className="text-xs text-slate-500">Email</p>
-                        <p className="text-sm font-medium text-slate-700">{selectedClient.email}</p>
+                        <p className="text-sm font-medium text-slate-700 hover:text-primary-600 transition-colors">{selectedClient.email}</p>
                       </div>
                       <a
                         href={`mailto:${selectedClient.email}`}
@@ -6493,23 +6837,32 @@ export default function FunilDetailPage() {
 
                 {/* Additional Info */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Informações</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Informações</h4>
+                    <button
+                      onClick={openEditContactModal}
+                      className="flex items-center gap-1 text-xs text-primary-500 hover:text-primary-700 transition-colors"
+                    >
+                      <Pencil1Icon className="w-3 h-3" />
+                      Editar
+                    </button>
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {selectedClient.industry && (
-                      <div className="p-3 bg-slate-50 rounded-xl">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
                         <p className="text-xs text-slate-500">Ramo</p>
-                        <p className="text-sm font-medium text-slate-700">{selectedClient.industry}</p>
+                        <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.industry}</p>
                       </div>
                     )}
                     {selectedClient.document && (
-                      <div className="p-3 bg-slate-50 rounded-xl">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
                         <p className="text-xs text-slate-500">CNPJ/CPF</p>
-                        <p className="text-sm font-medium text-slate-700">{selectedClient.document}</p>
+                        <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.document}</p>
                       </div>
                     )}
                     {selectedClient.leadSource && (
-                      <div className="p-3 bg-slate-50 rounded-xl">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
                         <p className="text-xs text-slate-500">Origem</p>
                         <div className="flex items-center gap-1.5">
                           {leadSourceIcons[selectedClient.leadSource] && (
@@ -6520,12 +6873,12 @@ export default function FunilDetailPage() {
                               height={16}
                             />
                           )}
-                          <p className="text-sm font-medium text-slate-700">{selectedClient.leadSource}</p>
+                          <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.leadSource}</p>
                         </div>
                       </div>
                     )}
                     {selectedClient.leadType && (
-                      <div className="p-3 bg-slate-50 rounded-xl">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
                         <p className="text-xs text-slate-500">Tipo de Lead</p>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
                           leadTypeOptions.find(opt => opt.value === selectedClient.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
