@@ -23,6 +23,7 @@ import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
 import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
 import { useCredits } from '@/hooks/useCredits'
+import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [orgId, setOrgId] = useState<string | null>(null)
   const [orgName, setOrgName] = useState<string | null>(null)
   const [orgPlan, setOrgPlan] = useState<PlanId | null>(null)
+  const [orgCreatedAt, setOrgCreatedAt] = useState<string | null>(null)
   const [member, setMember] = useState<OrgMember | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -180,6 +182,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   setOrgId(orgRef.id)
                   setOrgName(orgData?.name || null)
                   setOrgPlan((orgData?.plan as PlanId) || 'basic')
+                  setOrgCreatedAt(orgData?.createdAt || null)
                   setMember(memberData)
                 }
               }
@@ -202,6 +205,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setOrgId(null)
       setOrgName(null)
       setOrgPlan(null)
+      setOrgCreatedAt(null)
       setMember(null)
       unsub()
     }
@@ -493,8 +497,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-              <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} member={member}>
-                {children}
+              <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} member={member}>
+                <FreePlanExpiredGate>
+                  {children}
+                </FreePlanExpiredGate>
               </CrmUserProvider>
             </div>
           </main>

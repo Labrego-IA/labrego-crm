@@ -35,6 +35,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import { useRouter } from 'next/navigation'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
+import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
 
 interface NavItem {
   label: string
@@ -166,6 +167,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const pathname = usePathname()
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
+  const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const handleLogout = async () => {
@@ -423,6 +425,31 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           </>
         )}
       </div>
+
+      {/* Trial banner */}
+      {isFreePlan && !collapsed && (
+        <div className="px-3 py-2">
+          <Link
+            href="/admin/plano"
+            onClick={() => onNavigate?.()}
+            className={`block rounded-xl p-3 transition-colors ${
+              isExpired
+                ? 'bg-red-500/20 border border-red-400/30 hover:bg-red-500/30'
+                : 'bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30'
+            }`}
+          >
+            <p className={`text-xs font-semibold ${isExpired ? 'text-red-300' : 'text-amber-300'}`}>
+              {isExpired ? 'Teste gratuito expirado' : 'Teste gratuito'}
+            </p>
+            <p className={`text-[11px] mt-0.5 ${isExpired ? 'text-red-400/80' : 'text-amber-400/80'}`}>
+              {isExpired
+                ? 'Assine um plano para continuar'
+                : `${daysRemaining} dia${daysRemaining !== 1 ? 's' : ''} restante${daysRemaining !== 1 ? 's' : ''}`
+              }
+            </p>
+          </Link>
+        </div>
+      )}
 
       {/* Guia + Logout */}
       <div className="px-3 py-3 border-t border-white/10 space-y-1">
