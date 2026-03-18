@@ -40,6 +40,8 @@ import MemberSelector from '@/components/MemberSelector'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 // Types
 type Cliente = {
@@ -184,6 +186,7 @@ export default function ContatosPage() {
   const searchParams = useSearchParams()
   const { userEmail, orgId, orgPlan, member } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
   const [costCenters, setCostCenters] = useState<CostCenter[]>([])
@@ -1738,7 +1741,7 @@ export default function ContatosPage() {
 
             {/* Import Button */}
             <button
-              onClick={() => setShowImportModal(true)}
+              onClick={() => guard(() => setShowImportModal(true))}
               className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all shadow-sm"
               title="Importar contatos"
             >
@@ -1748,7 +1751,7 @@ export default function ContatosPage() {
 
             {/* New Contact Button (desktop only) */}
             <button
-              onClick={openNewModal}
+              onClick={() => guard(openNewModal)}
               className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 hover:shadow-xl hover:shadow-primary-300"
             >
               <PlusIcon className="w-4 h-4" />
@@ -1760,7 +1763,7 @@ export default function ContatosPage() {
 
       {/* Mobile: FAB flutuante */}
       <button
-        onClick={openNewModal}
+        onClick={() => guard(openNewModal)}
         className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
         aria-label="Novo contato"
       >
@@ -1824,14 +1827,14 @@ export default function ContatosPage() {
                 Cancelar
               </button>
               <button
-                onClick={() => setShowBulkMoveModal(true)}
+                onClick={() => guard(() => setShowBulkMoveModal(true))}
                 className="px-4 py-2 bg-primary-600 text-white rounded-xl font-medium text-sm hover:bg-primary-700 transition-colors flex items-center gap-2"
               >
                 <FunnelIcon className="w-4 h-4" />
                 Mover para Funil
               </button>
               <button
-                onClick={() => setShowBulkDeleteModal(true)}
+                onClick={() => guard(() => setShowBulkDeleteModal(true))}
                 className="px-4 py-2 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors flex items-center gap-2"
               >
                 <TrashIcon className="w-4 h-4" />
@@ -2391,10 +2394,10 @@ export default function ContatosPage() {
 
                                   {/* Editar */}
                                   <button
-                                    onClick={() => {
+                                    onClick={() => guard(() => {
                                       openEditModal(client)
                                       setActionsPosition(null)
-                                    }}
+                                    })}
                                     className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
                                   >
                                     <Pencil1Icon className="w-4 h-4" />
@@ -2403,11 +2406,11 @@ export default function ContatosPage() {
 
                                   {/* Excluir */}
                                   <button
-                                    onClick={() => {
+                                    onClick={() => guard(() => {
                                       setDeleteId(client.id)
                                       setOpenActionsId(null)
                                       setActionsPosition(null)
-                                    }}
+                                    })}
                                     className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                   >
                                     <TrashIcon className="w-4 h-4" />
@@ -3628,6 +3631,9 @@ export default function ContatosPage() {
           </div>
         </div>
       )}
+
+      {/* Free Plan Guard Dialog */}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
