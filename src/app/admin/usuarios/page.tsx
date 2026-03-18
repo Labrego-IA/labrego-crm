@@ -194,6 +194,7 @@ export default function UsuariosPage() {
 
   // Actions menu
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
   /* ---------------------- Real-time subscription ------------------------ */
@@ -455,11 +456,18 @@ export default function UsuariosPage() {
 
   /* ---------------------- Close actions menu on outside click ----------- */
 
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!openMenuId) return
     function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      if (
+        menuRef.current && !menuRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
         setOpenMenuId(null)
+        setMenuPos(null)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -702,7 +710,7 @@ export default function UsuariosPage() {
         ) : (
           <>
             {/* Desktop table */}
-            <div className={`${ui.card} hidden sm:block overflow-hidden`}>
+            <div className={`${ui.card} hidden sm:block`}>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
                   <thead>
@@ -812,7 +820,16 @@ export default function UsuariosPage() {
                             <div className="relative inline-block" ref={openMenuId === m.id ? menuRef : undefined}>
                               <button
                                 type="button"
-                                onClick={() => setOpenMenuId(openMenuId === m.id ? null : m.id)}
+                                onClick={(e) => {
+                                  if (openMenuId === m.id) {
+                                    setOpenMenuId(null)
+                                    setMenuPos(null)
+                                  } else {
+                                    const rect = e.currentTarget.getBoundingClientRect()
+                                    setMenuPos({ top: rect.bottom + 4, left: rect.right })
+                                    setOpenMenuId(m.id)
+                                  }
+                                }}
                                 className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
                                 title="Acoes"
                               >
@@ -820,11 +837,15 @@ export default function UsuariosPage() {
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                                 </svg>
                               </button>
-                              {openMenuId === m.id && (
-                                <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 animate-scale-in">
+                              {openMenuId === m.id && menuPos && (
+                                <div
+                                  ref={dropdownRef}
+                                  className="fixed w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-[9999] animate-scale-in"
+                                  style={{ top: menuPos.top, left: menuPos.left - 176 }}
+                                >
                                   <button
                                     type="button"
-                                    onClick={() => { openEditModal(m); setOpenMenuId(null) }}
+                                    onClick={() => { openEditModal(m); setOpenMenuId(null); setMenuPos(null) }}
                                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
                                   >
                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -835,7 +856,7 @@ export default function UsuariosPage() {
                                   {!isSelf && (
                                     <button
                                       type="button"
-                                      onClick={() => { setBlockMember(m); setOpenMenuId(null) }}
+                                      onClick={() => { setBlockMember(m); setOpenMenuId(null); setMenuPos(null) }}
                                       className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition ${
                                         m.status === 'suspended'
                                           ? 'text-emerald-700 hover:bg-emerald-50'
@@ -864,7 +885,7 @@ export default function UsuariosPage() {
                                       <div className="border-t border-gray-100 my-1" />
                                       <button
                                         type="button"
-                                        onClick={() => { setDeleteMember(m); setOpenMenuId(null) }}
+                                        onClick={() => { setDeleteMember(m); setOpenMenuId(null); setMenuPos(null) }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition"
                                       >
                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -941,15 +962,28 @@ export default function UsuariosPage() {
                       <div className="relative" ref={openMenuId === `mobile-${m.id}` ? menuRef : undefined}>
                         <button
                           type="button"
-                          onClick={() => setOpenMenuId(openMenuId === `mobile-${m.id}` ? null : `mobile-${m.id}`)}
+                          onClick={(e) => {
+                            if (openMenuId === `mobile-${m.id}`) {
+                              setOpenMenuId(null)
+                              setMenuPos(null)
+                            } else {
+                              const rect = e.currentTarget.getBoundingClientRect()
+                              setMenuPos({ top: rect.bottom + 4, left: rect.right })
+                              setOpenMenuId(`mobile-${m.id}`)
+                            }
+                          }}
                           className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
                         >
                           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                           </svg>
                         </button>
-                        {openMenuId === `mobile-${m.id}` && (
-                          <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-50 animate-scale-in">
+                        {openMenuId === `mobile-${m.id}` && menuPos && (
+                          <div
+                            ref={dropdownRef}
+                            className="fixed w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-[9999] animate-scale-in"
+                            style={{ top: menuPos.top, left: menuPos.left - 176 }}
+                          >
                             <button
                               type="button"
                               onClick={() => { openEditModal(m); setOpenMenuId(null) }}
