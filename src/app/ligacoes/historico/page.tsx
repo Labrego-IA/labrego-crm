@@ -14,7 +14,6 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   PhoneIcon,
   ArrowLeftIcon,
@@ -346,7 +345,6 @@ export default function HistoricoLigacoesPage() {
   const hasActiveFilters = filters.search || filters.dateFrom || filters.dateTo || filters.funnelId
 
   return (
-    <NoOrgPreviewGate>
     <div className="h-full bg-slate-50 flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
@@ -601,6 +599,5 @@ export default function HistoricoLigacoesPage() {
         )}
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }

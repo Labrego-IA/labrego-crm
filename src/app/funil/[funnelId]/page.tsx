@@ -37,7 +37,6 @@ import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import AudioPlayer from '@/components/AudioPlayer'
 import RichTextEditor from '@/components/RichTextEditor'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   Cross2Icon,
   PlusIcon,
@@ -3413,7 +3412,6 @@ export default function FunilDetailPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 flex flex-col">
       {/* Header with KPIs */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-20">
@@ -9224,6 +9222,5 @@ export default function FunilDetailPage() {
         onCancel={handleCancelUnsavedClose}
       />
     </div>
-    </NoOrgPreviewGate>
   )
 }

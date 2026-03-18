@@ -28,7 +28,6 @@ import { assemblePromptFromWizard } from '@/lib/promptAssembler'
 import AgentWizard from '@/components/ligacoes/AgentWizard'
 import IntegrationsPanel from '@/components/ligacoes/IntegrationsPanel'
 import VoiceSelector from '@/components/ligacoes/VoiceSelector'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 const WEEKDAYS = [
   { value: 0, label: 'Domingo' },
@@ -285,7 +284,6 @@ export default function ConfiguracaoPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="h-full bg-slate-50 flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 bg-white border-b border-slate-200 sticky top-0 z-10">
@@ -833,6 +831,5 @@ export default function ConfiguracaoPage() {
         )}
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }

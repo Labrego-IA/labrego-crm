@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -569,7 +568,6 @@ export default function UsuariosPage() {
   /* ============================== Render ================================ */
 
   return (
-    <NoOrgPreviewGate>
     <PermissionGate
       action="canManageUsers"
       fallback={
@@ -1361,6 +1359,5 @@ export default function UsuariosPage() {
         />
       </div>
     </PermissionGate>
-    </NoOrgPreviewGate>
   )
 }

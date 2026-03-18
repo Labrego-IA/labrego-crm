@@ -23,7 +23,6 @@ import {
   BuildingOfficeIcon,
 } from '@heroicons/react/24/outline'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 const COST_CENTER_COLORS = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
@@ -226,7 +225,6 @@ export default function AdminCentrosCustoPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -498,6 +496,5 @@ export default function AdminCentrosCustoPage() {
         </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }

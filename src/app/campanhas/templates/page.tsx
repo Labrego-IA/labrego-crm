@@ -6,7 +6,6 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   type EmailTemplate,
   type EmailBlockData,
@@ -180,7 +179,6 @@ function TemplatesLibraryContent() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
@@ -336,7 +334,6 @@ function TemplatesLibraryContent() {
         </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

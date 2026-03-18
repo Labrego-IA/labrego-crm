@@ -18,7 +18,6 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 type PlaybookSection = {
   key: string
@@ -187,7 +186,6 @@ export default function EstrategiaComercialPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
@@ -312,6 +310,5 @@ export default function EstrategiaComercialPage() {
         </button>
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }

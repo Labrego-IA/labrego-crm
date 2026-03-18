@@ -9,7 +9,6 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import UpgradePrompt from '@/components/UpgradePrompt'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
 import {
@@ -394,7 +393,6 @@ export default function FunnelHubPage() {
   // Empty state
   if (funnels.length === 0) {
     return (
-      <NoOrgPreviewGate>
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-10 max-w-md text-center">
           <div className="w-20 h-20 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -420,13 +418,11 @@ export default function FunnelHubPage() {
         {/* Create Modal */}
         {showCreateModal && <FunnelModal />}
       </div>
-      </NoOrgPreviewGate>
     )
   }
 
   // Main render - Funnel Hub
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
       <div>
         {/* Header */}
@@ -765,7 +761,6 @@ export default function FunnelHubPage() {
         )
       })()}
     </div>
-    </NoOrgPreviewGate>
   )
 
   // Funnel Create/Edit Modal component

@@ -12,7 +12,6 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import { db } from '@/lib/firebaseClient'
 import {
   FunnelIcon,
@@ -687,7 +686,6 @@ export default function ConversaoPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6 overflow-x-hidden">
 
       {/* ── HEADER ─────────────────────────────────────── */}
@@ -880,6 +878,5 @@ export default function ConversaoPage() {
         )}
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }

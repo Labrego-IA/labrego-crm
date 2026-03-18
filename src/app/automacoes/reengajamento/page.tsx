@@ -14,7 +14,6 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   ArrowPathIcon,
   BoltIcon,
@@ -180,7 +179,6 @@ function ReengajamentoContent() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
@@ -227,7 +225,6 @@ function ReengajamentoContent() {
         )}
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

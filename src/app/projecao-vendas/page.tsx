@@ -14,7 +14,6 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -375,7 +374,6 @@ export default function ProjecaoVendasPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div className="p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
@@ -843,7 +841,6 @@ export default function ProjecaoVendasPage() {
         )
       })}
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

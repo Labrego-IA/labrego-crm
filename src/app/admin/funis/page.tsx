@@ -12,7 +12,6 @@ import {
   ChevronRightIcon,
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -381,7 +380,6 @@ export default function AdminFunisPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -614,6 +612,5 @@ export default function AdminFunisPage() {
       </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }

@@ -12,7 +12,6 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 import {
   LineChart,
   Line,
@@ -734,7 +733,6 @@ function AnalyticsDashboard() {
   /* ─── Render ─── */
 
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
@@ -812,7 +810,6 @@ function AnalyticsDashboard() {
         )}
       </div>
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

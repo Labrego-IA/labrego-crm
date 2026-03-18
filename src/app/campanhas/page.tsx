@@ -27,7 +27,6 @@ import {
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 /* ================================= Constants ================================= */
 
@@ -244,7 +243,6 @@ function CampanhasContent() {
   /* ================================= Render ================================= */
 
   return (
-    <NoOrgPreviewGate>
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -525,7 +523,6 @@ function CampanhasContent() {
         </>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

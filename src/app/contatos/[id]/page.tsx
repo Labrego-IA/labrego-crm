@@ -60,7 +60,6 @@ import {
   UsersIcon,
   FunnelIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 // Types
 type Client = {
@@ -971,7 +970,6 @@ export default function ContactDetailsPage() {
   const address = formatAddress()
 
   return (
-    <NoOrgPreviewGate>
     <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-10">
@@ -2612,7 +2610,6 @@ export default function ContactDetailsPage() {
         </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }
 

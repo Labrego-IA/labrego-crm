@@ -35,7 +35,6 @@ import {
   ESTADOS_BR,
 } from '@/types/icp'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgPreviewGate from '@/components/NoOrgPreviewGate'
 
 type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
@@ -268,7 +267,6 @@ export default function AdminIcpPage() {
   }
 
   return (
-    <NoOrgPreviewGate>
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -812,6 +810,5 @@ export default function AdminIcpPage() {
         </div>
       )}
     </div>
-    </NoOrgPreviewGate>
   )
 }
