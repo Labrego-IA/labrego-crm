@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'missing required fields' }, { status: 400 })
     }
 
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'client']
     if (!validRoles.includes(role)) {
       return NextResponse.json({ error: 'invalid role' }, { status: 400 })
     }
@@ -89,6 +89,8 @@ export async function POST(req: NextRequest) {
     const permissions = ROLE_PRESETS[role as RolePreset]
     const memberRef = db.collection('organizations').doc(orgId).collection('members').doc()
 
+    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+
     await memberRef.set({
       userId,
       email: email.toLowerCase(),
@@ -97,6 +99,7 @@ export async function POST(req: NextRequest) {
       permissions,
       status: 'invited',
       joinedAt: now,
+      trialEndsAt,
       invitedBy: callerEmail,
     })
 
@@ -114,6 +117,7 @@ export async function POST(req: NextRequest) {
         manager: 'Gerente',
         seller: 'Vendedor',
         viewer: 'Visualizador',
+        client: 'Cliente',
       }
 
       const inviteHtml = `

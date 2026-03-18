@@ -28,12 +28,13 @@ export interface OrgMember {
   id: string
   userId: string
   email: string
-  role: 'admin' | 'manager' | 'seller' | 'viewer'
+  role: 'admin' | 'manager' | 'seller' | 'viewer' | 'client'
   displayName: string
   photoUrl?: string
   permissions: MemberPermissions
   status: 'active' | 'invited' | 'suspended'
   joinedAt: string
+  trialEndsAt?: string | null
   invitedBy?: string
   funnelAccess?: FunnelAccessConfig[]
 }
