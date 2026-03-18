@@ -18,7 +18,7 @@ export function usePermissions() {
     return member.permissions?.pages?.some(p => path.startsWith(p)) ?? false
   }
 
-  const viewScope = member?.permissions?.viewScope ?? 'own'
+  const viewScope = member?.role === 'admin' ? 'all' : (member?.permissions?.viewScope ?? 'own')
 
   return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer' }
 }
