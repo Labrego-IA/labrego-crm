@@ -36,6 +36,7 @@ import { auth } from '@/lib/firebaseClient'
 import { useRouter } from 'next/navigation'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface NavItem {
   label: string
@@ -168,6 +169,8 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
+  const { role } = usePermissions()
+  const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const handleLogout = async () => {
@@ -336,50 +339,54 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           </li>
         </ul>
 
-        {/* Administração */}
-        <div className={`mt-4 ${collapsed ? '' : 'mb-2'}`}>
-          {!collapsed && (
-            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-3">
-              Administracao
-            </span>
-          )}
-        </div>
-        <ul className="space-y-1">
-          {adminItems.map((item) => {
-            const isActive = isItemActive(item.href)
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  onClick={() => onNavigate?.()}
-                  className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
-                    ${collapsed ? 'justify-center' : ''}
-                    ${isActive
-                      ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                      : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
-                    }
-                  `}
-                >
-                  {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
-                  )}
-                  <span className={isActive ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
-                    {item.icon}
-                  </span>
-                  {!collapsed && (
-                    <span className="font-medium text-sm">{item.label}</span>
-                  )}
-                  {collapsed && (
-                    <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
-                      {item.label}
-                    </span>
-                  )}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+        {/* Administração - visível apenas para admins */}
+        {isAdmin && (
+          <>
+            <div className={`mt-4 ${collapsed ? '' : 'mb-2'}`}>
+              {!collapsed && (
+                <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-3">
+                  Administracao
+                </span>
+              )}
+            </div>
+            <ul className="space-y-1">
+              {adminItems.map((item) => {
+                const isActive = isItemActive(item.href)
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => onNavigate?.()}
+                      className={`
+                        flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
+                        ${collapsed ? 'justify-center' : ''}
+                        ${isActive
+                          ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+                          : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                        }
+                      `}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+                      )}
+                      <span className={isActive ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                        {item.icon}
+                      </span>
+                      {!collapsed && (
+                        <span className="font-medium text-sm">{item.label}</span>
+                      )}
+                      {collapsed && (
+                        <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+                          {item.label}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </>
+        )}
 
         {/* Super Admin */}
         {isSuperAdmin && (
