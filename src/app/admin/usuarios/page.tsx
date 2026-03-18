@@ -432,7 +432,7 @@ export default function UsuariosPage() {
           'Content-Type': 'application/json',
           'x-user-email': userEmail,
         },
-        body: JSON.stringify({ orgId, memberId: blockMember.id, action }),
+        body: JSON.stringify({ orgId, memberId: blockMember.id, userId: blockMember.userId, action }),
       })
       if (!res.ok) {
         const data = await res.json()

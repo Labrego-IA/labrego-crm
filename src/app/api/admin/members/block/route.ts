@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { orgId, memberId, action } = await req.json()
+    const { orgId, memberId, userId, action } = await req.json()
 
     if (!orgId || !memberId || !action) {
       return NextResponse.json({ error: 'missing required fields' }, { status: 400 })
@@ -45,12 +45,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'only admins can block/unblock members' }, { status: 403 })
     }
 
-    // Get target member
-    const memberRef = db.collection('organizations').doc(orgId).collection('members').doc(memberId)
-    const memberDoc = await memberRef.get()
+    // Get target member — try by document ID first, then by userId field
+    const membersCol = db.collection('organizations').doc(orgId).collection('members')
+    let memberRef = membersCol.doc(memberId)
+    let memberDoc = await memberRef.get()
+
+    // If not found by doc ID (e.g. auth-only users with id "auth-{uid}"), search by userId field
+    if (!memberDoc.exists && userId) {
+      const byUserId = await membersCol.where('userId', '==', userId).limit(1).get()
+      if (!byUserId.empty) {
+        memberRef = byUserId.docs[0].ref
+        memberDoc = byUserId.docs[0]
+      }
+    }
+
+    const auth = getAdminAuth()
+    const newStatus = action === 'block' ? 'suspended' : 'active'
 
     if (!memberDoc.exists) {
-      return NextResponse.json({ error: 'member not found' }, { status: 404 })
+      // Auth-only user (exists in Firebase Auth but not in Firestore)
+      // We can still disable/enable their Firebase Auth account
+      if (!userId) {
+        return NextResponse.json({ error: 'member not found' }, { status: 404 })
+      }
+
+      // Verify auth user exists and prevent self-blocking
+      try {
+        const authUser = await auth.getUser(userId)
+        if (authUser.email?.toLowerCase() === callerEmail) {
+          return NextResponse.json({ error: 'you cannot block yourself' }, { status: 400 })
+        }
+        await auth.updateUser(userId, { disabled: action === 'block' })
+      } catch (authErr) {
+        console.error('[block] Error updating Firebase Auth user:', authErr)
+        return NextResponse.json({ error: 'failed to update auth state' }, { status: 500 })
+      }
+
+      return NextResponse.json({ success: true, status: newStatus })
     }
 
     const memberData = memberDoc.data()!
@@ -59,9 +90,6 @@ export async function POST(req: NextRequest) {
     if (memberData.email === callerEmail) {
       return NextResponse.json({ error: 'you cannot block yourself' }, { status: 400 })
     }
-
-    const auth = getAdminAuth()
-    const newStatus = action === 'block' ? 'suspended' : 'active'
 
     // Update Firebase Auth disabled state
     if (memberData.userId) {
