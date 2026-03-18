@@ -18,7 +18,6 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   ChatBubbleLeftRightIcon,
   EnvelopeIcon,
@@ -199,8 +198,6 @@ function CadenciaDashboard() {
     return stages.filter(s => s.funnelId === selectedFunnel)
   }, [stages, selectedFunnel])
 
-  if (!orgId) return <NoOrgMessage />
-
   return (
     <div className="min-h-screen bg-slate-50/50">
       {/* Header */}
@@ -241,10 +238,10 @@ function CadenciaDashboard() {
             {[...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-32 border border-slate-100" />)}
           </div>
         ) : mainTab === 'config' ? (
-          <ConfigTab orgId={orgId} stages={filteredStages} allStages={stages} steps={steps} setSteps={setSteps}
+          <ConfigTab orgId={orgId!} stages={filteredStages} allStages={stages} steps={steps} setSteps={setSteps}
             autoConfig={autoConfig} setAutoConfig={setAutoConfig} setStages={setStages} />
         ) : (
-          <ExecutionTab orgId={orgId} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} />
+          <ExecutionTab orgId={orgId!} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} />
         )}
       </div>
     </div>

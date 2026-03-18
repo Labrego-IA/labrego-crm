@@ -27,7 +27,6 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ======================== Component ======================== */
 
@@ -183,8 +182,6 @@ function TriggersPageContent() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="space-y-6">

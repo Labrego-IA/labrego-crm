@@ -60,7 +60,6 @@ import {
   UsersIcon,
   FunnelIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 // Types
 type Client = {
@@ -954,8 +953,6 @@ export default function ContactDetailsPage() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   if (!client) {
     return (

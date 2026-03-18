@@ -9,7 +9,6 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import UpgradePrompt from '@/components/UpgradePrompt'
-import NoOrgMessage from '@/components/NoOrgMessage'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
 import {
@@ -390,8 +389,6 @@ export default function FunnelHubPage() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   // Empty state
   if (funnels.length === 0) {

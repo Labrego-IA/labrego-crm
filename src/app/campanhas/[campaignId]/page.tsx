@@ -29,7 +29,6 @@ import {
 } from '@heroicons/react/24/outline'
 import { type EmailEvent, calcEngagement, EMPTY_ENGAGEMENT } from '@/types/email'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* ================================= Component ================================= */
 
@@ -197,8 +196,6 @@ function CampaignDetailsContent() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   if (!campaign) {
     return (

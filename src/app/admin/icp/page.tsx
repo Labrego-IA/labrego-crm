@@ -35,7 +35,6 @@ import {
   ESTADOS_BR,
 } from '@/types/icp'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
@@ -258,8 +257,6 @@ export default function AdminIcpPage() {
     setForm(EMPTY_ICP_PROFILE)
     setEditingId(null)
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   if (!can('canManageFunnels') && !can('canManageSettings')) {
     return (

@@ -6,7 +6,6 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
-import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   type EmailTemplate,
   type EmailBlockData,
@@ -166,8 +165,6 @@ function TemplatesLibraryContent() {
       return true
     })
   }, [allTemplates, selectedCategory, search])
-
-  if (!orgId) return <NoOrgMessage />
 
   const openInEditor = (tmpl: typeof SYSTEM_TEMPLATES[0] | EmailTemplate) => {
     if (tmpl.isSystem) {

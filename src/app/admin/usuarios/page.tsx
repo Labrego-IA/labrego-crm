@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -567,8 +566,6 @@ export default function UsuariosPage() {
   const atLimit = memberCount >= maxUsers
 
   /* ============================== Render ================================ */
-
-  if (!orgId) return <NoOrgMessage />
 
   return (
     <PermissionGate

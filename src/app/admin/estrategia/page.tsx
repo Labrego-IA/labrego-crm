@@ -18,7 +18,6 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 type PlaybookSection = {
   key: string
@@ -185,8 +184,6 @@ export default function EstrategiaComercialPage() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">

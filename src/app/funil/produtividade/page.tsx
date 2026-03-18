@@ -23,7 +23,6 @@ import {
   ArrowsRightLeftIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline'
-import NoOrgMessage from '@/components/NoOrgMessage'
 
 type ActionType = 'call' | 'email' | 'whatsapp' | 'stage_change' | 'followup'
 
@@ -420,8 +419,6 @@ export default function ProdutividadePage() {
       </div>
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">

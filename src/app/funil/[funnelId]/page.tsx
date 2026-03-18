@@ -37,7 +37,6 @@ import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import AudioPlayer from '@/components/AudioPlayer'
 import RichTextEditor from '@/components/RichTextEditor'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
-import NoOrgMessage from '@/components/NoOrgMessage'
 import {
   Cross2Icon,
   PlusIcon,
@@ -3388,8 +3387,6 @@ export default function FunilDetailPage() {
       date.getFullYear() === today.getFullYear()
     )
   }
-
-  if (!orgId) return <NoOrgMessage />
 
   // Funnel not found or no access
   if (funnelNotFound) {
