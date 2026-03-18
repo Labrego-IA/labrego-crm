@@ -720,7 +720,7 @@ function HeaderUserMenu({
   onLogout,
   orgName,
 }: {
-  menuRef: React.RefObject<HTMLDivElement | null>
+  menuRef: React.Ref<HTMLDivElement>
   isOpen: boolean
   onToggle: () => void
   onClose: () => void
