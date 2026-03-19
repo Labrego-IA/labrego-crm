@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
+import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
+import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
+import type { PlanId } from '@/types/plan'
 
 export const runtime = 'nodejs'
 
@@ -8,6 +11,8 @@ export const runtime = 'nodejs'
  * Blocks or unblocks a user by:
  * 1. Updating their Firestore member status to 'suspended' or 'active'
  * 2. Disabling/enabling their Firebase Auth account (prevents login)
+ * 3. On block: backs up permissions and clears them (removes plan access)
+ * 4. On unblock: restores permissions from backup
  */
 export async function POST(req: NextRequest) {
   const callerEmail = req.headers.get('x-user-email')?.toLowerCase()
@@ -103,8 +108,53 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Update Firestore member status
-    await memberRef.update({ status: newStatus })
+    // Build Firestore update payload
+    if (action === 'block') {
+      // Back up current permissions and clear them — user loses all plan access
+      await memberRef.update({
+        status: newStatus,
+        _permissionsBackup: memberData.permissions || null,
+        permissions: {
+          pages: [],
+          actions: {
+            canCreateContacts: false,
+            canEditContacts: false,
+            canDeleteContacts: false,
+            canCreateProposals: false,
+            canExportData: false,
+            canManageFunnels: false,
+            canManageUsers: false,
+            canTriggerCalls: false,
+            canViewReports: false,
+            canManageSettings: false,
+            canTransferLeads: false,
+          },
+          viewScope: 'own',
+        },
+      })
+    } else {
+      // Unblock: restore permissions from backup, or regenerate from role + plan
+      let restoredPermissions = memberData._permissionsBackup || null
+
+      if (!restoredPermissions) {
+        // No backup — regenerate permissions from role and current org plan
+        const orgDoc = await db.collection('organizations').doc(orgId).get()
+        const orgPlan = (orgDoc.data()?.plan as PlanId) || 'free'
+        const role = (memberData.role as RolePreset) || 'viewer'
+        const rolePreset = ROLE_PRESETS[role] || ROLE_PRESETS.viewer
+        restoredPermissions = {
+          pages: filterPagesByPlan([...rolePreset.pages], orgPlan),
+          actions: filterActionsByPlan({ ...rolePreset.actions }, orgPlan),
+          viewScope: rolePreset.viewScope,
+        }
+      }
+
+      await memberRef.update({
+        status: newStatus,
+        permissions: restoredPermissions,
+        _permissionsBackup: null,
+      })
+    }
 
     return NextResponse.json({ success: true, status: newStatus })
   } catch (error: unknown) {
