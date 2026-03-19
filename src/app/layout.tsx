@@ -26,7 +26,7 @@ import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
 import NotificationBell from '@/components/NotificationBell'
-import { useSuperAdmin } from '@/hooks/useSuperAdmin'
+// useSuperAdmin removido — usado apenas no CrmSidebar
 
 const inter = Inter({
   subsets: ['latin'],
@@ -62,7 +62,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const lastLoggedRouteRef = useRef<string | null>(null)
   const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
-  const { isSuperAdmin } = useSuperAdmin()
+  // Apenas admin da organização pode usar "Ver como"
+  const isAdmin = member?.role === 'admin'
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   // Carregar membros da organização quando admin (skip para plano free)
   // Busca Firestore members + Firebase Auth users e faz merge (igual /admin/usuarios)
   useEffect(() => {
-    if (!orgId || !member || member.role !== 'admin' || orgPlan === 'free') return
+    if (!orgId || !member || !isAdmin || orgPlan === 'free') return
 
     const loadMembers = async () => {
       try {
@@ -155,7 +156,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     }
 
     loadMembers()
-  }, [orgId, member, orgPlan, userEmail])
+  }, [orgId, member, isAdmin, orgPlan, userEmail])
 
   const handleLogout = async () => {
     try {
@@ -645,8 +646,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   {/* Notification Bell */}
                   <NotificationBell />
 
-                  {/* Impersonation button - Admin only */}
-                  {member?.role === 'admin' && orgMembers.length > 0 && (
+                  {/* "Ver como" — visível somente para administradores */}
+                  {isAdmin && orgMembers.length > 0 && (
                     <div className="relative" ref={impersonateMenuRef}>
                       <ImpersonateButton
                         onClick={() => setImpersonateMenuOpen(!impersonateMenuOpen)}
