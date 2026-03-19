@@ -61,16 +61,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const memberDoc = membersSnap.docs[0]
-    const memberData = memberDoc.data()
-
-    if (memberData.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Apenas administradores podem alterar o plano' },
-        { status: 403 }
-      )
-    }
-
     const newLimits = PLAN_LIMITS[newPlan]
     const now = new Date().toISOString()
 
