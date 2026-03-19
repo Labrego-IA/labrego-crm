@@ -312,7 +312,7 @@ export default function UsuariosPage() {
 
   const togglePage = (path: string) => {
     // Only allow toggling pages that are in the current plan
-    if (!planAllowedPagePaths.has(path)) return
+    if (!planAllowedPagePaths.has(path as typeof ALL_PAGES[number]['path'])) return
     setEditPermissions((prev) => ({
       ...prev,
       pages: prev.pages.includes(path)
