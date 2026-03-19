@@ -15,16 +15,19 @@ interface PageAccessGuardProps {
 export default function PageAccessGuard({ children }: PageAccessGuardProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { canAccessPage, role } = usePermissions()
+  const { canAccessPage, role, isPartner } = usePermissions()
 
   // Admins tem acesso total
   if (role === 'admin') return <>{children}</>
+
+  // Usuários não-parceiros (sem invitedBy) não têm restrições de acesso
+  if (!isPartner) return <>{children}</>
 
   // Páginas públicas/utilitárias não precisam de verificação
   const isPublicPath = PUBLIC_PATHS.some(p => pathname.startsWith(p))
   if (isPublicPath) return <>{children}</>
 
-  // Verifica se o usuário tem acesso à página atual
+  // Verifica se o usuário tem acesso à página atual (apenas para parceiros)
   if (!canAccessPage(pathname)) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center p-4">
