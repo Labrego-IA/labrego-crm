@@ -306,23 +306,25 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     })
   }, [checkingAuth, userEmail, userUid])
 
-  // Cálculo do countdown do plano free
-  // Usuários sem plano registrado ou com plano 'free' são sempre tratados como free (7 dias de teste)
+  // Determinar se o usuario é free (sem plano registrado ou plano 'free')
+  const isFreePlan = !orgPlan || orgPlan === 'free'
+
+  // Cálculo do countdown do plano free (7 dias de teste)
   const freePlanCountdown = (() => {
-    const isFreePlan = !orgPlan || orgPlan === 'free'
     if (!isFreePlan) return null
     // Usa orgCreatedAt como data base, com fallback para a data de criação do Auth
     const createdAtStr = orgCreatedAt || userAuthCreatedAt
-    if (!createdAtStr) return null
+    if (!createdAtStr) return { days: 7, hours: 0, minutes: 0, seconds: 0, expired: false, noDate: true }
     const FREE_TRIAL_DAYS = 7
     const expiresAt = new Date(createdAtStr)
     expiresAt.setDate(expiresAt.getDate() + FREE_TRIAL_DAYS)
     const diffMs = expiresAt.getTime() - currentTime.getTime()
-    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, expired: true }
+    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true, noDate: false }
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-    return { days, hours, minutes, expired: false }
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000)
+    return { days, hours, minutes, seconds, expired: false, noDate: false }
   })()
 
   // Login: renderiza só o conteúdo, sem sidebar/header
@@ -464,7 +466,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       <span className="text-sm font-medium text-primary-600">{orgName}</span>
                     </>
                   )}
-                  {!creditsLoading && orgId && (
+                  {!isFreePlan && !creditsLoading && orgId && (
                     <>
                       <span className="text-slate-300">|</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -484,22 +486,26 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       <span className="text-slate-300">|</span>
                       <Link
                         href="/plano"
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors ${
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
                           freePlanCountdown.expired
                             ? 'bg-red-100 text-red-700 hover:bg-red-200'
                             : freePlanCountdown.days <= 1
-                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                              ? 'bg-red-100 text-red-700 hover:bg-red-200 animate-pulse'
                               : freePlanCountdown.days <= 3
                                 ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                                 : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                         }`}
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
+                        <span>Plano Free</span>
+                        <span className="text-[10px] opacity-80">|</span>
                         {freePlanCountdown.expired
-                          ? 'Teste expirado'
-                          : `${String(freePlanCountdown.days).padStart(2, '0')}d ${String(freePlanCountdown.hours).padStart(2, '0')}h ${String(freePlanCountdown.minutes).padStart(2, '0')}m`
+                          ? 'Teste expirado — Fazer upgrade'
+                          : freePlanCountdown.noDate
+                            ? 'Teste gratis por 7 dias'
+                            : `${String(freePlanCountdown.days).padStart(2, '0')}d ${String(freePlanCountdown.hours).padStart(2, '0')}h ${String(freePlanCountdown.minutes).padStart(2, '0')}m ${String(freePlanCountdown.seconds).padStart(2, '0')}s`
                         }
                       </Link>
                     </>
@@ -524,11 +530,13 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       </svg>
                       {freePlanCountdown.expired
                         ? 'Expirado'
-                        : `${String(freePlanCountdown.days).padStart(2, '0')}:${String(freePlanCountdown.hours).padStart(2, '0')}:${String(freePlanCountdown.minutes).padStart(2, '0')}`
+                        : freePlanCountdown.noDate
+                          ? 'Free'
+                          : `${String(freePlanCountdown.days).padStart(2, '0')}:${String(freePlanCountdown.hours).padStart(2, '0')}:${String(freePlanCountdown.minutes).padStart(2, '0')}`
                       }
                     </Link>
                   )}
-                  {!creditsLoading && orgId && (
+                  {!isFreePlan && !creditsLoading && orgId && (
                     <span className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
                       actionBalance <= 0 || minuteBalance <= 0
                         ? 'bg-red-100 text-red-700'

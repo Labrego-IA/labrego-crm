@@ -22,8 +22,8 @@ export function useCredits(orgId: string | undefined, orgPlan?: PlanId | null): 
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Plano free não tem créditos — retorna 0 sem consultar Firestore
-    if (!orgId || orgPlan === 'free') {
+    // Plano free (ou sem plano) não tem créditos — retorna 0 sem consultar Firestore
+    if (!orgId || !orgPlan || orgPlan === 'free') {
       setActionBalance(0)
       setMinuteBalance(0)
       setLoading(false)
