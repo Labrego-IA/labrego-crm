@@ -409,7 +409,7 @@ function CampanhasContent() {
                     { key: 'failedCount' as SortColumn, label: 'Falhos', align: 'right' },
                     { key: 'createdAt' as SortColumn, label: 'Criado em', align: 'left' },
                     { key: 'lastSentAt' as SortColumn, label: 'Envio', align: 'left' },
-                  ] as const).map((col) => (
+                  ] as { key: SortColumn; label: string; align: string }[]).map((col) => (
                     <th
                       key={col.key}
                       className={`px-4 py-3 text-${col.align} text-xs font-semibold text-slate-500 uppercase tracking-wider`}
