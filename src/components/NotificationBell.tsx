@@ -19,6 +19,14 @@ function timeAgo(dateStr: string): string {
 }
 
 const ICON_MAP: Record<string, { bg: string; icon: React.ReactNode }> = {
+  plan_subscribed: {
+    bg: 'bg-violet-100 text-violet-600',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
   plan_upgrade: {
     bg: 'bg-emerald-100 text-emerald-600',
     icon: (
@@ -77,7 +85,7 @@ export default function NotificationBell() {
   useEffect(() => {
     if (!orgPlan || !orgId || !userUid) return
     const planLabel = isFreePlan ? 'Teste gratuito' : (PLAN_DISPLAY[orgPlan as PlanId]?.displayName || orgPlan)
-    if (daysRemaining <= 1) {
+    if (daysRemaining <= 3) {
       checkAndCreateExpirationNotification(daysRemaining, planLabel)
     }
   }, [daysRemaining, isFreePlan, orgPlan, orgId, userUid, checkAndCreateExpirationNotification])
