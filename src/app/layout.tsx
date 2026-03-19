@@ -25,6 +25,7 @@ import { ImpersonationProvider, useImpersonation } from '@/contexts/Impersonatio
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
+import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [orgName, setOrgName] = useState<string | null>(null)
   const [orgPlan, setOrgPlan] = useState<PlanId | null>(null)
   const [orgCreatedAt, setOrgCreatedAt] = useState<string | null>(null)
+  const [orgPlanSubscribedAt, setOrgPlanSubscribedAt] = useState<string | null>(null)
   const [member, setMember] = useState<OrgMember | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -59,6 +61,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const lastLoggedRouteRef = useRef<string | null>(null)
   const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
+  const { isSuperAdmin } = useSuperAdmin()
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {
@@ -236,6 +239,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   setOrgName(orgData?.name || null)
                   setOrgPlan((orgData?.plan as PlanId) || 'free')
                   setOrgCreatedAt(orgData?.createdAt || null)
+                  setOrgPlanSubscribedAt(orgData?.planSubscribedAt || null)
                   setMember(memberData)
                 }
               }
@@ -262,6 +266,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       setOrgName(orgData?.name || null)
                       setOrgPlan('free')
                       setOrgCreatedAt(orgData?.createdAt || null)
+                      setOrgPlanSubscribedAt(orgData?.planSubscribedAt || null)
 
                       // Fetch the newly created member
                       const newMemberQuery = query(collectionGroup(db, 'members'), where('email', '==', email))
@@ -297,6 +302,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setOrgName(null)
       setOrgPlan(null)
       setOrgCreatedAt(null)
+      setOrgPlanSubscribedAt(null)
       setMember(null)
       unsub()
     }
@@ -336,19 +342,26 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     })
   }, [checkingAuth, userEmail, userUid])
 
-  // Cálculo do countdown do plano free
-  const freePlanCountdown = (() => {
-    if (orgPlan !== 'free' || !orgCreatedAt) return null
-    const FREE_TRIAL_DAYS = 7
-    const expiresAt = new Date(orgCreatedAt)
-    expiresAt.setDate(expiresAt.getDate() + FREE_TRIAL_DAYS)
+  // Cálculo do countdown da assinatura (free=7d, pago=30d)
+  const subscriptionCountdown = (() => {
+    if (!orgPlan || !orgCreatedAt) return null
+    const isFreePlan = orgPlan === 'free'
+    const trialDays = isFreePlan ? 7 : 30
+    const startDate = isFreePlan ? orgCreatedAt : (orgPlanSubscribedAt || orgCreatedAt)
+    const expiresAt = new Date(startDate)
+    expiresAt.setDate(expiresAt.getDate() + trialDays)
     const diffMs = expiresAt.getTime() - currentTime.getTime()
-    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, expired: true }
+    const planLabel = isFreePlan ? 'Teste gratuito' : 'Assinatura'
+    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true, planLabel }
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
-    return { days, hours, minutes, expired: false }
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000)
+    return { days, hours, minutes, seconds, expired: false, planLabel }
   })()
+
+  // Timer visível para todos os usuários com org ativa
+  const showSubscriptionTimer = !!subscriptionCountdown
 
   // Login: renderiza só o conteúdo, sem sidebar/header
   if (isPublicPage) {
@@ -407,7 +420,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       </head>
       <body className="bg-slate-50">
         <ImpersonationProvider>
-        <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} member={member}>
+        <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} orgPlanSubscribedAt={orgPlanSubscribedAt} member={member}>
         <div className="flex flex-col h-screen overflow-hidden">
         <ImpersonationBanner orgPlan={orgPlan} />
         <div className="flex flex-1 overflow-hidden">
@@ -504,27 +517,26 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       </span>
                     </>
                   )}
-                  {freePlanCountdown && (
+                  {showSubscriptionTimer && (
                     <>
                       <span className="text-slate-300">|</span>
                       <Link
                         href="/plano"
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors ${
-                          freePlanCountdown.expired
-                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                            : freePlanCountdown.days <= 1
-                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                              : freePlanCountdown.days <= 3
-                                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium transition-colors ${
+                          (() => {
+                            const c = subscriptionCountdown!
+                            if (c.expired) return 'bg-red-100 text-red-700 hover:bg-red-200'
+                            if (c.days <= 1) return 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            return 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                          })()
                         }`}
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {freePlanCountdown.expired
-                          ? 'Teste expirado'
-                          : `${String(freePlanCountdown.days).padStart(2, '0')}d ${String(freePlanCountdown.hours).padStart(2, '0')}h ${String(freePlanCountdown.minutes).padStart(2, '0')}m`
+                        {subscriptionCountdown!.expired
+                          ? 'Expirado'
+                          : `${String(subscriptionCountdown!.days).padStart(2, '0')}:${String(subscriptionCountdown!.hours).padStart(2, '0')}:${String(subscriptionCountdown!.minutes).padStart(2, '0')}`
                         }
                       </Link>
                     </>
@@ -533,23 +545,24 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
                 {/* Right side */}
                 <div className="flex items-center gap-3">
-                  {freePlanCountdown && (
+                  {showSubscriptionTimer && (
                     <Link
                       href="/plano"
-                      className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                        freePlanCountdown.expired || freePlanCountdown.days <= 1
-                          ? 'bg-red-100 text-red-700'
-                          : freePlanCountdown.days <= 3
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-blue-100 text-blue-700'
+                      className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium ${
+                        (() => {
+                          const c = subscriptionCountdown!
+                          if (c.expired) return 'bg-red-100 text-red-700'
+                          if (c.days <= 1) return 'bg-amber-100 text-amber-700'
+                          return 'bg-blue-50 text-blue-700'
+                        })()
                       }`}
                     >
                       <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      {freePlanCountdown.expired
+                      {subscriptionCountdown!.expired
                         ? 'Expirado'
-                        : `${String(freePlanCountdown.days).padStart(2, '0')}:${String(freePlanCountdown.hours).padStart(2, '0')}:${String(freePlanCountdown.minutes).padStart(2, '0')}`
+                        : `${String(subscriptionCountdown!.days).padStart(2, '0')}:${String(subscriptionCountdown!.hours).padStart(2, '0')}:${String(subscriptionCountdown!.minutes).padStart(2, '0')}`
                       }
                     </Link>
                   )}

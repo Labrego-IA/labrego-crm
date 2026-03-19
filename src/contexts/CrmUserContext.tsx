@@ -13,6 +13,7 @@ interface CrmUserContextType {
   orgName: string | null
   orgPlan: PlanId | null
   orgCreatedAt: string | null
+  orgPlanSubscribedAt: string | null
   member: OrgMember | null
 }
 
@@ -24,6 +25,7 @@ const CrmUserContext = createContext<CrmUserContextType>({
   orgName: null,
   orgPlan: null,
   orgCreatedAt: null,
+  orgPlanSubscribedAt: null,
   member: null,
 })
 
@@ -36,6 +38,7 @@ export function CrmUserProvider({
   orgName = null,
   orgPlan = null,
   orgCreatedAt = null,
+  orgPlanSubscribedAt = null,
   member = null,
 }: CrmUserContextType & { children: ReactNode }) {
   const { impersonatedMember, isImpersonating } = useImpersonation()
@@ -49,9 +52,10 @@ export function CrmUserProvider({
       orgName,
       orgPlan,
       orgCreatedAt,
+      orgPlanSubscribedAt,
       member: isImpersonating ? impersonatedMember : member,
     }),
-    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, orgCreatedAt, member, impersonatedMember, isImpersonating],
+    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, orgCreatedAt, orgPlanSubscribedAt, member, impersonatedMember, isImpersonating],
   )
   return (
     <CrmUserContext.Provider value={value}>

@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const orgRef = db.collection('organizations').doc()
     const now = new Date().toISOString()
 
-    await orgRef.set({
+    const orgData: Record<string, any> = {
       name,
       slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       plan,
@@ -54,7 +54,11 @@ export async function POST(req: NextRequest) {
       limits: { maxUsers: 10, maxFunnels: 3, maxContacts: 2000 },
       createdAt: now,
       updatedAt: now,
-    })
+    }
+    if (plan && plan !== 'free') {
+      orgData.planSubscribedAt = now
+    }
+    await orgRef.set(orgData)
 
     // Create credits/balance doc
     await orgRef.collection('credits').doc('balance').set({
@@ -199,9 +203,17 @@ export async function PUT(req: NextRequest) {
     if (!orgId) return NextResponse.json({ error: 'missing orgId' }, { status: 400 })
 
     const db = getAdminDb()
-    const update: Record<string, any> = { updatedAt: new Date().toISOString() }
+    const now = new Date().toISOString()
+    const update: Record<string, any> = { updatedAt: now }
     if (name) update.name = name
-    if (plan) update.plan = plan
+    if (plan) {
+      update.plan = plan
+      // Registrar data da assinatura quando o plano muda
+      const orgDoc = await db.collection('organizations').doc(orgId).get()
+      if (orgDoc.exists && orgDoc.data()?.plan !== plan) {
+        update.planSubscribedAt = now
+      }
+    }
     if (status) update.status = status
 
     await db.collection('organizations').doc(orgId).update(update)
