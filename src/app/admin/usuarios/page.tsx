@@ -5,7 +5,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import { db } from '@/lib/firebaseClient'
-import { collection, query, onSnapshot, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore'
+import { collection, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore'
 import { ROLE_PRESETS, ALL_PAGES, ALL_ACTIONS, type RolePreset } from '@/types/permissions'
 import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organization'
 import { toast } from 'sonner'
@@ -37,31 +37,12 @@ const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-800',
   invited: 'bg-amber-100 text-amber-800',
   suspended: 'bg-red-100 text-red-800',
-  unlinked: 'bg-slate-100 text-slate-600',
 }
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
   invited: 'Convidado',
   suspended: 'Suspenso',
-  unlinked: 'Sem vinculo',
-}
-
-const PROVIDER_LABELS: Record<string, string> = {
-  'google.com': 'Google',
-  'password': 'Email',
-  'email': 'Email',
-}
-
-interface AuthUser {
-  uid: string
-  email: string
-  displayName: string | undefined
-  photoURL: string | undefined
-  provider: string
-  createdAt: string | undefined
-  lastSignIn: string | undefined
-  disabled: boolean
 }
 
 function formatJoinedDate(iso: string): string {
@@ -191,8 +172,6 @@ export default function UsuariosPage() {
   const [deleteMember, setDeleteMember] = useState<OrgMember | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
-  // Firebase Auth users state
-  const [authUsers, setAuthUsers] = useState<AuthUser[]>([])
   // Block confirmation
   const [blockMember, setBlockMember] = useState<OrgMember | null>(null)
   const [blockLoading, setBlockLoading] = useState(false)
@@ -204,26 +183,9 @@ export default function UsuariosPage() {
 
   /* ---------------------- Real-time subscription ------------------------ */
 
-  // Fetch all Firebase Auth users
-  const fetchAuthUsers = useCallback(async () => {
-    if (!orgId || !userEmail) return
-    try {
-      const res = await fetch(`/api/admin/members/verify-auth?orgId=${encodeURIComponent(orgId)}`, {
-        headers: { 'x-user-email': userEmail },
-      })
-      if (res.ok) {
-        const { users } = await res.json() as { users: AuthUser[] }
-        setAuthUsers(users)
-      }
-    } catch {
-      // silently fail - members from Firestore will still show
-    }
-  }, [orgId, userEmail])
-
-  // Subscribe to Firestore members + fetch auth users
+  // Subscribe to Firestore members only (no Firebase Auth merge)
   useEffect(() => {
     if (!orgId) return
-    fetchAuthUsers()
     const q = query(collection(db, 'organizations', orgId, 'members'))
     const unsub = onSnapshot(
       q,
@@ -242,39 +204,7 @@ export default function UsuariosPage() {
       },
     )
     return () => unsub()
-  }, [orgId, fetchAuthUsers])
-
-  // Merge: Firestore members + Firebase Auth users that are not in Firestore
-  const mergedMembers = useMemo(() => {
-    // Only keep Firestore members whose userId still exists in Firebase Auth
-    const authUidSet = new Set(authUsers.map((u) => u.uid))
-    const memberEmailSet = new Set(members.map((m) => m.email?.toLowerCase()))
-    const memberUidSet = new Set(members.map((m) => m.userId).filter(Boolean))
-
-    // Filter Firestore members: keep if no userId or userId exists in Auth
-    const validMembers = authUsers.length > 0
-      ? members.filter((m) => !m.userId || authUidSet.has(m.userId))
-      : members
-
-    // Auth-only users (not in Firestore by email or uid)
-    const authOnly: OrgMember[] = authUsers
-      .filter((u) => !memberEmailSet.has(u.email?.toLowerCase()) && !memberUidSet.has(u.uid))
-      .map((u) => ({
-        id: `auth-${u.uid}`,
-        userId: u.uid,
-        email: u.email,
-        displayName: u.displayName || u.email?.split('@')[0] || '',
-        photoUrl: u.photoURL,
-        role: '' as OrgMember['role'],
-        permissions: defaultPermissions(),
-        status: 'unlinked' as OrgMember['status'],
-        joinedAt: u.createdAt || '',
-        _provider: u.provider,
-        _lastSignIn: u.lastSignIn,
-      } as OrgMember & { _provider?: string; _lastSignIn?: string }))
-
-    return [...validMembers, ...authOnly]
-  }, [members, authUsers])
+  }, [orgId])
 
   /* ---------------------- Add member handler ---------------------------- */
 
@@ -285,11 +215,11 @@ export default function UsuariosPage() {
       return
     }
 
-    const emailExists = mergedMembers.some(
+    const emailExists = members.some(
       (m) => m.email.toLowerCase() === addForm.email.trim().toLowerCase(),
     )
     if (emailExists) {
-      toast.error('Este email ja esta cadastrado na organizacao')
+      toast.error('Este email ja esta cadastrado como parceiro')
       return
     }
 
@@ -393,29 +323,11 @@ export default function UsuariosPage() {
     }
     setEditLoading(true)
     try {
-      const isUnlinked = editMember.id.startsWith('auth-')
-
-      if (isUnlinked) {
-        // Member exists in Firebase Auth but not in Firestore — create the document
-        const membersRef = collection(db, 'organizations', orgId, 'members')
-        const newDocRef = doc(membersRef)
-        await setDoc(newDocRef, {
-          userId: editMember.userId,
-          email: editMember.email,
-          displayName: editDisplayName.trim(),
-          role: editRole,
-          permissions: editPermissions,
-          status: 'active',
-          joinedAt: editMember.joinedAt || new Date().toISOString(),
-          photoUrl: editMember.photoUrl || '',
-        })
-      } else {
-        await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
-          displayName: editDisplayName.trim(),
-          role: editRole,
-          permissions: editPermissions,
-        })
-      }
+      await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
+        displayName: editDisplayName.trim(),
+        role: editRole,
+        permissions: editPermissions,
+      })
       toast.success(`${editDisplayName.trim()} atualizado com sucesso`)
       setEditMember(null)
     } catch (error) {
@@ -433,7 +345,7 @@ export default function UsuariosPage() {
     setDeleteLoading(true)
     try {
       await deleteDoc(doc(db, 'organizations', orgId, 'members', deleteMember.id))
-      toast.success(`${deleteMember.displayName} removido da organizacao`)
+      toast.success(`${deleteMember.displayName} removido dos parceiros`)
       setDeleteMember(null)
     } catch (error) {
       console.error('Error deleting member:', error)
@@ -552,9 +464,9 @@ export default function UsuariosPage() {
   const filteredMembers = useMemo(() => {
     const term = normalize(search.trim())
 
-    let result = mergedMembers
+    let result = members
     if (term) {
-      result = mergedMembers.filter((m) => {
+      result = members.filter((m) => {
         const name = normalize(m.displayName || '')
         const email = normalize(m.email || '')
         const role = normalize(ROLE_LABELS[m.role as RolePreset] || m.role || '')
@@ -588,11 +500,11 @@ export default function UsuariosPage() {
     }
 
     return result
-  }, [mergedMembers, search, sortColumn, sortDirection])
+  }, [members, search, sortColumn, sortDirection])
 
   /* ---------------------- Computed values ------------------------------- */
 
-  const memberCount = mergedMembers.length
+  const memberCount = members.length
   const maxUsers = limits.maxUsers
   const atLimit = memberCount >= maxUsers
 
@@ -610,7 +522,7 @@ export default function UsuariosPage() {
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">Acesso restrito</h3>
-            <p className="text-sm text-gray-500">Sem permissao para gerenciar usuarios</p>
+            <p className="text-sm text-gray-500">Sem permissao para gerenciar parceiros</p>
           </div>
         </div>
       }
@@ -619,9 +531,9 @@ export default function UsuariosPage() {
         {/* =================== Header =================== */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Usuarios</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Parceiros</h2>
             <p className="text-sm text-gray-500 mt-0.5">
-              Gerencie os membros da sua organizacao, convites e permissoes.
+              Gerencie os parceiros da sua conta. Cada parceiro podera visualizar os mesmos dados que voce.
             </p>
           </div>
           <button
@@ -629,12 +541,12 @@ export default function UsuariosPage() {
             disabled={atLimit}
             onClick={() => guard(() => setShowAddModal(true))}
             className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
-            title={atLimit ? 'Limite do plano atingido' : 'Adicionar membro'}
+            title={atLimit ? 'Limite do plano atingido' : 'Adicionar parceiro'}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            Adicionar membro
+            Adicionar parceiro
           </button>
         </div>
 
@@ -643,7 +555,7 @@ export default function UsuariosPage() {
           <button
             onClick={() => guard(() => setShowAddModal(true))}
             className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
-            aria-label="Adicionar membro"
+            aria-label="Adicionar parceiro"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -655,7 +567,7 @@ export default function UsuariosPage() {
         <div className={`${ui.card} px-5 py-4`}>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
-              Membros: {memberCount} / {maxUsers}
+              Parceiros: {memberCount} / {maxUsers}
             </span>
             {atLimit && (
               <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">
@@ -673,7 +585,7 @@ export default function UsuariosPage() {
           </div>
           {atLimit && (
             <p className="text-xs text-gray-500 mt-2">
-              Faca upgrade do plano para adicionar mais membros.
+              Faca upgrade do plano para adicionar mais parceiros.
             </p>
           )}
         </div>
@@ -693,7 +605,7 @@ export default function UsuariosPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Pesquisar por nome, email, cargo ou status..."
+            placeholder="Pesquisar parceiro por nome, email, cargo ou status..."
             className={`${ui.input} pl-9`}
           />
           {search && (
@@ -722,11 +634,11 @@ export default function UsuariosPage() {
               </svg>
             </div>
             <h3 className="text-base font-semibold text-gray-900">
-              {mergedMembers.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
+              {members.length === 0 ? 'Nenhum parceiro encontrado' : 'Nenhum resultado encontrado'}
             </h3>
             <p className="text-sm text-gray-500 mt-1">
-              {mergedMembers.length === 0
-                ? 'Adicione o primeiro membro da organizacao.'
+              {members.length === 0
+                ? 'Adicione o primeiro parceiro da sua conta.'
                 : 'Tente ajustar os termos da pesquisa.'}
             </p>
           </div>
@@ -739,7 +651,7 @@ export default function UsuariosPage() {
                   <thead>
                     <tr className="border-b border-gray-100 bg-slate-50/80">
                       {([
-                        { key: 'name' as SortColumn, label: 'Membro', align: 'left' },
+                        { key: 'name' as SortColumn, label: 'Parceiro', align: 'left' },
                         { key: 'email' as SortColumn, label: 'Email', align: 'left' },
                         { key: 'role' as SortColumn, label: 'Cargo', align: 'center' },
                         { key: 'status' as SortColumn, label: 'Status', align: 'center' },
@@ -1085,9 +997,9 @@ export default function UsuariosPage() {
           <Modal isOpen onClose={requestCloseAddModal} size="md" centered>
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Adicionar membro</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Adicionar parceiro</h3>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  Convide um novo membro para a organizacao.
+                  Convide um novo parceiro para sua conta. Ele podera visualizar os mesmos dados que voce.
                 </p>
               </div>
 
@@ -1101,7 +1013,7 @@ export default function UsuariosPage() {
                     type="text"
                     value={addForm.displayName}
                     onChange={(e) => setAddForm((f) => ({ ...f, displayName: e.target.value }))}
-                    placeholder="Nome do membro"
+                    placeholder="Nome do parceiro"
                     className={ui.input}
                   />
                 </div>
@@ -1381,11 +1293,11 @@ export default function UsuariosPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Remover membro</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Remover parceiro</h3>
                   <p className="text-sm text-gray-500 mt-1">
                     Tem certeza que deseja remover{' '}
                     <span className="font-medium text-gray-700">{deleteMember.displayName}</span>{' '}
-                    ({deleteMember.email}) da organizacao? Esta acao nao pode ser desfeita.
+                    ({deleteMember.email}) dos seus parceiros? Esta acao nao pode ser desfeita.
                   </p>
                 </div>
               </div>
@@ -1406,7 +1318,7 @@ export default function UsuariosPage() {
                       Removendo...
                     </>
                   ) : (
-                    'Remover membro'
+                    'Remover parceiro'
                   )}
                 </button>
               </div>
