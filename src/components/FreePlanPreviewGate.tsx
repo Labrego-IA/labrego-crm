@@ -3,6 +3,7 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import type { FeatureKey } from '@/types/plan'
 import { FEATURE_LABELS } from '@/types/plan'
 
@@ -19,6 +20,10 @@ interface FreePlanPreviewGateProps {
  */
 export default function FreePlanPreviewGate({ children, feature }: FreePlanPreviewGateProps) {
   const { orgPlan } = useCrmUser()
+  const { role } = usePermissions()
+
+  // Admin always has full access regardless of plan status
+  if (role === 'admin') return <>{children}</>
 
   // Se nao for free, renderiza normalmente
   if (orgPlan !== 'free') {

@@ -466,7 +466,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       </span>
                     </>
                   )}
-                  {freePlanCountdown && (
+                  {freePlanCountdown && member?.role !== 'admin' && (
                     <>
                       <span className="text-slate-300">|</span>
                       <Link
@@ -495,7 +495,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
                 {/* Right side */}
                 <div className="flex items-center gap-3">
-                  {freePlanCountdown && (
+                  {freePlanCountdown && member?.role !== 'admin' && (
                     <Link
                       href="/plano"
                       className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${

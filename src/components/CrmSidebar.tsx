@@ -456,7 +456,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
       </div>
 
       {/* Trial banner */}
-      {isFreePlan && !collapsed && (
+      {isFreePlan && !collapsed && role !== 'admin' && (
         <div className="px-3 py-2">
           <Link
             href="/plano"
