@@ -66,6 +66,7 @@ export async function GET(req: NextRequest) {
         lastSignIn: user.metadata.lastSignInTime,
         plan: orgInfo?.plan || null,
         orgName: orgInfo?.orgName || null,
+        orgId: orgInfo?.orgId || null,
         role: orgInfo?.role || null,
       }
     })
@@ -101,10 +102,22 @@ export async function PUT(req: NextRequest) {
         await auth.deleteUser(uid)
         break
       case 'update': {
-        const updateData: Record<string, string> = {}
-        if (body.displayName !== undefined) updateData.displayName = body.displayName
-        if (body.email !== undefined) updateData.email = body.email
-        await auth.updateUser(uid, updateData)
+        const db = getAdminDb()
+        // Update user disabled status if provided
+        if (body.disabled !== undefined) {
+          const disabled = body.disabled === true || body.disabled === 'true'
+          await auth.updateUser(uid, { disabled })
+        }
+        // Update organization fields if orgId is provided
+        if (body.orgId) {
+          const orgRef = db.collection('organizations').doc(body.orgId)
+          const orgUpdates: Record<string, any> = {}
+          if (body.orgName !== undefined) orgUpdates.name = body.orgName
+          if (body.plan !== undefined) orgUpdates.plan = body.plan
+          if (Object.keys(orgUpdates).length > 0) {
+            await orgRef.update(orgUpdates)
+          }
+        }
         break
       }
       default:
