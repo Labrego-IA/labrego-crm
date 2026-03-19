@@ -296,7 +296,7 @@ function EditCampaignContent() {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Corpo do email</label>
-          <RichTextEditor content={body} onChange={setBody} />
+          <RichTextEditor value={body} onChange={setBody} />
         </div>
       </div>
 
