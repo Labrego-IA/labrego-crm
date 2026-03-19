@@ -5,7 +5,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import { db } from '@/lib/firebaseClient'
-import { collection, query, where, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore'
 import { ROLE_PRESETS, ALL_PAGES, ALL_ACTIONS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan, isPageFeatureAvailable } from '@/lib/planPermissions'
 import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organization'
@@ -366,15 +366,27 @@ export default function UsuariosPage() {
   /* ---------------------- Delete member handler ------------------------- */
 
   const handleDelete = async () => {
-    if (!orgId || !deleteMember) return
+    if (!orgId || !deleteMember || !userEmail) return
     setDeleteLoading(true)
     try {
-      await deleteDoc(doc(db, 'organizations', orgId, 'members', deleteMember.id))
+      const res = await fetch('/api/admin/members/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': userEmail,
+        },
+        body: JSON.stringify({ orgId, memberId: deleteMember.id, userId: deleteMember.userId }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Erro ao remover membro')
+      }
       toast.success(`${deleteMember.displayName} removido dos parceiros`)
       setDeleteMember(null)
     } catch (error) {
       console.error('Error deleting member:', error)
-      toast.error('Erro ao remover membro')
+      const message = error instanceof Error ? error.message : 'Erro ao remover membro'
+      toast.error(message)
     } finally {
       setDeleteLoading(false)
     }
