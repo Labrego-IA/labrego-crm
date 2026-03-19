@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Users, Search, MoreVertical, Pencil, Ban, Trash2, CheckCircle, X, UserX } from 'lucide-react'
 import { PLAN_DISPLAY } from '@/types/plan'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -42,8 +42,6 @@ export default function SuperAdminUsuariosPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
   const [editForm, setEditForm] = useState({ orgName: '', plan: '', createdAt: '', disabled: false })
@@ -79,9 +77,9 @@ export default function SuperAdminUsuariosPage() {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpenMenuUid(null)
-      }
+      const target = e.target as HTMLElement
+      if (target.closest('[data-actions-menu]')) return
+      setOpenMenuUid(null)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -297,7 +295,7 @@ export default function SuperAdminUsuariosPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                       {openMenuUid === user.uid && (
-                        <div ref={menuRef} className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                        <div data-actions-menu className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                           <button
                             onClick={() => { openEdit(user); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -357,7 +355,7 @@ export default function SuperAdminUsuariosPage() {
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
                     {openMenuUid === user.uid && (
-                      <div ref={menuRef} className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                      <div data-actions-menu className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                         <button
                           onClick={() => { openEdit(user); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
