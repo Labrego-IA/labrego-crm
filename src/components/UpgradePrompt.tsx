@@ -41,7 +41,7 @@ export default function UpgradePrompt({ feature, className = '' }: UpgradePrompt
           Seu plano atual: <span className="font-medium capitalize">{PLAN_DISPLAY[plan]?.displayName || plan}</span>
         </p>
         <a
-          href="/admin/plano"
+          href="/plano"
           className="inline-flex items-center px-5 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
         >
           Ver planos disponiveis

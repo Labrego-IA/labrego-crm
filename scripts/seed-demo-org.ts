@@ -119,7 +119,7 @@ async function main() {
     permissions: {
       pages: [
         '/contatos', '/funil', '/funil/produtividade', '/conversao',
-        '/cadencia', '/ligacoes', '/admin/usuarios', '/admin/creditos', '/admin/plano',
+        '/cadencia', '/ligacoes', '/admin/usuarios', '/admin/creditos', '/plano',
       ],
       actions: {
         canCreateContacts: true,

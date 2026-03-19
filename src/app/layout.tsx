@@ -469,7 +469,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     <>
                       <span className="text-slate-300">|</span>
                       <Link
-                        href="/admin/plano"
+                        href="/plano"
                         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors ${
                           freePlanCountdown.expired
                             ? 'bg-red-100 text-red-700 hover:bg-red-200'
@@ -496,7 +496,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 <div className="flex items-center gap-3">
                   {freePlanCountdown && (
                     <Link
-                      href="/admin/plano"
+                      href="/plano"
                       className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                         freePlanCountdown.expired || freePlanCountdown.days <= 1
                           ? 'bg-red-100 text-red-700'

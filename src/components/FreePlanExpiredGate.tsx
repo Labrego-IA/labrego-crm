@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
 import { usePermissions } from '@/hooks/usePermissions'
 
-const ALLOWED_PATHS = ['/admin/plano', '/perfil', '/login']
+const ALLOWED_PATHS = ['/plano', '/perfil', '/login']
 
 function isAllowedPath(pathname: string): boolean {
   return ALLOWED_PATHS.some(p => pathname === p || pathname.startsWith(`${p}/`))
@@ -49,7 +49,7 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
         </p>
 
         <Link
-          href="/admin/plano"
+          href="/plano"
           className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -11,7 +11,7 @@ const SCREEN_LABELS: Record<string, string> = {
   '/ligacoes': 'Agente de Ligação',
   '/admin/usuarios': 'Usuarios',
   '/admin/creditos': 'Creditos',
-  '/admin/plano': 'Plano',
+  '/plano': 'Plano',
   '/admin/funis': 'Acesso a Funis',
 }
 
