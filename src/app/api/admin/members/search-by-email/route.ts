@@ -36,11 +36,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'forbidden' }, { status: 403 })
     }
 
-    const callerMember = callerSnap.docs[0].data()
-    const hasPermission = callerMember.role === 'admin' || callerMember.permissions?.actions?.canManageUsers === true
-    if (!hasPermission) {
-      return NextResponse.json({ error: 'insufficient permissions' }, { status: 403 })
-    }
+    // Caller is a member of this org — page-level PermissionGate already handles access control
 
     // Check if email already exists in org
     const existingSnap = await db
