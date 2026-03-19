@@ -25,6 +25,7 @@ import { ImpersonationProvider, useImpersonation } from '@/contexts/Impersonatio
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
+import NotificationBell from '@/components/NotificationBell'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 
 const inter = Inter({
@@ -577,6 +578,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       {actionBalance} · {minuteBalance}m
                     </span>
                   )}
+
+                  {/* Notification Bell */}
+                  <NotificationBell />
 
                   {/* Impersonation button - Admin only */}
                   {member?.role === 'admin' && orgMembers.length > 0 && (
