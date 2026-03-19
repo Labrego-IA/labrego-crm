@@ -7,6 +7,7 @@ export interface Funnel {
   isDefault: boolean
   order: number
   visibleTo: string[] // member IDs, empty = all
+  createdBy?: string // email of the user who created the funnel
   createdAt: string
   updatedAt: string
 }

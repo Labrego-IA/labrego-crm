@@ -7,7 +7,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import type { Funnel } from '@/types/funnel'
 
 export function useVisibleFunnels() {
-  const { orgId, member } = useCrmUser()
+  const { orgId, member, userEmail } = useCrmUser()
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -26,15 +26,16 @@ export function useVisibleFunnels() {
       q,
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
-        // Admins see all funnels; otherwise filter by visibleTo (empty = visible to all)
-        const memberId = member?.id
         const isAdmin = member?.role === 'admin'
-        const visible = isAdmin
-          ? all
-          : all.filter(f =>
-              f.visibleTo.length === 0 || (memberId && f.visibleTo.includes(memberId))
-            )
-        setFunnels(visible)
+
+        if (isAdmin) {
+          setFunnels(all)
+        } else {
+          // Não-admin vê apenas funis que ele próprio criou
+          const email = (userEmail || '').toLowerCase()
+          const visible = all.filter(f => f.createdBy === email)
+          setFunnels(visible)
+        }
         setLoading(false)
       },
       (error) => {
@@ -45,7 +46,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id, member?.role])
+  }, [orgId, member?.id, member?.role, userEmail])
 
   return { funnels, loading }
 }

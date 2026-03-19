@@ -60,6 +60,7 @@ type FunnelItem = {
   color: string
   isDefault: boolean
   visibleTo: string[]
+  createdBy?: string
 }
 
 type StageItem = {
@@ -135,7 +136,7 @@ export default function AdminFunisPage() {
 
     unsubs.push(
       onSnapshot(query(collection(db, 'organizations', orgId, 'funnels')), (snap) => {
-        const data = snap.docs.map((d) => {
+        const all = snap.docs.map((d) => {
           const raw = d.data()
           return {
             id: d.id,
@@ -143,9 +144,14 @@ export default function AdminFunisPage() {
             color: raw.color || '#4f46e5',
             isDefault: raw.isDefault || false,
             visibleTo: Array.isArray(raw.visibleTo) ? raw.visibleTo : [],
+            createdBy: raw.createdBy || '',
           }
         })
-        setFunnels(data.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
+        // Admin vê todos os funis; não-admin vê apenas funis que ele criou
+        const filtered = isAdmin
+          ? all
+          : all.filter((f) => f.createdBy === (userEmail || '').toLowerCase())
+        setFunnels(filtered.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
       }, (error) => {
         console.warn('[FunisPage] Firestore error:', error.message)
       })
