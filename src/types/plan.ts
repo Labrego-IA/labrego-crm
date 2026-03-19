@@ -53,7 +53,7 @@ const ALL_FEATURES: FeatureKey[] = [
 ]
 
 export const PLAN_FEATURES: Record<PlanId, FeatureKey[]> = {
-  free: ['funnel', 'contacts', 'proposals'],
+  free: ALL_FEATURES,
   agency_start: ALL_FEATURES,
   agency_pro: ALL_FEATURES,
   agency_scale: ALL_FEATURES,
@@ -63,7 +63,7 @@ export const PLAN_FEATURES: Record<PlanId, FeatureKey[]> = {
 }
 
 export const PLAN_LIMITS: Record<PlanId, PlanLimits> = {
-  free:           { maxUsers: 1,  maxFunnels: 1,  maxContacts: 100,   monthlyActions: 100,   monthlyMinutes: 0,    maxConcurrentAgents: 0,  maxNumbers: 0, maxCadences: 0,  monthlyCredits: 0 },
+  free:           { maxUsers: 5,  maxFunnels: 2,  maxContacts: 3000,  monthlyActions: 2000,  monthlyMinutes: 450,  maxConcurrentAgents: 3,  maxNumbers: 1, maxCadences: 1,  monthlyCredits: 450 },
   agency_start:   { maxUsers: 5,  maxFunnels: 1,  maxContacts: 2000,  monthlyActions: 2000,  monthlyMinutes: 450,  maxConcurrentAgents: 3,  maxNumbers: 1, maxCadences: 1,  monthlyCredits: 450 },
   agency_pro:     { maxUsers: 10, maxFunnels: 2,  maxContacts: 5000,  monthlyActions: 4000,  monthlyMinutes: 900,  maxConcurrentAgents: 6,  maxNumbers: 2, maxCadences: -1, monthlyCredits: 900 },
   agency_scale:   { maxUsers: 15, maxFunnels: 3,  maxContacts: 10000, monthlyActions: 6000,  monthlyMinutes: 1350, maxConcurrentAgents: 9,  maxNumbers: 3, maxCadences: -1, monthlyCredits: 1350 },
@@ -83,7 +83,7 @@ export const PLAN_OVERAGE: Record<PlanId, OveragePricing> = {
 }
 
 export const PLAN_DISPLAY: Record<PlanId, { displayName: string; price: number; category: PlanCategory }> = {
-  free:           { displayName: 'Free',            price: 0,       category: 'direct' },
+  free:           { displayName: 'Free (7 dias)',    price: 0,       category: 'direct' },
   agency_start:   { displayName: 'Agency Start',   price: 1499.90, category: 'agency' },
   agency_pro:     { displayName: 'Agency Pro',      price: 2849.80, category: 'agency' },
   agency_scale:   { displayName: 'Agency Scale',    price: 4149.70, category: 'agency' },

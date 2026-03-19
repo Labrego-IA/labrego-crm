@@ -239,6 +239,44 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   setMember(memberData)
                 }
               }
+            } else {
+              // User has no org — auto-provision with free plan
+              try {
+                const res = await fetch('/api/auto-provision', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email,
+                    uid: user.uid,
+                    displayName: user.displayName || email.split('@')[0],
+                  }),
+                })
+                if (res.ok) {
+                  const data = await res.json()
+                  if (data.orgId) {
+                    // Re-fetch org and member data after provisioning
+                    const orgDoc = await getDoc(doc(db, 'organizations', data.orgId))
+                    if (orgDoc.exists()) {
+                      const orgData = orgDoc.data()
+                      setOrgId(data.orgId)
+                      setOrgName(orgData?.name || null)
+                      setOrgPlan('free')
+                      setOrgCreatedAt(orgData?.createdAt || null)
+
+                      // Fetch the newly created member
+                      const newMemberQuery = query(collectionGroup(db, 'members'), where('email', '==', email))
+                      const newMemberSnap = await getDocs(newMemberQuery)
+                      if (!newMemberSnap.empty) {
+                        setMember({ id: newMemberSnap.docs[0].id, ...newMemberSnap.docs[0].data() } as OrgMember)
+                      }
+                    }
+                  }
+                } else {
+                  console.error('[layout] Auto-provision failed:', await res.text())
+                }
+              } catch (provisionErr) {
+                console.error('[layout] Auto-provision error:', provisionErr)
+              }
             }
           }
         } catch (err: any) {
