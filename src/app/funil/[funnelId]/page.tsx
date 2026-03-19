@@ -38,6 +38,8 @@ import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
 import AudioPlayer from '@/components/AudioPlayer'
 import RichTextEditor from '@/components/RichTextEditor'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   Cross2Icon,
   PlusIcon,
@@ -268,6 +270,7 @@ export default function FunilDetailPage() {
   const credits = useCredits(orgId || undefined)
   const { viewScope, can } = usePermissions()
   const { filterStages } = useVisibleStages(funnelId)
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   // Responsible filter (admin/manager)
   const [filterAssignedTo, setFilterAssignedTo] = useState<string>('')
@@ -2565,8 +2568,8 @@ export default function FunilDetailPage() {
     }
   }
 
-  // Open edit contact modal
-  const openEditContactModal = () => {
+  // Open edit contact modal (inner, always executes)
+  const _openEditContactModal = () => {
     if (!selectedClient) return
     setEditContactForm({
       name: selectedClient.name || '',
@@ -2587,6 +2590,9 @@ export default function FunilDetailPage() {
     setEditContactPhotoPreview(null)
     setShowEditContactModal(true)
   }
+
+  // Guarded wrapper — shows free plan dialog instead of opening edit modal
+  const openEditContactModal = () => guard(_openEditContactModal)
 
   // Save edit contact
   const handleSaveEditContact = async () => {
@@ -3832,10 +3838,10 @@ export default function FunilDetailPage() {
                     />
                     <div className="absolute right-0 top-12 z-50 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                       <button
-                        onClick={() => {
+                        onClick={() => guard(() => {
                           setShowNewContactModal(true)
                           setActionsMenuOpen(false)
-                        }}
+                        })}
                         className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
@@ -9388,6 +9394,9 @@ export default function FunilDetailPage() {
         onConfirm={handleConfirmUnsavedClose}
         onCancel={handleCancelUnsavedClose}
       />
+
+      {/* Free Plan Guard Dialog */}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

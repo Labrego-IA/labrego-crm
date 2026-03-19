@@ -12,6 +12,8 @@ import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -133,6 +135,7 @@ export default function UsuariosPage() {
   const { orgId, userUid, userEmail } = useCrmUser()
   const { can } = usePermissions()
   const { limits } = usePlan()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -604,7 +607,7 @@ export default function UsuariosPage() {
           <button
             type="button"
             disabled={atLimit}
-            onClick={() => setShowAddModal(true)}
+            onClick={() => guard(() => setShowAddModal(true))}
             className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={atLimit ? 'Limite do plano atingido' : 'Adicionar membro'}
           >
@@ -618,7 +621,7 @@ export default function UsuariosPage() {
         {/* Mobile: FAB flutuante */}
         {!atLimit && (
           <button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => guard(() => setShowAddModal(true))}
             className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
             aria-label="Adicionar membro"
           >
@@ -845,7 +848,7 @@ export default function UsuariosPage() {
                                 >
                                   <button
                                     type="button"
-                                    onClick={() => { openEditModal(m); setOpenMenuId(null); setMenuPos(null) }}
+                                    onClick={() => guard(() => { openEditModal(m); setOpenMenuId(null); setMenuPos(null) })}
                                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
                                   >
                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -986,7 +989,7 @@ export default function UsuariosPage() {
                           >
                             <button
                               type="button"
-                              onClick={() => { openEditModal(m); setOpenMenuId(null) }}
+                              onClick={() => guard(() => { openEditModal(m); setOpenMenuId(null) })}
                               className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
                             >
                               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1391,6 +1394,9 @@ export default function UsuariosPage() {
           onConfirm={closeEditModal}
           onCancel={() => setShowEditConfirm(false)}
         />
+
+        {/* Free Plan Guard Dialog */}
+        <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
       </div>
     </PermissionGate>
   )
