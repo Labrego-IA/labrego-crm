@@ -402,10 +402,13 @@ function NovasCampanhasContent() {
     if (!orgId || !segmentName.trim()) return
     setSavingSegment(true)
     try {
+      const cleanFilters = Object.fromEntries(
+        Object.entries(filters).filter(([, v]) => v !== undefined)
+      )
       await addDoc(collection(db, 'organizations', orgId, 'savedSegments'), {
         orgId,
         name: segmentName.trim(),
-        filters,
+        filters: cleanFilters,
         createdBy: member?.userId || '',
         createdAt: new Date().toISOString(),
       })
