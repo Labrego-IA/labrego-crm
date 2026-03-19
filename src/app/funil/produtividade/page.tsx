@@ -426,9 +426,6 @@ export default function ProdutividadePage() {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl shadow-lg shadow-primary-200">
-              <ChartBarIcon className="w-6 h-6 text-white" />
-            </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-800">Produtividade</h1>
               <p className="text-sm text-slate-500">Acompanhamento de atividades por usuário</p>
