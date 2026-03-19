@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { usePlan } from '@/hooks/usePlan'
 import { useOrganization } from '@/hooks/useOrganization'
+import { useCrmUser } from '@/contexts/CrmUserContext'
 import {
   PLAN_LIMITS,
   PLAN_DISPLAY,
@@ -13,6 +14,7 @@ import {
   type PlanCategory,
 } from '@/types/plan'
 import EmailProviderSection from '@/components/EmailProviderSection'
+import { toast } from 'sonner'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -47,8 +49,36 @@ function formatCurrency(value: number): string {
 export default function PlanoPage() {
   const { plan: currentPlan, limits: currentLimits, display: currentDisplay } = usePlan()
   const { org, loading } = useOrganization()
-  const [contactSent, setContactSent] = useState<PlanId | null>(null)
+  const { orgId, userEmail } = useCrmUser()
+  const [changingPlan, setChangingPlan] = useState<PlanId | null>(null)
   const [viewCategory, setViewCategory] = useState<PlanCategory>(PLAN_CATEGORY[currentPlan] || 'direct')
+
+  const handleChangePlan = async (targetPlan: PlanId) => {
+    if (!orgId || !userEmail) {
+      toast.error('Erro: organizacao ou usuario nao identificados.')
+      return
+    }
+    setChangingPlan(targetPlan)
+    try {
+      const res = await fetch('/api/admin/change-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId, newPlan: targetPlan, userEmail }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Erro ao alterar o plano.')
+        return
+      }
+      toast.success('Plano alterado com sucesso! A pagina sera atualizada.')
+      setTimeout(() => window.location.reload(), 1500)
+    } catch (err) {
+      console.error('[plano] change plan error:', err)
+      toast.error('Erro ao alterar o plano. Tente novamente.')
+    } finally {
+      setChangingPlan(null)
+    }
+  }
 
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
   const isHigherPlan = (target: PlanId) => {
@@ -249,19 +279,17 @@ export default function PlanoPage() {
                   <button disabled className="w-full cursor-not-allowed rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-400">
                     Plano atual
                   </button>
-                ) : isUpgrade ? (
-                  <button
-                    onClick={() => setContactSent(planId)}
-                    disabled={contactSent === planId}
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] bg-primary-600 text-white hover:bg-primary-700 ${
-                      contactSent === planId ? 'cursor-not-allowed opacity-60' : ''
-                    }`}
-                  >
-                    {contactSent === planId ? 'Solicitacao enviada' : 'Fazer upgrade'}
-                  </button>
                 ) : (
-                  <button disabled className="w-full cursor-not-allowed rounded-xl bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-400">
-                    Plano inferior
+                  <button
+                    onClick={() => handleChangePlan(planId)}
+                    disabled={changingPlan === planId}
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
+                      isUpgrade
+                        ? 'bg-primary-600 text-white hover:bg-primary-700'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    } ${changingPlan === planId ? 'cursor-not-allowed opacity-60' : ''}`}
+                  >
+                    {changingPlan === planId ? 'Alterando...' : isUpgrade ? 'Fazer upgrade' : 'Fazer downgrade'}
                   </button>
                 )}
               </div>

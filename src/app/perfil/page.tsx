@@ -78,6 +78,9 @@ export default function PerfilPage() {
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
+  // Plan change
+  const [changingPlan, setChangingPlan] = useState<PlanId | null>(null)
+
   // Delete account
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
@@ -198,6 +201,33 @@ export default function PerfilPage() {
     setShowDeleteModal(false)
     setDeleteConfirmText('')
     setDeletePassword('')
+  }
+
+  const handleChangePlan = async (targetPlan: PlanId) => {
+    if (!orgId || !userEmail) {
+      toast.error('Erro: organizacao ou usuario nao identificados.')
+      return
+    }
+    setChangingPlan(targetPlan)
+    try {
+      const res = await fetch('/api/admin/change-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId, newPlan: targetPlan, userEmail }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Erro ao alterar o plano.')
+        return
+      }
+      toast.success('Plano alterado com sucesso! A pagina sera atualizada.')
+      setTimeout(() => window.location.reload(), 1500)
+    } catch (err) {
+      console.error('[perfil] change plan error:', err)
+      toast.error('Erro ao alterar o plano. Tente novamente.')
+    } finally {
+      setChangingPlan(null)
+    }
   }
 
   // ─── Tab 1: Informações Básicas ───
@@ -732,7 +762,8 @@ export default function PerfilPage() {
                 isCurrent={planId === plan}
                 currentOrder={currentPlanOrder}
                 allPlanKeys={Object.keys(PLAN_DISPLAY)}
-                onSelect={() => toast.info('Entre em contato com o suporte para trocar de plano.')}
+                loading={changingPlan === planId}
+                onSelect={() => handleChangePlan(planId)}
               />
             ))}
           </div>
@@ -754,7 +785,8 @@ export default function PerfilPage() {
                 isCurrent={planId === plan}
                 currentOrder={currentPlanOrder}
                 allPlanKeys={Object.keys(PLAN_DISPLAY)}
-                onSelect={() => toast.info('Entre em contato com o suporte para trocar de plano.')}
+                loading={changingPlan === planId}
+                onSelect={() => handleChangePlan(planId)}
               />
             ))}
           </div>
@@ -767,11 +799,11 @@ export default function PerfilPage() {
             <p className="text-xs text-slate-500">Nossa equipe pode recomendar o plano ideal para o seu negócio.</p>
           </div>
           <button
-            onClick={() => toast.info('Entre em contato com o suporte para trocar de plano.')}
+            onClick={() => toast.info('Selecione o plano desejado acima para trocar automaticamente.')}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors shadow-sm flex-shrink-0"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-            Falar com suporte
+            Precisa de ajuda?
           </button>
         </div>
       </div>
@@ -904,6 +936,7 @@ function PlanCard({
   isCurrent,
   currentOrder,
   allPlanKeys,
+  loading,
   onSelect,
 }: {
   planId: string
@@ -911,6 +944,7 @@ function PlanCard({
   isCurrent: boolean
   currentOrder: number
   allPlanKeys: string[]
+  loading?: boolean
   onSelect: () => void
 }) {
   const planLimits = PLAN_LIMITS[planId as PlanId]
@@ -983,21 +1017,24 @@ function PlanCard({
       ) : (
         <button
           onClick={onSelect}
+          disabled={loading}
           className={`mt-4 w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
             isUpgrade
               ? 'text-white bg-primary-600 hover:bg-primary-700 border border-primary-600'
               : 'text-primary-600 bg-primary-50 border border-primary-200 hover:bg-primary-100'
-          }`}
+          } ${loading ? 'cursor-not-allowed opacity-60' : ''}`}
         >
-          {isUpgrade ? (
+          {loading ? (
+            'Alterando...'
+          ) : isUpgrade ? (
             <>
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
               Fazer upgrade
             </>
           ) : (
             <>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
-              Selecionar plano
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+              Fazer downgrade
             </>
           )}
         </button>
