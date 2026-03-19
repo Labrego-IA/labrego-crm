@@ -1,14 +1,15 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { ShieldCheckIcon } from '@heroicons/react/24/outline'
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
-  const { role } = usePermissions()
+  const pathname = usePathname()
+  const { role, canAccessPage } = usePermissions()
   const { member } = useCrmUser()
 
   // Aguarda carregar os dados do membro
@@ -20,8 +21,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     )
   }
 
-  // Bloqueia acesso para não-admins
-  if (role !== 'admin') {
+  // Admins tem acesso total; outros verificam permissão de página específica
+  const hasAccess = role === 'admin' || canAccessPage(pathname)
+
+  if (!hasAccess) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
         <div className="text-center space-y-4 p-8 bg-slate-800 border border-slate-700 rounded-2xl shadow-lg max-w-md mx-4">
@@ -30,7 +33,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </div>
           <h1 className="text-2xl font-bold text-white">Acesso negado</h1>
           <p className="text-white/60">
-            Você não tem permissão para acessar a área de administração.
+            Você não tem permissão para acessar esta página.
           </p>
           <button
             onClick={() => router.push('/contatos')}

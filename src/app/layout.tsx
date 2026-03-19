@@ -24,6 +24,7 @@ import { CrmUserProvider } from '@/contexts/CrmUserContext'
 import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
+import PageAccessGuard from '@/components/PageAccessGuard'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -610,7 +611,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
                 <FreePlanExpiredGate>
-                  {children}
+                  <PageAccessGuard>
+                    {children}
+                  </PageAccessGuard>
                 </FreePlanExpiredGate>
             </div>
           </main>

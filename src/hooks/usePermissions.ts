@@ -15,7 +15,7 @@ export function usePermissions() {
   const canAccessPage = (path: string): boolean => {
     if (!member) return false
     if (member.role === 'admin') return true
-    return member.permissions?.pages?.some(p => path.startsWith(p)) ?? false
+    return member.permissions?.pages?.some(p => path === p || path.startsWith(p + '/')) ?? false
   }
 
   const viewScope = member?.role === 'admin' ? 'all' : (member?.permissions?.viewScope ?? 'own')
