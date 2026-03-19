@@ -360,8 +360,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     return { days, hours, minutes, seconds, expired: false, planLabel }
   })()
 
-  // Timer visível para todos, exceto super admins
-  const showSubscriptionTimer = !!subscriptionCountdown && !isSuperAdmin
+  // Timer visível para todos os usuários com org ativa
+  const showSubscriptionTimer = !!subscriptionCountdown
 
   // Login: renderiza só o conteúdo, sem sidebar/header
   if (isPublicPage) {
