@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     })
 
     // Get all members across all organizations to map userId -> org
-    const userOrgMap = new Map<string, { orgId: string; orgName: string; plan: string; role: string; orgCreatedAt: string; orgUpdatedAt: string }>()
+    const userOrgMap = new Map<string, { orgId: string; memberId: string; orgName: string; plan: string; role: string; orgCreatedAt: string; orgUpdatedAt: string }>()
     for (const [orgId, orgData] of orgMap) {
       const membersSnap = await db.collection('organizations').doc(orgId).collection('members').get()
       membersSnap.docs.forEach((doc) => {
