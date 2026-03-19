@@ -74,7 +74,7 @@ export async function createOrganization(data: {
     actionTotalConsumed: 0,
   })
 
-  return { id: ref.id, ...orgData }
+  return { id: ref.id, ...orgData } as Organization
 }
 
 export async function updateOrganization(orgId: string, data: Partial<Pick<Organization, 'name' | 'logoUrl' | 'plan' | 'status' | 'settings' | 'limits'>>) {
