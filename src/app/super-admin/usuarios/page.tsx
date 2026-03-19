@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Users, Search, MoreVertical, Pencil, Ban, Trash2, CheckCircle, X, UserX } from 'lucide-react'
 import { PLAN_DISPLAY } from '@/types/plan'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -15,6 +15,7 @@ interface UserRecord {
   lastSignIn: string
   plan: string | null
   orgName: string | null
+  orgId: string | null
   role: string | null
 }
 
@@ -41,12 +42,10 @@ export default function SuperAdminUsuariosPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
-  const menuRef = useRef<HTMLDivElement>(null)
-
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
-  const [editForm, setEditForm] = useState({ displayName: '', email: '' })
-  const [editInitialForm, setEditInitialForm] = useState({ displayName: '', email: '' })
+  const [editForm, setEditForm] = useState({ orgName: '', plan: '', createdAt: '', disabled: false })
+  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', createdAt: '', disabled: false })
   const [editSubmitting, setEditSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -78,9 +77,9 @@ export default function SuperAdminUsuariosPage() {
   // Close dropdown on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpenMenuUid(null)
-      }
+      const target = e.target as HTMLElement
+      if (target.closest('[data-actions-menu]')) return
+      setOpenMenuUid(null)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -135,7 +134,12 @@ export default function SuperAdminUsuariosPage() {
 
   const openEdit = (user: UserRecord) => {
     setEditingUser(user)
-    const form = { displayName: user.displayName, email: user.email }
+    const form = {
+      orgName: user.orgName || '',
+      plan: user.plan || '',
+      createdAt: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '',
+      disabled: user.disabled,
+    }
     setEditForm(form)
     setEditInitialForm(form)
     setEditError('')
@@ -143,7 +147,12 @@ export default function SuperAdminUsuariosPage() {
   }
 
   const hasEditChanges = useCallback(() => {
-    return editForm.displayName !== editInitialForm.displayName || editForm.email !== editInitialForm.email
+    return (
+      editForm.orgName !== editInitialForm.orgName ||
+      editForm.plan !== editInitialForm.plan ||
+      editForm.createdAt !== editInitialForm.createdAt ||
+      editForm.disabled !== editInitialForm.disabled
+    )
   }, [editForm, editInitialForm])
 
   const handleCloseEdit = useCallback(() => {
@@ -162,13 +171,15 @@ export default function SuperAdminUsuariosPage() {
     setEditError('')
     try {
       await executeAction(editingUser.uid, 'update', {
-        displayName: editForm.displayName,
-        email: editForm.email,
+        orgId: editingUser.orgId || '',
+        orgName: editForm.orgName,
+        plan: editForm.plan,
+        disabled: String(editForm.disabled),
       })
       setUsers((prev) =>
         prev.map((u) =>
           u.uid === editingUser.uid
-            ? { ...u, displayName: editForm.displayName, email: editForm.email }
+            ? { ...u, orgName: editForm.orgName, plan: editForm.plan, disabled: editForm.disabled }
             : u
         )
       )
@@ -284,7 +295,7 @@ export default function SuperAdminUsuariosPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                       {openMenuUid === user.uid && (
-                        <div ref={menuRef} className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                        <div data-actions-menu className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                           <button
                             onClick={() => { openEdit(user); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -344,7 +355,7 @@ export default function SuperAdminUsuariosPage() {
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
                     {openMenuUid === user.uid && (
-                      <div ref={menuRef} className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                      <div data-actions-menu className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                         <button
                           onClick={() => { openEdit(user); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -413,25 +424,55 @@ export default function SuperAdminUsuariosPage() {
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
+            <div className="mb-4 space-y-1">
+              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Nome:</span> {editingUser.displayName || '—'}</p>
+              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Email:</span> {editingUser.email}</p>
+            </div>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
                 <input
                   type="text"
-                  value={editForm.displayName}
-                  onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                  value={editForm.orgName}
+                  onChange={(e) => setEditForm({ ...editForm, orgName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                  placeholder="Nome da empresa"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plano</label>
+                <select
+                  value={editForm.plan}
+                  onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                >
+                  <option value="">Sem plano</option>
+                  {Object.entries(PLAN_DISPLAY).map(([id, info]) => (
+                    <option key={id} value={id}>{(info as { displayName: string }).displayName}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cadastro</label>
                 <input
-                  type="email"
-                  value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  required
+                  type="date"
+                  value={editForm.createdAt}
+                  onChange={(e) => setEditForm({ ...editForm, createdAt: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                  disabled
                 />
+                <p className="text-xs text-gray-400 mt-1">Data de cadastro (somente leitura)</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={editForm.disabled ? 'blocked' : 'active'}
+                  onChange={(e) => setEditForm({ ...editForm, disabled: e.target.value === 'blocked' })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                >
+                  <option value="active">Ativo</option>
+                  <option value="blocked">Bloqueado</option>
+                </select>
               </div>
               {editError && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{editError}</p>}
               <div className="flex justify-end gap-3 pt-2">
@@ -440,7 +481,7 @@ export default function SuperAdminUsuariosPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={editSubmitting}
+                  disabled={editSubmitting || !hasEditChanges()}
                   className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition"
                 >
                   {editSubmitting ? 'Salvando...' : 'Salvar'}
