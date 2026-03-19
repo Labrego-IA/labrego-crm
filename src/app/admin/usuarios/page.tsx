@@ -5,7 +5,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlan } from '@/hooks/usePlan'
 import { db } from '@/lib/firebaseClient'
-import { collection, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore'
 import { ROLE_PRESETS, ALL_PAGES, ALL_ACTIONS, type RolePreset } from '@/types/permissions'
 import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organization'
 import { toast } from 'sonner'
@@ -183,10 +183,13 @@ export default function UsuariosPage() {
 
   /* ---------------------- Real-time subscription ------------------------ */
 
-  // Subscribe to Firestore members only (no Firebase Auth merge)
+  // Subscribe only to partners invited by the current user
   useEffect(() => {
-    if (!orgId) return
-    const q = query(collection(db, 'organizations', orgId, 'members'))
+    if (!orgId || !userEmail) return
+    const q = query(
+      collection(db, 'organizations', orgId, 'members'),
+      where('invitedBy', '==', userEmail.toLowerCase()),
+    )
     const unsub = onSnapshot(
       q,
       (snap) => {
@@ -204,7 +207,7 @@ export default function UsuariosPage() {
       },
     )
     return () => unsub()
-  }, [orgId])
+  }, [orgId, userEmail])
 
   /* ---------------------- Add member handler ---------------------------- */
 
