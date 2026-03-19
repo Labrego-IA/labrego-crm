@@ -16,6 +16,7 @@ interface UserRecord {
   plan: string | null
   orgName: string | null
   orgId: string | null
+  memberId: string | null
   role: string | null
   orgCreatedAt: string | null
   orgUpdatedAt: string | null
@@ -79,8 +80,8 @@ export default function SuperAdminUsuariosPage() {
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
-  const [editForm, setEditForm] = useState({ orgName: '', plan: '', createdAt: '', disabled: false })
-  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', createdAt: '', disabled: false })
+  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false })
+  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false })
   const [editSubmitting, setEditSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -130,7 +131,7 @@ export default function SuperAdminUsuariosPage() {
   })
 
   const executeAction = async (uid: string, action: string, extra?: Record<string, string>) => {
-    if (!userEmail) return
+    if (!userEmail) throw new Error('Usuario nao autenticado')
     const res = await fetch('/api/super-admin/users', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
@@ -172,7 +173,6 @@ export default function SuperAdminUsuariosPage() {
     const form = {
       orgName: user.orgName || '',
       plan: user.plan || '',
-      createdAt: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '',
       disabled: user.disabled,
     }
     setEditForm(form)
@@ -185,7 +185,6 @@ export default function SuperAdminUsuariosPage() {
     return (
       editForm.orgName !== editInitialForm.orgName ||
       editForm.plan !== editInitialForm.plan ||
-      editForm.createdAt !== editInitialForm.createdAt ||
       editForm.disabled !== editInitialForm.disabled
     )
   }, [editForm, editInitialForm])
@@ -207,18 +206,13 @@ export default function SuperAdminUsuariosPage() {
     try {
       await executeAction(editingUser.uid, 'update', {
         orgId: editingUser.orgId || '',
+        memberId: editingUser.memberId || '',
         orgName: editForm.orgName,
         plan: editForm.plan,
         disabled: String(editForm.disabled),
       })
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.uid === editingUser.uid
-            ? { ...u, orgName: editForm.orgName, plan: editForm.plan, disabled: editForm.disabled }
-            : u
-        )
-      )
       setEditingUser(null)
+      await fetchUsers()
     } catch (err: any) {
       setEditError(err.message)
     } finally {
@@ -525,8 +519,7 @@ export default function SuperAdminUsuariosPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Cadastro</label>
                 <input
                   type="date"
-                  value={editForm.createdAt}
-                  onChange={(e) => setEditForm({ ...editForm, createdAt: e.target.value })}
+                  value={editingUser.createdAt ? new Date(editingUser.createdAt).toISOString().split('T')[0] : ''}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
                   disabled
                 />
