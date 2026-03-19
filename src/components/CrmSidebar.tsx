@@ -36,7 +36,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import { useRouter } from 'next/navigation'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
-import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface NavItem {
@@ -164,7 +164,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const pathname = usePathname()
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
-  const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
+  const { isFreePlan, isExpired, daysRemaining } = usePlanExpiration()
   const { role, canAccessPage } = usePermissions()
   const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
@@ -455,8 +455,8 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
         )}
       </div>
 
-      {/* Trial banner */}
-      {isFreePlan && !collapsed && (
+      {/* Plan status banner */}
+      {!collapsed && (isFreePlan || isExpired) && (
         <div className="px-3 py-2">
           <Link
             href="/plano"
@@ -468,11 +468,14 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             }`}
           >
             <p className={`text-xs font-semibold ${isExpired ? 'text-red-300' : 'text-amber-300'}`}>
-              {isExpired ? 'Teste gratuito expirado' : 'Teste gratuito'}
+              {isExpired
+                ? (isFreePlan ? 'Teste gratuito expirado' : 'Assinatura expirada')
+                : 'Teste gratuito'
+              }
             </p>
             <p className={`text-[11px] mt-0.5 ${isExpired ? 'text-red-400/80' : 'text-amber-400/80'}`}>
               {isExpired
-                ? 'Assine um plano para continuar'
+                ? (isFreePlan ? 'Assine um plano para continuar' : 'Renove seu plano para continuar')
                 : `${daysRemaining} dia${daysRemaining !== 1 ? 's' : ''} restante${daysRemaining !== 1 ? 's' : ''}`
               }
             </p>

@@ -3,8 +3,9 @@
 import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 
 const ALLOWED_PATHS = ['/plano', '/perfil', '/login']
 
@@ -18,16 +19,19 @@ interface FreePlanExpiredGateProps {
 
 export default function FreePlanExpiredGate({ children }: FreePlanExpiredGateProps) {
   const pathname = usePathname()
-  const { isFreePlan, isExpired } = useFreePlanExpiration()
+  const { isExpired, isFreePlan } = usePlanExpiration()
   const { role } = usePermissions()
+  const { isSuperAdmin } = useSuperAdmin()
 
-  // Admin always has full access regardless of plan status
-  if (role === 'admin') return <>{children}</>
+  // Super admin and org admin always have full access
+  if (isSuperAdmin || role === 'admin') return <>{children}</>
 
-  if (!isFreePlan || !isExpired || isAllowedPath(pathname)) {
+  // If plan is not expired or path is allowed, show content
+  if (!isExpired || isAllowedPath(pathname)) {
     return <>{children}</>
   }
 
+  // Expired plan - block access
   return (
     <div className="flex items-center justify-center min-h-full px-6 py-16">
       <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-10 max-w-lg text-center">
@@ -37,16 +41,31 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
           </svg>
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-900 mb-3">
-          Seu periodo de teste expirou
-        </h2>
-
-        <p className="text-slate-600 mb-2">
-          O periodo gratuito de 7 dias chegou ao fim.
-        </p>
-        <p className="text-slate-500 text-sm mb-8">
-          Para continuar usando o Voxium CRM, assine um dos nossos planos e tenha acesso completo a todas as funcionalidades.
-        </p>
+        {isFreePlan ? (
+          <>
+            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+              Seu periodo de teste expirou
+            </h2>
+            <p className="text-slate-600 mb-2">
+              O periodo gratuito de 7 dias chegou ao fim.
+            </p>
+            <p className="text-slate-500 text-sm mb-8">
+              Para continuar usando o Voxium CRM, assine um dos nossos planos e tenha acesso completo a todas as funcionalidades.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+              Sua assinatura expirou
+            </h2>
+            <p className="text-slate-600 mb-2">
+              O periodo da sua assinatura atual chegou ao fim.
+            </p>
+            <p className="text-slate-500 text-sm mb-8">
+              Para continuar usando o Voxium CRM, renove seu plano ou faca um upgrade para manter acesso a todas as funcionalidades.
+            </p>
+          </>
+        )}
 
         <Link
           href="/plano"
@@ -55,7 +74,7 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
           </svg>
-          Ver planos e assinar
+          {isFreePlan ? 'Ver planos e assinar' : 'Renovar ou fazer upgrade'}
         </Link>
       </div>
     </div>

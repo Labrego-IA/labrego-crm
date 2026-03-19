@@ -1,16 +1,16 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useFreePlanExpiration } from '@/hooks/useFreePlanExpiration'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 import { usePermissions } from '@/hooks/usePermissions'
 
 export function useFreePlanGuard() {
-  const { isFreePlan, isExpired } = useFreePlanExpiration()
+  const { isExpired } = usePlanExpiration()
   const { role } = usePermissions()
   const [showDialog, setShowDialog] = useState(false)
 
-  // Only block when free plan is expired (not during active 7-day trial)
-  const isBlocked = isFreePlan && isExpired && role !== 'admin'
+  // Block when any plan (free or paid) is expired
+  const isBlocked = isExpired && role !== 'admin'
 
   const guard = useCallback(
     (action: () => void) => {
