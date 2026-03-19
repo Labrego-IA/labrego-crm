@@ -24,6 +24,8 @@ import {
   ClockIcon,
   ChartBarIcon,
   FunnelIcon,
+  PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
@@ -99,6 +101,10 @@ function CampanhasContent() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Delete confirmation
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+
   // When orgId is not available, stop loading immediately
   useEffect(() => {
     if (!orgId) {
@@ -150,6 +156,28 @@ function CampanhasContent() {
       return column
     })
   }, [sortDirection])
+
+  /* ----------------------------- Handlers -------------------------------- */
+
+  const handleDelete = useCallback(async (campaignId: string) => {
+    if (!orgId) return
+    setDeletingId(campaignId)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}?orgId=${encodeURIComponent(orgId)}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Erro ao excluir')
+      }
+      toast.success('Campanha excluída com sucesso')
+    } catch (error) {
+      console.error('Error deleting campaign:', error)
+      toast.error(error instanceof Error ? error.message : 'Erro ao excluir campanha')
+    }
+    setDeletingId(null)
+    setDeleteConfirmId(null)
+  }, [orgId])
 
   /* ----------------------------- Derived -------------------------------- */
 
@@ -381,7 +409,7 @@ function CampanhasContent() {
                     { key: 'failedCount' as SortColumn, label: 'Falhos', align: 'right' },
                     { key: 'createdAt' as SortColumn, label: 'Criado em', align: 'left' },
                     { key: 'lastSentAt' as SortColumn, label: 'Envio', align: 'left' },
-                  ]).map((col) => (
+                  ] as { key: SortColumn; label: string; align: string }[]).map((col) => (
                     <th
                       key={col.key}
                       className={`px-4 py-3 text-${col.align} text-xs font-semibold text-slate-500 uppercase tracking-wider`}
@@ -417,6 +445,9 @@ function CampanhasContent() {
                       </button>
                     </th>
                   ))}
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -442,6 +473,48 @@ function CampanhasContent() {
                     <td className="px-4 py-3 text-sm text-slate-500">{formatDate(c.createdAt)}</td>
                     <td className="px-4 py-3 text-sm text-slate-500">
                       {c.lastSentAt ? formatDate(c.lastSentAt) : c.scheduledAt ? formatDateTimeAt(c.scheduledAt) : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-1" onClick={(e) => e.stopPropagation()}>
+                        {['draft', 'scheduled'].includes(c.status) && (
+                          <button
+                            onClick={() => router.push(`/campanhas/${c.id}/editar`)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                            title="Editar campanha"
+                          >
+                            <PencilSquareIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                        {c.status !== 'sending' && (
+                          <>
+                            {deleteConfirmId === c.id ? (
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => handleDelete(c.id)}
+                                  disabled={deletingId === c.id}
+                                  className="rounded-lg px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
+                                >
+                                  {deletingId === c.id ? '...' : 'Confirmar'}
+                                </button>
+                                <button
+                                  onClick={() => setDeleteConfirmId(null)}
+                                  className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setDeleteConfirmId(c.id)}
+                                className="rounded-lg p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                title="Excluir campanha"
+                              >
+                                <TrashIcon className="h-4 w-4" />
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -472,7 +545,49 @@ function CampanhasContent() {
                   <span className="text-emerald-600">{c.sentCount} enviados</span>
                   {c.failedCount > 0 && <span className="text-red-600">{c.failedCount} falhos</span>}
                 </div>
-                <p className="text-xs text-slate-400 mt-2">{formatDate(c.createdAt)}</p>
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-xs text-slate-400">{formatDate(c.createdAt)}</p>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    {['draft', 'scheduled'].includes(c.status) && (
+                      <button
+                        onClick={() => router.push(`/campanhas/${c.id}/editar`)}
+                        className="rounded-lg p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                        title="Editar"
+                      >
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </button>
+                    )}
+                    {c.status !== 'sending' && (
+                      <>
+                        {deleteConfirmId === c.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => handleDelete(c.id)}
+                              disabled={deletingId === c.id}
+                              className="rounded-lg px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
+                            >
+                              {deletingId === c.id ? '...' : 'Sim'}
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(null)}
+                              className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                            >
+                              Não
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirmId(c.id)}
+                            className="rounded-lg p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            title="Excluir"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
           </div>

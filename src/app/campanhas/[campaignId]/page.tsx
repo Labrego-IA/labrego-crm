@@ -26,6 +26,8 @@ import {
   EyeIcon,
   CursorArrowRaysIcon,
   ExclamationTriangleIcon,
+  PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 import { type EmailEvent, calcEngagement, EMPTY_ENGAGEMENT } from '@/types/email'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -47,6 +49,8 @@ function CampaignDetailsContent() {
   const [resending, setResending] = useState(false)
   const [emailEvents, setEmailEvents] = useState<EmailEvent[]>([])
   const [engagementTab, setEngagementTab] = useState<'metrics' | 'timeline' | 'contacts'>('metrics')
+  const [deleting, setDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   // When orgId is not available, stop loading immediately
   useEffect(() => {
@@ -187,6 +191,27 @@ function CampaignDetailsContent() {
     setResending(false)
   }
 
+  const handleDelete = async () => {
+    if (!orgId || !campaignId) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/campaigns/${campaignId}?orgId=${encodeURIComponent(orgId)}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Erro ao excluir')
+      }
+      toast.success('Campanha excluída com sucesso')
+      router.push('/campanhas')
+    } catch (error) {
+      console.error('Error deleting campaign:', error)
+      toast.error(error instanceof Error ? error.message : 'Erro ao excluir campanha')
+      setDeleting(false)
+      setShowDeleteConfirm(false)
+    }
+  }
+
   /* ================================= Render ================================= */
 
   if (loading) {
@@ -223,6 +248,47 @@ function CampaignDetailsContent() {
             </span>
           </div>
           <p className="text-sm text-slate-500 mt-0.5">{campaign.subject}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {['draft', 'scheduled'].includes(campaign.status) && (
+            <button
+              onClick={() => router.push(`/campanhas/${campaignId}/editar`)}
+              className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+            >
+              <PencilSquareIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">Editar</span>
+            </button>
+          )}
+          {campaign.status !== 'sending' && (
+            <>
+              {showDeleteConfirm ? (
+                <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 shadow-sm">
+                  <span className="text-xs text-red-700 font-medium">Excluir?</span>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="rounded-lg px-2.5 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
+                  >
+                    {deleting ? 'Excluindo...' : 'Sim'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+                  >
+                    Não
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors shadow-sm"
+                >
+                  <TrashIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Excluir</span>
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
 
