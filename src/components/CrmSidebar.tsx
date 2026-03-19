@@ -185,9 +185,9 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   // Mostrar todos os itens, mas marcar os bloqueados
   const filteredNavItems = navItems
   const filteredAgentesItems = agentesItems
-  const filteredAdminItems = isAdmin ? adminItems : adminItems.filter(item => canAccessPage(item.href))
+  const filteredAdminItems = adminItems
   const hasAgentesAccess = true
-  const hasAdminAccess = isAdmin || adminItems.some(item => canAccessPage(item.href))
+  const hasAdminAccess = true
 
   const allNavItems = [...navItems, ...agentesItems, ...adminItems]
   const isItemActive = (itemHref: string): boolean => {

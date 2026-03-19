@@ -21,7 +21,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'all',
   },
   manager: {
-    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/plano'],
+    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/plano', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -38,7 +38,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'all',
   },
   seller: {
-    pages: ['/contatos', '/funil', '/conversao', '/plano'],
+    pages: ['/contatos', '/funil', '/conversao', '/plano', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -55,7 +55,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'own',
   },
   viewer: {
-    pages: ['/contatos', '/funil', '/plano'],
+    pages: ['/contatos', '/funil', '/plano', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia'],
     actions: {
       canCreateContacts: false,
       canEditContacts: false,
@@ -72,7 +72,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'all',
   },
   cliente: {
-    pages: ['/contatos', '/funil'],
+    pages: ['/contatos', '/funil', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia'],
     actions: {
       canCreateContacts: false,
       canEditContacts: false,
