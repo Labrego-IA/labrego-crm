@@ -499,11 +499,11 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           )}
           <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}`} />
           {!collapsed && (
-            <span className="font-medium text-sm">Meu Plano</span>
+            <span className="font-medium text-sm">Planos</span>
           )}
           {collapsed && (
             <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
-              Meu Plano
+              Planos
             </span>
           )}
         </Link>
