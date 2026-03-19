@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { usePlan } from '@/hooks/usePlan'
 import { useOrganization } from '@/hooks/useOrganization'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 import {
   PLAN_LIMITS,
   PLAN_DISPLAY,
@@ -51,6 +52,8 @@ export default function PlanoPage() {
   const { org, loading } = useOrganization()
   const { orgId, userEmail } = useCrmUser()
   const [changingPlan, setChangingPlan] = useState<PlanId | null>(null)
+  const { isExpired } = usePlanExpiration()
+  const [contactSent, setContactSent] = useState<PlanId | null>(null)
   const [viewCategory, setViewCategory] = useState<PlanCategory>(PLAN_CATEGORY[currentPlan] || 'direct')
 
   const handleChangePlan = async (targetPlan: PlanId) => {
@@ -82,6 +85,7 @@ export default function PlanoPage() {
 
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
   const isHigherPlan = (target: PlanId) => {
+    if (isExpired) return true
     if (PLAN_CATEGORY[target] !== currentCategory) return true
     return PLAN_ORDER[target] > PLAN_ORDER[currentPlan]
   }
@@ -195,7 +199,7 @@ export default function PlanoPage() {
           const display = PLAN_DISPLAY[planId]
           const limits = PLAN_LIMITS[planId]
           const overage = PLAN_OVERAGE[planId]
-          const isCurrent = planId === currentPlan
+          const isCurrent = planId === currentPlan && !isExpired
           const isUpgrade = isHigherPlan(planId)
           const isTopPlan = planId === 'agency_scale' || planId === 'direct_scale'
 
