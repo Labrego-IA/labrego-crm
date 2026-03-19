@@ -26,7 +26,6 @@ import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
-import { useSubscriptionCountdown } from '@/hooks/useSubscriptionCountdown'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -63,7 +62,6 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
   const { isSuperAdmin } = useSuperAdmin()
-  const subscriptionCountdown = useSubscriptionCountdown(currentTime)
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {
@@ -344,6 +342,24 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     })
   }, [checkingAuth, userEmail, userUid])
 
+  // Cálculo do countdown da assinatura (free=7d, pago=30d)
+  const subscriptionCountdown = (() => {
+    if (!orgPlan || !orgCreatedAt) return null
+    const isFreePlan = orgPlan === 'free'
+    const trialDays = isFreePlan ? 7 : 30
+    const startDate = isFreePlan ? orgCreatedAt : (orgPlanSubscribedAt || orgCreatedAt)
+    const expiresAt = new Date(startDate)
+    expiresAt.setDate(expiresAt.getDate() + trialDays)
+    const diffMs = expiresAt.getTime() - currentTime.getTime()
+    const planLabel = isFreePlan ? 'Teste gratuito' : 'Assinatura'
+    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true, planLabel }
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000)
+    return { days, hours, minutes, seconds, expired: false, planLabel }
+  })()
+
   // Timer visível para todos, exceto super admins
   const showSubscriptionTimer = !!subscriptionCountdown && !isSuperAdmin
 
@@ -506,14 +522,12 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       <span className="text-slate-300">|</span>
                       <Link
                         href="/plano"
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors ${
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium transition-colors ${
                           (() => {
                             const c = subscriptionCountdown!
-                            const redThreshold = orgPlan === 'free' ? 1 : 3
-                            const amberThreshold = orgPlan === 'free' ? 3 : 7
-                            if (c.expired || c.days <= redThreshold) return 'bg-red-100 text-red-700 hover:bg-red-200'
-                            if (c.days <= amberThreshold) return 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-                            return 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            if (c.expired) return 'bg-red-100 text-red-700 hover:bg-red-200'
+                            if (c.days <= 1) return 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                            return 'bg-blue-50 text-blue-700 hover:bg-blue-100'
                           })()
                         }`}
                       >
@@ -521,8 +535,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         {subscriptionCountdown!.expired
-                          ? `${subscriptionCountdown!.planLabel} expirado`
-                          : `${String(subscriptionCountdown!.days).padStart(2, '0')}d ${String(subscriptionCountdown!.hours).padStart(2, '0')}h ${String(subscriptionCountdown!.minutes).padStart(2, '0')}m`
+                          ? 'Expirado'
+                          : `${String(subscriptionCountdown!.days).padStart(2, '0')}:${String(subscriptionCountdown!.hours).padStart(2, '0')}:${String(subscriptionCountdown!.minutes).padStart(2, '0')}`
                         }
                       </Link>
                     </>
@@ -534,14 +548,12 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   {showSubscriptionTimer && (
                     <Link
                       href="/plano"
-                      className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                      className={`md:hidden inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium ${
                         (() => {
                           const c = subscriptionCountdown!
-                          const redThreshold = orgPlan === 'free' ? 1 : 3
-                          const amberThreshold = orgPlan === 'free' ? 3 : 7
-                          if (c.expired || c.days <= redThreshold) return 'bg-red-100 text-red-700'
-                          if (c.days <= amberThreshold) return 'bg-amber-100 text-amber-700'
-                          return 'bg-blue-100 text-blue-700'
+                          if (c.expired) return 'bg-red-100 text-red-700'
+                          if (c.days <= 1) return 'bg-amber-100 text-amber-700'
+                          return 'bg-blue-50 text-blue-700'
                         })()
                       }`}
                     >
