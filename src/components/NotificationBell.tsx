@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
-import { useNotifications } from '@/hooks/useNotifications'
+import { useNotifications, type AppNotification } from '@/hooks/useNotifications'
 import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 import { PLAN_DISPLAY, type PlanId } from '@/types/plan'
 import Link from 'next/link'
+import PartnerInvitePopup from './PartnerInvitePopup'
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -51,6 +52,14 @@ const ICON_MAP: Record<string, { bg: string; icon: React.ReactNode }> = {
       </svg>
     ),
   },
+  partner_invite: {
+    bg: 'bg-purple-100 text-purple-600',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+      </svg>
+    ),
+  },
 }
 
 export default function NotificationBell() {
@@ -58,7 +67,17 @@ export default function NotificationBell() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, checkAndCreateExpirationNotification } = useNotifications(orgId ?? undefined, userUid ?? undefined)
   const { daysRemaining, isFreePlan } = usePlanExpiration()
   const [open, setOpen] = useState(false)
+  const [inviteNotification, setInviteNotification] = useState<AppNotification | null>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const handleInviteClick = useCallback((n: AppNotification) => {
+    setInviteNotification(n)
+    setOpen(false)
+  }, [])
+
+  const handleInviteResponded = useCallback(() => {
+    setInviteNotification(null)
+  }, [])
 
   // Fechar dropdown ao clicar fora
   useEffect(() => {
@@ -99,6 +118,16 @@ export default function NotificationBell() {
         )}
       </button>
 
+      {/* Partner Invite Popup */}
+      {inviteNotification && (
+        <PartnerInvitePopup
+          notification={inviteNotification}
+          isOpen={!!inviteNotification}
+          onClose={() => setInviteNotification(null)}
+          onResponded={handleInviteResponded}
+        />
+      )}
+
       {open && (
         <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-lg border border-slate-200 z-50 animate-scale-in overflow-hidden">
           {/* Header do dropdown */}
@@ -127,11 +156,16 @@ export default function NotificationBell() {
               notifications.map((n) => {
                 const iconInfo = ICON_MAP[n.type] || ICON_MAP.system
                 const isExpiring = n.type === 'plan_expiring'
+                const isPartnerInvite = n.type === 'partner_invite'
 
                 const content = (
                   <div
                     key={n.id}
                     onClick={() => {
+                      if (isPartnerInvite && !n.read) {
+                        handleInviteClick(n)
+                        return
+                      }
                       if (!n.read) markAsRead(n.id)
                       if (!isExpiring) setOpen(false)
                     }}
@@ -152,6 +186,11 @@ export default function NotificationBell() {
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{n.message}</p>
+                      {isPartnerInvite && !n.read && (
+                        <span className="inline-flex items-center mt-1.5 text-[11px] font-medium text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+                          Clique para responder
+                        </span>
+                      )}
                       <p className="text-[10px] text-slate-400 mt-1">{timeAgo(n.createdAt)}</p>
                     </div>
                   </div>

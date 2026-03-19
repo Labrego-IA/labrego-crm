@@ -37,12 +37,14 @@ const ROLE_BADGE: Record<RolePreset, string> = {
 const STATUS_BADGE: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-800',
   invited: 'bg-amber-100 text-amber-800',
+  pending: 'bg-sky-100 text-sky-800',
   suspended: 'bg-red-100 text-red-800',
 }
 
 const STATUS_LABELS: Record<string, string> = {
   active: 'Ativo',
   invited: 'Convidado',
+  pending: 'Pendente',
   suspended: 'Suspenso',
 }
 
@@ -153,8 +155,11 @@ export default function UsuariosPage() {
   const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset }
   const [addForm, setAddForm] = useState(addFormDefault)
   const [addLoading, setAddLoading] = useState(false)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchResult, setSearchResult] = useState<{ found: boolean; user: { uid: string; email: string; displayName: string; photoUrl: string | null } | null } | null>(null)
+  const [searchError, setSearchError] = useState<string | null>(null)
 
-  const addHasChanges = addForm.email !== '' || addForm.displayName !== '' || addForm.role !== 'seller'
+  const addHasChanges = addForm.email !== '' || addForm.role !== 'seller'
 
   // Edit modal
   const [editMember, setEditMember] = useState<OrgMember | null>(null)
@@ -222,12 +227,69 @@ export default function UsuariosPage() {
     return () => unsub()
   }, [orgId, userEmail])
 
+  /* ---------------------- Search user by email --------------------------- */
+
+  const handleSearchEmail = async () => {
+    if (!orgId || !userEmail) return
+    const emailVal = addForm.email.trim()
+    if (!emailVal) {
+      toast.error('Informe o email do usuario')
+      return
+    }
+
+    // Basic email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      toast.error('Informe um email valido')
+      return
+    }
+
+    setSearchLoading(true)
+    setSearchResult(null)
+    setSearchError(null)
+
+    try {
+      const res = await fetch('/api/admin/members/search-by-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': userEmail,
+        },
+        body: JSON.stringify({ orgId, email: emailVal }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        if (res.status === 409) {
+          setSearchError('Este email ja esta cadastrado como parceiro')
+        } else {
+          throw new Error(data.error || 'Erro ao buscar usuario')
+        }
+        return
+      }
+
+      const data = await res.json()
+      setSearchResult(data)
+
+      if (data.found && data.user) {
+        setAddForm((f) => ({ ...f, displayName: data.user.displayName || '' }))
+      } else {
+        setAddForm((f) => ({ ...f, displayName: '' }))
+      }
+    } catch (error: unknown) {
+      console.error('Error searching email:', error)
+      const message = error instanceof Error ? error.message : 'Erro ao buscar usuario'
+      setSearchError(message)
+    } finally {
+      setSearchLoading(false)
+    }
+  }
+
   /* ---------------------- Add member handler ---------------------------- */
 
   const handleAdd = async () => {
     if (!orgId || !userEmail) return
-    if (!addForm.email.trim() || !addForm.displayName.trim()) {
-      toast.error('Preencha todos os campos obrigatorios')
+    if (!addForm.email.trim()) {
+      toast.error('Informe o email do usuario')
       return
     }
 
@@ -250,7 +312,7 @@ export default function UsuariosPage() {
         body: JSON.stringify({
           orgId,
           email: addForm.email.trim(),
-          displayName: addForm.displayName.trim(),
+          displayName: searchResult?.user?.displayName || addForm.displayName.trim() || addForm.email.trim().split('@')[0],
           role: addForm.role,
         }),
       })
@@ -260,8 +322,10 @@ export default function UsuariosPage() {
         throw new Error(data.error || 'Erro ao convidar membro')
       }
 
-      toast.success(`Convite enviado para ${addForm.email.trim()} com credenciais de acesso`)
+      toast.success(`Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao para aceitar.`)
       setAddForm({ email: '', displayName: '', role: 'seller' })
+      setSearchResult(null)
+      setSearchError(null)
       setShowAddModal(false)
     } catch (error: unknown) {
       console.error('Error adding member:', error)
@@ -456,6 +520,8 @@ export default function UsuariosPage() {
     setShowAddModal(false)
     setShowAddConfirm(false)
     setAddForm({ email: '', displayName: '', role: 'seller' })
+    setSearchResult(null)
+    setSearchError(null)
   }, [])
 
   const closeEditModal = useCallback(() => {
@@ -1036,80 +1102,154 @@ export default function UsuariosPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Adicionar parceiro</h3>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  Convide um novo parceiro para sua conta. Ele podera visualizar os mesmos dados que voce.
+                  Busque um usuario pelo email para convida-lo como parceiro. Ele recebera uma notificacao para aceitar o convite.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="add-name" className={ui.label}>
-                    Nome
-                  </label>
-                  <input
-                    id="add-name"
-                    type="text"
-                    value={addForm.displayName}
-                    onChange={(e) => setAddForm((f) => ({ ...f, displayName: e.target.value }))}
-                    placeholder="Nome do parceiro"
-                    className={ui.input}
-                  />
-                </div>
-
+                {/* Email search field */}
                 <div>
                   <label htmlFor="add-email" className={ui.label}>
-                    Email
+                    Email do usuario
                   </label>
-                  <input
-                    id="add-email"
-                    type="email"
-                    value={addForm.email}
-                    onChange={(e) => setAddForm((f) => ({ ...f, email: e.target.value }))}
-                    placeholder="email@empresa.com"
-                    className={ui.input}
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      id="add-email"
+                      type="email"
+                      value={addForm.email}
+                      onChange={(e) => {
+                        setAddForm((f) => ({ ...f, email: e.target.value }))
+                        // Reset search when email changes
+                        if (searchResult || searchError) {
+                          setSearchResult(null)
+                          setSearchError(null)
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault()
+                          handleSearchEmail()
+                        }
+                      }}
+                      placeholder="email@empresa.com"
+                      className={ui.input}
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSearchEmail}
+                      disabled={searchLoading || !addForm.email.trim()}
+                      className={`${ui.btnPrimary} shrink-0 ${searchLoading || !addForm.email.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {searchLoading ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                      ) : (
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="add-role" className={ui.label}>
-                    Cargo
-                  </label>
-                  <select
-                    id="add-role"
-                    value={addForm.role}
-                    onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
-                    className={ui.select}
-                  >
-                    {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
-                      <option key={role} value={role}>
-                        {ROLE_LABELS[role]}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-400 mt-1">
-                    As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
-                  </p>
-                </div>
+                {/* Search error */}
+                {searchError && (
+                  <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2.5">
+                    <svg className="h-4 w-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <p className="text-sm text-red-700">{searchError}</p>
+                  </div>
+                )}
+
+                {/* Search result: user found */}
+                {searchResult?.found && searchResult.user && (
+                  <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      {searchResult.user.photoUrl ? (
+                        <img
+                          src={searchResult.user.photoUrl}
+                          alt={searchResult.user.displayName}
+                          className="h-10 w-10 rounded-full object-cover ring-1 ring-emerald-200"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                          {(searchResult.user.displayName || '?').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate">{searchResult.user.displayName}</p>
+                        <p className="text-xs text-gray-500">{searchResult.user.email}</p>
+                      </div>
+                      <svg className="h-5 w-5 text-emerald-500 shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-emerald-700">Usuario encontrado! Selecione o cargo e envie o convite.</p>
+                  </div>
+                )}
+
+                {/* Search result: user not found */}
+                {searchResult && !searchResult.found && (
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <svg className="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                      </svg>
+                      <p className="text-sm font-medium text-amber-800">Usuario nao encontrado</p>
+                    </div>
+                    <p className="text-xs text-amber-700">
+                      Nenhum usuario cadastrado com este email. O convite sera enviado e o usuario recebera a notificacao quando criar sua conta.
+                    </p>
+                  </div>
+                )}
+
+                {/* Role selector — shown after search */}
+                {searchResult && !searchError && (
+                  <div>
+                    <label htmlFor="add-role" className={ui.label}>
+                      Cargo
+                    </label>
+                    <select
+                      id="add-role"
+                      value={addForm.role}
+                      onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
+                      className={ui.select}
+                    >
+                      {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                        <option key={role} value={role}>
+                          {ROLE_LABELS[role]}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-400 mt-1">
+                      As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
                 <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
-                <button
-                  type="button"
-                  onClick={handleAdd}
-                  disabled={addLoading}
-                  className={`${ui.btnPrimary} ${addLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {addLoading ? (
-                    <>
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                      Enviando...
-                    </>
-                  ) : (
-                    'Enviar convite'
-                  )}
-                </button>
+                {searchResult && !searchError && (
+                  <button
+                    type="button"
+                    onClick={handleAdd}
+                    disabled={addLoading}
+                    className={`${ui.btnPrimary} ${addLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {addLoading ? (
+                      <>
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        Enviando...
+                      </>
+                    ) : (
+                      'Enviar convite'
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           </Modal>

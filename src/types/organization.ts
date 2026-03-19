@@ -33,7 +33,7 @@ export interface OrgMember {
   displayName: string
   photoUrl?: string
   permissions: MemberPermissions
-  status: 'active' | 'invited' | 'suspended' | 'unlinked'
+  status: 'active' | 'invited' | 'pending' | 'suspended' | 'unlinked'
   joinedAt: string
   invitedBy?: string
   funnelAccess?: FunnelAccessConfig[]
