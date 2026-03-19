@@ -66,7 +66,7 @@ export default function PlanoPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-8">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Plano e Assinatura</h2>
