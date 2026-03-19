@@ -5,7 +5,7 @@ import type { MemberActions } from '@/types/organization'
 import { ALL_PAGES } from '@/types/permissions'
 
 // Set de caminhos conhecidos para verificação exata
-const KNOWN_PAGE_PATHS = new Set(ALL_PAGES.map(p => p.path))
+const KNOWN_PAGE_PATHS = new Set<string>(ALL_PAGES.map(p => p.path))
 
 export function usePermissions() {
   const { member } = useCrmUser()
