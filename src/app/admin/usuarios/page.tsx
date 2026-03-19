@@ -7,6 +7,7 @@ import { usePlan } from '@/hooks/usePlan'
 import { db } from '@/lib/firebaseClient'
 import { collection, query, where, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore'
 import { ROLE_PRESETS, ALL_PAGES, ALL_ACTIONS, type RolePreset } from '@/types/permissions'
+import { filterPagesByPlan, filterActionsByPlan, isPageFeatureAvailable } from '@/lib/planPermissions'
 import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organization'
 import { toast } from 'sonner'
 import PermissionGate from '@/components/PermissionGate'
@@ -117,8 +118,20 @@ const ui = {
 export default function UsuariosPage() {
   const { orgId, userUid, userEmail } = useCrmUser()
   const { can } = usePermissions()
-  const { limits } = usePlan()
+  const { limits, plan } = usePlan()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
+
+  /* ---------------------- Plan-filtered pages & actions ------------------ */
+
+  const planAllowedPages = useMemo(
+    () => ALL_PAGES.filter(page => isPageFeatureAvailable(page.feature, plan)),
+    [plan],
+  )
+
+  const planAllowedPagePaths = useMemo(
+    () => new Set(planAllowedPages.map(p => p.path)),
+    [planAllowedPages],
+  )
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -291,13 +304,15 @@ export default function UsuariosPage() {
     setEditRole(role)
     const preset = ROLE_PRESETS[role]
     setEditPermissions({
-      pages: [...preset.pages],
-      actions: { ...preset.actions },
+      pages: filterPagesByPlan([...preset.pages], plan),
+      actions: filterActionsByPlan({ ...preset.actions }, plan),
       viewScope: preset.viewScope,
     })
   }
 
   const togglePage = (path: string) => {
+    // Only allow toggling pages that are in the current plan
+    if (!planAllowedPagePaths.has(path as typeof ALL_PAGES[number]['path'])) return
     setEditPermissions((prev) => ({
       ...prev,
       pages: prev.pages.includes(path)
@@ -326,10 +341,17 @@ export default function UsuariosPage() {
     }
     setEditLoading(true)
     try {
+      // Ensure only plan-allowed pages/actions are saved
+      const filteredPermissions = {
+        ...editPermissions,
+        pages: filterPagesByPlan(editPermissions.pages, plan),
+        actions: filterActionsByPlan(editPermissions.actions, plan),
+      }
       await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
         displayName: editDisplayName.trim(),
         role: editRole,
-        permissions: editPermissions,
+        permissions: filteredPermissions,
+        planId: plan,
       })
       toast.success(`${editDisplayName.trim()} atualizado com sucesso`)
       setEditMember(null)
@@ -1052,7 +1074,7 @@ export default function UsuariosPage() {
                     ))}
                   </select>
                   <p className="text-xs text-gray-400 mt-1">
-                    As permissoes serao preenchidas com base no cargo selecionado.
+                    As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
                   </p>
                 </div>
               </div>
@@ -1154,11 +1176,14 @@ export default function UsuariosPage() {
                 </div>
               </div>
 
-              {/* Pages checklist */}
+              {/* Pages checklist — only plan-allowed pages */}
               <div>
                 <span className={ui.label}>Paginas permitidas</span>
+                <p className="text-xs text-gray-400 mb-1">
+                  Apenas paginas disponiveis no seu plano sao exibidas.
+                </p>
                 <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 p-3 bg-slate-50/50">
-                  {ALL_PAGES.map((page) => (
+                  {planAllowedPages.map((page) => (
                     <label
                       key={page.path}
                       className="flex items-center gap-2 cursor-pointer py-0.5"

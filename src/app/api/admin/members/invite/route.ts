@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { getEmailProviderConfig, createProvider } from '@/lib/email/emailProvider'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
+import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
+import type { PlanId } from '@/types/plan'
 
 export const runtime = 'nodejs'
 
@@ -58,9 +60,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'email already exists in organization' }, { status: 409 })
     }
 
-    // Get org name for the email
+    // Get org data (name + plan) for the email and permission filtering
     const orgDoc = await db.collection('organizations').doc(orgId).get()
-    const orgName = orgDoc.data()?.name || 'Voxium CRM'
+    const orgData = orgDoc.data()
+    const orgName = orgData?.name || 'Voxium CRM'
+    const orgPlan = (orgData?.plan as PlanId) || 'free'
 
     // Create Firebase Auth user
     const auth = getAdminAuth()
@@ -84,9 +88,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'failed to create auth user' }, { status: 500 })
     }
 
-    // Create member document
+    // Create member document with permissions filtered by org plan
     const now = new Date().toISOString()
-    const permissions = ROLE_PRESETS[role as RolePreset]
+    const rolePreset = ROLE_PRESETS[role as RolePreset]
+    const permissions = {
+      ...rolePreset,
+      pages: filterPagesByPlan(rolePreset.pages, orgPlan),
+      actions: filterActionsByPlan(rolePreset.actions, orgPlan),
+    }
     const memberRef = db.collection('organizations').doc(orgId).collection('members').doc()
 
     await memberRef.set({
@@ -98,6 +107,7 @@ export async function POST(req: NextRequest) {
       status: 'invited',
       joinedAt: now,
       invitedBy: callerEmail,
+      planId: orgPlan,
     })
 
     // Send invitation email
