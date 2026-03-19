@@ -98,12 +98,26 @@ export async function PUT(req: NextRequest) {
     const auth = getAdminAuth()
 
     switch (action) {
-      case 'disable':
+      case 'disable': {
         await auth.updateUser(uid, { disabled: true })
+        // Also update Firestore member status to 'suspended' so the app layout blocks access
+        const db = getAdminDb()
+        const orgsSnap = await db.collectionGroup('members').where('userId', '==', uid).get()
+        for (const memberDoc of orgsSnap.docs) {
+          await memberDoc.ref.update({ status: 'suspended' })
+        }
         break
-      case 'enable':
+      }
+      case 'enable': {
         await auth.updateUser(uid, { disabled: false })
+        // Also update Firestore member status back to 'active'
+        const db = getAdminDb()
+        const orgsSnap = await db.collectionGroup('members').where('userId', '==', uid).get()
+        for (const memberDoc of orgsSnap.docs) {
+          await memberDoc.ref.update({ status: 'active' })
+        }
         break
+      }
       case 'delete':
         await auth.deleteUser(uid)
         break
@@ -113,6 +127,12 @@ export async function PUT(req: NextRequest) {
         if (body.disabled !== undefined) {
           const disabled = body.disabled === true || body.disabled === 'true'
           await auth.updateUser(uid, { disabled })
+          // Sync Firestore member status with Firebase Auth disabled state
+          if (body.orgId && body.memberId) {
+            await db.collection('organizations').doc(body.orgId).collection('members').doc(body.memberId).update({
+              status: disabled ? 'suspended' : 'active',
+            })
+          }
         }
         // Update organization name if orgId is provided
         if (body.orgId && body.orgName !== undefined) {

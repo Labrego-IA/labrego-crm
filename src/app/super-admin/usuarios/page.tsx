@@ -278,7 +278,7 @@ export default function SuperAdminUsuariosPage() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-visible">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
@@ -293,7 +293,7 @@ export default function SuperAdminUsuariosPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {filteredUsers.map((user, idx) => (
                   <tr key={user.uid} className="border-b border-gray-50 hover:bg-gray-50 transition">
                     <td className="px-4 py-3 font-medium text-gray-900">{user.displayName || '—'}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{user.email}</td>
@@ -344,7 +344,9 @@ export default function SuperAdminUsuariosPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                       {openMenuUid === user.uid && (
-                        <div data-actions-menu className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                        <div data-actions-menu className={`absolute right-4 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] ${
+                          idx >= filteredUsers.length - 3 ? 'bottom-full mb-1' : 'top-full mt-1'
+                        }`}>
                           <button
                             onClick={() => { openEdit(user); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -384,7 +386,7 @@ export default function SuperAdminUsuariosPage() {
 
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
-            {filteredUsers.map((user) => (
+            {filteredUsers.map((user, idx) => (
               <div key={user.uid} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -404,7 +406,9 @@ export default function SuperAdminUsuariosPage() {
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
                     {openMenuUid === user.uid && (
-                      <div data-actions-menu className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                      <div data-actions-menu className={`absolute right-0 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px] ${
+                        idx >= filteredUsers.length - 2 ? 'bottom-full mb-1' : 'top-full mt-1'
+                      }`}>
                         <button
                           onClick={() => { openEdit(user); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
