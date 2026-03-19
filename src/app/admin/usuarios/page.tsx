@@ -1191,49 +1191,47 @@ export default function UsuariosPage() {
 
                 {/* Search result: user not found */}
                 {searchResult && !searchResult.found && (
-                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 space-y-2">
+                  <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
                     <div className="flex items-center gap-2">
-                      <svg className="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                      <svg className="h-5 w-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                       </svg>
-                      <p className="text-sm font-medium text-amber-800">Usuario nao encontrado</p>
+                      <p className="text-sm font-medium text-red-800">Usuario nao cadastrado</p>
                     </div>
-                    <p className="text-xs text-amber-700">
-                      Nenhum usuario cadastrado com este email. O convite sera enviado e o usuario recebera a notificacao quando criar sua conta.
+                    <p className="text-xs text-red-700">
+                      Nenhum usuario cadastrado com este email no app. O usuario precisa criar uma conta primeiro para poder ser convidado.
                     </p>
                   </div>
                 )}
 
-                {/* Role selector — shown after search */}
-                {searchResult && !searchError && (
-                  <div>
-                    <label htmlFor="add-role" className={ui.label}>
-                      Cargo
-                    </label>
-                    <select
-                      id="add-role"
-                      value={addForm.role}
-                      onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
-                      className={ui.select}
-                    >
-                      {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
-                        <option key={role} value={role}>
-                          {ROLE_LABELS[role]}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-gray-400 mt-1">
-                      As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
-                    </p>
-                  </div>
-                )}
+                {/* Role selector — always visible */}
+                <div>
+                  <label htmlFor="add-role" className={ui.label}>
+                    Cargo
+                  </label>
+                  <select
+                    id="add-role"
+                    value={addForm.role}
+                    onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
+                    className={ui.select}
+                  >
+                    {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                      <option key={role} value={role}>
+                        {ROLE_LABELS[role]}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-400 mt-1">
+                    As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
                 <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
-                {searchResult && !searchError && (
+                {searchResult?.found && !searchError && (
                   <button
                     type="button"
                     onClick={handleAdd}

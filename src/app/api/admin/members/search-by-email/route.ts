@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
     }
 
     const callerMember = callerSnap.docs[0].data()
-    if (callerMember.role !== 'admin') {
-      return NextResponse.json({ error: 'only admins can search members' }, { status: 403 })
+    const hasPermission = callerMember.role === 'admin' || callerMember.permissions?.actions?.canManageUsers === true
+    if (!hasPermission) {
+      return NextResponse.json({ error: 'insufficient permissions' }, { status: 403 })
     }
 
     // Check if email already exists in org
