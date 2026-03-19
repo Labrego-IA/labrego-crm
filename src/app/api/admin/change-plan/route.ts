@@ -82,6 +82,35 @@ export async function POST(req: NextRequest) {
     allMembersSnap.docs.forEach((memberDoc: any) => {
       batch.update(memberDoc.ref, { plan: newPlan })
     })
+
+    // Criar notificação de parabéns pela assinatura para todos os membros
+    const planName = PLAN_LIMITS[newPlan] ? (newPlan as string) : newPlan
+    const PLAN_NAMES: Record<string, string> = {
+      free: 'Free',
+      agency_start: 'Agency Start',
+      agency_pro: 'Agency Pro',
+      agency_scale: 'Agency Scale',
+      direct_starter: 'Starter',
+      direct_growth: 'Growth',
+      direct_scale: 'Scale',
+    }
+    const displayName = PLAN_NAMES[newPlan] || planName
+
+    allMembersSnap.docs.forEach((memberDoc: any) => {
+      const memberData = memberDoc.data()
+      if (!memberData.userId) return
+      const notifRef = db.collection('notifications').doc()
+      batch.set(notifRef, {
+        orgId,
+        userId: memberData.userId,
+        type: 'plan_subscribed',
+        title: 'Parabéns pela assinatura! 🎉',
+        message: `Estamos muito felizes em tê-lo na Voxium! Seu plano ${displayName} já está ativo. Aproveite todos os recursos disponíveis e conte com a gente!`,
+        read: false,
+        createdAt: now,
+      })
+    })
+
     await batch.commit()
 
     return NextResponse.json({
