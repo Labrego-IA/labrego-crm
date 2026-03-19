@@ -10,6 +10,7 @@ export interface Organization {
   status: 'active' | 'suspended' | 'trial'
   createdAt: string
   updatedAt: string
+  planSubscribedAt?: string
 }
 
 export interface OrgSettings {

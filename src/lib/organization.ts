@@ -38,7 +38,7 @@ export async function createOrganization(data: {
   const limits = PLAN_LIMITS[data.plan]
   const now = new Date().toISOString()
 
-  const orgData = {
+  const orgData: Record<string, unknown> = {
     name: data.name,
     slug: data.slug,
     plan: data.plan,
@@ -55,6 +55,9 @@ export async function createOrganization(data: {
     status: 'active' as const,
     createdAt: now,
     updatedAt: now,
+  }
+  if (data.plan !== 'free') {
+    orgData.planSubscribedAt = now
   }
 
   const ref = db.collection('organizations').doc()
@@ -76,10 +79,22 @@ export async function createOrganization(data: {
 
 export async function updateOrganization(orgId: string, data: Partial<Pick<Organization, 'name' | 'logoUrl' | 'plan' | 'status' | 'settings' | 'limits'>>) {
   const ref = getOrgRef(orgId)
-  await ref.update({
+  const now = new Date().toISOString()
+  const updateData: Record<string, unknown> = {
     ...data,
-    updatedAt: new Date().toISOString(),
-  })
+    updatedAt: now,
+  }
+
+  // Quando o plano muda, registrar a data da assinatura
+  if (data.plan) {
+    const current = await ref.get()
+    const currentPlan = current.data()?.plan
+    if (currentPlan !== data.plan) {
+      updateData.planSubscribedAt = now
+    }
+  }
+
+  await ref.update(updateData)
 }
 
 export async function listOrganizations(): Promise<Organization[]> {
