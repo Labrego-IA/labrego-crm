@@ -48,6 +48,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [orgPlan, setOrgPlan] = useState<PlanId | null>(null)
   const [orgCreatedAt, setOrgCreatedAt] = useState<string | null>(null)
   const [member, setMember] = useState<OrgMember | null>(null)
+  const [userAuthCreatedAt, setUserAuthCreatedAt] = useState<string | null>(null)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [impersonateMenuOpen, setImpersonateMenuOpen] = useState(false)
@@ -177,6 +178,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       setUserEmail(user.email)
       setUserUid(user.uid)
       setUserPhoto(user.photoURL)
+      // Guardar data de criação do Auth como fallback para trial
+      if (user.metadata?.creationTime) {
+        setUserAuthCreatedAt(user.metadata.creationTime)
+      }
       ;(async () => {
         try {
           const snap = await getDoc(doc(db, 'users', user.email!))
@@ -190,7 +195,10 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           if (email) {
             const memberQuery = query(collectionGroup(db, 'members'), where('email', '==', email))
             const memberSnap = await getDocs(memberQuery)
-            if (!memberSnap.empty) {
+            if (memberSnap.empty) {
+              // Usuário sem organização: tratado como plano free
+              setOrgPlan('free')
+            } else {
               // If user has memberships in multiple orgs, prioritize active status and most recent
               let bestDoc = memberSnap.docs[0]
               if (memberSnap.docs.length > 1) {
@@ -299,10 +307,15 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   }, [checkingAuth, userEmail, userUid])
 
   // Cálculo do countdown do plano free
+  // Usuários sem plano registrado ou com plano 'free' são sempre tratados como free (7 dias de teste)
   const freePlanCountdown = (() => {
-    if (orgPlan !== 'free' || !orgCreatedAt) return null
+    const isFreePlan = !orgPlan || orgPlan === 'free'
+    if (!isFreePlan) return null
+    // Usa orgCreatedAt como data base, com fallback para a data de criação do Auth
+    const createdAtStr = orgCreatedAt || userAuthCreatedAt
+    if (!createdAtStr) return null
     const FREE_TRIAL_DAYS = 7
-    const expiresAt = new Date(orgCreatedAt)
+    const expiresAt = new Date(createdAtStr)
     expiresAt.setDate(expiresAt.getDate() + FREE_TRIAL_DAYS)
     const diffMs = expiresAt.getTime() - currentTime.getTime()
     if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, expired: true }
