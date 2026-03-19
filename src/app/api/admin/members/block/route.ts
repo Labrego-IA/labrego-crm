@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
-import { PLAN_LIMITS } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
 import { ensurePartnerHasOwnOrg } from '@/lib/partnerOrg'
 

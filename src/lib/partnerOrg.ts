@@ -6,8 +6,7 @@ import { PLAN_LIMITS } from '@/types/plan'
  * If the user already has an active membership in another org (their own), does nothing.
  */
 export async function ensurePartnerHasOwnOrg(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  db: any,
+  db: FirebaseFirestore.Firestore,
   email: string,
   userId: string,
   displayName: string,
@@ -19,8 +18,8 @@ export async function ensurePartnerHasOwnOrg(
     .where('email', '==', normalizedEmail)
     .get()
 
-  const hasActiveOwnOrg = allMemberships.docs.some(doc => {
-    const data = doc.data()
+  const hasActiveOwnOrg = allMemberships.docs.some((d: FirebaseFirestore.QueryDocumentSnapshot) => {
+    const data = d.data()
     return data.status === 'active' && !data.invitedBy
   })
 

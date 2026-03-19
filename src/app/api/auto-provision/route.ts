@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
 
     if (!memberSnap.empty) {
       // Find an active own-org membership (not a suspended partner)
-      const usable = memberSnap.docs.find(doc => {
-        const data = doc.data()
+      const usable = memberSnap.docs.find((d: FirebaseFirestore.QueryDocumentSnapshot) => {
+        const data = d.data()
         // Skip suspended partner memberships
         if (data.status === 'suspended' && data.invitedBy) return false
         return true
