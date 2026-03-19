@@ -18,6 +18,8 @@ interface UserRecord {
   orgId: string | null
   memberId: string | null
   role: string | null
+  orgCreatedAt: string | null
+  orgUpdatedAt: string | null
 }
 
 function timeAgo(dateStr: string): string {
@@ -35,6 +37,39 @@ function timeAgo(dateStr: string): string {
   const diffYears = Math.floor(diffMonths / 12)
   if (diffYears === 1) return '1 ano'
   return `${diffYears} anos`
+}
+
+function planCountdown(user: UserRecord): { label: string; expired: boolean; urgent: boolean } {
+  const isFreePlan = !user.plan || user.plan === 'free'
+
+  // Free plan: 7 days from account creation date
+  // Paid plan: 30 days from plan subscription date (orgUpdatedAt)
+  let startDate: string | null
+  let durationDays: number
+
+  if (isFreePlan) {
+    // Use orgCreatedAt if available, otherwise use Firebase Auth createdAt
+    startDate = user.orgCreatedAt || user.createdAt
+    durationDays = 7
+  } else {
+    // Paid plan: use orgUpdatedAt (set when plan changes)
+    startDate = user.orgUpdatedAt || user.orgCreatedAt
+    durationDays = 30
+  }
+
+  if (!startDate) return { label: '—', expired: false, urgent: false }
+
+  const start = new Date(startDate)
+  const expiresAt = new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000)
+  const now = new Date()
+  const diffMs = expiresAt.getTime() - now.getTime()
+  if (diffMs <= 0) return { label: '00:00:00', expired: true, urgent: true }
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const urgent = days <= 1
+  return { label: `${pad(days)}:${pad(hours)}:${pad(minutes)}`, expired: false, urgent }
 }
 
 export default function SuperAdminUsuariosPage() {
@@ -186,7 +221,7 @@ export default function SuperAdminUsuariosPage() {
   }
 
   const getPlanLabel = (plan: string | null) => {
-    if (!plan) return '—'
+    if (!plan) return 'Free (7 dias)'
     return (PLAN_DISPLAY as Record<string, { displayName: string }>)[plan]?.displayName || plan
   }
 
@@ -252,6 +287,7 @@ export default function SuperAdminUsuariosPage() {
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Empresa</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Plano</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Cadastro</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Tempo restante</th>
                   <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
                   <th className="text-right px-4 py-3 font-medium text-gray-600">Acoes</th>
                 </tr>
@@ -269,6 +305,25 @@ export default function SuperAdminUsuariosPage() {
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
                       {user.createdAt ? timeAgo(user.createdAt) : '—'}
+                    </td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const countdown = planCountdown(user)
+                        return (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium ${
+                            countdown.expired
+                              ? 'bg-red-100 text-red-700'
+                              : countdown.urgent
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-blue-50 text-blue-700'
+                          }`}>
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {countdown.expired ? 'Expirado' : countdown.label}
+                          </span>
+                        )
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {user.disabled ? (
@@ -397,6 +452,20 @@ export default function SuperAdminUsuariosPage() {
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
                       {getPlanLabel(user.plan)}
                     </span>
+                    {(() => {
+                      const countdown = planCountdown(user)
+                      return (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium ${
+                          countdown.expired
+                            ? 'bg-red-100 text-red-700'
+                            : countdown.urgent
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-blue-50 text-blue-700'
+                        }`}>
+                          {countdown.expired ? 'Expirado' : countdown.label}
+                        </span>
+                      )
+                    })()}
                   </div>
                   <span className="text-xs text-gray-400" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
                     {user.createdAt ? timeAgo(user.createdAt) : '—'}

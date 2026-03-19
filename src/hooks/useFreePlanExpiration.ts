@@ -7,7 +7,8 @@ const FREE_TRIAL_DAYS = 7
 export function useFreePlanExpiration() {
   const { orgPlan, orgCreatedAt } = useCrmUser()
 
-  const isFreePlan = orgPlan === 'free'
+  // Users without a plan (null) are also considered free plan
+  const isFreePlan = !orgPlan || orgPlan === 'free'
 
   if (!isFreePlan || !orgCreatedAt) {
     return { isFreePlan, isExpired: false, daysRemaining: 0 }

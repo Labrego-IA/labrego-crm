@@ -32,14 +32,14 @@ export async function GET(req: NextRequest) {
 
     // Get all organizations to map members to plans
     const orgsSnap = await db.collection('organizations').get()
-    const orgMap = new Map<string, { name: string; plan: string }>()
+    const orgMap = new Map<string, { name: string; plan: string; createdAt: string; updatedAt: string }>()
     orgsSnap.docs.forEach((doc) => {
       const data = doc.data()
-      orgMap.set(doc.id, { name: data.name, plan: data.plan })
+      orgMap.set(doc.id, { name: data.name, plan: data.plan, createdAt: data.createdAt || '', updatedAt: data.updatedAt || data.createdAt || '' })
     })
 
     // Get all members across all organizations to map userId -> org
-    const userOrgMap = new Map<string, { orgId: string; memberId: string; orgName: string; plan: string; role: string }>()
+    const userOrgMap = new Map<string, { orgId: string; orgName: string; plan: string; role: string; orgCreatedAt: string; orgUpdatedAt: string }>()
     for (const [orgId, orgData] of orgMap) {
       const membersSnap = await db.collection('organizations').doc(orgId).collection('members').get()
       membersSnap.docs.forEach((doc) => {
@@ -51,6 +51,8 @@ export async function GET(req: NextRequest) {
             orgName: orgData.name,
             plan: member.plan || orgData.plan,
             role: member.role || 'user',
+            orgCreatedAt: orgData.createdAt,
+            orgUpdatedAt: orgData.updatedAt,
           })
         }
       })
@@ -70,6 +72,8 @@ export async function GET(req: NextRequest) {
         orgId: orgInfo?.orgId || null,
         memberId: orgInfo?.memberId || null,
         role: orgInfo?.role || null,
+        orgCreatedAt: orgInfo?.orgCreatedAt || null,
+        orgUpdatedAt: orgInfo?.orgUpdatedAt || null,
       }
     })
 
