@@ -217,6 +217,44 @@ export async function PUT(req: NextRequest) {
     if (status) update.status = status
 
     await db.collection('organizations').doc(orgId).update(update)
+
+    // Criar notificação de parabenização para todos os membros da org ao mudar plano
+    if (plan) {
+      const orgDoc = await db.collection('organizations').doc(orgId).get()
+      const currentPlan = orgDoc.data()?.plan
+      if (currentPlan === plan) {
+        // Plano já atualizado — criar notificações
+        const PLAN_NAMES: Record<string, string> = {
+          free: 'Free',
+          agency_start: 'Agency Start',
+          agency_pro: 'Agency Pro',
+          agency_scale: 'Agency Scale',
+          direct_starter: 'Starter',
+          direct_growth: 'Growth',
+          direct_scale: 'Scale',
+        }
+        const planName = PLAN_NAMES[plan] || plan
+
+        const membersSnap = await db.collection('organizations').doc(orgId).collection('members').where('status', '==', 'active').get()
+        const batch = db.batch()
+        membersSnap.docs.forEach((memberDoc) => {
+          const memberData = memberDoc.data()
+          if (!memberData.userId) return
+          const notifRef = db.collection('notifications').doc()
+          batch.set(notifRef, {
+            orgId,
+            userId: memberData.userId,
+            type: 'plan_upgrade',
+            title: 'Plano atualizado com sucesso!',
+            message: `Parabens! Seu plano foi atualizado para ${planName}. Aproveite todos os novos recursos disponiveis.`,
+            read: false,
+            createdAt: now,
+          })
+        })
+        batch.commit().catch((err: unknown) => console.error('[super-admin] Plan upgrade notification error:', err))
+      }
+    }
+
     return NextResponse.json({ ok: true })
   } catch (error: any) {
     console.error('[super-admin/organizations] PUT error:', error)
