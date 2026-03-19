@@ -194,56 +194,99 @@ export default function RootLayout({ children }: CrmLayoutProps) {
             const memberQuery = query(collectionGroup(db, 'members'), where('email', '==', email))
             const memberSnap = await getDocs(memberQuery)
             if (!memberSnap.empty) {
-              // If user has memberships in multiple orgs, prioritize active status and most recent
+              // If user has memberships in multiple orgs, prioritize:
+              // 1. Active own-org memberships (no invitedBy) first
+              // 2. Active partner memberships second
+              // 3. Skip suspended partner memberships (they lost access to the partner org)
               let bestDoc = memberSnap.docs[0]
               if (memberSnap.docs.length > 1) {
                 const sorted = [...memberSnap.docs].sort((a, b) => {
                   const aData = a.data()
                   const bData = b.data()
+                  // Skip suspended partner memberships — push them to the bottom
+                  const aSuspendedPartner = aData.status === 'suspended' && !!aData.invitedBy
+                  const bSuspendedPartner = bData.status === 'suspended' && !!bData.invitedBy
+                  if (aSuspendedPartner && !bSuspendedPartner) return 1
+                  if (bSuspendedPartner && !aSuspendedPartner) return -1
                   // Active members first
                   if (aData.status === 'active' && bData.status !== 'active') return -1
                   if (bData.status === 'active' && aData.status !== 'active') return 1
+                  // Own org (no invitedBy) over partner org when both active
+                  if (!aData.invitedBy && bData.invitedBy) return -1
+                  if (aData.invitedBy && !bData.invitedBy) return 1
                   // Then by joinedAt descending (most recent first)
                   return (bData.joinedAt || '').localeCompare(aData.joinedAt || '')
                 })
                 bestDoc = sorted[0]
               }
               const memberData = { id: bestDoc.id, ...bestDoc.data() } as OrgMember
-              // Block suspended members from accessing the app
+              // Block suspended non-partner members from accessing the app
+              // Suspended partners should fall back to their own org (handled by auto-provision below)
               if (memberData.status === 'suspended') {
-                console.warn('[layout] Member is suspended, signing out:', memberData.email)
-                await signOut(auth)
-                router.replace('/login?blocked=1')
-                return
-              }
-              // Auto-activate invited members on login
-              if (memberData.status === 'invited') {
-                try {
-                  await updateDoc(bestDoc.ref, { status: 'active' })
-                  memberData.status = 'active'
-                } catch (e) {
-                  console.error('[layout] Failed to activate member:', e)
+                if (memberData.invitedBy) {
+                  // Partner was blocked — skip this membership, auto-provision their own free org
+                  console.info('[layout] Partner suspended, auto-provisioning own org:', memberData.email)
+                } else {
+                  console.warn('[layout] Member is suspended, signing out:', memberData.email)
+                  await signOut(auth)
+                  router.replace('/login?blocked=1')
+                  return
                 }
               }
-              // O path é organizations/{orgId}/members/{memberId}
-              const orgRef = bestDoc.ref.parent.parent
-              if (orgRef) {
-                const orgDoc = await getDoc(orgRef)
-                if (orgDoc.exists()) {
-                  const orgData = orgDoc.data()
-                  // Skip suspended organizations
-                  if (orgData?.status === 'suspended') {
-                    console.warn('[layout] Organization is suspended:', orgRef.id)
+
+              // If bestDoc is a usable membership (not a suspended partner), use it
+              const isSuspendedPartner = memberData.status === 'suspended' && !!memberData.invitedBy
+              if (!isSuspendedPartner) {
+                // Auto-activate invited members on login
+                if (memberData.status === 'invited') {
+                  try {
+                    await updateDoc(bestDoc.ref, { status: 'active' })
+                    memberData.status = 'active'
+                  } catch (e) {
+                    console.error('[layout] Failed to activate member:', e)
                   }
-                  setOrgId(orgRef.id)
-                  setOrgName(orgData?.name || null)
-                  setOrgPlan((orgData?.plan as PlanId) || 'free')
-                  setOrgCreatedAt(orgData?.createdAt || null)
-                  setOrgPlanSubscribedAt(orgData?.planSubscribedAt || null)
-                  setMember(memberData)
+                }
+                // O path é organizations/{orgId}/members/{memberId}
+                const orgRef = bestDoc.ref.parent.parent
+                if (orgRef) {
+                  const orgDoc = await getDoc(orgRef)
+                  if (orgDoc.exists()) {
+                    const orgData = orgDoc.data()
+                    // Skip suspended organizations
+                    if (orgData?.status === 'suspended') {
+                      console.warn('[layout] Organization is suspended:', orgRef.id)
+                    }
+                    setOrgId(orgRef.id)
+                    setOrgName(orgData?.name || null)
+                    setOrgPlan((orgData?.plan as PlanId) || 'free')
+                    setOrgCreatedAt(orgData?.createdAt || null)
+                    setOrgPlanSubscribedAt(orgData?.planSubscribedAt || null)
+                    setMember(memberData)
+                  }
                 }
               }
-            } else {
+            }
+
+            // Auto-provision free org if user has no usable membership
+            // (either no memberships at all, or only suspended partner memberships)
+            const hasUsableMembership = !memberSnap.empty && (() => {
+              const bestData = memberSnap.docs.length > 1
+                ? [...memberSnap.docs].sort((a, b) => {
+                    const aData = a.data()
+                    const bData = b.data()
+                    const aSP = aData.status === 'suspended' && !!aData.invitedBy
+                    const bSP = bData.status === 'suspended' && !!bData.invitedBy
+                    if (aSP && !bSP) return 1
+                    if (bSP && !aSP) return -1
+                    if (aData.status === 'active' && bData.status !== 'active') return -1
+                    if (bData.status === 'active' && aData.status !== 'active') return 1
+                    return 0
+                  })[0].data()
+                : memberSnap.docs[0].data()
+              return !(bestData.status === 'suspended' && !!bestData.invitedBy)
+            })()
+
+            if (!hasUsableMembership) {
               // User has no org — auto-provision with free plan
               try {
                 const res = await fetch('/api/auto-provision', {
