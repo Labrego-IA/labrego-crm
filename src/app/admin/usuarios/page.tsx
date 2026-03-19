@@ -22,6 +22,7 @@ const ROLE_LABELS: Record<RolePreset, string> = {
   manager: 'Gerente',
   seller: 'Vendedor',
   viewer: 'Visualizador',
+  cliente: 'Cliente',
 }
 
 const ROLE_BADGE: Record<RolePreset, string> = {
@@ -29,6 +30,7 @@ const ROLE_BADGE: Record<RolePreset, string> = {
   manager: 'bg-blue-100 text-blue-800',
   seller: 'bg-green-100 text-green-800',
   viewer: 'bg-gray-100 text-gray-800',
+  cliente: 'bg-orange-100 text-orange-800',
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -85,7 +87,7 @@ function normalize(str: string): string {
 type SortColumn = 'name' | 'email' | 'role' | 'status' | 'joinedAt'
 type SortDirection = 'asc' | 'desc'
 
-const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
+const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3, cliente: 4 }
 const STATUS_ORDER: Record<string, number> = { active: 0, invited: 1, suspended: 2 }
 
 function defaultActions(): MemberActions {
@@ -330,7 +332,7 @@ export default function UsuariosPage() {
     setEditMember(member)
     const name = member.displayName || ''
     setEditDisplayName(name)
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'cliente']
     const role = validRoles.includes(member.role as RolePreset)
       ? (member.role as RolePreset)
       : 'viewer'
@@ -380,7 +382,7 @@ export default function UsuariosPage() {
 
   const handleSaveEdit = async () => {
     if (!orgId || !editMember) return
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer']
+    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'cliente']
     if (!editRole || !validRoles.includes(editRole)) {
       toast.error('Selecione um cargo valido')
       return
@@ -391,11 +393,29 @@ export default function UsuariosPage() {
     }
     setEditLoading(true)
     try {
-      await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
-        displayName: editDisplayName.trim(),
-        role: editRole,
-        permissions: editPermissions,
-      })
+      const isUnlinked = editMember.id.startsWith('auth-')
+
+      if (isUnlinked) {
+        // Member exists in Firebase Auth but not in Firestore — create the document
+        const membersRef = collection(db, 'organizations', orgId, 'members')
+        const newDocRef = doc(membersRef)
+        await setDoc(newDocRef, {
+          userId: editMember.userId,
+          email: editMember.email,
+          displayName: editDisplayName.trim(),
+          role: editRole,
+          permissions: editPermissions,
+          status: 'active',
+          joinedAt: editMember.joinedAt || new Date().toISOString(),
+          photoUrl: editMember.photoUrl || '',
+        })
+      } else {
+        await updateDoc(doc(db, 'organizations', orgId, 'members', editMember.id), {
+          displayName: editDisplayName.trim(),
+          role: editRole,
+          permissions: editPermissions,
+        })
+      }
       toast.success(`${editDisplayName.trim()} atualizado com sucesso`)
       setEditMember(null)
     } catch (error) {
