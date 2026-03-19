@@ -95,7 +95,7 @@ export default function SuperAdminUsuariosPage() {
   })
 
   const executeAction = async (uid: string, action: string, extra?: Record<string, string>) => {
-    if (!userEmail) return
+    if (!userEmail) throw new Error('Usuario nao autenticado')
     const res = await fetch('/api/super-admin/users', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'x-user-email': userEmail },
@@ -176,14 +176,8 @@ export default function SuperAdminUsuariosPage() {
         plan: editForm.plan,
         disabled: String(editForm.disabled),
       })
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.uid === editingUser.uid
-            ? { ...u, orgName: editForm.orgName, plan: editForm.plan, disabled: editForm.disabled }
-            : u
-        )
-      )
       setEditingUser(null)
+      await fetchUsers()
     } catch (err: any) {
       setEditError(err.message)
     } finally {
