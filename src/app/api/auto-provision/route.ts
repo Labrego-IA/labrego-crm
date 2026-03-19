@@ -12,17 +12,25 @@ export async function POST(req: NextRequest) {
     const db = getAdminDb()
     const normalizedEmail = email.toLowerCase()
 
-    // Check if user already has a membership in any org
+    // Check if user already has a usable membership in any org
+    // Skip suspended partner memberships — they lost access and need their own org
     const memberSnap = await db.collectionGroup('members')
       .where('email', '==', normalizedEmail)
-      .limit(1)
       .get()
 
     if (!memberSnap.empty) {
-      // User already belongs to an org
-      const memberDoc = memberSnap.docs[0]
-      const orgRef = memberDoc.ref.parent.parent
-      return NextResponse.json({ orgId: orgRef?.id, alreadyExists: true })
+      // Find an active own-org membership (not a suspended partner)
+      const usable = memberSnap.docs.find((d: FirebaseFirestore.QueryDocumentSnapshot) => {
+        const data = d.data()
+        // Skip suspended partner memberships
+        if (data.status === 'suspended' && data.invitedBy) return false
+        return true
+      })
+
+      if (usable) {
+        const orgRef = usable.ref.parent.parent
+        return NextResponse.json({ orgId: orgRef?.id, alreadyExists: true })
+      }
     }
 
     // Create new organization with free plan

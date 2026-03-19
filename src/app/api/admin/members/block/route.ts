@@ -3,6 +3,7 @@ import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
 import type { PlanId } from '@/types/plan'
+import { ensurePartnerHasOwnOrg } from '@/lib/partnerOrg'
 
 export const runtime = 'nodejs'
 
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest) {
     }
 
     const memberData = memberDoc.data()!
+    const isPartner = !!memberData.invitedBy
 
     // Prevent self-blocking
     if (memberData.email === callerEmail) {
@@ -97,7 +99,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Update Firebase Auth disabled state
-    if (memberData.userId) {
+    // Partners (invitedBy) should NOT have Auth disabled — they need to fall back to their own org
+    if (memberData.userId && !isPartner) {
       try {
         await auth.updateUser(memberData.userId, {
           disabled: action === 'block',
@@ -132,6 +135,11 @@ export async function POST(req: NextRequest) {
           viewScope: 'own',
         },
       })
+
+      // For partners: ensure they have their own free org to fall back to
+      if (isPartner && memberData.userId) {
+        await ensurePartnerHasOwnOrg(db, memberData.email, memberData.userId, memberData.displayName)
+      }
     } else {
       // Unblock: restore permissions from backup, or regenerate from role + plan
       let restoredPermissions = memberData._permissionsBackup || null
@@ -146,6 +154,15 @@ export async function POST(req: NextRequest) {
           pages: filterPagesByPlan([...rolePreset.pages], orgPlan),
           actions: filterActionsByPlan({ ...rolePreset.actions }, orgPlan),
           viewScope: rolePreset.viewScope,
+        }
+      }
+
+      // Re-enable Firebase Auth if it was disabled (non-partner case)
+      if (memberData.userId && !isPartner) {
+        try {
+          await auth.updateUser(memberData.userId, { disabled: false })
+        } catch (authErr) {
+          console.error('[block] Error re-enabling Firebase Auth user:', authErr)
         }
       }
 

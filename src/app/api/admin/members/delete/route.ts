@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
+import { ensurePartnerHasOwnOrg } from '@/lib/partnerOrg'
 
 export const runtime = 'nodejs'
 
@@ -59,21 +60,27 @@ export async function POST(req: NextRequest) {
     }
 
     const memberData = memberDoc.data()!
+    const isPartner = !!memberData.invitedBy
 
     // Prevent self-deletion
     if (memberData.email === callerEmail) {
       return NextResponse.json({ error: 'you cannot delete yourself' }, { status: 400 })
     }
 
-    // Disable Firebase Auth account (revokes all access)
+    // For partners: ensure they have their own free org before removing them
+    // This must happen BEFORE deleting the member doc so the collectionGroup query still finds them
+    if (isPartner && (memberData.userId || userId)) {
+      await ensurePartnerHasOwnOrg(db, memberData.email, memberData.userId || userId, memberData.displayName)
+    }
+
+    // Disable Firebase Auth account — but NOT for partners (they need to log into their own org)
     const targetUserId = memberData.userId || userId
-    if (targetUserId) {
+    if (targetUserId && !isPartner) {
       const auth = getAdminAuth()
       try {
         await auth.updateUser(targetUserId, { disabled: true })
       } catch (authErr) {
         console.error('[delete] Error disabling Firebase Auth user:', authErr)
-        // Continue with Firestore deletion even if auth update fails
       }
     }
 
