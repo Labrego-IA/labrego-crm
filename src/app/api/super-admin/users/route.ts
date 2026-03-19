@@ -120,6 +120,13 @@ export async function PUT(req: NextRequest) {
         if (body.orgId && body.orgName !== undefined) {
           await db.collection('organizations').doc(body.orgId).update({ name: body.orgName })
         }
+        // Update member role if provided
+        if (body.orgId && body.memberId && body.role !== undefined) {
+          const validRoles = ['admin', 'manager', 'seller', 'viewer', 'cliente']
+          if (body.role && validRoles.includes(body.role)) {
+            await db.collection('organizations').doc(body.orgId).collection('members').doc(body.memberId).update({ role: body.role })
+          }
+        }
         // Update plan on the organization and all members
         if (body.orgId && body.plan !== undefined) {
           const newPlan = body.plan as PlanId

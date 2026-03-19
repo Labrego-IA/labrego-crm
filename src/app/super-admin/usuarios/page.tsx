@@ -1,8 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Users, Search, MoreVertical, Pencil, Ban, Trash2, CheckCircle, X, UserX } from 'lucide-react'
+import { Users, Search, MoreVertical, Pencil, Ban, Trash2, CheckCircle, X, UserX, Shield } from 'lucide-react'
 import { PLAN_DISPLAY } from '@/types/plan'
+import type { RolePreset } from '@/types/permissions'
+
+const ROLE_LABELS: Record<RolePreset, string> = {
+  admin: 'Admin',
+  manager: 'Gerente',
+  seller: 'Vendedor',
+  viewer: 'Visualizador',
+  cliente: 'Cliente',
+}
+
+const ROLE_COLORS: Record<RolePreset, string> = {
+  admin: 'bg-purple-100 text-purple-700',
+  manager: 'bg-blue-100 text-blue-700',
+  seller: 'bg-emerald-100 text-emerald-700',
+  viewer: 'bg-gray-100 text-gray-600',
+  cliente: 'bg-amber-100 text-amber-700',
+}
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
@@ -80,8 +97,8 @@ export default function SuperAdminUsuariosPage() {
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
-  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false })
-  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false })
+  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false, role: '' })
+  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false, role: '' })
   const [editSubmitting, setEditSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -164,6 +181,7 @@ export default function SuperAdminUsuariosPage() {
       orgName: user.orgName || '',
       plan: user.plan || '',
       disabled: user.disabled,
+      role: user.role || '',
     }
     setEditForm(form)
     setEditInitialForm(form)
@@ -175,7 +193,8 @@ export default function SuperAdminUsuariosPage() {
     return (
       editForm.orgName !== editInitialForm.orgName ||
       editForm.plan !== editInitialForm.plan ||
-      editForm.disabled !== editInitialForm.disabled
+      editForm.disabled !== editInitialForm.disabled ||
+      editForm.role !== editInitialForm.role
     )
   }, [editForm, editInitialForm])
 
@@ -200,6 +219,7 @@ export default function SuperAdminUsuariosPage() {
         orgName: editForm.orgName,
         plan: editForm.plan,
         disabled: String(editForm.disabled),
+        role: editForm.role,
       })
       setEditingUser(null)
       await fetchUsers()
@@ -261,6 +281,7 @@ export default function SuperAdminUsuariosPage() {
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Empresa</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Cargo</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Plano</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Cadastro</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Tempo restante</th>
@@ -274,6 +295,16 @@ export default function SuperAdminUsuariosPage() {
                     <td className="px-4 py-3 font-medium text-gray-900">{user.displayName || '—'}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{user.email}</td>
                     <td className="px-4 py-3 text-gray-600 text-xs">{user.orgName || '—'}</td>
+                    <td className="px-4 py-3">
+                      {user.role && (user.role as RolePreset) in ROLE_LABELS ? (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_COLORS[user.role as RolePreset]}`}>
+                          <Shield className="w-3 h-3" />
+                          {ROLE_LABELS[user.role as RolePreset]}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
                         {getPlanLabel(user.plan)}
@@ -399,6 +430,12 @@ export default function SuperAdminUsuariosPage() {
                         <CheckCircle className="w-3 h-3" /> Ativo
                       </span>
                     )}
+                    {user.role && (user.role as RolePreset) in ROLE_LABELS && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_COLORS[user.role as RolePreset]}`}>
+                        <Shield className="w-3 h-3" />
+                        {ROLE_LABELS[user.role as RolePreset]}
+                      </span>
+                    )}
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
                       {getPlanLabel(user.plan)}
                     </span>
@@ -442,6 +479,19 @@ export default function SuperAdminUsuariosPage() {
               <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Email:</span> {editingUser.email}</p>
             </div>
             <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                <select
+                  value={editForm.role}
+                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                >
+                  <option value="">Sem cargo</option>
+                  {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                    <option key={role} value={role}>{ROLE_LABELS[role]}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
                 <input
