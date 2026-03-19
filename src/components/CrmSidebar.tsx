@@ -29,6 +29,7 @@ import {
   BookOpenIcon,
   EnvelopeIcon,
   QuestionMarkCircleIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { signOut } from 'firebase/auth'
@@ -164,7 +165,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
-  const { role } = usePermissions()
+  const { role, canAccessPage } = usePermissions()
   const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
@@ -180,6 +181,13 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   )
   const [agentesOpen, setAgentesOpen] = useState(isAgentesSubItemActive)
+
+  // Mostrar todos os itens, mas marcar os bloqueados
+  const filteredNavItems = navItems
+  const filteredAgentesItems = agentesItems
+  const filteredAdminItems = isAdmin ? adminItems : adminItems.filter(item => canAccessPage(item.href))
+  const hasAgentesAccess = true
+  const hasAdminAccess = isAdmin || adminItems.some(item => canAccessPage(item.href))
 
   const allNavItems = [...navItems, ...agentesItems, ...adminItems]
   const isItemActive = (itemHref: string): boolean => {
@@ -221,16 +229,17 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           )}
         </div>
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const isActive = isItemActive(item.href)
             const isDisabled = item.badge === 'Em breve'
+            const isLocked = !isAdmin && !isDisabled && !canAccessPage(item.href)
 
             return (
               <li key={item.href}>
                 <Link
-                  href={isDisabled ? '#' : item.href}
+                  href={isDisabled || isLocked ? '#' : item.href}
                   onClick={(e) => {
-                    if (isDisabled) {
+                    if (isDisabled || isLocked) {
                       e.preventDefault()
                       return
                     }
@@ -241,7 +250,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     ${collapsed ? 'justify-center' : ''}
                     ${isActive
                       ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                      : isDisabled
+                      : isDisabled || isLocked
                         ? 'text-white/30 cursor-not-allowed'
                         : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
                     }
@@ -250,12 +259,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                   {isActive && (
                     <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
                   )}
-                  <span className={isActive ? 'text-[#13DEFC]' : isDisabled ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                  <span className={isActive ? 'text-[#13DEFC]' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
                     {item.icon}
                   </span>
                   {!collapsed && (
                     <>
                       <span className="font-medium text-sm flex-1">{item.label}</span>
+                      {isLocked && (
+                        <LockClosedIcon className="w-4 h-4 text-white/30" />
+                      )}
                       {item.badge && (
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${item.badgeColor}`}>
                           {item.badge}
@@ -266,6 +278,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                   {collapsed && (
                     <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
                       {item.label}
+                      {isLocked && <span className="ml-2 text-neutral-400">(Bloqueado)</span>}
                       {item.badge && <span className="ml-2 text-neutral-400">({item.badge})</span>}
                     </span>
                   )}
@@ -274,6 +287,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             )
           })}
           {/* Agentes - expandable button */}
+          {hasAgentesAccess && (
           <li>
             <button
               onClick={() => setAgentesOpen(!agentesOpen)}
@@ -306,25 +320,37 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             </button>
             {agentesOpen && !collapsed && (
               <ul className="mt-1 ml-4 space-y-1">
-                {agentesItems.map((item) => {
+                {filteredAgentesItems.map((item) => {
                   const isActive = isItemActive(item.href)
+                  const isLocked = !isAdmin && !canAccessPage(item.href)
                   return (
                     <li key={item.href}>
                       <Link
-                        href={item.href}
-                        onClick={() => onNavigate?.()}
+                        href={isLocked ? '#' : item.href}
+                        onClick={(e) => {
+                          if (isLocked) {
+                            e.preventDefault()
+                            return
+                          }
+                          onNavigate?.()
+                        }}
                         className={`
                           flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group relative
                           ${isActive
                             ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                            : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                            : isLocked
+                              ? 'text-white/30 cursor-not-allowed'
+                              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
                           }
                         `}
                       >
-                        <span className={isActive ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                        <span className={isActive ? 'text-[#13DEFC]' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
                           {item.icon}
                         </span>
-                        <span className="font-medium text-sm">{item.label}</span>
+                        <span className="font-medium text-sm flex-1">{item.label}</span>
+                        {isLocked && (
+                          <LockClosedIcon className="w-4 h-4 text-white/30" />
+                        )}
                       </Link>
                     </li>
                   )
@@ -332,10 +358,11 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               </ul>
             )}
           </li>
+          )}
         </ul>
 
-        {/* Administração - visível apenas para admins */}
-        {isAdmin && (
+        {/* Administração - visível para quem tem acesso a páginas admin */}
+        {hasAdminAccess && (
           <>
             <div className={`mt-4 ${collapsed ? '' : 'mb-2'}`}>
               {!collapsed && (
@@ -345,7 +372,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               )}
             </div>
             <ul className="space-y-1">
-              {adminItems.map((item) => {
+              {filteredAdminItems.map((item) => {
                 const isActive = isItemActive(item.href)
                 return (
                   <li key={item.href}>
