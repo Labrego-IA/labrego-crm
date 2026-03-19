@@ -16,6 +16,7 @@ interface UserRecord {
   plan: string | null
   orgName: string | null
   orgId: string | null
+  memberId: string | null
   role: string | null
 }
 
@@ -44,8 +45,8 @@ export default function SuperAdminUsuariosPage() {
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
-  const [editForm, setEditForm] = useState({ disabled: false })
-  const [editInitialForm, setEditInitialForm] = useState({ disabled: false })
+  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false })
+  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false })
   const [editSubmitting, setEditSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -134,7 +135,11 @@ export default function SuperAdminUsuariosPage() {
 
   const openEdit = (user: UserRecord) => {
     setEditingUser(user)
-    const form = { disabled: user.disabled }
+    const form = {
+      orgName: user.orgName || '',
+      plan: user.plan || '',
+      disabled: user.disabled,
+    }
     setEditForm(form)
     setEditInitialForm(form)
     setEditError('')
@@ -142,7 +147,11 @@ export default function SuperAdminUsuariosPage() {
   }
 
   const hasEditChanges = useCallback(() => {
-    return editForm.disabled !== editInitialForm.disabled
+    return (
+      editForm.orgName !== editInitialForm.orgName ||
+      editForm.plan !== editInitialForm.plan ||
+      editForm.disabled !== editInitialForm.disabled
+    )
   }, [editForm, editInitialForm])
 
   const handleCloseEdit = useCallback(() => {
@@ -161,6 +170,10 @@ export default function SuperAdminUsuariosPage() {
     setEditError('')
     try {
       await executeAction(editingUser.uid, 'update', {
+        orgId: editingUser.orgId || '',
+        memberId: editingUser.memberId || '',
+        orgName: editForm.orgName,
+        plan: editForm.plan,
         disabled: String(editForm.disabled),
       })
       setEditingUser(null)
@@ -408,12 +421,41 @@ export default function SuperAdminUsuariosPage() {
             <div className="mb-4 space-y-1">
               <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Nome:</span> {editingUser.displayName || '—'}</p>
               <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Email:</span> {editingUser.email}</p>
-              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Empresa:</span> {editingUser.orgName || '—'}</p>
-              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Plano:</span> {getPlanLabel(editingUser.plan)}</p>
-              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Cadastro:</span> {editingUser.createdAt ? new Date(editingUser.createdAt).toLocaleDateString('pt-BR') : '—'}</p>
-              <p className="text-xs text-gray-400 mt-1">Para alterar empresa ou plano, use a aba Empresas.</p>
             </div>
             <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                <input
+                  type="text"
+                  value={editForm.orgName}
+                  onChange={(e) => setEditForm({ ...editForm, orgName: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                  placeholder="Nome da empresa"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Plano</label>
+                <select
+                  value={editForm.plan}
+                  onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                >
+                  <option value="">Sem plano</option>
+                  {Object.entries(PLAN_DISPLAY).map(([id, info]) => (
+                    <option key={id} value={id}>{(info as { displayName: string }).displayName}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cadastro</label>
+                <input
+                  type="date"
+                  value={editingUser.createdAt ? new Date(editingUser.createdAt).toISOString().split('T')[0] : ''}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                  disabled
+                />
+                <p className="text-xs text-gray-400 mt-1">Data de cadastro (somente leitura)</p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select

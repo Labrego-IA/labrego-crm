@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     })
 
     // Get all members across all organizations to map userId -> org
-    const userOrgMap = new Map<string, { orgId: string; orgName: string; plan: string; role: string }>()
+    const userOrgMap = new Map<string, { orgId: string; memberId: string; orgName: string; plan: string; role: string }>()
     for (const [orgId, orgData] of orgMap) {
       const membersSnap = await db.collection('organizations').doc(orgId).collection('members').get()
       membersSnap.docs.forEach((doc) => {
@@ -47,8 +47,9 @@ export async function GET(req: NextRequest) {
         if (member.userId) {
           userOrgMap.set(member.userId, {
             orgId,
+            memberId: doc.id,
             orgName: orgData.name,
-            plan: orgData.plan,
+            plan: member.plan || orgData.plan,
             role: member.role || 'user',
           })
         }
@@ -67,6 +68,7 @@ export async function GET(req: NextRequest) {
         plan: orgInfo?.plan || null,
         orgName: orgInfo?.orgName || null,
         orgId: orgInfo?.orgId || null,
+        memberId: orgInfo?.memberId || null,
         role: orgInfo?.role || null,
       }
     })
@@ -108,15 +110,13 @@ export async function PUT(req: NextRequest) {
           const disabled = body.disabled === true || body.disabled === 'true'
           await auth.updateUser(uid, { disabled })
         }
-        // Update organization fields if orgId is provided
-        if (body.orgId) {
-          const orgRef = db.collection('organizations').doc(body.orgId)
-          const orgUpdates: Record<string, any> = {}
-          if (body.orgName !== undefined) orgUpdates.name = body.orgName
-          if (body.plan !== undefined) orgUpdates.plan = body.plan
-          if (Object.keys(orgUpdates).length > 0) {
-            await orgRef.update(orgUpdates)
-          }
+        // Update organization name if orgId is provided
+        if (body.orgId && body.orgName !== undefined) {
+          await db.collection('organizations').doc(body.orgId).update({ name: body.orgName })
+        }
+        // Update plan on the member document (per-user)
+        if (body.orgId && body.memberId && body.plan !== undefined) {
+          await db.collection('organizations').doc(body.orgId).collection('members').doc(body.memberId).update({ plan: body.plan })
         }
         break
       }
