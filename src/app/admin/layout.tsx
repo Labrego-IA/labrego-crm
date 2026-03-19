@@ -9,7 +9,7 @@ import { ShieldCheckIcon } from '@heroicons/react/24/outline'
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const { role, canAccessPage } = usePermissions()
+  const { role, canAccessPage, isImpersonating } = usePermissions()
   const { member } = useCrmUser()
 
   // Aguarda carregar os dados do membro
@@ -21,8 +21,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     )
   }
 
-  // Admins tem acesso total; outros verificam permissão de página específica
-  const hasAccess = role === 'admin' || canAccessPage(pathname)
+  // Admins tem acesso total (exceto quando impersonando); outros verificam permissão de página específica
+  const hasAccess = (role === 'admin' && !isImpersonating) || canAccessPage(pathname)
 
   if (!hasAccess) {
     return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useImpersonation } from '@/contexts/ImpersonationContext'
 import type { MemberActions } from '@/types/organization'
 import { ALL_PAGES } from '@/types/permissions'
 
@@ -9,16 +10,20 @@ const KNOWN_PAGE_PATHS = new Set<string>(ALL_PAGES.map(p => p.path))
 
 export function usePermissions() {
   const { member } = useCrmUser()
+  const { isImpersonating } = useImpersonation()
+
+  // Quando impersonando, nunca aplicar bypass de admin — usar permissões reais do membro
+  const isEffectiveAdmin = member?.role === 'admin' && !isImpersonating
 
   const can = (action: keyof MemberActions): boolean => {
     if (!member) return false
-    if (member.role === 'admin') return true
+    if (isEffectiveAdmin) return true
     return member.permissions?.actions?.[action] ?? false
   }
 
   const canAccessPage = (path: string): boolean => {
     if (!member) return false
-    if (member.role === 'admin') return true
+    if (isEffectiveAdmin) return true
     const pages = member.permissions?.pages
     if (!pages) return false
 
@@ -31,7 +36,7 @@ export function usePermissions() {
     return pages.some(p => path.startsWith(p + '/'))
   }
 
-  const viewScope = member?.role === 'admin' ? 'all' : (member?.permissions?.viewScope ?? 'own')
+  const viewScope = isEffectiveAdmin ? 'all' : (member?.permissions?.viewScope ?? 'own')
 
-  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer' }
+  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer', isImpersonating }
 }

@@ -15,10 +15,10 @@ interface PageAccessGuardProps {
 export default function PageAccessGuard({ children }: PageAccessGuardProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const { canAccessPage, role } = usePermissions()
+  const { canAccessPage, role, isImpersonating } = usePermissions()
 
-  // Admins tem acesso total
-  if (role === 'admin') return <>{children}</>
+  // Admins tem acesso total (exceto quando impersonando outro usuário)
+  if (role === 'admin' && !isImpersonating) return <>{children}</>
 
   // Páginas públicas/utilitárias não precisam de verificação
   const isPublicPath = PUBLIC_PATHS.some(p => pathname.startsWith(p))

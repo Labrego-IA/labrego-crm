@@ -165,8 +165,8 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
-  const { role, canAccessPage } = usePermissions()
-  const isAdmin = role === 'admin'
+  const { role, canAccessPage, isImpersonating } = usePermissions()
+  const isAdmin = role === 'admin' && !isImpersonating
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const handleLogout = async () => {
