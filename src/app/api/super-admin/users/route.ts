@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { isSuperAdmin } from '@/lib/superAdmin'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
+import { PLAN_LIMITS } from '@/types/plan'
+import type { PlanId } from '@/types/plan'
 
 async function requireSuperAdmin(req: NextRequest): Promise<string | NextResponse> {
   const email = req.headers.get('x-user-email')?.toLowerCase()
@@ -118,9 +120,35 @@ export async function PUT(req: NextRequest) {
         if (body.orgId && body.orgName !== undefined) {
           await db.collection('organizations').doc(body.orgId).update({ name: body.orgName })
         }
-        // Update plan on the member document (per-user)
-        if (body.orgId && body.memberId && body.plan !== undefined) {
-          await db.collection('organizations').doc(body.orgId).collection('members').doc(body.memberId).update({ plan: body.plan })
+        // Update plan on the organization and all members
+        if (body.orgId && body.plan !== undefined) {
+          const newPlan = body.plan as PlanId
+          const now = new Date().toISOString()
+          const orgRef = db.collection('organizations').doc(body.orgId)
+
+          // Update organization plan, limits, and timestamps
+          const updateData: Record<string, unknown> = {
+            plan: newPlan,
+            updatedAt: now,
+            planSubscribedAt: now,
+          }
+          if (newPlan in PLAN_LIMITS) {
+            const newLimits = PLAN_LIMITS[newPlan]
+            updateData.limits = {
+              maxUsers: newLimits.maxUsers,
+              maxFunnels: newLimits.maxFunnels,
+              maxContacts: newLimits.maxContacts,
+            }
+          }
+          await orgRef.update(updateData)
+
+          // Update all members' plan field
+          const allMembersSnap = await orgRef.collection('members').get()
+          const batch = db.batch()
+          allMembersSnap.docs.forEach((memberDoc: any) => {
+            batch.update(memberDoc.ref, { plan: newPlan })
+          })
+          await batch.commit()
         }
         break
       }
