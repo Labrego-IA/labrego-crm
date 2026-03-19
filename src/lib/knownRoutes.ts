@@ -20,7 +20,7 @@ const RAW_KNOWN_ROUTES = [
   '/ligacoes',
   '/admin/usuarios',
   '/admin/creditos',
-  '/admin/plano',
+  '/plano',
   '/admin/funis',
 ] as const
 

@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
       displayName: adminEmail.split('@')[0],
       role: 'admin',
       permissions: {
-        pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/admin/usuarios', '/admin/creditos', '/admin/plano'],
+        pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/admin/usuarios', '/admin/creditos', '/plano'],
         actions: {
           canCreateContacts: true,
           canEditContacts: true,

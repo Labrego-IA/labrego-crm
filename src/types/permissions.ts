@@ -4,7 +4,7 @@ export type RolePreset = 'admin' | 'manager' | 'seller' | 'viewer'
 
 export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
   admin: {
-    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/ligacoes/configuracao', '/ligacoes/disparo', '/ligacoes/historico', '/analytics', '/projecao-vendas', '/automacoes', '/campanhas', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia', '/admin/plano'],
+    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/ligacoes/configuracao', '/ligacoes/disparo', '/ligacoes/historico', '/analytics', '/projecao-vendas', '/automacoes', '/campanhas', '/plano', '/admin/usuarios', '/admin/email', '/admin/funis', '/admin/icp', '/admin/centros-custo', '/admin/propostas', '/admin/creditos', '/admin/estrategia'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -21,7 +21,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'all',
   },
   manager: {
-    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes'],
+    pages: ['/contatos', '/funil', '/funil/produtividade', '/conversao', '/cadencia', '/ligacoes', '/plano'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -38,7 +38,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'all',
   },
   seller: {
-    pages: ['/contatos', '/funil', '/conversao'],
+    pages: ['/contatos', '/funil', '/conversao', '/plano'],
     actions: {
       canCreateContacts: true,
       canEditContacts: true,
@@ -55,7 +55,7 @@ export const ROLE_PRESETS: Record<RolePreset, MemberPermissions> = {
     viewScope: 'own',
   },
   viewer: {
-    pages: ['/contatos', '/funil'],
+    pages: ['/contatos', '/funil', '/plano'],
     actions: {
       canCreateContacts: false,
       canEditContacts: false,
@@ -95,7 +95,7 @@ export const ALL_PAGES = [
   { path: '/admin/propostas', label: 'Config. Propostas', feature: 'contacts' },
   { path: '/admin/creditos', label: 'Creditos', feature: 'voice_agent' },
   { path: '/admin/estrategia', label: 'Estrategia Comercial', feature: 'contacts' },
-  { path: '/admin/plano', label: 'Meu Plano', feature: 'contacts' },
+  { path: '/plano', label: 'Meu Plano', feature: 'contacts' },
 ] as const
 
 export const ALL_ACTIONS: { key: keyof MemberActions; label: string }[] = [

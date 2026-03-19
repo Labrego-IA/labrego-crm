@@ -151,11 +151,6 @@ const adminItems: NavItem[] = [
     href: '/admin/estrategia',
     icon: <BookOpenIcon className="w-5 h-5" />,
   },
-  {
-    label: 'Meu Plano',
-    href: '/admin/plano',
-    icon: <Cog6ToothIcon className="w-5 h-5" />,
-  },
 ]
 
 interface CrmSidebarProps {
@@ -437,7 +432,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
       {isFreePlan && !collapsed && (
         <div className="px-3 py-2">
           <Link
-            href="/admin/plano"
+            href="/plano"
             onClick={() => onNavigate?.()}
             className={`block rounded-xl p-3 transition-colors ${
               isExpired
@@ -458,8 +453,33 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
         </div>
       )}
 
-      {/* Guia + Logout */}
+      {/* Meu Plano + Guia + Logout */}
       <div className="px-3 py-3 border-t border-white/10 space-y-1">
+        <Link
+          href="/plano"
+          onClick={() => onNavigate?.()}
+          className={`
+            w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
+            ${collapsed ? 'justify-center' : ''}
+            ${pathname === '/plano'
+              ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+            }
+          `}
+        >
+          {pathname === '/plano' && (
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+          )}
+          <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}`} />
+          {!collapsed && (
+            <span className="font-medium text-sm">Meu Plano</span>
+          )}
+          {collapsed && (
+            <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+              Meu Plano
+            </span>
+          )}
+        </Link>
         <Link
           href="/guia"
           onClick={() => onNavigate?.()}

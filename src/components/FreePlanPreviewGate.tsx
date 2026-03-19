@@ -59,7 +59,7 @@ export default function FreePlanPreviewGate({ children, feature }: FreePlanPrevi
             Para utilizar todos os recursos, faca o upgrade do seu plano.
           </p>
           <Link
-            href="/admin/plano"
+            href="/plano"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-700 transition-colors shadow-sm"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
