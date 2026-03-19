@@ -10,15 +10,19 @@ const KNOWN_PAGE_PATHS = new Set<string>(ALL_PAGES.map(p => p.path))
 export function usePermissions() {
   const { member } = useCrmUser()
 
+  // Usuários que não são parceiros (sem invitedBy) têm acesso total
+  // Restrições de acesso só se aplicam a parceiros/companheiros vinculados a outro usuário
+  const isPartner = !!member?.invitedBy
+
   const can = (action: keyof MemberActions): boolean => {
     if (!member) return false
-    if (member.role === 'admin') return true
+    if (member.role === 'admin' || !isPartner) return true
     return member.permissions?.actions?.[action] ?? false
   }
 
   const canAccessPage = (path: string): boolean => {
     if (!member) return false
-    if (member.role === 'admin') return true
+    if (member.role === 'admin' || !isPartner) return true
     const pages = member.permissions?.pages
     if (!pages) return false
 
@@ -31,7 +35,7 @@ export function usePermissions() {
     return pages.some(p => path.startsWith(p + '/'))
   }
 
-  const viewScope = member?.role === 'admin' ? 'all' : (member?.permissions?.viewScope ?? 'own')
+  const viewScope = (member?.role === 'admin' || !isPartner) ? 'all' : (member?.permissions?.viewScope ?? 'own')
 
-  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer' }
+  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer', isPartner }
 }
