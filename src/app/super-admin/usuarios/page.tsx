@@ -87,7 +87,7 @@ export default function SuperAdminUsuariosPage() {
   const [showConfirmClose, setShowConfirmClose] = useState(false)
 
   // Confirm action dialog
-  const [confirmAction, setConfirmAction] = useState<{ uid: string; action: 'delete' | 'disable' | 'enable'; email: string } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<{ uid: string; action: 'delete'; email: string } | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
 
   const fetchUsers = useCallback(async () => {
@@ -148,17 +148,7 @@ export default function SuperAdminUsuariosPage() {
     setActionLoading(true)
     try {
       await executeAction(confirmAction.uid, confirmAction.action)
-      if (confirmAction.action === 'delete') {
-        setUsers((prev) => prev.filter((u) => u.uid !== confirmAction.uid))
-      } else {
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.uid === confirmAction.uid
-              ? { ...u, disabled: confirmAction.action === 'disable' }
-              : u
-          )
-        )
-      }
+      setUsers((prev) => prev.filter((u) => u.uid !== confirmAction.uid))
       setConfirmAction(null)
     } catch (err: any) {
       console.error('[super-admin/usuarios] action error:', err)
@@ -225,23 +215,9 @@ export default function SuperAdminUsuariosPage() {
     return (PLAN_DISPLAY as Record<string, { displayName: string }>)[plan]?.displayName || plan
   }
 
-  const getActionLabel = (action: string) => {
-    switch (action) {
-      case 'delete': return 'Excluir'
-      case 'disable': return 'Bloquear'
-      case 'enable': return 'Desbloquear'
-      default: return action
-    }
-  }
+  const getActionLabel = () => 'Excluir'
 
-  const getActionDescription = (action: string, email: string) => {
-    switch (action) {
-      case 'delete': return `Tem certeza que deseja excluir o usuario ${email}? Esta acao e irreversivel.`
-      case 'disable': return `Tem certeza que deseja bloquear o usuario ${email}? Ele nao podera mais acessar o sistema.`
-      case 'enable': return `Deseja desbloquear o usuario ${email}?`
-      default: return ''
-    }
-  }
+  const getActionDescription = (email: string) => `Tem certeza que deseja excluir o usuario ${email}? Esta acao e irreversivel.`
 
   return (
     <div className="space-y-6">
@@ -353,19 +329,6 @@ export default function SuperAdminUsuariosPage() {
                           </button>
                           <button
                             onClick={() => {
-                              setConfirmAction({
-                                uid: user.uid,
-                                action: user.disabled ? 'enable' : 'disable',
-                                email: user.email,
-                              })
-                              setOpenMenuUid(null)
-                            }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-                          >
-                            <Ban className="w-3.5 h-3.5" /> {user.disabled ? 'Desbloquear' : 'Bloquear'}
-                          </button>
-                          <button
-                            onClick={() => {
                               setConfirmAction({ uid: user.uid, action: 'delete', email: user.email })
                               setOpenMenuUid(null)
                             }}
@@ -410,19 +373,6 @@ export default function SuperAdminUsuariosPage() {
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
                         >
                           <Pencil className="w-3.5 h-3.5" /> Editar
-                        </button>
-                        <button
-                          onClick={() => {
-                            setConfirmAction({
-                              uid: user.uid,
-                              action: user.disabled ? 'enable' : 'disable',
-                              email: user.email,
-                            })
-                            setOpenMenuUid(null)
-                          }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-                        >
-                          <Ban className="w-3.5 h-3.5" /> {user.disabled ? 'Desbloquear' : 'Bloquear'}
                         </button>
                         <button
                           onClick={() => {
@@ -558,8 +508,8 @@ export default function SuperAdminUsuariosPage() {
       {confirmAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && setConfirmAction(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{getActionLabel(confirmAction.action)}</h3>
-            <p className="text-sm text-gray-600 mb-6">{getActionDescription(confirmAction.action, confirmAction.email)}</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">{getActionLabel()}</h3>
+            <p className="text-sm text-gray-600 mb-6">{getActionDescription(confirmAction.email)}</p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmAction(null)}
@@ -571,13 +521,9 @@ export default function SuperAdminUsuariosPage() {
               <button
                 onClick={handleConfirmAction}
                 disabled={actionLoading}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50 ${
-                  confirmAction.action === 'delete'
-                    ? 'bg-red-600 text-white hover:bg-red-700'
-                    : 'bg-primary-600 text-white hover:bg-primary-700'
-                }`}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50 bg-red-600 text-white hover:bg-red-700"
               >
-                {actionLoading ? 'Processando...' : getActionLabel(confirmAction.action)}
+                {actionLoading ? 'Processando...' : getActionLabel()}
               </button>
             </div>
           </div>
