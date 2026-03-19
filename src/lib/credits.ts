@@ -89,11 +89,11 @@ export async function deductCredits(orgId: string, minutes: number, callId?: str
   }
 
   // Atomic decrement
-  await getCreditsRef(orgId).update({
+  await getCreditsRef(orgId).set({
     balance: FieldValue.increment(-deduction),
     totalConsumed: FieldValue.increment(deduction),
     lastConsumedAt: now,
-  })
+  }, { merge: true })
 
   const newBalance = await getCreditBalance(orgId)
 
@@ -123,11 +123,11 @@ export async function deductAction(
 ): Promise<CreditTransaction> {
   const now = new Date().toISOString()
 
-  await getCreditsRef(orgId).update({
+  await getCreditsRef(orgId).set({
     actionBalance: FieldValue.increment(-1),
     actionTotalConsumed: FieldValue.increment(1),
     lastActionConsumedAt: now,
-  })
+  }, { merge: true })
 
   const newBalance = await getCreditBalance(orgId)
 
@@ -161,17 +161,17 @@ export async function addCredits(
   const now = new Date().toISOString()
 
   if (creditType === 'minutes') {
-    await getCreditsRef(orgId).update({
+    await getCreditsRef(orgId).set({
       balance: FieldValue.increment(amount),
       totalPurchased: FieldValue.increment(amount),
       lastRechargeAt: now,
-    })
+    }, { merge: true })
   } else {
-    await getCreditsRef(orgId).update({
+    await getCreditsRef(orgId).set({
       actionBalance: FieldValue.increment(amount),
       actionTotalPurchased: FieldValue.increment(amount),
       lastRechargeAt: now,
-    })
+    }, { merge: true })
   }
 
   const newBalance = await getCreditBalance(orgId)
