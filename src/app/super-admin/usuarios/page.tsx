@@ -17,6 +17,7 @@ interface UserRecord {
   orgName: string | null
   role: string | null
   orgCreatedAt: string | null
+  orgUpdatedAt: string | null
 }
 
 function timeAgo(dateStr: string): string {
@@ -36,11 +37,28 @@ function timeAgo(dateStr: string): string {
   return `${diffYears} anos`
 }
 
-function planCountdown(plan: string | null, orgCreatedAt: string | null): { label: string; expired: boolean; urgent: boolean } {
-  if (!orgCreatedAt) return { label: '—', expired: false, urgent: false }
-  const durationDays = plan === 'free' || !plan ? 7 : 30
-  const created = new Date(orgCreatedAt)
-  const expiresAt = new Date(created.getTime() + durationDays * 24 * 60 * 60 * 1000)
+function planCountdown(user: UserRecord): { label: string; expired: boolean; urgent: boolean } {
+  const isFreePlan = !user.plan || user.plan === 'free'
+
+  // Free plan: 7 days from account creation date
+  // Paid plan: 30 days from plan subscription date (orgUpdatedAt)
+  let startDate: string | null
+  let durationDays: number
+
+  if (isFreePlan) {
+    // Use orgCreatedAt if available, otherwise use Firebase Auth createdAt
+    startDate = user.orgCreatedAt || user.createdAt
+    durationDays = 7
+  } else {
+    // Paid plan: use orgUpdatedAt (set when plan changes)
+    startDate = user.orgUpdatedAt || user.orgCreatedAt
+    durationDays = 30
+  }
+
+  if (!startDate) return { label: '—', expired: false, urgent: false }
+
+  const start = new Date(startDate)
+  const expiresAt = new Date(start.getTime() + durationDays * 24 * 60 * 60 * 1000)
   const now = new Date()
   const diffMs = expiresAt.getTime() - now.getTime()
   if (diffMs <= 0) return { label: '00:00:00', expired: true, urgent: true }
@@ -285,7 +303,7 @@ export default function SuperAdminUsuariosPage() {
                     </td>
                     <td className="px-4 py-3">
                       {(() => {
-                        const countdown = planCountdown(user.plan, user.orgCreatedAt)
+                        const countdown = planCountdown(user)
                         return (
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium ${
                             countdown.expired
@@ -430,7 +448,7 @@ export default function SuperAdminUsuariosPage() {
                       {getPlanLabel(user.plan)}
                     </span>
                     {(() => {
-                      const countdown = planCountdown(user.plan, user.orgCreatedAt)
+                      const countdown = planCountdown(user)
                       return (
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-mono font-medium ${
                           countdown.expired
