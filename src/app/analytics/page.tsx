@@ -12,6 +12,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
 import { db } from '@/lib/firebaseClient'
 import PlanGate from '@/components/PlanGate'
+import Modal from '@/components/Modal'
 import {
   LineChart,
   Line,
@@ -1485,7 +1486,7 @@ function ConversionTab({ clients }: { clients: Client[] }) {
             </thead>
             <tbody>
               {rows.map(r => (
-                <tr key={r.dimension} className={`border-b border-slate-50 hover:bg-slate-50/50 ${drillDimValue === r.dimension ? 'bg-primary-50/30' : ''}`}>
+                <tr key={r.dimension} className="border-b border-slate-50 hover:bg-slate-50/50">
                   <td className="p-3 font-medium text-slate-700">{r.dimension}</td>
                   <td className="p-3 text-center text-slate-600">{r.total}</td>
                   <td className="p-3 text-center text-slate-600">{r.converted}</td>
@@ -1496,9 +1497,9 @@ function ConversionTab({ clients }: { clients: Client[] }) {
                   </td>
                   <td className="p-3 text-center text-slate-600">{r.avgDays || '—'}</td>
                   <td className="p-3">
-                    <button onClick={() => setDrillDimValue(drillDimValue === r.dimension ? null : r.dimension)}
+                    <button onClick={() => setDrillDimValue(r.dimension)}
                       className="text-primary-600 hover:text-primary-800 text-xs font-medium">
-                      {drillDimValue === r.dimension ? 'Fechar' : 'Detalhar'}
+                      Detalhar
                     </button>
                   </td>
                 </tr>
@@ -1508,19 +1509,46 @@ function ConversionTab({ clients }: { clients: Client[] }) {
         </div>
       </div>
 
-      {/* Drill-down panel */}
-      {drillDimValue && drillClients.length > 0 && (
-        <div className="bg-white rounded-2xl border border-primary-200 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-primary-100 bg-primary-50/30 flex items-center justify-between">
+      {/* Drill-down modal */}
+      <Modal isOpen={!!drillDimValue && drillClients.length > 0} onClose={() => setDrillDimValue(null)} size="3xl" centered>
+        <div>
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-sm font-semibold text-primary-900">Drill-down: {drillDimValue}</h3>
-              <p className="text-xs text-primary-600 mt-0.5">{drillClients.length} contatos</p>
+              <h3 className="text-lg font-semibold text-slate-900">Detalhamento: {drillDimValue}</h3>
+              <p className="text-sm text-slate-500 mt-0.5">{drillClients.length} contatos · {DIMENSION_LABELS[dimension]}</p>
             </div>
-            <button onClick={() => setDrillDimValue(null)} className="p-1 rounded-lg hover:bg-primary-100">
-              <XMarkIcon className="w-5 h-5 text-primary-500" />
+            <button onClick={() => setDrillDimValue(null)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+              <XMarkIcon className="w-5 h-5 text-slate-400" />
             </button>
           </div>
-          <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* Summary cards */}
+          {(() => {
+            const row = rows.find(r => r.dimension === drillDimValue)
+            if (!row) return null
+            return (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <div className="bg-slate-50 rounded-xl p-3">
+                  <p className="text-xs text-slate-500">Total</p>
+                  <p className="text-lg font-bold text-slate-800">{row.total}</p>
+                </div>
+                <div className="bg-primary-50 rounded-xl p-3">
+                  <p className="text-xs text-primary-600">Convertidos</p>
+                  <p className="text-lg font-bold text-primary-700">{row.converted}</p>
+                </div>
+                <div className="bg-emerald-50 rounded-xl p-3">
+                  <p className="text-xs text-emerald-600">Taxa de Conversão</p>
+                  <p className="text-lg font-bold text-emerald-700">{formatPct(row.rate)}</p>
+                </div>
+                <div className="bg-amber-50 rounded-xl p-3">
+                  <p className="text-xs text-amber-600">Tempo Médio</p>
+                  <p className="text-lg font-bold text-amber-700">{row.avgDays ? `${row.avgDays} dias` : '—'}</p>
+                </div>
+              </div>
+            )
+          })()}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Mini funnel */}
             <div>
               <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Distribuição por Etapa</h4>
@@ -1543,8 +1571,8 @@ function ConversionTab({ clients }: { clients: Client[] }) {
             {/* Contact list */}
             <div>
               <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Contatos</h4>
-              <div className="space-y-1 max-h-64 overflow-y-auto">
-                {drillClients.slice(0, 30).map(c => (
+              <div className="space-y-1 max-h-72 overflow-y-auto">
+                {drillClients.slice(0, 50).map(c => (
                   <a key={c.id} href={`/contatos/${c.id}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 text-xs">
                     <span className="text-slate-700 font-medium">{c.name as string || 'Sem nome'}</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs ${c.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
@@ -1552,14 +1580,14 @@ function ConversionTab({ clients }: { clients: Client[] }) {
                     </span>
                   </a>
                 ))}
-                {drillClients.length > 30 && (
-                  <p className="text-xs text-slate-400 text-center pt-1">E mais {drillClients.length - 30}...</p>
+                {drillClients.length > 50 && (
+                  <p className="text-xs text-slate-400 text-center pt-1">E mais {drillClients.length - 50}...</p>
                 )}
               </div>
             </div>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   )
 }
