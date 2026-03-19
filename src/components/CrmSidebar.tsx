@@ -169,7 +169,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = useFreePlanExpiration()
-  const { role } = usePermissions()
+  const { role, canAccessPage } = usePermissions()
   const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
@@ -226,7 +226,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           )}
         </div>
         <ul className="space-y-1">
-          {navItems.map((item) => {
+          {navItems.filter((item) => isAdmin || canAccessPage(item.href)).map((item) => {
             const isActive = isItemActive(item.href)
             const isDisabled = item.badge === 'Em breve'
 
@@ -279,6 +279,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             )
           })}
           {/* Agentes - expandable button */}
+          {(isAdmin || agentesItems.some((item) => canAccessPage(item.href))) && (
           <li>
             <button
               onClick={() => setAgentesOpen(!agentesOpen)}
@@ -311,7 +312,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             </button>
             {agentesOpen && !collapsed && (
               <ul className="mt-1 ml-4 space-y-1">
-                {agentesItems.map((item) => {
+                {agentesItems.filter((item) => isAdmin || canAccessPage(item.href)).map((item) => {
                   const isActive = isItemActive(item.href)
                   return (
                     <li key={item.href}>
@@ -337,6 +338,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               </ul>
             )}
           </li>
+          )}
         </ul>
 
         {/* Administração - visível apenas para admins */}

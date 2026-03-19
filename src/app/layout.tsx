@@ -20,10 +20,11 @@ import { logActivity } from '@/lib/activityLogger'
 import { getScreenLabel } from '@/lib/screenLabels'
 import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
-import { CrmUserProvider } from '@/contexts/CrmUserContext'
+import { CrmUserProvider, useCrmUser } from '@/contexts/CrmUserContext'
 import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
+import PageAccessGate from '@/components/PageAccessGate'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -426,23 +427,13 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
                 {/* Greeting - mobile */}
                 <span className="md:hidden text-sm font-semibold text-slate-700 truncate max-w-[180px]">
-                  {(() => {
-                    const h = currentTime.getHours()
-                    const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-                    const firstName = (member?.displayName || userEmail?.split('@')[0] || '').split(' ')[0]
-                    return firstName ? `${greeting}, ${firstName}` : greeting
-                  })()}
+                  <HeaderGreeting fallbackName={member?.displayName} fallbackEmail={userEmail} />
                 </span>
 
                 {/* Greeting - desktop */}
                 <div className="hidden md:flex items-center gap-2">
                   <span className="text-sm text-slate-700">
-                    {(() => {
-                      const h = currentTime.getHours()
-                      const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
-                      const firstName = (member?.displayName || userEmail?.split('@')[0] || '').split(' ')[0]
-                      return firstName ? `${greeting}, ${firstName}` : greeting
-                    })()}
+                    <HeaderGreeting fallbackName={member?.displayName} fallbackEmail={userEmail} />
                   </span>
                   {orgName && (
                     <>
@@ -610,7 +601,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
                 <FreePlanExpiredGate>
-                  {children}
+                  <PageAccessGate>
+                    {children}
+                  </PageAccessGate>
                 </FreePlanExpiredGate>
             </div>
           </main>
@@ -622,6 +615,21 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       </body>
     </html>
   )
+}
+
+function HeaderGreeting({ fallbackName, fallbackEmail }: { fallbackName?: string; fallbackEmail: string | null }) {
+  const { member } = useCrmUser()
+  const [currentTime, setCurrentTime] = useState(new Date())
+
+  useEffect(() => {
+    const id = setInterval(() => setCurrentTime(new Date()), 60000)
+    return () => clearInterval(id)
+  }, [])
+
+  const h = currentTime.getHours()
+  const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
+  const firstName = (member?.displayName || fallbackName || fallbackEmail?.split('@')[0] || '').split(' ')[0]
+  return <>{firstName ? `${greeting}, ${firstName}` : greeting}</>
 }
 
 const ROLE_LABELS: Record<string, string> = {
