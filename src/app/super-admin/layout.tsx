@@ -6,10 +6,11 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/lib/firebaseClient'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 import Link from 'next/link'
-import { Building2, CreditCard, ShieldCheck, ArrowLeft } from 'lucide-react'
+import { Building2, CreditCard, Users, ShieldCheck, ArrowLeft } from 'lucide-react'
 
 const tabs = [
   { label: 'Empresas', href: '/super-admin', icon: <Building2 className="w-4 h-4" /> },
+  { label: 'Usuarios', href: '/super-admin/usuarios', icon: <Users className="w-4 h-4" /> },
   { label: 'Creditos', href: '/super-admin/creditos', icon: <CreditCard className="w-4 h-4" /> },
 ]
 
