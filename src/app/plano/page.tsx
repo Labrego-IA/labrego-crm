@@ -8,6 +8,7 @@ import {
   PLAN_DISPLAY,
   PLAN_OVERAGE,
   PLAN_CATEGORY,
+  FEATURE_LABELS,
   type PlanId,
   type PlanCategory,
 } from '@/types/plan'
@@ -87,6 +88,24 @@ export default function PlanoPage() {
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-xl bg-slate-50 p-3 text-center">
+              <p className="text-xs font-medium text-slate-500">Usuarios</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
+                {currentLimits.maxUsers}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3 text-center">
+              <p className="text-xs font-medium text-slate-500">Contatos</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
+                {formatLimit(currentLimits.maxContacts)}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3 text-center">
+              <p className="text-xs font-medium text-slate-500">Funis</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
+                {currentLimits.maxFunnels}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Acoes/mes</p>
               <p className="mt-1 text-lg font-semibold text-slate-900">
                 {formatLimit(currentLimits.monthlyActions)}
@@ -108,6 +127,12 @@ export default function PlanoPage() {
               <p className="text-xs font-medium text-slate-500">Numeros</p>
               <p className="mt-1 text-lg font-semibold text-slate-900">
                 {currentLimits.maxNumbers}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3 text-center">
+              <p className="text-xs font-medium text-slate-500">Cadencias</p>
+              <p className="mt-1 text-lg font-semibold text-slate-900">
+                {currentLimits.maxCadences === -1 ? 'Ilimitadas' : currentLimits.maxCadences}
               </p>
             </div>
           </div>
@@ -173,6 +198,18 @@ export default function PlanoPage() {
               {/* Limits */}
               <div className="mb-4 space-y-2 text-sm">
                 <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                  <span className="text-slate-500">Usuarios</span>
+                  <span className="font-semibold text-slate-800">{limits.maxUsers}</span>
+                </div>
+                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                  <span className="text-slate-500">Contatos</span>
+                  <span className="font-semibold text-slate-800">{formatLimit(limits.maxContacts)}</span>
+                </div>
+                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                  <span className="text-slate-500">Funis</span>
+                  <span className="font-semibold text-slate-800">{limits.maxFunnels}</span>
+                </div>
+                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
                   <span className="text-slate-500">Acoes/mes</span>
                   <span className="font-semibold text-slate-800">{formatLimit(limits.monthlyActions)}</span>
                 </div>
@@ -194,12 +231,11 @@ export default function PlanoPage() {
                 </div>
               </div>
 
-              {/* Included */}
+              {/* Included features */}
               <ul className="mb-4 space-y-1.5 text-sm">
-                <li className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">WhatsApp + E-mail</span></li>
-                <li className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">Integracao com CRM</span></li>
-                <li className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">Agente de voz IA</span></li>
-                <li className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">Automacao de cadencia</span></li>
+                {Object.values(FEATURE_LABELS).map((label) => (
+                  <li key={label} className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">{label}</span></li>
+                ))}
               </ul>
 
               {/* Overage */}
