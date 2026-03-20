@@ -193,12 +193,23 @@ async function processOrg(
   const stepMap = new Map<string, CadenceStep>()
   for (const s of steps) stepMap.set(s.id, s)
 
-  // Get stages info
+  // Get stages info (include automationConfig for per-stage call hours/limits)
   const stagesSnap = await db.collection('funnelStages')
     .where('orgId', '==', orgId)
     .get()
-  const stageMap = new Map<string, { id: string; name: string; funnelId: string }>()
-  stagesSnap.docs.forEach(d => stageMap.set(d.id, { id: d.id, name: d.data().name, funnelId: d.data().funnelId || '' }))
+  const stageMap = new Map<string, { id: string; name: string; funnelId: string; callStartHour?: string; callEndHour?: string; maxCallsPerDay?: number }>()
+  stagesSnap.docs.forEach(d => {
+    const data = d.data()
+    const ac = data.automationConfig || {}
+    stageMap.set(d.id, {
+      id: d.id,
+      name: data.name,
+      funnelId: data.funnelId || '',
+      callStartHour: ac.callStartHour || undefined,
+      callEndHour: ac.callEndHour || undefined,
+      maxCallsPerDay: ac.maxCallsPerDay || undefined,
+    })
+  })
 
   // Find eligible contacts — single-field query to avoid composite index requirement
   type ContactDoc = Record<string, unknown> & { id: string }
@@ -309,10 +320,9 @@ async function processOrg(
       const stageBudgetsUsed = new Map<string, number>()
 
       const phoneFiltered = phoneEligible.filter(({ step, stage }) => {
-        const stageData = stage as unknown as Record<string, unknown>
-        const stageStartHour = (stageData.callStartHour as string) || config.workHoursStart
-        const stageEndHour = (stageData.callEndHour as string) || config.workHoursEnd
-        const stageMaxCalls = (stageData.maxCallsPerDay as number) || globalMaxPhoneDaily
+        const stageStartHour = stage.callStartHour || config.workHoursStart
+        const stageEndHour = stage.callEndHour || config.workHoursEnd
+        const stageMaxCalls = stage.maxCallsPerDay || globalMaxPhoneDaily
 
         // Check per-stage hours
         if (currentTime < stageStartHour || currentTime > stageEndHour) return false
