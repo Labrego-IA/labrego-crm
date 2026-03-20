@@ -1,17 +1,23 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
+import { useState, useEffect, useRef } from 'react'
+import { collection, query, orderBy, onSnapshot, doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useAllowedMemberIds } from './useAllowedMemberIds'
+import { usePartnerView } from '@/contexts/PartnerViewContext'
 import type { Funnel } from '@/types/funnel'
 
 export function useVisibleFunnels() {
   const { orgId, member, userEmail } = useCrmUser()
-  const { allowedEmails, hasFullAccess } = useAllowedMemberIds()
+  const { allowedMemberIds, allowedEmails, hasFullAccess } = useAllowedMemberIds()
+  const { activeView, hasMultipleViews } = usePartnerView()
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [loading, setLoading] = useState(true)
+  const migratedRef = useRef<Set<string>>(new Set())
+
+  // Only backfill in personal view to ensure correct ownership
+  const isPersonalView = !hasMultipleViews || activeView === 'personal'
 
   useEffect(() => {
     if (!orgId) {
@@ -29,19 +35,61 @@ export function useVisibleFunnels() {
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
 
+        // Backfill createdByMemberId — only from personal view
+        if (isPersonalView && member?.id && userEmail) {
+          const email = userEmail.toLowerCase()
+          for (const f of all) {
+            if (!f.createdByMemberId && f.createdBy === email && !migratedRef.current.has(f.id)) {
+              migratedRef.current.add(f.id)
+              updateDoc(doc(db, 'organizations', orgId, 'funnels', f.id), {
+                createdByMemberId: member.id,
+              }).catch((err) => {
+                console.warn('[useVisibleFunnels] Failed to backfill createdByMemberId:', err.message)
+                migratedRef.current.delete(f.id)
+              })
+            }
+          }
+        }
+
         if (hasFullAccess) {
-          // Full access (admin without personal view restriction): sees all funnels
           setFunnels(all)
-        } else if (allowedEmails) {
-          // Restricted: see only funnels created by allowed emails
-          const visible = all.filter(f =>
-            f.createdBy && allowedEmails.has(f.createdBy.toLowerCase())
-          )
+        } else if (allowedMemberIds) {
+          const currentEmail = (userEmail || '').toLowerCase()
+          const isPartnerView = hasMultipleViews && activeView === 'partner'
+
+          const visible = all.filter(f => {
+            // If funnel has createdByMemberId, use it for member-based filtering
+            if (f.createdByMemberId) {
+              return allowedMemberIds.has(f.createdByMemberId)
+            }
+
+            // Funnel without createdByMemberId (legacy):
+            // - In personal view: show if created by current user's email
+            // - In partner view: show only if created by someone else (companion),
+            //   NOT by current user (those belong to personal view)
+            if (f.createdBy) {
+              const funnelEmail = f.createdBy.toLowerCase()
+              if (isPartnerView && funnelEmail === currentEmail) {
+                // Current user's legacy funnel — belongs to personal view, hide in partner view
+                return false
+              }
+              // Show if createdBy is in allowed emails (companion's funnel, or own in personal view)
+              if (allowedEmails) {
+                return allowedEmails.has(funnelEmail)
+              }
+            }
+            return false
+          })
           setFunnels(visible)
         } else {
-          // Fallback while allowedEmails is loading: show own funnels only
-          const email = (userEmail || '').toLowerCase()
-          const visible = all.filter(f => f.createdBy === email)
+          // Fallback while data is loading: show own funnels only
+          const visible = all.filter(f => {
+            if (f.createdByMemberId && member?.id) {
+              return f.createdByMemberId === member.id
+            }
+            const email = (userEmail || '').toLowerCase()
+            return f.createdBy === email
+          })
           setFunnels(visible)
         }
         setLoading(false)
@@ -54,7 +102,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id, hasFullAccess, userEmail, allowedEmails])
+  }, [orgId, member?.id, hasFullAccess, isPersonalView, hasMultipleViews, activeView, userEmail, allowedMemberIds, allowedEmails])
 
   return { funnels, loading }
 }

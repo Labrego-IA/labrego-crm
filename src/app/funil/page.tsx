@@ -211,6 +211,7 @@ export default function FunnelHubPage() {
         order: maxOrder + 1,
         visibleTo: [],
         createdBy: (userEmail || '').toLowerCase(),
+        createdByMemberId: member?.id || '',
         createdAt: now,
         updatedAt: now,
       })
