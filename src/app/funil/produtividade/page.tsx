@@ -223,7 +223,7 @@ const ACTION_TYPE_CONFIG: Record<ActionType, { label: string; icon: React.Compon
 }
 
 export default function ProdutividadePage() {
-  const { orgId, member } = useCrmUser()
+  const { orgId, userEmail, member } = useCrmUser()
   const { viewScope } = usePermissions()
   const [entries, setEntries] = useState<ProductivityEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -313,7 +313,12 @@ export default function ProdutividadePage() {
         }
       })
 
-      setEntries(allEntries)
+      // Non-admin users see only their own productivity
+      if (viewScope === 'own' && userEmail) {
+        setEntries(allEntries.filter((e) => e.author === userEmail))
+      } else {
+        setEntries(allEntries)
+      }
     } catch (error) {
       console.error('Erro ao carregar dados de produtividade:', error)
     } finally {
@@ -326,7 +331,7 @@ export default function ProdutividadePage() {
     if (!orgId) return
     fetchProductivityData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, viewScope, member?.id])
+  }, [orgId, viewScope, member?.id, userEmail])
 
   const handleRefresh = () => {
     setRefreshing(true)
@@ -428,7 +433,9 @@ export default function ProdutividadePage() {
           <div className="flex items-center gap-3">
             <div>
               <h1 className="text-2xl font-bold text-slate-800">Produtividade</h1>
-              <p className="text-sm text-slate-500">Acompanhamento de atividades por usuário</p>
+              <p className="text-sm text-slate-500">
+                {viewScope === 'own' ? 'Suas atividades nos últimos 7 dias' : 'Acompanhamento de atividades por usuário'}
+              </p>
             </div>
           </div>
           <button
