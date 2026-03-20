@@ -37,6 +37,7 @@ export async function createFunnel(orgId: string, data: {
   description?: string
   color: string
   isDefault?: boolean
+  createdBy?: string
 }): Promise<Funnel> {
   const now = new Date().toISOString()
 
@@ -59,6 +60,7 @@ export async function createFunnel(orgId: string, data: {
     isDefault: data.isDefault || existing.length === 0, // first funnel is always default
     order: maxOrder + 1,
     visibleTo: [] as string[],
+    createdBy: data.createdBy || '',
     createdAt: now,
     updatedAt: now,
   }
