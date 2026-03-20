@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   collection,
   query,
@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import type { OrgMember } from '@/types/organization'
 import { toast } from 'sonner'
 import {
   PlusIcon,
@@ -40,14 +41,34 @@ type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
 
 export default function AdminIcpPage() {
-  const { orgId } = useCrmUser()
-  const { can } = usePermissions()
+  const { orgId, userEmail, member } = useCrmUser()
+  const { can, isSystemAdmin } = usePermissions()
+  const isAdmin = isSystemAdmin || member?.role === 'admin'
 
-  const [profiles, setProfiles] = useState<IcpProfile[]>([])
+  const [allProfiles, setAllProfiles] = useState<IcpProfile[]>([])
+  const [orgMembers, setOrgMembers] = useState<OrgMember[]>([])
   const [funnels, setFunnels] = useState<FunnelItem[]>([])
   const [products, setProducts] = useState<ProductItem[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+
+  // Calcula o conjunto de emails permitidos (usuario + parceiros)
+  const allowedEmails = useMemo(() => {
+    if (isAdmin || !userEmail) return null // null = sem filtro (admin ve tudo)
+    const emails = new Set<string>([userEmail])
+    // Parceiros: membros que eu convidei ou que me convidaram
+    for (const m of orgMembers) {
+      if (m.invitedBy === userEmail) emails.add(m.email)
+      if (member?.invitedBy && m.email === member.invitedBy) emails.add(m.email)
+    }
+    return emails
+  }, [isAdmin, userEmail, orgMembers, member])
+
+  // Filtra perfis pelo createdBy
+  const profiles = useMemo(() => {
+    if (!allowedEmails) return allProfiles // admin ve tudo
+    return allProfiles.filter((p) => p.createdBy && allowedEmails.has(p.createdBy))
+  }, [allProfiles, allowedEmails])
 
   // Modal state
   const [showModal, setShowModal] = useState(false)
@@ -77,13 +98,24 @@ export default function AdminIcpPage() {
         query(collection(db, 'icpProfiles'), where('orgId', '==', orgId)),
         (snap) => {
           const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as IcpProfile))
-          setProfiles(data.sort((a, b) => a.priority - b.priority))
+          setAllProfiles(data.sort((a, b) => a.priority - b.priority))
           setLoading(false)
         },
         (err) => {
           console.error('ICP profiles listener error:', err)
           setLoading(false)
         }
+      )
+    )
+
+    // Carrega membros da org para determinar relacoes de parceria
+    unsubs.push(
+      onSnapshot(
+        collection(db, 'organizations', orgId, 'members'),
+        (snap) => {
+          setOrgMembers(snap.docs.map((d) => ({ id: d.id, ...d.data() } as OrgMember)))
+        },
+        (err) => { console.error('Members listener error:', err) }
       )
     )
 
@@ -173,6 +205,7 @@ export default function AdminIcpPage() {
       } else {
         await addDoc(collection(db, 'icpProfiles'), {
           ...data,
+          createdBy: userEmail || '',
           createdAt: now,
         })
         toast.success('Perfil ICP criado')

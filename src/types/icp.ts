@@ -24,6 +24,7 @@ export interface IcpProfile {
   productIds: string[]
   isActive: boolean
   priority: number
+  createdBy?: string
   createdAt: string
   updatedAt: string
 }
