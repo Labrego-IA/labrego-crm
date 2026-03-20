@@ -896,10 +896,11 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
     const next = new Date(now)
     const mins = next.getMinutes()
     const nextMins = Math.ceil((mins + 1) / 15) * 15
-    next.setMinutes(nextMins, 0, 0)
     if (nextMins >= 60) {
       next.setMinutes(0, 0, 0)
       next.setHours(next.getHours() + 1)
+    } else {
+      next.setMinutes(nextMins, 0, 0)
     }
 
     // Parse work hours
