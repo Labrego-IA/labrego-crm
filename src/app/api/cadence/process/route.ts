@@ -3,6 +3,7 @@ import { getAdminDb } from '@/lib/firebaseAdmin'
 import { getAutomationConfig, getTodayActionCount, getTodayPhoneCallCount, getTodayPhoneCallCountByStage } from '@/lib/automationConfig'
 import { executeCadenceStep, logCadenceExecution, determineBestStage } from '@/lib/cadenceExecutors'
 import { createCadenceCallQueue, getCallQueue, processQueue } from '@/lib/callQueue'
+import { canMakeCall } from '@/lib/credits'
 import type { CadenceStep, CadenceExecutionLog, AutomationConfig } from '@/types/cadence'
 
 const BATCH_SIZE = 20
@@ -386,6 +387,15 @@ async function processOrg(
         stageBudgetsUsed.set(stage.id, (stageBudgetsUsed.get(stage.id) || 0) + 1)
         return true
       })
+
+      // Check credits before enqueuing calls
+      const creditCheck = await canMakeCall(orgId)
+      if (!creditCheck.allowed) {
+        console.log(`[CADENCE] Org ${orgId}: ${creditCheck.reason} — skipping ${phoneFiltered.length} phone steps`)
+        results.failed += phoneFiltered.length
+        results.errors.push(creditCheck.reason || 'Sem créditos')
+        phoneFiltered.length = 0 // skip all phone steps
+      }
 
       // Limit to global budget
       const phonesToEnqueue = phoneFiltered.slice(0, Math.min(globalPhoneBudget, actionsLeft))
