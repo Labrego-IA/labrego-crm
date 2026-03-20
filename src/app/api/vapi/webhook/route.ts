@@ -205,6 +205,21 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
 
     const callId = call?.id
 
+    // ===== IDEMPOTÊNCIA: evitar processar mesmo webhook 2x (Bug fix #3) =====
+    // Se o VAPI enviar o webhook duplicado (retry por timeout), verificamos
+    // se já processamos este callId consultando a collection callRecords.
+    if (callId) {
+      const db = getAdminDb()
+      const existingRecord = await db.collection('callRecords')
+        .where('vapiCallId', '==', callId)
+        .limit(1)
+        .get()
+      if (!existingRecord.empty) {
+        console.log(`[VAPI WEBHOOK] Webhook duplicado ignorado para callId: ${callId}`)
+        return NextResponse.json({ status: 'duplicate', callId })
+      }
+    }
+
     // Vapi promove assistantOverrides.metadata para call.metadata no webhook
     // Checar ambos os caminhos para garantir compatibilidade
     const metadata = call?.metadata || call?.assistantOverrides?.metadata || {}
