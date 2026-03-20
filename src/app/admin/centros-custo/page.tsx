@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   collection,
   query,
@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import type { OrgMember } from '@/types/organization'
 import { toast } from 'sonner'
 import {
   PlusIcon,
@@ -36,6 +37,7 @@ interface CostCenter {
   description: string
   color: string
   isActive: boolean
+  createdBy?: string
   createdAt: string
   updatedAt: string
 }
@@ -55,10 +57,13 @@ const EMPTY_FORM: CostCenterForm = {
 }
 
 export default function AdminCentrosCustoPage() {
-  const { orgId } = useCrmUser()
-  const { can } = usePermissions()
+  const { orgId, userEmail, member } = useCrmUser()
+  const { can, isSystemAdmin } = usePermissions()
 
-  const [costCenters, setCostCenters] = useState<CostCenter[]>([])
+  const isAdmin = isSystemAdmin || member?.role === 'admin'
+
+  const [allCostCenters, setAllCostCenters] = useState<CostCenter[]>([])
+  const [partnerEmails, setPartnerEmails] = useState<string[]>([])
   const [clientCounts, setClientCounts] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -81,6 +86,41 @@ export default function AdminCentrosCustoPage() {
     if (!orgId) setLoading(false)
   }, [orgId])
 
+  // Load partners of the current user
+  useEffect(() => {
+    if (!orgId || !userEmail || isAdmin) return
+    const q = query(
+      collection(db, 'organizations', orgId, 'members'),
+      where('invitedBy', '==', userEmail.toLowerCase()),
+    )
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const emails = snap.docs.map((d) => {
+          const data = d.data() as OrgMember
+          return data.email?.toLowerCase()
+        }).filter(Boolean)
+        setPartnerEmails(emails)
+      },
+      (err) => {
+        console.error('Partners listener error:', err)
+      }
+    )
+    return () => unsub()
+  }, [orgId, userEmail, isAdmin])
+
+  // Filtered cost centers based on user access
+  const costCenters = useMemo(() => {
+    if (isAdmin) return allCostCenters
+    if (!userEmail) return []
+    const email = userEmail.toLowerCase()
+    const allowedEmails = new Set([email, ...partnerEmails])
+    return allCostCenters.filter((cc) => {
+      if (!cc.createdBy) return false
+      return allowedEmails.has(cc.createdBy.toLowerCase())
+    })
+  }, [allCostCenters, isAdmin, userEmail, partnerEmails])
+
   // Load data
   useEffect(() => {
     if (!orgId) return
@@ -92,7 +132,7 @@ export default function AdminCentrosCustoPage() {
         query(collection(db, 'organizations', orgId, 'costCenters')),
         (snap) => {
           const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as CostCenter))
-          setCostCenters(data)
+          setAllCostCenters(data)
           setLoading(false)
         },
         (err) => {
@@ -184,6 +224,7 @@ export default function AdminCentrosCustoPage() {
       } else {
         await addDoc(collection(db, 'organizations', orgId, 'costCenters'), {
           ...data,
+          createdBy: userEmail?.toLowerCase() || '',
           createdAt: now,
         })
         toast.success('Centro de custo criado')
