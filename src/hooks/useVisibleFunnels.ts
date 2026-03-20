@@ -9,9 +9,11 @@ import type { Funnel } from '@/types/funnel'
 
 export function useVisibleFunnels() {
   const { orgId, member, userEmail } = useCrmUser()
-  const { allowedEmails, hasFullAccess } = useAllowedMemberIds()
+  const { allowedEmails } = useAllowedMemberIds()
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [loading, setLoading] = useState(true)
+
+  const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
 
   useEffect(() => {
     if (!orgId) {
@@ -28,19 +30,18 @@ export function useVisibleFunnels() {
       q,
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
-        const isAdmin = member?.role === 'admin'
 
-        if (isAdmin || hasFullAccess) {
+        if (isAdmin) {
+          // Admin sees all funnels
           setFunnels(all)
         } else if (allowedEmails) {
-          // Non-admin: see funnels created by self + partners in the same group
-          const visible = all.filter(f => {
-            if (!f.createdBy) return true // backward compat: funnels without createdBy are visible
-            return allowedEmails.has(f.createdBy.toLowerCase())
-          })
+          // Restricted user: see only funnels created by allowed emails (self + partner)
+          const visible = all.filter(f =>
+            f.createdBy && allowedEmails.has(f.createdBy.toLowerCase())
+          )
           setFunnels(visible)
         } else {
-          // Fallback while allowedEmails is loading: show own funnels
+          // Fallback while allowedEmails is loading: show own funnels only
           const email = (userEmail || '').toLowerCase()
           const visible = all.filter(f => f.createdBy === email)
           setFunnels(visible)
@@ -55,7 +56,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id, member?.role, userEmail, allowedEmails, hasFullAccess])
+  }, [orgId, member?.id, isAdmin, userEmail, allowedEmails])
 
   return { funnels, loading }
 }
