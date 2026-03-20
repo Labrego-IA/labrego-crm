@@ -40,6 +40,7 @@ import MemberSelector from '@/components/MemberSelector'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import FreePlanDialog from '@/components/FreePlanDialog'
 
@@ -186,6 +187,7 @@ export default function ContatosPage() {
   const searchParams = useSearchParams()
   const { userEmail, orgId, orgPlan, member } = useCrmUser()
   const { viewScope, can } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
@@ -861,9 +863,13 @@ export default function ContatosPage() {
   const filteredClients = useMemo(() => {
     let result = [...clients]
 
-    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+    // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
     if (viewScope === 'own' && member?.id) {
-      result = result.filter((c) => c.assignedTo === member.id)
+      if (allowedMemberIds) {
+        result = result.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+      } else {
+        result = result.filter((c) => c.assignedTo === member.id)
+      }
     }
 
     // Quick funnel filter — includes contacts with no stage or orphaned stage IDs
@@ -916,7 +922,7 @@ export default function ContatosPage() {
     }
 
     return result
-  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels, viewScope, member?.id])
+  }, [clients, columnFilters, sortConfig, getStageName, quickFunnelFilter, funnelStages, funnels, viewScope, member?.id, allowedMemberIds])
 
   // ── Excel style helpers ────────────────────────────────────
   const getExcelStyles = useCallback(() => {

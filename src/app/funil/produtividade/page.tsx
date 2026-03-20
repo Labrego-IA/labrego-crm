@@ -11,6 +11,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import {
   ChartBarIcon,
   ArrowPathIcon,
@@ -225,6 +226,7 @@ const ACTION_TYPE_CONFIG: Record<ActionType, { label: string; icon: React.Compon
 export default function ProdutividadePage() {
   const { orgId, member } = useCrmUser()
   const { viewScope, isSystemAdmin, isPartner } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
   const [entries, setEntries] = useState<ProductivityEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -303,8 +305,14 @@ export default function ProdutividadePage() {
       const clientsMap: { [id: string]: { name: string; stage: string } } = {}
       clientsSnap.docs.forEach((doc) => {
         const data = doc.data()
-        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
-        if (viewScope === 'own' && member?.id && data.assignedTo !== member.id) return
+        // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+        if (viewScope === 'own' && member?.id) {
+          if (allowedMemberIds) {
+            if (data.assignedTo && !allowedMemberIds.has(data.assignedTo)) return
+          } else if (data.assignedTo !== member.id) {
+            return
+          }
+        }
         const stageName = data.funnelStage ? stagesMap[data.funnelStage] || 'Sem etapa' : 'Sem etapa'
         clientsMap[doc.id] = {
           name: data.name || data.empresa || 'Cliente desconhecido',
@@ -381,7 +389,7 @@ export default function ProdutividadePage() {
     if (!hasFullAccess && allowedAuthors === null) return // Wait for companions to load
     fetchProductivityData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, viewScope, member?.id, allowedAuthors])
+  }, [orgId, viewScope, member?.id, allowedAuthors, allowedMemberIds])
 
   const handleRefresh = () => {
     setRefreshing(true)

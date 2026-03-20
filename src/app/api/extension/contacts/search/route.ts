@@ -36,9 +36,34 @@ export async function GET(req: NextRequest) {
     const normalizedPhone = normalizePhone(phone)
     const db = getAdminDb()
 
-    // Helper: check if contact belongs to this user when viewScope is 'own'
+    // Build allowed member IDs set for partner group access
+    let allowedIds: Set<string> | null = null
+    if (isOwn) {
+      allowedIds = new Set<string>()
+      if (member.id) allowedIds.add(member.id)
+      try {
+        const membersSnap = await db.collection('organizations').doc(orgId).collection('members')
+          .where('status', '==', 'active').get()
+        if (member.invitedBy) {
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === member.invitedBy) allowedIds!.add(d.id)
+            if (data.email === member.invitedBy) allowedIds!.add(d.id)
+          })
+        } else if (member.email) {
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === member.email.toLowerCase()) allowedIds!.add(d.id)
+          })
+        }
+      } catch {
+        // Fallback: keep only own data
+      }
+    }
+
+    // Helper: check if contact belongs to user's partner group when viewScope is 'own'
     const canAccess = (data: Record<string, unknown>) =>
-      !isOwn || data.assignedTo === member.id
+      !allowedIds || !data.assignedTo || allowedIds.has(data.assignedTo as string)
 
     // Buscar por telefone exato primeiro (filtrado por orgId)
     let snapshot = await db

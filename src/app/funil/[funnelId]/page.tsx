@@ -32,6 +32,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useCredits } from '@/hooks/useCredits'
 import type { OrgMember } from '@/types/organization'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { useVisibleStages } from '@/hooks/useVisibleStages'
 import { leadSourceOptions, leadSourceIcons, leadTypeOptions } from '@/lib/leadSources'
 import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
@@ -269,6 +270,7 @@ export default function FunilDetailPage() {
   const { userEmail, orgId, member } = useCrmUser()
   const credits = useCredits(orgId || undefined)
   const { viewScope, can } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
   const { filterStages } = useVisibleStages(funnelId)
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
@@ -941,9 +943,13 @@ export default function FunilDetailPage() {
   const filteredClients = useMemo(() => {
     let result = clients
 
-    // Apply viewScope filter: sellers see only their leads
+    // Apply viewScope filter: sellers see only their + partners' leads
     if (viewScope === 'own' && member?.id) {
-      result = result.filter((c) => c.assignedTo === member.id)
+      if (allowedMemberIds) {
+        result = result.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+      } else {
+        result = result.filter((c) => c.assignedTo === member.id)
+      }
     }
 
     // Apply responsible filter (admin/manager dropdown)
@@ -1072,7 +1078,7 @@ export default function FunilDetailPage() {
     }
 
     return result
-  }, [clients, searchTerm, advancedFilters, activeAdvancedFiltersCount, viewScope, member?.id, filterAssignedTo])
+  }, [clients, searchTerm, advancedFilters, activeAdvancedFiltersCount, viewScope, member?.id, filterAssignedTo, allowedMemberIds])
 
   // Apply funnelAccess stage filter
   const visibleFunnelStages = useMemo(() => filterStages(funnelStages), [funnelStages, filterStages])

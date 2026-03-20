@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useAllowedMemberIds } from './useAllowedMemberIds'
 import type { Funnel } from '@/types/funnel'
 
 export function useVisibleFunnels() {
   const { orgId, member, userEmail } = useCrmUser()
+  const { allowedEmails, hasFullAccess } = useAllowedMemberIds()
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -28,10 +30,17 @@ export function useVisibleFunnels() {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
         const isAdmin = member?.role === 'admin'
 
-        if (isAdmin) {
+        if (isAdmin || hasFullAccess) {
           setFunnels(all)
+        } else if (allowedEmails) {
+          // Non-admin: see funnels created by self + partners in the same group
+          const visible = all.filter(f => {
+            if (!f.createdBy) return true // backward compat: funnels without createdBy are visible
+            return allowedEmails.has(f.createdBy.toLowerCase())
+          })
+          setFunnels(visible)
         } else {
-          // Não-admin vê apenas funis que ele próprio criou
+          // Fallback while allowedEmails is loading: show own funnels
           const email = (userEmail || '').toLowerCase()
           const visible = all.filter(f => f.createdBy === email)
           setFunnels(visible)
@@ -46,7 +55,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id, member?.role, userEmail])
+  }, [orgId, member?.id, member?.role, userEmail, allowedEmails, hasFullAccess])
 
   return { funnels, loading }
 }

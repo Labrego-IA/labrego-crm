@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import {
   PhoneIcon,
   ArrowLeftIcon,
@@ -52,6 +53,7 @@ interface Filters {
 export default function HistoricoLigacoesPage() {
   const { orgId, member } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
   const [calls, setCalls] = useState<CallRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [funnels, setFunnels] = useState<FunnelOption[]>([])
@@ -105,8 +107,14 @@ export default function HistoricoLigacoesPage() {
       >()
       clientsSnap.docs.forEach((d) => {
         const data = d.data()
-        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
-        if (viewScope === 'own' && member?.id && data.assignedTo !== member.id) return
+        // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+        if (viewScope === 'own' && member?.id) {
+          if (allowedMemberIds) {
+            if (data.assignedTo && !allowedMemberIds.has(data.assignedTo)) return
+          } else if (data.assignedTo !== member.id) {
+            return
+          }
+        }
         clientsMap.set(d.id, {
           name: data.name || data.nome || '',
           company: data.company || data.empresa || '',
@@ -224,7 +232,7 @@ export default function HistoricoLigacoesPage() {
       setLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, viewScope, member?.id])
+  }, [orgId, viewScope, member?.id, allowedMemberIds])
 
   useEffect(() => {
     loadCalls()
