@@ -301,8 +301,11 @@ async function processOrg(
       console.log(`[CADENCE] Global daily phone limit reached (${todayPhoneCount}/${globalMaxPhoneDaily}), skipping phone steps`)
       results.skipped += phoneEligible.length
     } else {
-      // Filter by per-stage hours and daily limits
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      // Filter by per-stage hours and daily limits (usar timezone da org, não UTC)
+      const tzForStage = config.timezone || 'America/Sao_Paulo'
+      const localTimeStr = now.toLocaleString('en-US', { timeZone: tzForStage, hour: '2-digit', minute: '2-digit', hour12: false })
+      const [stH, stM] = localTimeStr.split(':').map(Number)
+      const currentTime = `${String(stH).padStart(2, '0')}:${String(stM).padStart(2, '0')}`
       const stageBudgetsUsed = new Map<string, number>()
 
       const phoneFiltered = phoneEligible.filter(({ step, stage }) => {
