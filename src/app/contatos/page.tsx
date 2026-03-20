@@ -1402,8 +1402,12 @@ export default function ContatosPage() {
   // Open new contact modal
   const openNewModal = () => {
     setEditingId(null)
-    setForm(emptyForm)
-    setInitialForm(emptyForm)
+    // Auto-assign current member when viewScope is 'own'
+    const initialData = viewScope === 'own' && member?.id
+      ? { ...emptyForm, assignedTo: member.id, assignedToName: member.displayName || '' }
+      : emptyForm
+    setForm(initialData)
+    setInitialForm(initialData)
     setPhotoFile(null)
     setPhotoPreview(null)
     setShowModal(true)
@@ -1498,11 +1502,15 @@ export default function ContatosPage() {
         updatedAt: new Date().toISOString(),
       }
 
-      // Include assignedTo on creation if set
-      if (!editingId && form.assignedTo) {
-        clientData.assignedTo = form.assignedTo
-        clientData.assignedToName = form.assignedToName || null
-        clientData.assignedAt = new Date().toISOString()
+      // Include assignedTo on creation — auto-assign to current member if viewScope is 'own'
+      if (!editingId) {
+        const assignTo = form.assignedTo || (viewScope === 'own' && member?.id ? member.id : '')
+        const assignName = form.assignedTo ? (form.assignedToName || null) : (viewScope === 'own' && member?.displayName ? member.displayName : null)
+        if (assignTo) {
+          clientData.assignedTo = assignTo
+          clientData.assignedToName = assignName
+          clientData.assignedAt = new Date().toISOString()
+        }
       }
 
       if (editingId) {
