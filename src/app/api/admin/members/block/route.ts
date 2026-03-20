@@ -47,7 +47,12 @@ export async function POST(req: NextRequest) {
     }
 
     const callerMember = callerSnap.docs[0].data()
-    if (callerMember.role !== 'admin') {
+    const isCallerAdmin = callerMember.role === 'admin'
+    const isCallerOwner = !callerMember.invitedBy // org owner (non-partner) has full access
+    const isCallerSystemAdmin = callerMember.systemRole === 'admin'
+    const canManageUsers = callerMember.permissions?.actions?.canManageUsers === true
+
+    if (!isCallerAdmin && !isCallerOwner && !isCallerSystemAdmin && !canManageUsers) {
       return NextResponse.json({ error: 'only admins can block/unblock members' }, { status: 403 })
     }
 
