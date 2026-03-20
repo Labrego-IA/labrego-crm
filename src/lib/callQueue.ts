@@ -7,6 +7,7 @@
 // adicionais são feitas em memória (volumes pequenos, max ~200 itens).
 
 import { getAdminDb } from './firebaseAdmin'
+import { FieldValue } from 'firebase-admin/firestore'
 import { makeVapiCall, getActiveProspects, parseMultiplePhones, getVapiCallDetails, classifyCallResult } from './callRouting'
 import { canMakeCall, deductAction } from './credits'
 import {
@@ -454,24 +455,8 @@ export async function processQueue(queueId: string): Promise<{
   for (const item of pendingItems) {
     const now = new Date().toISOString()
 
-    // Verificar créditos antes de cada ligação (ação + minutos)
-    if (orgId) {
-      const creditCheck = await canMakeCall(orgId)
-      if (!creditCheck.allowed) {
-        console.log(`[CALL-QUEUE] Créditos insuficientes para ${item.name}: ${creditCheck.reason}`)
-        await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update({
-          status: 'cancelled' as CallQueueItemStatus,
-          error: creditCheck.reason || 'Créditos insuficientes',
-          updatedAt: now,
-          endedAt: now,
-        })
-        continue
-      }
-      // Debitar 1 ação antes de iniciar a ligação
-      await deductAction(orgId, 'call', item.clientId, `Ligação fila: ${item.name}`)
-    }
-
     // Per-stage validation: verificar se a etapa ainda está dentro do horário
+    // IMPORTANTE: verificar horário ANTES de debitar créditos (Bug fix #5)
     const itemStageId = (item as unknown as Record<string, unknown>).stageId as string | undefined
     if (itemStageId && stageConfigs) {
       const stageConf = stageConfigs.get(itemStageId)
@@ -489,6 +474,21 @@ export async function processQueue(queueId: string): Promise<{
           console.log(`[CALL-QUEUE] ${item.name} cancelado: fora do horário da etapa (${currentTime} vs ${stageConf.callStartHour}-${stageConf.callEndHour})`)
           continue
         }
+      }
+    }
+
+    // Verificar créditos antes de cada ligação (ação + minutos)
+    if (orgId) {
+      const creditCheck = await canMakeCall(orgId)
+      if (!creditCheck.allowed) {
+        console.log(`[CALL-QUEUE] Créditos insuficientes para ${item.name}: ${creditCheck.reason}`)
+        await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update({
+          status: 'cancelled' as CallQueueItemStatus,
+          error: creditCheck.reason || 'Créditos insuficientes',
+          updatedAt: now,
+          endedAt: now,
+        })
+        continue
       }
     }
 
@@ -510,6 +510,11 @@ export async function processQueue(queueId: string): Promise<{
         partners: item.partners,
       }, orgId, item.cadenceOverrides || undefined)
 
+      // Debitar 1 ação DEPOIS da chamada ser iniciada com sucesso (Bug fix #1)
+      if (orgId) {
+        await deductAction(orgId, 'call', item.clientId, `Ligação fila: ${item.name}`)
+      }
+
       // Atualizar com o callId do VAPI
       await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update({
         status: 'in_progress' as CallQueueItemStatus,
@@ -528,6 +533,15 @@ export async function processQueue(queueId: string): Promise<{
         updatedAt: new Date().toISOString(),
         endedAt: new Date().toISOString(),
       })
+
+      // Liberar cadencePendingCallResult para não travar o contato na cadência (Bug fix #2)
+      if (item.cadenceStepId) {
+        try {
+          await db.collection('clients').doc(item.clientId).update({
+            cadencePendingCallResult: false,
+          })
+        } catch { /* ignore */ }
+      }
 
       errors++
       console.error(`[CALL-QUEUE] Erro ao ligar para ${item.name}:`, error)
@@ -589,22 +603,26 @@ export async function onCallCompleted(params: {
   if (params.duration != null) updateData.duration = params.duration
   await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update(updateData)
 
-  // Atualizar contadores da fila
+  // Atualizar contadores da fila atomicamente (Bug fix #4)
+  await db.collection(COLLECTION_QUEUE).doc(item.queueId).update({
+    completedItems: FieldValue.increment(1),
+    activeCallsCount: FieldValue.increment(-1),
+    updatedAt: now,
+  })
+
+  console.log(`[CALL-QUEUE] Ligação concluída: ${item.name} (${params.vapiCallId}) - ${params.outcome || 'sem outcome'}`)
+
   const queue = await getCallQueue(item.queueId)
   if (!queue) {
     return { nextStarted: false, queueFinished: false }
   }
 
-  const newCompleted = (queue.completedItems || 0) + 1
-  const newActiveCalls = Math.max(0, (queue.activeCallsCount || 0) - 1)
-
-  await db.collection(COLLECTION_QUEUE).doc(item.queueId).update({
-    completedItems: newCompleted,
-    activeCallsCount: newActiveCalls,
-    updatedAt: now,
-  })
-
-  console.log(`[CALL-QUEUE] Ligação concluída: ${item.name} (${params.vapiCallId}) - ${params.outcome || 'sem outcome'}`)
+  // Corrigir activeCallsCount se ficou negativo por race condition histórica
+  if ((queue.activeCallsCount || 0) < 0) {
+    await db.collection(COLLECTION_QUEUE).doc(item.queueId).update({
+      activeCallsCount: 0,
+    })
+  }
 
   // Verificar se a fila terminou
   const allItems = await getQueueItems(item.queueId)
@@ -646,14 +664,20 @@ export async function onCallFailed(params: {
     endedAt: now,
   })
 
-  const queue = await getCallQueue(item.queueId)
-  if (!queue) return
-
+  // Atualizar contadores da fila atomicamente (Bug fix #4)
   await db.collection(COLLECTION_QUEUE).doc(item.queueId).update({
-    failedItems: (queue.failedItems || 0) + 1,
-    activeCallsCount: Math.max(0, (queue.activeCallsCount || 0) - 1),
+    failedItems: FieldValue.increment(1),
+    activeCallsCount: FieldValue.increment(-1),
     updatedAt: now,
   })
+
+  // Corrigir activeCallsCount se ficou negativo
+  const queue = await getCallQueue(item.queueId)
+  if (queue && (queue.activeCallsCount || 0) < 0) {
+    await db.collection(COLLECTION_QUEUE).doc(item.queueId).update({
+      activeCallsCount: 0,
+    })
+  }
 
   console.log(`[CALL-QUEUE] Ligação falhou: ${item.name} (${params.vapiCallId}) - ${params.error}`)
 
