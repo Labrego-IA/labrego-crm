@@ -8,6 +8,7 @@ export interface Funnel {
   order: number
   visibleTo: string[] // member IDs, empty = all
   createdBy?: string // email of the user who created the funnel
+  createdByMemberId?: string // member ID of the view/profile that created the funnel
   createdAt: string
   updatedAt: string
 }

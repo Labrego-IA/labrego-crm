@@ -943,13 +943,11 @@ export default function FunilDetailPage() {
   const filteredClients = useMemo(() => {
     let result = clients
 
-    // Apply viewScope filter: restricted users see only their + partner's leads
-    if (viewScope === 'own' && member?.id) {
-      if (allowedMemberIds) {
-        result = result.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
-      } else {
-        result = result.filter((c) => c.assignedTo === member.id)
-      }
+    // Apply view filter: filter by allowedMemberIds when set (personal view or restricted scope)
+    if (allowedMemberIds && member?.id) {
+      result = result.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
+    } else if (viewScope === 'own' && member?.id) {
+      result = result.filter((c) => c.assignedTo === member.id)
     }
 
     // Apply responsible filter (admin/manager dropdown)
