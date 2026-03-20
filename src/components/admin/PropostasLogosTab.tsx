@@ -49,7 +49,7 @@ export default function PropostasLogosTab() {
         id: d.id,
         ...d.data(),
       } as LogoItem))
-      setLogos(filterByAccess(allItems))
+      setLogos(filterByAccess<LogoItem>(allItems))
     } catch (error) {
       console.error('Error loading logos:', error)
       toast.error('Erro ao carregar logos.')
