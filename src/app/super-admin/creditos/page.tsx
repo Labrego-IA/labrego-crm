@@ -31,6 +31,7 @@ export default function SuperAdminCreditosPage() {
 
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
+  const [creditType, setCreditType] = useState<'minutes' | 'actions'>('minutes')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -81,7 +82,8 @@ export default function SuperAdminCreditosPage() {
         body: JSON.stringify({
           orgId: selectedOrgId,
           amount: num,
-          description: description || (num > 0 ? 'Creditos adicionados' : 'Creditos removidos'),
+          creditType,
+          description: description || (num > 0 ? `Creditos de ${creditType === 'actions' ? 'acoes' : 'minutos'} adicionados` : `Creditos de ${creditType === 'actions' ? 'acoes' : 'minutos'} removidos`),
         }),
       })
       if (!res.ok) throw new Error((await res.json()).error || 'Erro')
@@ -122,22 +124,46 @@ export default function SuperAdminCreditosPage() {
                 <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
                   <div className="p-3 bg-primary-50 rounded-lg"><Wallet className="w-5 h-5 text-primary-600" /></div>
                   <div>
-                    <p className="text-sm text-gray-500">Saldo</p>
+                    <p className="text-sm text-gray-500">Saldo Minutos</p>
                     <p className="text-xl font-bold text-gray-900">{balance?.balance?.toLocaleString('pt-BR') ?? 0} min</p>
                   </div>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
                   <div className="p-3 bg-green-50 rounded-lg"><TrendingUp className="w-5 h-5 text-green-600" /></div>
                   <div>
-                    <p className="text-sm text-gray-500">Total comprado</p>
-                    <p className="text-xl font-bold text-gray-900">{balance?.totalPurchased?.toLocaleString('pt-BR') ?? 0} min</p>
+                    <p className="text-sm text-gray-500">Comprado (min)</p>
+                    <p className="text-xl font-bold text-gray-900">{balance?.totalPurchased?.toLocaleString('pt-BR') ?? 0}</p>
                   </div>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
                   <div className="p-3 bg-orange-50 rounded-lg"><TrendingDown className="w-5 h-5 text-orange-600" /></div>
                   <div>
-                    <p className="text-sm text-gray-500">Total consumido</p>
-                    <p className="text-xl font-bold text-gray-900">{balance?.totalConsumed?.toLocaleString('pt-BR') ?? 0} min</p>
+                    <p className="text-sm text-gray-500">Consumido (min)</p>
+                    <p className="text-xl font-bold text-gray-900">{balance?.totalConsumed?.toLocaleString('pt-BR') ?? 0}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white rounded-xl border border-violet-200 p-4 flex items-center gap-4">
+                  <div className="p-3 bg-violet-50 rounded-lg"><CreditCard className="w-5 h-5 text-violet-600" /></div>
+                  <div>
+                    <p className="text-sm text-gray-500">Saldo Acoes</p>
+                    <p className="text-xl font-bold text-violet-700">{balance?.actionBalance?.toLocaleString('pt-BR') ?? 0}</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                  <div className="p-3 bg-green-50 rounded-lg"><TrendingUp className="w-5 h-5 text-green-600" /></div>
+                  <div>
+                    <p className="text-sm text-gray-500">Comprado (acoes)</p>
+                    <p className="text-xl font-bold text-gray-900">{balance?.actionTotalPurchased?.toLocaleString('pt-BR') ?? 0}</p>
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                  <div className="p-3 bg-orange-50 rounded-lg"><TrendingDown className="w-5 h-5 text-orange-600" /></div>
+                  <div>
+                    <p className="text-sm text-gray-500">Consumido (acoes)</p>
+                    <p className="text-xl font-bold text-gray-900">{balance?.actionTotalConsumed?.toLocaleString('pt-BR') ?? 0}</p>
                   </div>
                 </div>
               </div>
@@ -145,6 +171,13 @@ export default function SuperAdminCreditosPage() {
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-4">Adicionar / Remover Creditos</h3>
                 <form onSubmit={handleAddCredits} className="flex flex-wrap gap-3 items-end">
+                  <div className="min-w-[140px]">
+                    <label className="block text-xs text-gray-500 mb-1">Tipo</label>
+                    <select value={creditType} onChange={(e) => setCreditType(e.target.value as 'minutes' | 'actions')} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40">
+                      <option value="minutes">Minutos</option>
+                      <option value="actions">Acoes</option>
+                    </select>
+                  </div>
                   <div className="flex-1 min-w-[120px]">
                     <label className="block text-xs text-gray-500 mb-1">Quantidade (negativo p/ remover)</label>
                     <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40" placeholder="Ex: 100 ou -50" />
