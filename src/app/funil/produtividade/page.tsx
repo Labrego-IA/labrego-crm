@@ -224,16 +224,65 @@ const ACTION_TYPE_CONFIG: Record<ActionType, { label: string; icon: React.Compon
 
 export default function ProdutividadePage() {
   const { orgId, member } = useCrmUser()
-  const { viewScope } = usePermissions()
+  const { viewScope, isSystemAdmin, isPartner } = usePermissions()
   const [entries, setEntries] = useState<ProductivityEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [popup, setPopup] = useState<{ author: string; date: string; clients: ClientDetail[] } | null>(null)
+  const [allowedAuthors, setAllowedAuthors] = useState<Set<string> | null>(null) // null = no filter (see all)
+
+  // Determine if user has full access (system admin, org admin, or owner)
+  const hasFullAccess = isSystemAdmin || member?.role === 'admin' || !isPartner
 
   // When orgId is not available, stop loading immediately
   useEffect(() => {
     if (!orgId) setLoading(false)
   }, [orgId])
+
+  // Fetch allowed authors for non-admin partners (companions filter)
+  useEffect(() => {
+    if (!orgId || !member || hasFullAccess) {
+      setAllowedAuthors(null) // No filter needed
+      return
+    }
+
+    const fetchCompanions = async () => {
+      try {
+        const membersSnap = await getDocs(
+          query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'))
+        )
+        const allowed = new Set<string>()
+
+        // Always include self
+        if (member.displayName) allowed.add(member.displayName)
+
+        const currentInvitedBy = member.invitedBy
+        if (currentInvitedBy) {
+          membersSnap.docs.forEach((doc) => {
+            const data = doc.data()
+            // Companions: same invitedBy value
+            if (data.invitedBy === currentInvitedBy && data.displayName) {
+              allowed.add(data.displayName)
+            }
+            // The inviter themselves
+            if (data.email === currentInvitedBy && data.displayName) {
+              allowed.add(data.displayName)
+            }
+          })
+        }
+
+        setAllowedAuthors(allowed)
+      } catch (error) {
+        console.error('Erro ao carregar companheiros:', error)
+        // Fallback: only show own data
+        const fallback = new Set<string>()
+        if (member.displayName) fallback.add(member.displayName)
+        setAllowedAuthors(fallback)
+      }
+    }
+
+    fetchCompanions()
+  }, [orgId, member, hasFullAccess])
 
   const fetchProductivityData = async () => {
     try {
@@ -313,7 +362,12 @@ export default function ProdutividadePage() {
         }
       })
 
-      setEntries(allEntries)
+      // Filter entries by allowed authors (companions restriction)
+      if (allowedAuthors) {
+        setEntries(allEntries.filter(e => allowedAuthors.has(e.author)))
+      } else {
+        setEntries(allEntries)
+      }
     } catch (error) {
       console.error('Erro ao carregar dados de produtividade:', error)
     } finally {
@@ -324,9 +378,10 @@ export default function ProdutividadePage() {
 
   useEffect(() => {
     if (!orgId) return
+    if (!hasFullAccess && allowedAuthors === null) return // Wait for companions to load
     fetchProductivityData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, viewScope, member?.id])
+  }, [orgId, viewScope, member?.id, allowedAuthors])
 
   const handleRefresh = () => {
     setRefreshing(true)
