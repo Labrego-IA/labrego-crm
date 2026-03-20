@@ -138,9 +138,34 @@ export async function GET(req: NextRequest) {
       ...doc.data(),
     }))
 
-    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+    // Apply viewScope filter: restricted users see only their + partner's contacts
     if (viewScope === 'own' && member?.role !== 'admin') {
-      contacts = contacts.filter((c: any) => c.assignedTo === member.id)
+      const allowedIds = new Set<string>()
+      if (member.id) allowedIds.add(member.id)
+
+      // Load partner members (inviter or invited)
+      try {
+        const membersSnap = await db.collection('organizations').doc(orgId).collection('members')
+          .where('status', '==', 'active').get()
+
+        if (member.invitedBy) {
+          // Partner: include only the inviter
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.email === member.invitedBy) allowedIds.add(d.id)
+          })
+        } else if (member.email) {
+          // Owner: include partners they invited
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === member.email.toLowerCase()) allowedIds.add(d.id)
+          })
+        }
+      } catch {
+        // Fallback: keep only own data
+      }
+
+      contacts = contacts.filter((c: any) => c.assignedTo && allowedIds.has(c.assignedTo))
     }
 
     // Filtrar por busca se necessário

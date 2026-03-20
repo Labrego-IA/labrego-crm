@@ -291,14 +291,18 @@ export default function ConversaoPage() {
 
         const currentInvitedBy = member.invitedBy
         if (currentInvitedBy) {
+          // Partner: include only the inviter
           membersSnap.docs.forEach((doc) => {
             const data = doc.data()
-            // Companions: same invitedBy value (siblings)
-            if (data.invitedBy === currentInvitedBy) {
+            if (data.email === currentInvitedBy) {
               allowed.add(doc.id)
             }
-            // The inviter themselves (invitedBy stores the email)
-            if (data.email === currentInvitedBy) {
+          })
+        } else if (member.email) {
+          // Owner: include partners they invited
+          membersSnap.docs.forEach((doc) => {
+            const data = doc.data()
+            if (data.invitedBy === member.email.toLowerCase()) {
               allowed.add(doc.id)
             }
           })
@@ -344,8 +348,8 @@ export default function ConversaoPage() {
       const clientMap = new Map<string, ClientData>()
       clientsSnap.docs.forEach(d => {
         const data = d.data()
-        // Apply access filter: partners see only their own + companions' contacts
-        if (allowedMemberIds && data.assignedTo && !allowedMemberIds.has(data.assignedTo)) return
+        // Apply access filter: restricted users see only their + partner's contacts
+        if (allowedMemberIds && (!data.assignedTo || !allowedMemberIds.has(data.assignedTo))) return
         orgClientIds.add(d.id)
         clientMap.set(d.id, {
           id: d.id,

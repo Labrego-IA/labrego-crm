@@ -7,6 +7,7 @@ import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { usePlan } from '@/hooks/usePlan'
 import UpgradePrompt from '@/components/UpgradePrompt'
 import type { Funnel } from '@/types/funnel'
@@ -54,6 +55,7 @@ export default function FunnelHubPage() {
   const { orgId, member, userEmail } = useCrmUser()
   const { funnels, loading: loadingFunnels } = useVisibleFunnels()
   const { can, viewScope } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
   const { limits } = usePlan()
 
   const canManage = can('canManageFunnels')
@@ -155,13 +157,16 @@ export default function FunnelHubPage() {
   }, [icpProfiles])
 
   // Compute contacts per funnel
-  // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+  // Apply viewScope filter: restricted users see only their + partner's contacts
   const visibleClients = useMemo(() => {
     if (viewScope === 'own' && member?.id) {
+      if (allowedMemberIds) {
+        return allClients.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
+      }
       return allClients.filter((c) => c.assignedTo === member.id)
     }
     return allClients
-  }, [allClients, viewScope, member?.id])
+  }, [allClients, viewScope, member?.id, allowedMemberIds])
 
   const funnelStats = useMemo(() => {
     const stats: Record<string, { contacts: number; stages: number }> = {}

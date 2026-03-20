@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { db } from '@/lib/firebaseClient'
 import {
   collection,
@@ -98,6 +99,7 @@ function NovasCampanhasContent() {
   const router = useRouter()
   const { orgId, member } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { allowedMemberIds } = useAllowedMemberIds()
 
   /* ----------------------------- Wizard State -------------------------------- */
 
@@ -209,9 +211,13 @@ function NovasCampanhasContent() {
       (snap) => {
         let items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Cliente, 'id'>) }))
 
-        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
+        // Apply viewScope filter: restricted users see only their + partner's contacts
         if (viewScope === 'own' && member?.id) {
-          items = items.filter((c) => c.assignedTo === member.id)
+          if (allowedMemberIds) {
+            items = items.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
+          } else {
+            items = items.filter((c) => c.assignedTo === member.id)
+          }
         }
 
         // Client-side filtering (Firestore has limited composite query support)
@@ -322,7 +328,7 @@ function NovasCampanhasContent() {
 
     return () => unsub()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, filters, stages, viewScope, member?.id])
+  }, [orgId, filters, stages, viewScope, member?.id, allowedMemberIds])
 
   /* ==================== Derived State ==================== */
 
