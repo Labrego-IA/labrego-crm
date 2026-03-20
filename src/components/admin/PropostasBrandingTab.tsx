@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db, storage } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -16,6 +17,7 @@ interface PropostasBrandingTabProps {
 
 export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: PropostasBrandingTabProps) {
   const { orgId } = useCrmUser()
+  const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
   const [form, setForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
   const [initialForm, setInitialForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
   const [loading, setLoading] = useState(true)
@@ -43,10 +45,16 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
   }, [form, hasChanges, onDirtyChange])
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading || !settingsOwnerId) return
     const load = async () => {
       try {
-        const snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalBranding'))
+        // Try user-specific path first
+        const userDoc = doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'branding')
+        let snap = await getDoc(userDoc)
+        // Fall back to org-level path for backward compatibility
+        if (!snap.exists()) {
+          snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalBranding'))
+        }
         if (snap.exists()) {
           const loaded = { ...DEFAULT_PROPOSAL_BRANDING, ...(snap.data() as Partial<ProposalBranding>) }
           setForm(loaded)
@@ -59,7 +67,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
       }
     }
     load()
-  }, [orgId])
+  }, [orgId, accessLoading, settingsOwnerId])
 
   const handleChange = (field: keyof ProposalBranding, value: string | number | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -86,10 +94,14 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
   }
 
   const handleSave = async () => {
-    if (!orgId) return
+    if (!orgId || !settingsOwnerId) return
     setSaving(true)
     try {
-      await setDoc(doc(db, 'organizations', orgId, 'settings', 'proposalBranding'), form, { merge: true })
+      await setDoc(
+        doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'branding'),
+        form,
+        { merge: true },
+      )
       setInitialForm(form)
       onDirtyChange?.(false)
       toast.success('Configuracoes salvas!')

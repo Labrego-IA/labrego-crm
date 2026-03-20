@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { toast } from 'sonner'
@@ -66,6 +67,7 @@ const EMPTY_FIELD: EditingField = {
 
 export default function PropostasFieldsTab() {
   const { orgId } = useCrmUser()
+  const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
   const [fields, setFields] = useState<ProposalCustomField[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -78,12 +80,14 @@ export default function PropostasFieldsTab() {
   const [deletingFieldId, setDeletingFieldId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading || !settingsOwnerId) return
     const load = async () => {
       try {
-        const snap = await getDoc(
-          doc(db, 'organizations', orgId, 'settings', 'proposalCustomFields')
-        )
+        const userDoc = doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'customFields')
+        let snap = await getDoc(userDoc)
+        if (!snap.exists()) {
+          snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalCustomFields'))
+        }
         if (snap.exists()) {
           const data = snap.data()
           setFields(
@@ -99,10 +103,10 @@ export default function PropostasFieldsTab() {
       }
     }
     load()
-  }, [orgId])
+  }, [orgId, accessLoading, settingsOwnerId])
 
   const saveFields = async (updated: ProposalCustomField[]) => {
-    if (!orgId) return
+    if (!orgId || !settingsOwnerId) return
     setSaving(true)
     try {
       // Remove undefined values to avoid Firestore errors
@@ -114,9 +118,9 @@ export default function PropostasFieldsTab() {
         return clean
       })
       await setDoc(
-        doc(db, 'organizations', orgId, 'settings', 'proposalCustomFields'),
+        doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'customFields'),
         { fields: sanitized },
-        { merge: true }
+        { merge: true },
       )
       setFields(updated)
       toast.success('Campos salvos!')

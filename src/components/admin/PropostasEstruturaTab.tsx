@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { toast } from 'sonner'
@@ -10,15 +11,20 @@ import { DEFAULT_PROPOSAL_STRUCTURE, ALL_PDF_SECTIONS } from '@/types/proposalSt
 
 export default function PropostasEstruturaTab() {
   const { orgId } = useCrmUser()
+  const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
   const [sections, setSections] = useState<PdfSection[]>(ALL_PDF_SECTIONS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading || !settingsOwnerId) return
     const load = async () => {
       try {
-        const snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalStructure'))
+        const userDoc = doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'structure')
+        let snap = await getDoc(userDoc)
+        if (!snap.exists()) {
+          snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalStructure'))
+        }
         if (snap.exists()) {
           const data = snap.data() as Partial<ProposalStructure>
           if (data.sections?.length) {
@@ -38,7 +44,7 @@ export default function PropostasEstruturaTab() {
       }
     }
     load()
-  }, [orgId])
+  }, [orgId, accessLoading, settingsOwnerId])
 
   const toggleSection = (key: string) => {
     // Cover is always required
@@ -58,11 +64,15 @@ export default function PropostasEstruturaTab() {
   }
 
   const handleSave = async () => {
-    if (!orgId) return
+    if (!orgId || !settingsOwnerId) return
     setSaving(true)
     try {
       const structure: ProposalStructure = { sections }
-      await setDoc(doc(db, 'organizations', orgId, 'settings', 'proposalStructure'), structure, { merge: true })
+      await setDoc(
+        doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'structure'),
+        structure,
+        { merge: true },
+      )
       toast.success('Estrutura salva!')
     } catch (error) {
       console.error('Save error:', error)

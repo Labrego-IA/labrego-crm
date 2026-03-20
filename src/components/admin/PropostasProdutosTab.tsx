@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db } from '@/lib/firebaseClient'
 import {
   collection,
@@ -30,7 +31,8 @@ type SortColumn = 'name' | 'price' | 'hourValue' | 'margin' | 'tax' | 'schedule'
 type SortDirection = 'asc' | 'desc'
 
 export default function PropostasProdutosTab() {
-  const { orgId } = useCrmUser()
+  const { orgId, userUid } = useCrmUser()
+  const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<Product | null>(null)
@@ -43,19 +45,20 @@ export default function PropostasProdutosTab() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading) return
     loadProducts()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId])
+  }, [orgId, accessLoading])
 
   const loadProducts = async () => {
     if (!orgId) return
     setLoading(true)
     try {
       const snap = await getDocs(query(collection(db, 'products'), where('orgId', '==', orgId)))
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product))
-      items.sort((a, b) => a.name.localeCompare(b.name))
-      setProducts(items)
+      const allItems = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product))
+      const filtered = filterByAccess(allItems)
+      filtered.sort((a, b) => a.name.localeCompare(b.name))
+      setProducts(filtered)
     } catch (error) {
       console.error('Error loading products:', error)
       toast.error('Erro ao carregar produtos.')
@@ -129,6 +132,7 @@ export default function PropostasProdutosTab() {
         await addDoc(collection(db, 'products'), {
           ...form,
           orgId,
+          createdBy: userUid,
           createdAt: now,
           updatedAt: now,
         })

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db, storage } from '@/lib/firebaseClient'
 import {
   collection,
@@ -21,10 +22,12 @@ interface LogoItem {
   url: string
   name: string
   orgId: string
+  createdBy?: string
 }
 
 export default function PropostasLogosTab() {
-  const { orgId } = useCrmUser()
+  const { orgId, userUid } = useCrmUser()
+  const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
   const [logos, setLogos] = useState<LogoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -32,21 +35,21 @@ export default function PropostasLogosTab() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading) return
     loadLogos()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId])
+  }, [orgId, accessLoading])
 
   const loadLogos = async () => {
     if (!orgId) return
     setLoading(true)
     try {
       const snap = await getDocs(query(collection(db, 'logos'), where('orgId', '==', orgId)))
-      const items = snap.docs.map(d => ({
+      const allItems = snap.docs.map(d => ({
         id: d.id,
         ...d.data(),
       } as LogoItem))
-      setLogos(items)
+      setLogos(filterByAccess(allItems))
     } catch (error) {
       console.error('Error loading logos:', error)
       toast.error('Erro ao carregar logos.')
@@ -70,6 +73,7 @@ export default function PropostasLogosTab() {
           url,
           name: file.name.replace(/\.[^.]+$/, ''),
           orgId,
+          createdBy: userUid,
         })
       }
       toast.success(`${files.length} logo${files.length > 1 ? 's' : ''} enviado${files.length > 1 ? 's' : ''}!`)
