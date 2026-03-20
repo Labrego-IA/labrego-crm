@@ -213,7 +213,7 @@ async function processOrg(
 
   // Find eligible contacts — single-field query to avoid composite index requirement
   type ContactDoc = Record<string, unknown> & { id: string }
-  const eligible: { contact: ContactDoc; step: CadenceStep; stage: { id: string; name: string } }[] = []
+  const eligible: { contact: ContactDoc; step: CadenceStep; stage: { id: string; name: string; funnelId: string; callStartHour?: string; callEndHour?: string; maxCallsPerDay?: number } }[] = []
 
   const clientsSnap = await db.collection('clients')
     .where('orgId', '==', orgId)
