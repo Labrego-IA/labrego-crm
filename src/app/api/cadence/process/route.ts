@@ -122,25 +122,34 @@ async function enrollUnenrolledContacts(
     .where('orgId', '==', orgId)
     .get()
 
-  if (stepsSnap.empty) return
+  if (stepsSnap.empty) {
+    console.log(`[CADENCE] Org ${orgId}: no cadenceSteps documents found`)
+    return
+  }
 
   const steps = stepsSnap.docs
     .map(d => ({ id: d.id, ...d.data() } as CadenceStep))
     .filter(s => s.isActive)
 
+  console.log(`[CADENCE] Org ${orgId}: ${stepsSnap.size} cadenceSteps total, ${steps.length} active`)
+
   if (steps.length === 0) return
 
   // Find first step per stage (lowest order)
   const stageFirstSteps = new Map<string, CadenceStep>()
+  const skippedPaused: string[] = []
+  const skippedChild: string[] = []
   for (const step of steps) {
-    if (pausedStageIds.includes(step.stageId)) continue
+    if (pausedStageIds.includes(step.stageId)) { skippedPaused.push(step.id); continue }
     // Only consider root steps (no parentStepId)
-    if (step.parentStepId) continue
+    if (step.parentStepId) { skippedChild.push(step.id); continue }
     const existing = stageFirstSteps.get(step.stageId)
     if (!existing || step.order < existing.order) {
       stageFirstSteps.set(step.stageId, step)
     }
   }
+
+  console.log(`[CADENCE] Org ${orgId}: enroll check — ${stageFirstSteps.size} stages with root steps, ${skippedPaused.length} paused, ${skippedChild.length} child steps`)
 
   const now = new Date().toISOString()
 
@@ -149,12 +158,14 @@ async function enrollUnenrolledContacts(
     .where('orgId', '==', orgId)
     .get()
 
+  console.log(`[CADENCE] Org ${orgId}: ${clientsSnap.size} total contacts`)
+
   for (const [stageId, firstStep] of stageFirstSteps) {
     // Filter contacts in this stage without cadence enrollment
-    const unenrolled = clientsSnap.docs.filter(d => {
-      const data = d.data()
-      return data.funnelStage === stageId && !data.currentCadenceStepId
-    })
+    const inStage = clientsSnap.docs.filter(d => d.data().funnelStage === stageId)
+    const unenrolled = inStage.filter(d => !d.data().currentCadenceStepId)
+
+    console.log(`[CADENCE] Org ${orgId}: stage ${stageId} — ${inStage.length} contacts in stage, ${unenrolled.length} unenrolled`)
 
     if (unenrolled.length === 0) continue
 
@@ -229,13 +240,23 @@ async function processOrg(
     .where('orgId', '==', orgId)
     .get()
 
+  let noStepId = 0
+  let responded = 0
+  let stepNotFound = 0
+  let pendingCall = 0
+  let callCompleted = 0
+  let stagePaused = 0
+  let stageNotFound = 0
+  let waitingDays = 0
+
   for (const contactDoc of clientsSnap.docs) {
     const contact: ContactDoc = { id: contactDoc.id, ...contactDoc.data() }
     const stepId = contact.currentCadenceStepId as string
-    if (!stepId) continue
+    if (!stepId) { noStepId++; continue }
 
     // Check if responded — AI determines best stage
     if (contact.lastCadenceStepResponded) {
+      responded++
       await handleRespondedContact(db, orgId, contact, stageMap)
       results.processed++
       results.success++
@@ -243,16 +264,18 @@ async function processOrg(
     }
 
     const step = stepMap.get(stepId)
-    if (!step || !step.isActive) continue
+    if (!step || !step.isActive) { stepNotFound++; continue }
 
     // Check if waiting for phone call result from webhook
     if (contact.cadencePendingCallResult === true) {
+      pendingCall++
       // Webhook hasn't fired yet — skip, wait for next cron cycle
       continue
     }
 
     // Phone step completed, webhook confirmed not answered — advance now
     if (contact.cadencePendingCallResult === false && step.contactMethod === 'phone') {
+      callCompleted++
       await db.collection('clients').doc(contact.id).update({
         cadencePendingCallResult: null,
       })
@@ -265,10 +288,10 @@ async function processOrg(
     }
 
     // Check if stage is paused
-    if (pausedStageIds.includes(step.stageId)) continue
+    if (pausedStageIds.includes(step.stageId)) { stagePaused++; continue }
 
     const stage = stageMap.get(step.stageId)
-    if (!stage) continue
+    if (!stage) { stageNotFound++; continue }
 
     // Check timing: lastCadenceActionAt + daysAfterPrevious <= now
     // Usa comparação por dias corridos (meia-noite) para evitar pular steps
@@ -288,12 +311,14 @@ async function processOrg(
         now.getUTCDate()
       ))
       const daysDiff = Math.floor((nowDay.getTime() - lastActionDay.getTime()) / (1000 * 60 * 60 * 24))
-      if (daysDiff < step.daysAfterPrevious) continue
+      if (daysDiff < step.daysAfterPrevious) { waitingDays++; continue }
     }
     // If daysAfterPrevious === 0 or no lastCadenceActionAt, executes immediately
 
     eligible.push({ contact, step, stage })
   }
+
+  console.log(`[CADENCE] Org ${orgId}: processOrg filter — total=${clientsSnap.size}, noStepId=${noStepId}, responded=${responded}, stepNotFound=${stepNotFound}, pendingCall=${pendingCall}, callCompleted=${callCompleted}, stagePaused=${stagePaused}, stageNotFound=${stageNotFound}, waitingDays=${waitingDays}, eligible=${eligible.length}`)
 
   // ---- SEPARATE PHONE vs NON-PHONE ----
   const phoneEligible = eligible.filter(e => e.step.contactMethod === 'phone')
