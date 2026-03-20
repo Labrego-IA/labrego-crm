@@ -207,7 +207,7 @@ function CadenciaDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push(selectedFunnel ? `/funis?funnelId=${selectedFunnel}` : '/funis')}
+              onClick={() => router.push(selectedFunnel ? `/funil/${selectedFunnel}` : '/funil')}
               className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
               title="Voltar para o funil"
             >
