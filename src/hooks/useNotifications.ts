@@ -8,7 +8,7 @@ export interface AppNotification {
   id: string
   orgId: string
   userId: string
-  type: 'plan_upgrade' | 'plan_expiring' | 'plan_subscribed' | 'welcome' | 'system' | 'partner_invite'
+  type: 'plan_upgrade' | 'plan_expiring' | 'plan_subscribed' | 'welcome' | 'system' | 'partner_invite' | 'partner_invite_accepted' | 'partner_invite_rejected'
   title: string
   message: string
   read: boolean

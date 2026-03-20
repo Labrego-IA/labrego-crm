@@ -88,6 +88,66 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Send notification to the inviter about the response
+    try {
+      const inviterEmail = memberData.invitedBy
+      if (inviterEmail) {
+        const respondedByName = memberData.displayName || callerEmail
+
+        // Find inviter's userId and orgIds to send notification
+        const inviterMemberships = await db.collectionGroup('members')
+          .where('email', '==', inviterEmail)
+          .where('status', 'in', ['active', 'invited'])
+          .limit(5)
+          .get()
+
+        const inviterOrgIds = new Set<string>()
+        let inviterUserId = ''
+
+        inviterMemberships.docs.forEach(d => {
+          const memberOrgRef = d.ref.parent.parent
+          if (memberOrgRef) {
+            inviterOrgIds.add(memberOrgRef.id)
+          }
+          if (!inviterUserId) {
+            inviterUserId = d.data().userId
+          }
+        })
+
+        if (inviterUserId && inviterOrgIds.size > 0) {
+          const now = new Date().toISOString()
+          const notifType = action === 'accept' ? 'partner_invite_accepted' : 'partner_invite_rejected'
+          const title = action === 'accept'
+            ? 'Convite aceito!'
+            : 'Convite recusado'
+          const message = action === 'accept'
+            ? `${respondedByName} aceitou seu convite de parceria e agora faz parte da sua organizacao.`
+            : `${respondedByName} recusou seu convite de parceria.`
+
+          for (const inviterOrgId of inviterOrgIds) {
+            await db.collection('notifications').add({
+              orgId: inviterOrgId,
+              userId: inviterUserId,
+              type: notifType,
+              title,
+              message,
+              read: false,
+              createdAt: now,
+              metadata: {
+                respondedByEmail: callerEmail,
+                respondedByName: respondedByName,
+                inviteOrgId: orgId,
+                action,
+              },
+            })
+          }
+        }
+      }
+    } catch (notifErr) {
+      console.error('[respond-invite] Notification to inviter error:', notifErr)
+      // Non-critical: don't fail the response if notification fails
+    }
+
     return NextResponse.json({ success: true, action })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error'
