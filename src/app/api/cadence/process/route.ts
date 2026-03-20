@@ -193,7 +193,7 @@ async function processOrg(
   orgId: string,
   config: AutomationConfig,
   maxActions: number,
-  results: { processed: number; success: number; failed: number; skipped: number }
+  results: { processed: number; success: number; failed: number; skipped: number; errors: string[] }
 ) {
   const pausedStageIds = config.pausedStageIds
   const now = new Date()
