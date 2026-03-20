@@ -4,6 +4,7 @@ import { createContext, useContext, useMemo, ReactNode } from 'react'
 import type { OrgMember } from '@/types/organization'
 import type { PlanId } from '@/types/plan'
 import { useImpersonation } from './ImpersonationContext'
+import { usePartnerView } from './PartnerViewContext'
 
 interface CrmUserContextType {
   userEmail: string | null
@@ -42,21 +43,56 @@ export function CrmUserProvider({
   member = null,
 }: CrmUserContextType & { children: ReactNode }) {
   const { impersonatedMember, isImpersonating } = useImpersonation()
+  const { activeMembership, hasMultipleViews } = usePartnerView()
 
-  const value = useMemo(
-    () => ({
-      userEmail: isImpersonating ? impersonatedMember!.email : userEmail,
-      userUid: isImpersonating ? impersonatedMember!.userId : userUid,
-      userPhoto: isImpersonating ? (impersonatedMember!.photoUrl || null) : userPhoto,
+  const value = useMemo(() => {
+    // Priority: Impersonation > Partner View Switch > Default
+    if (isImpersonating && impersonatedMember) {
+      return {
+        userEmail: impersonatedMember.email,
+        userUid: impersonatedMember.userId,
+        userPhoto: impersonatedMember.photoUrl || null,
+        orgId,
+        orgName,
+        orgPlan,
+        orgCreatedAt,
+        orgPlanSubscribedAt,
+        member: impersonatedMember,
+      }
+    }
+
+    if (hasMultipleViews && activeMembership) {
+      return {
+        userEmail,
+        userUid,
+        userPhoto,
+        orgId: activeMembership.orgId,
+        orgName: activeMembership.orgName,
+        orgPlan: activeMembership.orgPlan,
+        orgCreatedAt: activeMembership.orgCreatedAt,
+        orgPlanSubscribedAt: activeMembership.orgPlanSubscribedAt,
+        member: activeMembership.member,
+      }
+    }
+
+    return {
+      userEmail,
+      userUid,
+      userPhoto,
       orgId,
       orgName,
       orgPlan,
       orgCreatedAt,
       orgPlanSubscribedAt,
-      member: isImpersonating ? impersonatedMember : member,
-    }),
-    [userEmail, userUid, userPhoto, orgId, orgName, orgPlan, orgCreatedAt, orgPlanSubscribedAt, member, impersonatedMember, isImpersonating],
-  )
+      member,
+    }
+  }, [
+    userEmail, userUid, userPhoto, orgId, orgName, orgPlan,
+    orgCreatedAt, orgPlanSubscribedAt, member,
+    impersonatedMember, isImpersonating,
+    activeMembership, hasMultipleViews,
+  ])
+
   return (
     <CrmUserContext.Provider value={value}>
       {children}

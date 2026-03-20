@@ -22,6 +22,7 @@ import { formatDateTime } from '@/lib/format'
 import { Toaster } from 'sonner'
 import { CrmUserProvider } from '@/contexts/CrmUserContext'
 import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext'
+import { PartnerViewProvider, usePartnerView, type MembershipInfo } from '@/contexts/PartnerViewContext'
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [impersonateMenuOpen, setImpersonateMenuOpen] = useState(false)
   const [orgMembers, setOrgMembers] = useState<OrgMember[]>([])
+  const [allMemberships, setAllMemberships] = useState<MembershipInfo[]>([])
   const impersonateMenuRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -201,33 +203,25 @@ export default function RootLayout({ children }: CrmLayoutProps) {
               // 1. Active own-org memberships (no invitedBy) first
               // 2. Active partner memberships second
               // 3. Skip suspended partner memberships (they lost access to the partner org)
-              let bestDoc = memberSnap.docs[0]
-              if (memberSnap.docs.length > 1) {
-                const sorted = [...memberSnap.docs].sort((a, b) => {
-                  const aData = a.data()
-                  const bData = b.data()
-                  // Skip suspended partner memberships — push them to the bottom
-                  const aSuspendedPartner = aData.status === 'suspended' && !!aData.invitedBy
-                  const bSuspendedPartner = bData.status === 'suspended' && !!bData.invitedBy
-                  if (aSuspendedPartner && !bSuspendedPartner) return 1
-                  if (bSuspendedPartner && !aSuspendedPartner) return -1
-                  // Active members first
-                  if (aData.status === 'active' && bData.status !== 'active') return -1
-                  if (bData.status === 'active' && aData.status !== 'active') return 1
-                  // Own org (no invitedBy) over partner org when both active
-                  if (!aData.invitedBy && bData.invitedBy) return -1
-                  if (aData.invitedBy && !bData.invitedBy) return 1
-                  // Then by joinedAt descending (most recent first)
-                  return (bData.joinedAt || '').localeCompare(aData.joinedAt || '')
-                })
-                bestDoc = sorted[0]
-              }
+              const sorted = [...memberSnap.docs].sort((a, b) => {
+                const aData = a.data()
+                const bData = b.data()
+                const aSuspendedPartner = aData.status === 'suspended' && !!aData.invitedBy
+                const bSuspendedPartner = bData.status === 'suspended' && !!bData.invitedBy
+                if (aSuspendedPartner && !bSuspendedPartner) return 1
+                if (bSuspendedPartner && !aSuspendedPartner) return -1
+                if (aData.status === 'active' && bData.status !== 'active') return -1
+                if (bData.status === 'active' && aData.status !== 'active') return 1
+                if (!aData.invitedBy && bData.invitedBy) return -1
+                if (aData.invitedBy && !bData.invitedBy) return 1
+                return (bData.joinedAt || '').localeCompare(aData.joinedAt || '')
+              })
+              const bestDoc = sorted[0]
+
               const memberData = { id: bestDoc.id, ...bestDoc.data() } as OrgMember
               // Block suspended non-partner members from accessing the app
-              // Suspended partners should fall back to their own org (handled by auto-provision below)
               if (memberData.status === 'suspended') {
                 if (memberData.invitedBy) {
-                  // Partner was blocked — skip this membership, auto-provision their own free org
                   console.info('[layout] Partner suspended, auto-provisioning own org:', memberData.email)
                 } else {
                   console.warn('[layout] Member is suspended, signing out:', memberData.email)
@@ -249,13 +243,11 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     console.error('[layout] Failed to activate member:', e)
                   }
                 }
-                // O path é organizations/{orgId}/members/{memberId}
                 const orgRef = bestDoc.ref.parent.parent
                 if (orgRef) {
                   const orgDoc = await getDoc(orgRef)
                   if (orgDoc.exists()) {
                     const orgData = orgDoc.data()
-                    // Skip suspended organizations
                     if (orgData?.status === 'suspended') {
                       console.warn('[layout] Organization is suspended:', orgRef.id)
                     }
@@ -268,6 +260,63 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   }
                 }
               }
+
+              // Load ALL active memberships for partner view switching
+              const loadedMemberships: MembershipInfo[] = []
+              for (const memberDoc of sorted) {
+                const mData = { id: memberDoc.id, ...memberDoc.data() } as OrgMember
+                // Skip suspended memberships
+                if (mData.status === 'suspended') continue
+                // Auto-activate invited members
+                if (mData.status === 'invited') {
+                  try {
+                    await updateDoc(memberDoc.ref, { status: 'active' })
+                    mData.status = 'active'
+                  } catch { /* already handled for bestDoc */ }
+                }
+                const mOrgRef = memberDoc.ref.parent.parent
+                if (!mOrgRef) continue
+                // For the bestDoc, reuse already fetched org data
+                if (memberDoc.id === bestDoc.id && !isSuspendedPartner) {
+                  const orgRef = bestDoc.ref.parent.parent
+                  if (orgRef) {
+                    const orgDoc = await getDoc(orgRef)
+                    if (orgDoc.exists()) {
+                      const orgData = orgDoc.data()
+                      loadedMemberships.push({
+                        member: mData,
+                        orgId: orgRef.id,
+                        orgName: orgData?.name || '',
+                        orgPlan: (orgData?.plan as PlanId) || 'free',
+                        orgCreatedAt: orgData?.createdAt || null,
+                        orgPlanSubscribedAt: orgData?.planSubscribedAt || null,
+                        isPartner: !!mData.invitedBy,
+                      })
+                    }
+                  }
+                } else {
+                  try {
+                    const mOrgDoc = await getDoc(mOrgRef)
+                    if (mOrgDoc.exists()) {
+                      const mOrgData = mOrgDoc.data()
+                      if (mOrgData?.status !== 'suspended') {
+                        loadedMemberships.push({
+                          member: mData,
+                          orgId: mOrgRef.id,
+                          orgName: mOrgData?.name || '',
+                          orgPlan: (mOrgData?.plan as PlanId) || 'free',
+                          orgCreatedAt: mOrgData?.createdAt || null,
+                          orgPlanSubscribedAt: mOrgData?.planSubscribedAt || null,
+                          isPartner: !!mData.invitedBy,
+                        })
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('[layout] Failed to load partner org data:', e)
+                  }
+                }
+              }
+              setAllMemberships(loadedMemberships)
             }
 
             // Auto-provision free org if user has no usable membership
@@ -466,9 +515,11 @@ export default function RootLayout({ children }: CrmLayoutProps) {
       </head>
       <body className="bg-slate-50">
         <ImpersonationProvider>
+        <PartnerViewProvider memberships={allMemberships}>
         <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} orgPlanSubscribedAt={orgPlanSubscribedAt} member={member}>
         <div className="flex flex-col h-screen overflow-hidden">
         <ImpersonationBanner orgPlan={orgPlan} />
+        <PartnerViewBanner />
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar - Desktop */}
           <aside
@@ -531,6 +582,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     return firstName ? `${greeting}, ${firstName}` : greeting
                   })()}
                 </span>
+
+                {/* Partner View Switcher - mobile */}
+                <PartnerViewSwitcherMobile />
 
                 {/* Greeting - desktop */}
                 <div className="hidden md:flex items-center gap-2">
@@ -651,6 +705,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   {/* Notification Bell */}
                   <NotificationBell />
 
+                  {/* Partner View Switcher */}
+                  <PartnerViewSwitcher />
+
                   {/* "Ver como" — visível somente para administradores */}
                   {isAdmin && orgMembers.length > 0 && (
                     <div className="relative" ref={impersonateMenuRef}>
@@ -744,6 +801,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         </div>
         </div>
         </CrmUserProvider>
+        </PartnerViewProvider>
         </ImpersonationProvider>
         <Toaster />
       </body>
@@ -913,6 +971,102 @@ function ImpersonationBanner({ orgPlan }: { orgPlan: PlanId | null }) {
           className="ml-3 px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded text-xs font-semibold transition-colors"
         >
           Sair
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function PartnerViewSwitcherMobile() {
+  const { activeView, hasMultipleViews, switchView } = usePartnerView()
+
+  if (!hasMultipleViews) return null
+
+  const isPartnerView = activeView === 'partner'
+
+  return (
+    <button
+      onClick={() => switchView(isPartnerView ? 'personal' : 'partner')}
+      className={`md:hidden flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors ${
+        isPartnerView
+          ? 'bg-indigo-100 text-indigo-700'
+          : 'bg-slate-100 text-slate-600'
+      }`}
+    >
+      {isPartnerView ? (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ) : (
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      )}
+      {isPartnerView ? 'Parceiro' : 'Pessoal'}
+    </button>
+  )
+}
+
+function PartnerViewSwitcher() {
+  const { activeView, hasMultipleViews, personalMembership, partnerMembership, switchView } = usePartnerView()
+
+  if (!hasMultipleViews) return null
+
+  const isPartnerView = activeView === 'partner'
+
+  return (
+    <div className="hidden md:flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+      <button
+        onClick={() => switchView('personal')}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+          !isPartnerView
+            ? 'bg-white text-primary-700 shadow-sm'
+            : 'text-slate-500 hover:text-slate-700'
+        }`}
+        title={`Conta pessoal${personalMembership ? ` — ${personalMembership.orgName}` : ''}`}
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        Pessoal
+      </button>
+      <button
+        onClick={() => switchView('partner')}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+          isPartnerView
+            ? 'bg-white text-indigo-700 shadow-sm'
+            : 'text-slate-500 hover:text-slate-700'
+        }`}
+        title={`Conta parceiro${partnerMembership ? ` — ${partnerMembership.orgName}` : ''}`}
+      >
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        Parceiro
+      </button>
+    </div>
+  )
+}
+
+function PartnerViewBanner() {
+  const { activeView, hasMultipleViews, partnerMembership, switchView } = usePartnerView()
+
+  if (!hasMultipleViews || activeView !== 'partner' || !partnerMembership) return null
+
+  return (
+    <div className="bg-indigo-500 text-white px-4 py-1.5 text-center text-sm font-medium shadow-md z-[60]">
+      <div className="flex items-center justify-center gap-2">
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <span>
+          Visualizando como <strong>Parceiro</strong> em <strong>{partnerMembership.orgName}</strong>
+        </span>
+        <button
+          onClick={() => switchView('personal')}
+          className="ml-3 px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded text-xs font-semibold transition-colors"
+        >
+          Voltar para conta pessoal
         </button>
       </div>
     </div>
