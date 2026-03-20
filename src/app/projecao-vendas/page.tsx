@@ -10,6 +10,7 @@ import {
   doc,
   orderBy,
   deleteField,
+  getDocs,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -79,7 +80,7 @@ function formatCurrencyShort(value: number): string {
 }
 
 export default function ProjecaoVendasPage() {
-  const { orgId, member } = useCrmUser()
+  const { orgId, member, userEmail } = useCrmUser()
   const { viewScope } = usePermissions()
 
   const [funnels, setFunnels] = useState<Funnel[]>([])
@@ -98,6 +99,9 @@ export default function ProjecaoVendasPage() {
   const [filterMaxProb, setFilterMaxProb] = useState<string>('')
   const [showFilters, setShowFilters] = useState(false)
 
+  // Allowed member IDs for partner-scoped access
+  const [allowedMemberIds, setAllowedMemberIds] = useState<Set<string> | null>(null)
+
   // Pagination state per funnel
   const [funnelPages, setFunnelPages] = useState<Record<string, number>>({})
 
@@ -107,6 +111,55 @@ export default function ProjecaoVendasPage() {
       setLoading(false)
     }
   }, [orgId])
+
+  // Compute allowed member IDs for partner-scoped access
+  useEffect(() => {
+    if (!orgId || !member || viewScope !== 'own') {
+      setAllowedMemberIds(null) // No filter needed — admin/full access
+      return
+    }
+
+    const fetchAllowedMembers = async () => {
+      try {
+        const membersSnap = await getDocs(
+          query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'))
+        )
+        const allowed = new Set<string>()
+
+        // Always include self
+        allowed.add(member.id)
+
+        if (member.invitedBy) {
+          // Current user is a partner: include companions (same invitedBy) + the inviter
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === member.invitedBy) {
+              allowed.add(d.id)
+            }
+            if (data.email === member.invitedBy) {
+              allowed.add(d.id)
+            }
+          })
+        } else if (userEmail) {
+          // Current user is org owner: include partners they invited
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === userEmail.toLowerCase()) {
+              allowed.add(d.id)
+            }
+          })
+        }
+
+        setAllowedMemberIds(allowed)
+      } catch (error) {
+        console.error('Erro ao carregar parceiros:', error)
+        // Fallback: only show own data
+        setAllowedMemberIds(new Set([member.id]))
+      }
+    }
+
+    fetchAllowedMembers()
+  }, [orgId, member, viewScope, userEmail])
 
   // Load funnels
   useEffect(() => {
@@ -156,8 +209,8 @@ export default function ProjecaoVendasPage() {
   // Filter clients: dealValue > 0 OR probability > 0, then apply user filters
   const eligibleClients = useMemo(() => {
     return clients.filter(c => {
-      // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
-      if (viewScope === 'own' && member?.id && c.assignedTo !== member.id) return false
+      // Apply viewScope filter: non-admin users see only their own + partners' contacts
+      if (allowedMemberIds && (!c.assignedTo || !allowedMemberIds.has(c.assignedTo))) return false
 
       const stage = stages.find(s => s.id === c.funnelStage)
       const prob = getClientProbability(c, stage)
@@ -188,7 +241,7 @@ export default function ProjecaoVendasPage() {
 
       return true
     })
-  }, [clients, stages, searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb, viewScope, member?.id])
+  }, [clients, stages, searchTerm, filterStage, filterMinValue, filterMaxValue, filterMinProb, filterMaxProb, allowedMemberIds])
 
   // Reset pagination when filters change
   useEffect(() => {
