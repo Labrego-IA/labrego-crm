@@ -111,7 +111,7 @@ export function useProposalDataAccess() {
    * Admin sees all; others see only items from allowed users.
    * Items without createdBy are visible to all (backward compatibility).
    */
-  const filterByAccess = <T extends Record<string, unknown>>(items: T[]): T[] => {
+  const filterByAccess = <T extends { createdBy?: string }>(items: T[]): T[] => {
     if (isAdmin || !allowedUserIds) return items
     return items.filter(
       (item) => !item.createdBy || allowedUserIds.includes(item.createdBy),
