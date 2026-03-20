@@ -27,16 +27,22 @@ export async function POST(request: NextRequest) {
   const now = new Date()
   const results = { enrolled: 0, processed: 0, success: 0, failed: 0, skipped: 0, errors: [] as string[] }
 
+  console.log('[CADENCE] Cron triggered at', now.toISOString())
+
   try {
     // Get all organizations
     const orgsSnap = await db.collection('organizations').get()
+    console.log(`[CADENCE] Found ${orgsSnap.size} organizations`)
 
     for (const orgDoc of orgsSnap.docs) {
       const orgId = orgDoc.id
 
       try {
         const config = await getAutomationConfig(orgId)
-        if (!config.enabled) continue
+        if (!config.enabled) {
+          console.log(`[CADENCE] Org ${orgId}: automation disabled, skipping`)
+          continue
+        }
 
         // Check work hours using org timezone
         const tz = config.timezone || 'America/Sao_Paulo'
@@ -44,6 +50,7 @@ export async function POST(request: NextRequest) {
         const [localHours, localMinutes] = localTime.split(':').map(Number)
         const currentTime = `${String(localHours).padStart(2, '0')}:${String(localMinutes).padStart(2, '0')}`
         if (currentTime < config.workHoursStart || currentTime > config.workHoursEnd) {
+          console.log(`[CADENCE] Org ${orgId}: outside work hours (${currentTime}, window: ${config.workHoursStart}-${config.workHoursEnd})`)
           continue
         }
 
@@ -54,11 +61,13 @@ export async function POST(request: NextRequest) {
         }
 
         const remaining = config.maxActionsPerDay - todayCount
+        console.log(`[CADENCE] Org ${orgId}: processing (todayCount=${todayCount}, remaining=${remaining}, time=${currentTime})`)
 
         // Auto-enroll contacts in stages with cadence steps
         await enrollUnenrolledContacts(db, orgId, config.pausedStageIds, results)
 
         await processOrg(db, orgId, config, remaining, results)
+        console.log(`[CADENCE] Org ${orgId}: done (enrolled=${results.enrolled}, processed=${results.processed}, success=${results.success}, failed=${results.failed})`)
 
         // Salvar stats do último processamento no automationConfig para visibilidade no frontend
         await db.collection('organizations').doc(orgId).collection('automationConfig').doc('global').set({
@@ -80,6 +89,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    console.log(`[CADENCE] Complete:`, JSON.stringify(results))
     return NextResponse.json({
       message: 'Cadence processing complete',
       ...results,
