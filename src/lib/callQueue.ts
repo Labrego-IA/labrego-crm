@@ -10,6 +10,7 @@ import { getAdminDb } from './firebaseAdmin'
 import { FieldValue } from 'firebase-admin/firestore'
 import { makeVapiCall, getActiveProspects, parseMultiplePhones, getVapiCallDetails, classifyCallResult } from './callRouting'
 import { canMakeCall, deductAction } from './credits'
+import { getAutomationConfig } from './automationConfig'
 import {
   CallQueue,
   CallQueueItem,
@@ -435,8 +436,11 @@ export async function processQueue(queueId: string): Promise<{
 
   // Carregar configs de etapa para validação de horário (se for fila de cadência)
   let stageConfigs: Map<string, { callStartHour?: string; callEndHour?: string }> | null = null
+  let orgTimezone = 'America/Sao_Paulo'
   if (queue.type === 'cadence' && orgId) {
     try {
+      const automationConf = await getAutomationConfig(orgId)
+      orgTimezone = automationConf.timezone || 'America/Sao_Paulo'
       const stagesSnap = await db.collection('organizations').doc(orgId).collection('funnelStages').get()
       stageConfigs = new Map()
       for (const doc of stagesSnap.docs) {
@@ -462,7 +466,9 @@ export async function processQueue(queueId: string): Promise<{
       const stageConf = stageConfigs.get(itemStageId)
       if (stageConf && stageConf.callStartHour && stageConf.callEndHour) {
         const nowDate = new Date()
-        const currentTime = `${String(nowDate.getHours()).padStart(2, '0')}:${String(nowDate.getMinutes()).padStart(2, '0')}`
+        const localTime = nowDate.toLocaleString('en-US', { timeZone: orgTimezone, hour: '2-digit', minute: '2-digit', hour12: false })
+        const [lh, lm] = localTime.split(':').map(Number)
+        const currentTime = `${String(lh).padStart(2, '0')}:${String(lm).padStart(2, '0')}`
         if (currentTime < stageConf.callStartHour || currentTime > stageConf.callEndHour) {
           // Fora do horário — cancelar este item
           await db.collection(COLLECTION_QUEUE_ITEMS).doc(item.id).update({
