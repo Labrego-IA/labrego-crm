@@ -158,6 +158,8 @@ export default function UsuariosPage() {
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchResult, setSearchResult] = useState<{ found: boolean; user: { uid: string; email: string; displayName: string; photoUrl: string | null } | null } | null>(null)
   const [searchError, setSearchError] = useState<string | null>(null)
+  const [emailSendError, setEmailSendError] = useState<string | null>(null)
+  const [showEmailErrorPopup, setShowEmailErrorPopup] = useState(false)
 
   const addHasChanges = addForm.email !== '' || addForm.role !== 'seller'
 
@@ -277,6 +279,7 @@ export default function UsuariosPage() {
       if (data.found && data.user) {
         setAddForm((f) => ({ ...f, displayName: data.user.displayName || '' }))
       } else {
+        // User not found in Firebase Auth — still allow invite (will be created)
         setAddForm((f) => ({ ...f, displayName: '' }))
       }
     } catch (error: unknown) {
@@ -306,7 +309,9 @@ export default function UsuariosPage() {
     }
 
     setAddLoading(true)
+    setEmailSendError(null)
     try {
+      // Step 1: Create the invite (works for both existing and new users)
       const res = await fetch('/api/admin/members/invite', {
         method: 'POST',
         headers: {
@@ -326,7 +331,51 @@ export default function UsuariosPage() {
         throw new Error(data.error || 'Erro ao convidar membro')
       }
 
-      toast.success(`Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao para aceitar.`)
+      const inviteData = await res.json()
+
+      // Step 2: Send email with invite link via configured provider (Hostinger, etc.)
+      try {
+        // Get org name for the email
+        const callerMember = members.find(m => m.email.toLowerCase() === userEmail.toLowerCase())
+        const inviterName = callerMember?.displayName || userEmail
+
+        const emailRes = await fetch('/api/admin/members/send-invite-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-email': userEmail,
+          },
+          body: JSON.stringify({
+            orgId,
+            email: addForm.email.trim(),
+            inviteToken: inviteData.inviteToken,
+            inviterName,
+            orgName: '', // Will use default from API
+            role: addForm.role,
+          }),
+        })
+
+        if (!emailRes.ok) {
+          const emailData = await emailRes.json()
+          if (emailData.error === 'no_email_provider') {
+            // No email provider — invite still created, just warn
+            toast.success(`Convite criado para ${addForm.email.trim()}. Porem nao foi possivel enviar email: provedor nao configurado. O usuario recebera uma notificacao in-app.`)
+          } else {
+            // Email sending failed — could mean email doesn't exist
+            setEmailSendError(emailData.message || 'Falha ao enviar email de convite.')
+            setShowEmailErrorPopup(true)
+            // Invite was already created, so we still close and succeed
+            toast.success(`Convite criado para ${addForm.email.trim()}. O email de convite nao pode ser enviado, mas o usuario recebera uma notificacao in-app.`)
+          }
+        } else {
+          toast.success(`Convite enviado por email para ${addForm.email.trim()}!`)
+        }
+      } catch (emailErr) {
+        console.error('Error sending invite email:', emailErr)
+        // Email failed but invite was created successfully
+        toast.success(`Convite criado para ${addForm.email.trim()}. O email nao pode ser enviado, mas o usuario recebera uma notificacao in-app.`)
+      }
+
       setAddForm({ email: '', displayName: '', role: 'seller' })
       setSearchResult(null)
       setSearchError(null)
@@ -1106,7 +1155,7 @@ export default function UsuariosPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Adicionar parceiro</h3>
                 <p className="text-sm text-gray-500 mt-0.5">
-                  Busque um usuario pelo email para convida-lo como parceiro. Ele recebera uma notificacao para aceitar o convite.
+                  Busque um usuario pelo email para convida-lo como parceiro. Um email de convite sera enviado com um link para aceitar.
                 </p>
               </div>
 
@@ -1193,17 +1242,17 @@ export default function UsuariosPage() {
                   </div>
                 )}
 
-                {/* Search result: user not found */}
+                {/* Search result: user not found — still allow invite via email */}
                 {searchResult && !searchResult.found && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 space-y-2">
                     <div className="flex items-center gap-2">
-                      <svg className="h-5 w-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      <svg className="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                       </svg>
-                      <p className="text-sm font-medium text-red-800">Usuario nao cadastrado</p>
+                      <p className="text-sm font-medium text-amber-800">Usuario nao cadastrado no app</p>
                     </div>
-                    <p className="text-xs text-red-700">
-                      Nenhum usuario cadastrado com este email no app. O usuario precisa criar uma conta primeiro para poder ser convidado.
+                    <p className="text-xs text-amber-700">
+                      Este email ainda nao possui conta no app. Um convite sera enviado por email com um link para aceitar a parceria. Ao clicar, o usuario podera se cadastrar ou fazer login.
                     </p>
                   </div>
                 )}
@@ -1235,7 +1284,7 @@ export default function UsuariosPage() {
                 <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
-                {searchResult?.found && !searchError && (
+                {searchResult && !searchError && (
                   <button
                     type="button"
                     onClick={handleAdd}
@@ -1248,7 +1297,12 @@ export default function UsuariosPage() {
                         Enviando...
                       </>
                     ) : (
-                      'Enviar convite'
+                      <>
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                        </svg>
+                        Enviar convite por email
+                      </>
                     )}
                   </button>
                 )}
@@ -1507,6 +1561,37 @@ export default function UsuariosPage() {
             </div>
           </Modal>
         )}
+        {/* =================== Email Send Error Popup =================== */}
+        {showEmailErrorPopup && (
+          <Modal isOpen onClose={() => setShowEmailErrorPopup(false)} size="sm" centered>
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                  <svg className="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Falha no envio do email</h3>
+                <p className="text-sm text-gray-500 mt-2">
+                  {emailSendError || 'Nao foi possivel enviar o email de convite. O email informado pode nao existir ou o provedor de email nao esta configurado corretamente.'}
+                </p>
+                <p className="text-xs text-gray-400 mt-3">
+                  O convite foi criado no sistema. O usuario podera aceitar pela notificacao in-app caso ja possua conta.
+                </p>
+              </div>
+              <div className="flex justify-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowEmailErrorPopup(false)}
+                  className={ui.btnPrimary}
+                >
+                  Entendi
+                </button>
+              </div>
+            </div>
+          </Modal>
+        )}
+
         {/* =================== Unsaved Changes Dialogs =================== */}
         <ConfirmCloseDialog
           isOpen={showAddConfirm}

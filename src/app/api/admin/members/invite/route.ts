@@ -3,6 +3,7 @@ import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
 import type { PlanId } from '@/types/plan'
+import crypto from 'crypto'
 
 export const runtime = 'nodejs'
 
@@ -116,6 +117,7 @@ export async function POST(req: NextRequest) {
 
     // Create member document with status 'pending' (permissions will be applied on accept)
     const now = new Date().toISOString()
+    const inviteToken = crypto.randomBytes(32).toString('hex')
     const rolePreset = ROLE_PRESETS[role as RolePreset]
     const permissions = {
       ...rolePreset,
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
       joinedAt: now,
       invitedBy: callerEmail,
       planId: orgPlan,
+      inviteToken,
     })
 
     // Create in-app notification for the invited user
@@ -186,7 +189,7 @@ export async function POST(req: NextRequest) {
       // Don't fail the request if notification fails — member was already created
     }
 
-    return NextResponse.json({ memberId: memberRef.id, userId })
+    return NextResponse.json({ memberId: memberRef.id, userId, inviteToken })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('[invite] Error:', error)

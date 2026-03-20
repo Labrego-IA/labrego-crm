@@ -5,7 +5,7 @@ import { getAdminDb } from '@/lib/firebaseAdmin'
 /*  Types                                                     */
 /* ═══════════════════════════════════════════════════════════ */
 
-export type EmailProviderId = 'gmail' | 'resend' | 'sendgrid'
+export type EmailProviderId = 'gmail' | 'resend' | 'sendgrid' | 'hostinger'
 
 export interface EmailResult {
   success: boolean
@@ -46,6 +46,10 @@ export interface EmailProviderConfig {
   gmailAppPassword?: string
   resendApiKey?: string
   sendgridApiKey?: string
+  hostingerUser?: string
+  hostingerPassword?: string
+  hostingerHost?: string
+  hostingerPort?: number
 }
 
 export const DEFAULT_EMAIL_CONFIG: EmailProviderConfig = {
@@ -58,6 +62,7 @@ export const PROVIDER_LABELS: Record<EmailProviderId, string> = {
   gmail: 'Gmail (SMTP)',
   resend: 'Resend',
   sendgrid: 'SendGrid',
+  hostinger: 'Hostinger (SMTP)',
 }
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -90,6 +95,8 @@ export function createProvider(
       return createResendProvider(config)
     case 'sendgrid':
       return createSendGridProvider(config)
+    case 'hostinger':
+      return createHostingerProvider(config)
     case 'gmail':
     default:
       return createGmailProvider(config)
@@ -424,6 +431,62 @@ function createSendGridProvider(config: EmailProviderConfig): EmailProvider {
       }
 
       return { total: emails.length, sent, failed, results, provider: 'sendgrid' }
+    },
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  Hostinger Provider (SMTP)                                 */
+/* ═══════════════════════════════════════════════════════════ */
+
+function createHostingerProvider(config: EmailProviderConfig): EmailProvider {
+  return {
+    id: 'hostinger',
+    name: 'Hostinger (SMTP)',
+    async send(to, subject, html, from) {
+      try {
+        const nodemailer = await import('nodemailer')
+        const user = config.hostingerUser?.trim() || process.env.HOSTINGER_EMAIL_USER?.trim()
+        const pass = config.hostingerPassword?.trim() || process.env.HOSTINGER_EMAIL_PASS?.trim()
+        const host = config.hostingerHost?.trim() || process.env.HOSTINGER_SMTP_HOST?.trim() || 'smtp.hostinger.com'
+        const port = config.hostingerPort || Number(process.env.HOSTINGER_SMTP_PORT) || 465
+
+        if (!user || !pass) {
+          return { success: false, provider: 'hostinger', error: 'Credenciais Hostinger nao configuradas. Configure HOSTINGER_EMAIL_USER e HOSTINGER_EMAIL_PASS.' }
+        }
+
+        const transporter = nodemailer.default.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+        })
+
+        const info = await transporter.sendMail({
+          from: from || `${config.fromName || 'Labrego CRM'} <${user}>`,
+          to,
+          subject,
+          html,
+        })
+
+        return { success: true, messageId: info.messageId, provider: 'hostinger' }
+      } catch (err) {
+        return { success: false, provider: 'hostinger', error: err instanceof Error ? err.message : 'Hostinger send failed' }
+      }
+    },
+    async sendBulk(emails, from) {
+      const results: EmailResult[] = []
+      let sent = 0
+      let failed = 0
+
+      for (const email of emails) {
+        const result = await this.send(email.to, email.subject, email.html, from)
+        results.push(result)
+        if (result.success) sent++
+        else failed++
+      }
+
+      return { total: emails.length, sent, failed, results, provider: 'hostinger' }
     },
   }
 }

@@ -27,6 +27,7 @@ import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
 import PageAccessGuard from '@/components/PageAccessGuard'
 import NotificationBell from '@/components/NotificationBell'
+import InviteTokenPopup from '@/components/InviteTokenPopup'
 // useSuperAdmin removido — usado apenas no CrmSidebar
 
 const inter = Inter({
@@ -62,7 +63,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const lastLoggedRouteRef = useRef<string | null>(null)
-  const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
+  const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password' || pathname === '/invite'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
   // Apenas admin da organização pode usar "Ver como"
   // systemRole 'admin' (definido via super-admin) também concede acesso
@@ -403,6 +404,25 @@ export default function RootLayout({ children }: CrmLayoutProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, isPublicPage])
+
+  // Pending invite token from email link
+  const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (checkingAuth || !userEmail || !userUid) return
+    // Check localStorage for pending invite token (set by /invite page)
+    const token = typeof window !== 'undefined' ? localStorage.getItem('pendingInviteToken') : null
+    if (token) {
+      setPendingInviteToken(token)
+    }
+  }, [checkingAuth, userEmail, userUid])
+
+  const handleInviteTokenHandled = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('pendingInviteToken')
+    }
+    setPendingInviteToken(null)
+  }
 
   // Relógio
   useEffect(() => {
@@ -803,6 +823,14 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         </CrmUserProvider>
         </PartnerViewProvider>
         </ImpersonationProvider>
+        {/* Invite Token Popup — shown when user logs in/registers after clicking email invite link */}
+        {pendingInviteToken && userEmail && (
+          <InviteTokenPopup
+            token={pendingInviteToken}
+            userEmail={userEmail}
+            onHandled={handleInviteTokenHandled}
+          />
+        )}
         <Toaster />
       </body>
     </html>
