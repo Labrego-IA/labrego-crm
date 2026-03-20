@@ -808,16 +808,24 @@ export default function ContatosPage() {
             }
 
             const contactRef = doc(collection(db, 'clients'))
+            const now = new Date().toISOString()
             await setDoc(contactRef, {
               ...contact,
               orgId,
+              status: contact.status || 'Lead',
+              // Assign imported contact to current user so it's visible under viewScope 'own'
+              ...(!contact.assignedTo && member?.id && {
+                assignedTo: member.id,
+                assignedToName: contact.assignedToName || member.displayName || '',
+                assignedAt: now,
+              }),
               ...(importStageId && importFunnelId && {
                 funnelId: importFunnelId,
                 funnelStage: importStageId,
-                funnelStageUpdatedAt: new Date().toISOString(),
+                funnelStageUpdatedAt: now,
               }),
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
+              createdAt: now,
+              updatedAt: now,
             })
 
             // Track newly imported names and documents to avoid duplicates within the import itself
