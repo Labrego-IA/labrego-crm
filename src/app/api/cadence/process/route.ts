@@ -268,9 +268,25 @@ async function processOrg(
 
     // Check if waiting for phone call result from webhook
     if (contact.cadencePendingCallResult === true) {
-      pendingCall++
-      // Webhook hasn't fired yet — skip, wait for next cron cycle
-      continue
+      // Timeout: if pending for more than 2 hours, unstick the contact
+      const lastAction = contact.lastCadenceActionAt as string | undefined
+      if (lastAction) {
+        const pendingSince = new Date(lastAction).getTime()
+        const twoHoursMs = 2 * 60 * 60 * 1000
+        if (Date.now() - pendingSince > twoHoursMs) {
+          console.log(`[CADENCE] Org ${orgId}: contact ${contact.id} pending call timed out (>2h), unsticking`)
+          await db.collection('clients').doc(contact.id).update({
+            cadencePendingCallResult: false,
+          })
+          // Let it fall through to the callCompleted check below
+        } else {
+          pendingCall++
+          continue
+        }
+      } else {
+        pendingCall++
+        continue
+      }
     }
 
     // Phone step completed, webhook confirmed not answered — advance now
