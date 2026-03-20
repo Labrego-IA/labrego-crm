@@ -211,10 +211,10 @@ function NovasCampanhasContent() {
       (snap) => {
         let items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Cliente, 'id'>) }))
 
-        // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+        // Apply viewScope filter: restricted users see only their + partner's contacts
         if (viewScope === 'own' && member?.id) {
           if (allowedMemberIds) {
-            items = items.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+            items = items.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
           } else {
             items = items.filter((c) => c.assignedTo === member.id)
           }

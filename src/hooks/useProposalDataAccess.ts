@@ -48,7 +48,7 @@ export function useProposalDataAccess() {
     const loadAccess = async () => {
       try {
         if (isPartner && member.invitedBy) {
-          // Partner user: find inviter + companions with same invitedBy
+          // Partner user: find only the inviter
           const membersSnap = await getDocs(
             query(
               collection(db, 'organizations', orgId, 'members'),
@@ -65,10 +65,6 @@ export function useProposalDataAccess() {
             if (data.email === member.invitedBy) {
               ids.push(data.userId)
               inviterUserId = data.userId
-            }
-            // Companions (same invitedBy, different user)
-            if (data.invitedBy === member.invitedBy && data.userId !== userUid) {
-              ids.push(data.userId)
             }
           })
 

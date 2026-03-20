@@ -157,11 +157,11 @@ export default function FunnelHubPage() {
   }, [icpProfiles])
 
   // Compute contacts per funnel
-  // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+  // Apply viewScope filter: restricted users see only their + partner's contacts
   const visibleClients = useMemo(() => {
     if (viewScope === 'own' && member?.id) {
       if (allowedMemberIds) {
-        return allClients.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+        return allClients.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
       }
       return allClients.filter((c) => c.assignedTo === member.id)
     }

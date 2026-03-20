@@ -863,10 +863,10 @@ export default function ContatosPage() {
   const filteredClients = useMemo(() => {
     let result = [...clients]
 
-    // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+    // Apply viewScope filter: restricted users see only their + partner's contacts
     if (viewScope === 'own' && member?.id) {
       if (allowedMemberIds) {
-        result = result.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+        result = result.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
       } else {
         result = result.filter((c) => c.assignedTo === member.id)
       }

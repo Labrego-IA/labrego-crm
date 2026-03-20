@@ -130,12 +130,9 @@ export default function ProjecaoVendasPage() {
         allowed.add(member.id)
 
         if (member.invitedBy) {
-          // Current user is a partner: include companions (same invitedBy) + the inviter
+          // Current user is a partner: include only the inviter
           membersSnap.docs.forEach((d) => {
             const data = d.data()
-            if (data.invitedBy === member.invitedBy) {
-              allowed.add(d.id)
-            }
             if (data.email === member.invitedBy) {
               allowed.add(d.id)
             }

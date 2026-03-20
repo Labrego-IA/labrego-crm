@@ -11,8 +11,8 @@ import { usePermissions } from './usePermissions'
  *
  * Rules:
  * - Admin or viewScope !== 'own': returns null (no filter — see all)
- * - Partner (has invitedBy): sees own + inviter + companions (same invitedBy)
- * - Owner (no invitedBy): sees own + all partners they invited
+ * - Partner (has invitedBy): sees own data + inviter's data
+ * - Owner (no invitedBy): sees own data + data from partners they invited
  *
  * Returns:
  * - allowedMemberIds: Set of member IDs visible (null = no filter)
@@ -59,22 +59,16 @@ export function useAllowedMemberIds() {
         if (userEmail) emails.add(userEmail.toLowerCase())
 
         if (member.invitedBy) {
-          // Current user is a partner: include companions (same invitedBy) + the inviter
+          // Current user is a partner: include ONLY the inviter
           membersSnap.docs.forEach((d) => {
             const data = d.data()
-            // Companions: same invitedBy value (siblings)
-            if (data.invitedBy === member.invitedBy) {
-              ids.add(d.id)
-              if (data.email) emails.add(data.email.toLowerCase())
-            }
-            // The inviter themselves
             if (data.email === member.invitedBy) {
               ids.add(d.id)
               if (data.email) emails.add(data.email.toLowerCase())
             }
           })
         } else if (userEmail) {
-          // Current user is org owner: include all partners they invited
+          // Current user is org owner: include partners they invited
           membersSnap.docs.forEach((d) => {
             const data = d.data()
             if (data.invitedBy === userEmail.toLowerCase()) {

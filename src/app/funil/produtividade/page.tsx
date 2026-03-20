@@ -305,10 +305,10 @@ export default function ProdutividadePage() {
       const clientsMap: { [id: string]: { name: string; stage: string } } = {}
       clientsSnap.docs.forEach((doc) => {
         const data = doc.data()
-        // Apply viewScope filter: non-admin users with 'own' scope see only their + partners' contacts
+        // Apply viewScope filter: restricted users see only their + partner's contacts
         if (viewScope === 'own' && member?.id) {
           if (allowedMemberIds) {
-            if (data.assignedTo && !allowedMemberIds.has(data.assignedTo)) return
+            if (!data.assignedTo || !allowedMemberIds.has(data.assignedTo)) return
           } else if (data.assignedTo !== member.id) {
             return
           }

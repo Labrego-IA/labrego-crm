@@ -943,10 +943,10 @@ export default function FunilDetailPage() {
   const filteredClients = useMemo(() => {
     let result = clients
 
-    // Apply viewScope filter: sellers see only their + partners' leads
+    // Apply viewScope filter: restricted users see only their + partner's leads
     if (viewScope === 'own' && member?.id) {
       if (allowedMemberIds) {
-        result = result.filter((c) => !c.assignedTo || allowedMemberIds.has(c.assignedTo))
+        result = result.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
       } else {
         result = result.filter((c) => c.assignedTo === member.id)
       }

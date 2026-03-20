@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
     const normalizedPhone = normalizePhone(phone)
     const db = getAdminDb()
 
-    // Build allowed member IDs set for partner group access
+    // Build allowed member IDs set for partner access
     let allowedIds: Set<string> | null = null
     if (isOwn) {
       allowedIds = new Set<string>()
@@ -45,12 +45,13 @@ export async function GET(req: NextRequest) {
         const membersSnap = await db.collection('organizations').doc(orgId).collection('members')
           .where('status', '==', 'active').get()
         if (member.invitedBy) {
+          // Partner: include only the inviter
           membersSnap.docs.forEach((d) => {
             const data = d.data()
-            if (data.invitedBy === member.invitedBy) allowedIds!.add(d.id)
             if (data.email === member.invitedBy) allowedIds!.add(d.id)
           })
         } else if (member.email) {
+          // Owner: include partners they invited
           membersSnap.docs.forEach((d) => {
             const data = d.data()
             if (data.invitedBy === member.email.toLowerCase()) allowedIds!.add(d.id)
@@ -61,9 +62,9 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Helper: check if contact belongs to user's partner group when viewScope is 'own'
+    // Helper: check if contact belongs to user's partner when viewScope is 'own'
     const canAccess = (data: Record<string, unknown>) =>
-      !allowedIds || !data.assignedTo || allowedIds.has(data.assignedTo as string)
+      !allowedIds || (!!data.assignedTo && allowedIds.has(data.assignedTo as string))
 
     // Buscar por telefone exato primeiro (filtrado por orgId)
     let snapshot = await db
