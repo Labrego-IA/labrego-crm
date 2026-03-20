@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePartnerView } from '@/contexts/PartnerViewContext'
 import { auth, db, storage } from '@/lib/firebaseClient'
 import {
   EmailAuthProvider,
@@ -36,6 +37,8 @@ const DELETE_CONFIRMATION_PHRASE = 'EXCLUIR MINHA CONTA'
 
 export default function PerfilPage() {
   const { userEmail, userUid, userPhoto, orgId, orgName, orgPlan, member } = useCrmUser()
+  const { activeView, hasMultipleViews, partnerMembership } = usePartnerView()
+  const isPartnerView = hasMultipleViews && activeView === 'partner'
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { plan, limits, display } = usePlan()
@@ -235,7 +238,7 @@ export default function PerfilPage() {
     <div className="space-y-6">
       {/* Profile Card */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        <div className="h-28 bg-gradient-to-r from-primary-600 via-primary-500 to-accent relative">
+        <div className={`h-28 relative ${isPartnerView ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500' : 'bg-gradient-to-r from-primary-600 via-primary-500 to-accent'}`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-50" />
         </div>
 
@@ -290,8 +293,16 @@ export default function PerfilPage() {
                 {member?.displayName || userDisplayName || userEmail?.split('@')[0] || 'Usuário'}
               </h2>
               <div className="flex items-center gap-2 mt-1">
+                {isPartnerView && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Parceiro
+                  </span>
+                )}
                 {member?.role && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isPartnerView ? 'bg-indigo-50 text-indigo-600' : 'bg-primary-100 text-primary-700'}`}>
                     {ROLE_LABELS[member.role] || member.role}
                   </span>
                 )}
@@ -316,28 +327,33 @@ export default function PerfilPage() {
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          Informações da Conta
+          {isPartnerView ? 'Informações do Parceiro' : 'Informações da Conta'}
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InfoField label="E-mail" value={userEmail || '--'} />
           <InfoField label="Nome" value={member?.displayName || userDisplayName || '--'} />
-          <InfoField
-            label="Telefone"
-            value={
-              userPhone
-                ? userPhone.length === 11
-                  ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 7)}-${userPhone.slice(7)}`
-                  : userPhone.length === 10
-                    ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 6)}-${userPhone.slice(6)}`
-                    : userPhone
-                : '--'
-            }
-          />
-          <InfoField label="Organização" value={orgName || '--'} />
+          {!isPartnerView && (
+            <InfoField
+              label="Telefone"
+              value={
+                userPhone
+                  ? userPhone.length === 11
+                    ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 7)}-${userPhone.slice(7)}`
+                    : userPhone.length === 10
+                      ? `(${userPhone.slice(0, 2)}) ${userPhone.slice(2, 6)}-${userPhone.slice(6)}`
+                      : userPhone
+                  : '--'
+              }
+            />
+          )}
+          <InfoField label={isPartnerView ? 'Organização parceira' : 'Organização'} value={orgName || '--'} />
           <InfoField label="Cargo" value={member?.role ? (ROLE_LABELS[member.role] || member.role) : '--'} />
+          {isPartnerView && member?.invitedBy && (
+            <InfoField label="Convidado por" value={member.invitedBy} />
+          )}
           <InfoField
-            label="Membro desde"
+            label={isPartnerView ? 'Parceiro desde' : 'Membro desde'}
             value={
               member?.joinedAt
                 ? new Date(member.joinedAt).toLocaleDateString('pt-BR', {
@@ -810,27 +826,42 @@ export default function PerfilPage() {
     </div>
   )
 
-  const tabs = [
-    { key: 'info', label: 'Informações', content: infoTab },
-    { key: 'security', label: 'Segurança', content: securityTab },
-    { key: 'plan', label: 'Meu Plano', content: planTab },
-  ]
+  const tabs = isPartnerView
+    ? [
+        { key: 'info', label: 'Informações', content: infoTab },
+        { key: 'plan', label: 'Plano da Organização', content: planTab },
+      ]
+    : [
+        { key: 'info', label: 'Informações', content: infoTab },
+        { key: 'security', label: 'Segurança', content: securityTab },
+        { key: 'plan', label: 'Meu Plano', content: planTab },
+      ]
+
+  // Reset to 'info' tab when switching views if current tab doesn't exist
+  const validTabKeys = tabs.map(t => t.key)
+  const effectiveTab = validTabKeys.includes(activeTab) ? activeTab : 'info'
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Meu Perfil</h1>
-          <p className="text-sm text-slate-500 mt-1">Gerencie suas informações pessoais e configurações de conta</p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isPartnerView ? 'Perfil Parceiro' : 'Meu Perfil'}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {isPartnerView
+              ? `Visualizando seus dados como parceiro em ${orgName || 'organização parceira'}`
+              : 'Gerencie suas informações pessoais e configurações de conta'}
+          </p>
         </div>
 
         {/* Tabs */}
-        <Tabs items={tabs} active={activeTab} onChange={setActiveTab} />
+        <Tabs items={tabs} active={effectiveTab} onChange={setActiveTab} />
       </div>
 
-      {/* Delete Account Modal */}
-      <Modal isOpen={showDeleteModal} onClose={closeDeleteModal} size="md" centered>
+      {/* Delete Account Modal — only in personal view */}
+      {!isPartnerView && <Modal isOpen={showDeleteModal} onClose={closeDeleteModal} size="md" centered>
         <div className="space-y-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
@@ -902,7 +933,7 @@ export default function PerfilPage() {
             </button>
           </div>
         </div>
-      </Modal>
+      </Modal>}
     </div>
   )
 }
