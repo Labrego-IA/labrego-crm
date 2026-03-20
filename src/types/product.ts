@@ -13,6 +13,7 @@ export interface Product {
   margin: number
   tax: number
   schedule: ProductScheduleEntry[]
+  createdBy?: string
   createdAt: string
   updatedAt: string
 }

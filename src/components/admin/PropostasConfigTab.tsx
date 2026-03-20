@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { toast } from 'sonner'
@@ -16,6 +17,7 @@ interface PropostasConfigTabProps {
 
 export default function PropostasConfigTab({ onDirtyChange, onResetRef }: PropostasConfigTabProps) {
   const { orgId } = useCrmUser()
+  const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
   const [form, setForm] = useState<ProposalConfig>(DEFAULT_PROPOSAL_CONFIG)
   const [initialForm, setInitialForm] = useState<ProposalConfig>(DEFAULT_PROPOSAL_CONFIG)
   const [loading, setLoading] = useState(true)
@@ -33,10 +35,14 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
   }, [onResetRef, resetForm])
 
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading || !settingsOwnerId) return
     const load = async () => {
       try {
-        const snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalConfig'))
+        const userDoc = doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'config')
+        let snap = await getDoc(userDoc)
+        if (!snap.exists()) {
+          snap = await getDoc(doc(db, 'organizations', orgId, 'settings', 'proposalConfig'))
+        }
         if (snap.exists()) {
           const loaded = { ...DEFAULT_PROPOSAL_CONFIG, ...(snap.data() as Partial<ProposalConfig>) }
           setForm(loaded)
@@ -49,7 +55,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
       }
     }
     load()
-  }, [orgId])
+  }, [orgId, accessLoading, settingsOwnerId])
 
   const hasChanges = useCallback(() => {
     return (Object.keys(initialForm) as (keyof ProposalConfig)[]).some(
@@ -64,10 +70,14 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
   }, [form, isEditing, hasChanges, onDirtyChange])
 
   const handleSave = async () => {
-    if (!orgId) return
+    if (!orgId || !settingsOwnerId) return
     setSaving(true)
     try {
-      await setDoc(doc(db, 'organizations', orgId, 'settings', 'proposalConfig'), form, { merge: true })
+      await setDoc(
+        doc(db, 'organizations', orgId, 'userSettings', settingsOwnerId, 'proposals', 'config'),
+        form,
+        { merge: true },
+      )
       setInitialForm(form)
       setIsEditing(false)
       onDirtyChange?.(false)

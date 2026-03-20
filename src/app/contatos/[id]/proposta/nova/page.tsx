@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import {
   collection,
   addDoc,
@@ -52,6 +53,7 @@ export default function NewProposalCRMPage() {
   const params = useParams<{ id: string }>()
   const clientId = params?.id
   const { orgId } = useCrmUser()
+  const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
   const { branding } = useProposalBranding()
   const { structure } = useProposalStructure()
   const { fields: customFields } = useProposalCustomFields()
@@ -115,7 +117,7 @@ export default function NewProposalCRMPage() {
 
   // Load data
   useEffect(() => {
-    if (!orgId) return
+    if (!orgId || accessLoading) return
 
     const loadData = async () => {
       try {
@@ -126,14 +128,17 @@ export default function NewProposalCRMPage() {
           clientId ? getDoc(doc(db, 'clients', clientId)) : null,
         ])
 
+        const allProducts = productsSnap.docs
+          .map(d => ({ id: d.id, ...(d.data() as any) }))
+          .map(p => ({ ...p, price: p.price ?? 0 }))
         setProducts(
-          productsSnap.docs
-            .map(d => ({ id: d.id, ...(d.data() as any) }))
-            .map(p => ({ ...p, price: p.price ?? 0 }))
-            .sort((a, b) => a.name.localeCompare(b.name))
+          filterByAccess(allProducts).sort((a, b) => a.name.localeCompare(b.name))
         )
 
-        const logoUrls = logosSnap.docs.map(d => (d.data() as any).url as string)
+        const filteredLogos = filterByAccess(
+          logosSnap.docs.map(d => ({ id: d.id, ...(d.data() as any) }))
+        )
+        const logoUrls = filteredLogos.map(d => d.url as string)
         const base64Logos = await convertLogosToBase64(logoUrls)
         setLogos(base64Logos)
 
@@ -160,7 +165,8 @@ export default function NewProposalCRMPage() {
     }
 
     loadData()
-  }, [clientId, orgId, setValue])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientId, orgId, setValue, accessLoading])
 
   // Reactive values
   const contextValue = useWatch({ control, name: 'context' })
