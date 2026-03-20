@@ -778,11 +778,21 @@ export default function ContatosPage() {
           setImportProgress({ current: 0, total })
 
           // Build sets of existing names and documents for duplicate detection
+          // Only check duplicates against contacts visible to the current user
+          // (own contacts for personal view, or partner group contacts)
+          let visibleClients = clients
+          if (viewScope === 'own' && member?.id) {
+            if (allowedMemberIds) {
+              visibleClients = clients.filter((c) => c.assignedTo && allowedMemberIds.has(c.assignedTo))
+            } else {
+              visibleClients = clients.filter((c) => c.assignedTo === member.id)
+            }
+          }
           const existingNames = new Set(
-            clients.map((c) => c.name.trim().toLowerCase())
+            visibleClients.map((c) => c.name.trim().toLowerCase())
           )
           const existingDocs = new Set(
-            clients
+            visibleClients
               .filter((c) => c.document)
               .map((c) => c.document!.replace(/\D/g, ''))
               .filter((d) => d.length > 0)
