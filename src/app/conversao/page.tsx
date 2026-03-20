@@ -240,14 +240,18 @@ function ConversionTable({
 
 export default function ConversaoPage() {
   const { orgId, member } = useCrmUser()
-  const { viewScope } = usePermissions()
+  const { viewScope, isPartner, isSystemAdmin } = usePermissions()
   const pageRef = useRef<HTMLDivElement>(null)
+
+  // Determine if user has full access (system admin, org admin, or owner)
+  const hasFullAccess = isSystemAdmin || member?.role === 'admin' || !isPartner
 
   // ── State ──────────────────────────────────────────────
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
   const [movementLogs, setMovementLogs] = useState<MovementLog[]>([])
   const [clientDataMap, setClientDataMap] = useState<Map<string, ClientData>>(new Map())
   const [loading, setLoading] = useState(true)
+  const [allowedMemberIds, setAllowedMemberIds] = useState<Set<string> | null>(null) // null = no filter
   const [periodType, setPeriodType] = useState<PeriodType>('week')
   const [dateRange, setDateRange] = useState<{ start: Date; end: Date }>(() => {
     const end = new Date()
@@ -267,6 +271,51 @@ export default function ConversaoPage() {
       setLoading(false)
     }
   }, [orgId])
+
+  // ── Fetch allowed member IDs for partner access control ──
+  useEffect(() => {
+    if (!orgId || !member || hasFullAccess) {
+      setAllowedMemberIds(null) // No filter needed — full access
+      return
+    }
+
+    const fetchCompanions = async () => {
+      try {
+        const membersSnap = await getDocs(
+          query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'))
+        )
+        const allowed = new Set<string>()
+
+        // Always include self
+        if (member.id) allowed.add(member.id)
+
+        const currentInvitedBy = member.invitedBy
+        if (currentInvitedBy) {
+          membersSnap.docs.forEach((doc) => {
+            const data = doc.data()
+            // Companions: same invitedBy value (siblings)
+            if (data.invitedBy === currentInvitedBy) {
+              allowed.add(doc.id)
+            }
+            // The inviter themselves (invitedBy stores the email)
+            if (data.email === currentInvitedBy) {
+              allowed.add(doc.id)
+            }
+          })
+        }
+
+        setAllowedMemberIds(allowed)
+      } catch (error) {
+        console.error('[ConversaoPage] Erro ao carregar companheiros:', error)
+        // Fallback: only show own data
+        const fallback = new Set<string>()
+        if (member.id) fallback.add(member.id)
+        setAllowedMemberIds(fallback)
+      }
+    }
+
+    fetchCompanions()
+  }, [orgId, member, hasFullAccess])
 
   // ── Data Loading ───────────────────────────────────────
   useEffect(() => {
@@ -295,8 +344,8 @@ export default function ConversaoPage() {
       const clientMap = new Map<string, ClientData>()
       clientsSnap.docs.forEach(d => {
         const data = d.data()
-        // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
-        if (viewScope === 'own' && member?.id && data.assignedTo !== member.id) return
+        // Apply access filter: partners see only their own + companions' contacts
+        if (allowedMemberIds && data.assignedTo && !allowedMemberIds.has(data.assignedTo)) return
         orgClientIds.add(d.id)
         clientMap.set(d.id, {
           id: d.id,
@@ -347,7 +396,7 @@ export default function ConversaoPage() {
 
     return () => { if (logsUnsub) logsUnsub() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orgId, viewScope, member?.id])
+  }, [orgId, allowedMemberIds])
 
   useEffect(() => {
     if (!orgId) return
