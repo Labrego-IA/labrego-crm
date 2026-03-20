@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { db, storage } from '@/lib/firebaseClient'
 import { formatDate, formatCurrency, formatDateTime, formatWhatsAppNumber } from '@/lib/format'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { usePermissions } from '@/hooks/usePermissions'
 import {
   collection,
   doc,
@@ -241,6 +242,7 @@ export default function ContactDetailsPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { userEmail, orgId } = useCrmUser()
+  const { can } = usePermissions()
   const id = params?.id
 
   // Data states
@@ -1094,23 +1096,27 @@ export default function ContactDetailsPage() {
                       onClick={() => setShowActionsMenu(false)}
                     />
                     <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200/60 py-1 z-30">
-                      <button
-                        onClick={openEditModal}
-                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                      >
-                        <Pencil1Icon className="w-4 h-4" />
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowDeleteConfirm(true)
-                          setShowActionsMenu(false)
-                        }}
-                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                        Excluir
-                      </button>
+                      {can('canEditContacts') && (
+                        <button
+                          onClick={openEditModal}
+                          className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                        >
+                          <Pencil1Icon className="w-4 h-4" />
+                          Editar
+                        </button>
+                      )}
+                      {can('canDeleteContacts') && (
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirm(true)
+                            setShowActionsMenu(false)
+                          }}
+                          className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                          Excluir
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
@@ -1616,13 +1622,15 @@ export default function ContactDetailsPage() {
                       <p className="text-xs sm:text-sm text-slate-500 whitespace-nowrap">
                         {proposals.length} {proposals.length === 1 ? 'proposta' : 'propostas'} encontradas
                       </p>
-                      <Link
-                        href={`/contatos/${id}/proposta/nova`}
-                        className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-primary-600 text-white rounded-xl font-medium text-xs sm:text-sm hover:bg-primary-700 transition-colors shadow-lg shadow-primary-200 whitespace-nowrap shrink-0"
-                      >
-                        <PlusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        Nova Proposta
-                      </Link>
+                      {can('canCreateProposals') && (
+                        <Link
+                          href={`/contatos/${id}/proposta/nova`}
+                          className="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-primary-600 text-white rounded-xl font-medium text-xs sm:text-sm hover:bg-primary-700 transition-colors shadow-lg shadow-primary-200 whitespace-nowrap shrink-0"
+                        >
+                          <PlusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          Nova Proposta
+                        </Link>
+                      )}
                     </div>
 
                     {proposals.length === 0 ? (

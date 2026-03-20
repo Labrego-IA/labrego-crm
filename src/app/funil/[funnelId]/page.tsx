@@ -3837,37 +3837,41 @@ export default function FunilDetailPage() {
                       onClick={() => setActionsMenuOpen(false)}
                     />
                     <div className="absolute right-0 top-12 z-50 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                      <button
-                        onClick={() => guard(() => {
-                          setShowNewContactModal(true)
-                          setActionsMenuOpen(false)
-                        })}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
-                          <UserPlusIcon className="w-4 h-4 text-primary-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-800">Novo Contato</p>
-                          <p className="text-xs text-slate-500">Adicionar lead ao funil</p>
-                        </div>
-                      </button>
+                      {can('canCreateContacts') && (
+                        <button
+                          onClick={() => guard(() => {
+                            setShowNewContactModal(true)
+                            setActionsMenuOpen(false)
+                          })}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
+                            <UserPlusIcon className="w-4 h-4 text-primary-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Novo Contato</p>
+                            <p className="text-xs text-slate-500">Adicionar lead ao funil</p>
+                          </div>
+                        </button>
+                      )}
 
-                      <button
-                        onClick={() => {
-                          setShowSettings(true)
-                          setActionsMenuOpen(false)
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                          <GearIcon className="w-4 h-4 text-slate-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-800">Configurar Etapas</p>
-                          <p className="text-xs text-slate-500">Editar funil de vendas</p>
-                        </div>
-                      </button>
+                      {can('canManageFunnels') && (
+                        <button
+                          onClick={() => {
+                            setShowSettings(true)
+                            setActionsMenuOpen(false)
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                            <GearIcon className="w-4 h-4 text-slate-600" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">Configurar Etapas</p>
+                            <p className="text-xs text-slate-500">Editar funil de vendas</p>
+                          </div>
+                        </button>
+                      )}
 
                       <button
                         onClick={() => {
@@ -6554,20 +6558,24 @@ export default function FunilDetailPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={openEditContactModal}
-                      className="p-2 rounded-xl hover:bg-primary-50 transition-colors group"
-                      title="Editar contato"
-                    >
-                      <Pencil1Icon className="w-5 h-5 text-slate-400 group-hover:text-primary-500" />
-                    </button>
-                    <button
-                      onClick={() => setDeletingClient(selectedClient)}
-                      className="p-2 rounded-xl hover:bg-red-50 transition-colors group"
-                      title="Excluir contato"
-                    >
-                      <TrashIcon className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
-                    </button>
+                    {can('canEditContacts') && (
+                      <button
+                        onClick={openEditContactModal}
+                        className="p-2 rounded-xl hover:bg-primary-50 transition-colors group"
+                        title="Editar contato"
+                      >
+                        <Pencil1Icon className="w-5 h-5 text-slate-400 group-hover:text-primary-500" />
+                      </button>
+                    )}
+                    {can('canDeleteContacts') && (
+                      <button
+                        onClick={() => setDeletingClient(selectedClient)}
+                        className="p-2 rounded-xl hover:bg-red-50 transition-colors group"
+                        title="Excluir contato"
+                      >
+                        <TrashIcon className="w-5 h-5 text-slate-400 group-hover:text-red-500" />
+                      </button>
+                    )}
                     <button
                       onClick={() => guardedClose(
                         !!(newNote.trim() || (editingComments && contactComments !== (selectedClient?.needsDetail || ''))),

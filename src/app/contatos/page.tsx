@@ -185,7 +185,7 @@ export default function ContatosPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { userEmail, orgId, orgPlan, member } = useCrmUser()
-  const { viewScope } = usePermissions()
+  const { viewScope, can } = usePermissions()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
@@ -1691,7 +1691,7 @@ export default function ContatosPage() {
             )}
 
             {/* Export Dropdown */}
-            <div className="relative">
+            {can('canExportData') && <div className="relative">
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 disabled={exporting}
@@ -1737,38 +1737,42 @@ export default function ContatosPage() {
                   </div>
                 </>
               )}
-            </div>
+            </div>}
 
             {/* Import Button */}
-            <button
-              onClick={() => guard(() => setShowImportModal(true))}
-              className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all shadow-sm"
-              title="Importar contatos"
-            >
-              <ArrowUpTrayIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Importar</span>
-            </button>
+            {can('canCreateContacts') && (
+              <button
+                onClick={() => guard(() => setShowImportModal(true))}
+                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all shadow-sm"
+                title="Importar contatos"
+              >
+                <ArrowUpTrayIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Importar</span>
+              </button>
+            )}
 
             {/* New Contact Button (desktop only) */}
-            <button
-              onClick={() => guard(openNewModal)}
-              className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 hover:shadow-xl hover:shadow-primary-300"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Novo Contato
-            </button>
+            {can('canCreateContacts') && (
+              <button
+                onClick={() => guard(openNewModal)}
+                className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 hover:shadow-xl hover:shadow-primary-300"
+              >
+                <PlusIcon className="w-4 h-4" />
+                Novo Contato
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       {/* Mobile: FAB flutuante */}
-      <button
+      {can('canCreateContacts') && <button
         onClick={() => guard(openNewModal)}
         className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
         aria-label="Novo contato"
       >
         <PlusIcon className="w-6 h-6" />
-      </button>
+      </button>}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -1833,13 +1837,15 @@ export default function ContatosPage() {
                 <FunnelIcon className="w-4 h-4" />
                 Mover para Funil
               </button>
-              <button
-                onClick={() => guard(() => setShowBulkDeleteModal(true))}
-                className="px-4 py-2 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors flex items-center gap-2"
-              >
-                <TrashIcon className="w-4 h-4" />
-                Excluir selecionados
-              </button>
+              {can('canDeleteContacts') && (
+                <button
+                  onClick={() => guard(() => setShowBulkDeleteModal(true))}
+                  className="px-4 py-2 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors flex items-center gap-2"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  Excluir selecionados
+                </button>
+              )}
             </div>
           </div>
           {/* Banner: selecionar todos os filtrados */}
@@ -2393,29 +2399,33 @@ export default function ContatosPage() {
                                   <div className="border-t border-slate-100 my-1" />
 
                                   {/* Editar */}
-                                  <button
-                                    onClick={() => guard(() => {
-                                      openEditModal(client)
-                                      setActionsPosition(null)
-                                    })}
-                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                                  >
-                                    <Pencil1Icon className="w-4 h-4" />
-                                    Editar
-                                  </button>
+                                  {can('canEditContacts') && (
+                                    <button
+                                      onClick={() => guard(() => {
+                                        openEditModal(client)
+                                        setActionsPosition(null)
+                                      })}
+                                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                    >
+                                      <Pencil1Icon className="w-4 h-4" />
+                                      Editar
+                                    </button>
+                                  )}
 
                                   {/* Excluir */}
-                                  <button
-                                    onClick={() => guard(() => {
-                                      setDeleteId(client.id)
-                                      setOpenActionsId(null)
-                                      setActionsPosition(null)
-                                    })}
-                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                  >
-                                    <TrashIcon className="w-4 h-4" />
-                                    Excluir
-                                  </button>
+                                  {can('canDeleteContacts') && (
+                                    <button
+                                      onClick={() => guard(() => {
+                                        setDeleteId(client.id)
+                                        setOpenActionsId(null)
+                                        setActionsPosition(null)
+                                      })}
+                                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                    >
+                                      <TrashIcon className="w-4 h-4" />
+                                      Excluir
+                                    </button>
+                                  )}
                                 </div>
                               </>
                             )}
