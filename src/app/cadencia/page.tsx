@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import {
   collection,
   doc,
@@ -35,6 +35,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   ArrowPathIcon,
+  ArrowLeftIcon,
   Cog6ToothIcon,
   BoltIcon,
   XMarkIcon,
@@ -131,6 +132,7 @@ export default function CadenciaPage() {
 
 function CadenciaDashboard() {
   const { orgId } = useCrmUser()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const funnelIdParam = searchParams.get('funnelId')
   const [mainTab, setMainTab] = useState<MainTab>('config')
@@ -204,6 +206,13 @@ function CadenciaDashboard() {
       <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push(selectedFunnel ? `/funis?funnelId=${selectedFunnel}` : '/funis')}
+              className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+              title="Voltar para o funil"
+            >
+              <ArrowLeftIcon className="w-5 h-5" />
+            </button>
             <h1 className="text-2xl font-bold text-slate-900">Cadência de Vendas</h1>
             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${autoConfig.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
               <span className={`w-2 h-2 rounded-full ${autoConfig.enabled ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
