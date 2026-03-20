@@ -260,7 +260,11 @@ export default function UsuariosPage() {
       if (!res.ok) {
         const data = await res.json()
         if (res.status === 409) {
-          setSearchError('Este email ja esta cadastrado como parceiro')
+          if (data.error === 'already_partner_of_another') {
+            setSearchError('Este usuario ja e parceiro de outro usuario')
+          } else {
+            setSearchError('Este email ja esta cadastrado como seu parceiro')
+          }
         } else {
           throw new Error(data.error || 'Erro ao buscar usuario')
         }

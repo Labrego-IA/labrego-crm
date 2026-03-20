@@ -38,16 +38,33 @@ export async function POST(req: NextRequest) {
 
     // Caller is a member of this org — page-level PermissionGate already handles access control
 
-    // Check if email already exists in org
-    const existingSnap = await db
+    // Check if email is already a partner of the current user in this org
+    const ownInviteSnap = await db
       .collection('organizations').doc(orgId)
       .collection('members')
       .where('email', '==', normalizedEmail)
+      .where('invitedBy', '==', callerEmail)
       .limit(1)
       .get()
 
-    if (!existingSnap.empty) {
-      return NextResponse.json({ error: 'email already exists in organization' }, { status: 409 })
+    if (!ownInviteSnap.empty) {
+      return NextResponse.json({ error: 'already_your_partner' }, { status: 409 })
+    }
+
+    // Check if email is already a partner of another user (across all orgs)
+    const partnerSnap = await db.collectionGroup('members')
+      .where('email', '==', normalizedEmail)
+      .where('status', 'in', ['active', 'pending'])
+      .limit(5)
+      .get()
+
+    const isPartnerOfAnother = partnerSnap.docs.some(d => {
+      const data = d.data()
+      return data.invitedBy && data.invitedBy !== callerEmail
+    })
+
+    if (isPartnerOfAnother) {
+      return NextResponse.json({ error: 'already_partner_of_another' }, { status: 409 })
     }
 
     // Search in Firebase Auth
