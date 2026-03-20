@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
+import { collection, query, orderBy, where, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
 import { formatDate, formatDateTimeAt } from '@/lib/format'
 import { toast } from 'sonner'
@@ -29,6 +29,7 @@ import {
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
+import type { OrgMember } from '@/types/organization'
 
 /* ================================= Constants ================================= */
 
@@ -82,7 +83,8 @@ const CAMPAIGN_TYPE_ORDER: Record<string, number> = {
 
 function CampanhasContent() {
   const router = useRouter()
-  const { orgId, member } = useCrmUser()
+  const { orgId, member, userEmail } = useCrmUser()
+  const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -101,6 +103,9 @@ function CampanhasContent() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Partner user IDs (for non-admin access filtering)
+  const [partnerUserIds, setPartnerUserIds] = useState<Set<string>>(new Set())
+
   // Delete confirmation
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
@@ -111,6 +116,30 @@ function CampanhasContent() {
       setLoading(false)
     }
   }, [orgId])
+
+  /* ------------------- Partner members subscription ------------------- */
+
+  useEffect(() => {
+    if (!orgId || !userEmail || isAdmin) return
+    const partnersQuery = query(
+      collection(db, 'organizations', orgId, 'members'),
+      where('status', '==', 'active'),
+      where('invitedBy', '==', userEmail.toLowerCase()),
+    )
+    const unsub = onSnapshot(
+      partnersQuery,
+      (snap) => {
+        const ids = new Set(
+          snap.docs.map((d) => (d.data() as OrgMember).userId),
+        )
+        setPartnerUserIds(ids)
+      },
+      (error) => {
+        console.warn('[CampanhasPage] Error loading partners:', error.message)
+      },
+    )
+    return () => unsub()
+  }, [orgId, userEmail, isAdmin])
 
   /* ---------------------- Real-time subscription ------------------------ */
 
@@ -181,8 +210,17 @@ function CampanhasContent() {
 
   /* ----------------------------- Derived -------------------------------- */
 
+  // Campanhas visíveis ao usuário (filtragem por acesso)
+  const accessFiltered = useMemo(() => {
+    if (isAdmin || !member?.userId) return campaigns
+    const currentUserId = member.userId
+    return campaigns.filter(
+      (c) => c.createdBy === currentUserId || partnerUserIds.has(c.createdBy),
+    )
+  }, [campaigns, isAdmin, member?.userId, partnerUserIds])
+
   const filtered = useMemo(() => {
-    let result = campaigns
+    let result = accessFiltered
 
     if (searchQuery) {
       const q = normalize(searchQuery.trim())
@@ -237,31 +275,31 @@ function CampanhasContent() {
     }
 
     return result
-  }, [campaigns, searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
+  }, [accessFiltered, searchQuery, statusFilter, typeFilter, sortColumn, sortDirection])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
-  // Dashboard KPIs
+  // Dashboard KPIs (baseados nas campanhas visíveis ao usuário)
   const dashboardStats = useMemo(() => {
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
-    const thisMonth = campaigns.filter((c) => c.createdAt >= startOfMonth)
+    const thisMonth = accessFiltered.filter((c) => c.createdAt >= startOfMonth)
     const totalCampaignsMonth = thisMonth.length
     const totalSentMonth = thisMonth.reduce((sum, c) => sum + c.sentCount, 0)
 
-    const totalSent = campaigns.reduce((sum, c) => sum + c.sentCount, 0)
-    const totalFailed = campaigns.reduce((sum, c) => sum + c.failedCount, 0)
+    const totalSent = accessFiltered.reduce((sum, c) => sum + c.sentCount, 0)
+    const totalFailed = accessFiltered.reduce((sum, c) => sum + c.failedCount, 0)
     const failureRate = totalSent + totalFailed > 0 ? (totalFailed / (totalSent + totalFailed)) * 100 : 0
 
-    const scheduled = campaigns
+    const scheduled = accessFiltered
       .filter((c) => c.status === 'scheduled' && c.scheduledAt)
       .sort((a, b) => (a.scheduledAt || '').localeCompare(b.scheduledAt || ''))
     const nextScheduled = scheduled[0]?.scheduledAt || null
 
     return { totalCampaignsMonth, totalSentMonth, failureRate, nextScheduled }
-  }, [campaigns])
+  }, [accessFiltered])
 
   // Reset page when filters or sort change
   useEffect(() => {
@@ -390,8 +428,8 @@ function CampanhasContent() {
         <EmptyState
           icon={<FunnelIcon className="w-10 h-10" />}
           title="Nenhuma campanha encontrada"
-          description={campaigns.length === 0 ? 'Crie sua primeira campanha para começar' : 'Tente ajustar os filtros'}
-          action={campaigns.length === 0 ? { label: 'Nova Campanha', onClick: () => router.push('/campanhas/nova') } : undefined}
+          description={accessFiltered.length === 0 ? 'Crie sua primeira campanha para começar' : 'Tente ajustar os filtros'}
+          action={accessFiltered.length === 0 ? { label: 'Nova Campanha', onClick: () => router.push('/campanhas/nova') } : undefined}
         />
       ) : (
         <>
