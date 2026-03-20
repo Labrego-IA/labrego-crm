@@ -8,11 +8,12 @@ export interface AppNotification {
   id: string
   orgId: string
   userId: string
-  type: 'plan_upgrade' | 'plan_expiring' | 'plan_subscribed' | 'welcome' | 'system'
+  type: 'plan_upgrade' | 'plan_expiring' | 'plan_subscribed' | 'welcome' | 'system' | 'partner_invite'
   title: string
   message: string
   read: boolean
   createdAt: string
+  metadata?: Record<string, string>
 }
 
 export function useNotifications(orgId?: string, userId?: string) {
