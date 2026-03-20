@@ -253,7 +253,7 @@ export default function ContatosPage() {
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [importFunnelId, setImportFunnelId] = useState('')
   const [importStageId, setImportStageId] = useState('')
-  const [importResult, setImportResult] = useState<{ success: boolean; count: number; skipped?: number } | null>(null)
+  const [importResult, setImportResult] = useState<{ success: boolean; count: number; skipped?: number; totalParsed?: number; totalValid?: number; debug?: string } | null>(null)
   const [importProgress, setImportProgress] = useState<{ current: number; total: number } | null>(null)
   const { funnels } = useVisibleFunnels()
 
@@ -711,55 +711,86 @@ export default function ContatosPage() {
             const workbook = XLSX.read(data, { type: 'array' })
             const worksheet = workbook.Sheets[workbook.SheetNames[0]]
 
-            // Detect if file uses our styled template (title rows before headers)
-            // Try sheet_to_json with default (row 0 as header) first
-            let rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet, { defval: '' })
+            // STRATEGY: Always read raw rows first, then find the best header row
+            const allRows = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1, defval: '' }) as unknown[][]
+            console.log('[Import] Total raw rows from Excel:', allRows.length)
+            if (allRows.length > 0) {
+              console.log('[Import] First 6 rows:', allRows.slice(0, 6).map((r, i) => `Row ${i}: ${JSON.stringify(r)}`))
+            }
 
-            // Check if first row looks like a title (not real data headers)
-            // by seeing if any known field names exist in the column keys
-            const firstRowKeys = rawRows.length > 0 ? Object.keys(rawRows[0]).map(k => k.toLowerCase().trim()) : []
+            // Find the header row: scan all rows (up to 15) to find one with known field names
             const knownHeaders = Object.keys(fieldMap)
-            const hasKnownHeaders = firstRowKeys.some(k => knownHeaders.includes(k))
+            const knownTemplateHeaders = ['nome', 'telefone', 'email', 'empresa', 'ramo', 'cnpj/cpf', 'endereço', 'origem']
+            const allKnownHeaders = [...new Set([...knownHeaders, ...knownTemplateHeaders])]
 
-            if (!hasKnownHeaders && rawRows.length > 0) {
-              // Likely a styled template — scan for the header row
-              const allRows = XLSX.utils.sheet_to_json<string[]>(worksheet, { header: 1, defval: '' }) as string[][]
-              let headerRowIdx = -1
-              for (let i = 0; i < Math.min(allRows.length, 10); i++) {
-                const row = allRows[i]
-                if (!row || row.length === 0) continue
-                const hasMatch = row.some(cell => {
-                  const normalized = String(cell).toLowerCase().trim()
-                  return knownHeaders.includes(normalized)
-                })
-                if (hasMatch) {
-                  headerRowIdx = i
-                  break
-                }
-              }
-
-              if (headerRowIdx >= 0) {
-                const headers = allRows[headerRowIdx].map(h => String(h).trim())
-                rawRows = []
-                for (let i = headerRowIdx + 1; i < allRows.length; i++) {
-                  const row = allRows[i]
-                  if (!row || row.every(cell => !String(cell).trim())) continue
-                  const obj: Record<string, unknown> = {}
-                  headers.forEach((h, idx) => { obj[h] = row[idx] ?? '' })
-                  rawRows.push(obj)
-                }
+            let headerRowIdx = -1
+            let bestMatchCount = 0
+            for (let i = 0; i < Math.min(allRows.length, 15); i++) {
+              const row = allRows[i]
+              if (!row || !Array.isArray(row) || row.length === 0) continue
+              const matchCount = row.filter(cell => {
+                const normalized = String(cell ?? '').toLowerCase().trim()
+                return normalized.length > 0 && allKnownHeaders.includes(normalized)
+              }).length
+              if (matchCount >= 2 && matchCount > bestMatchCount) {
+                bestMatchCount = matchCount
+                headerRowIdx = i
               }
             }
 
+            // Fallback: if no header row found, assume row 0 is headers
+            if (headerRowIdx < 0) {
+              headerRowIdx = 0
+              console.warn('[Import] No header row detected, using row 0 as headers')
+            }
+
+            console.log('[Import] Header row index:', headerRowIdx, '| Match count:', bestMatchCount)
+
+            const headers = (allRows[headerRowIdx] || []).map(h => String(h ?? '').trim())
+            console.log('[Import] Headers found:', headers)
+
+            let rawRows: Record<string, unknown>[] = []
+            for (let i = headerRowIdx + 1; i < allRows.length; i++) {
+              const row = allRows[i]
+              if (!row || !Array.isArray(row)) continue
+              // Skip fully empty rows
+              const hasContent = row.some(cell => String(cell ?? '').trim().length > 0)
+              if (!hasContent) continue
+              const obj: Record<string, unknown> = {}
+              headers.forEach((h, idx) => { if (h) obj[h] = row[idx] ?? '' })
+              rawRows.push(obj)
+            }
+
+            // Skip template example row if present
+            if (rawRows.length > 0) {
+              const firstVals = Object.values(rawRows[0]).map(v => String(v ?? '').trim().toLowerCase())
+              if (firstVals.includes('joão da silva') || (firstVals.includes('joao da silva'))) {
+                console.log('[Import] Skipping template example row')
+                rawRows = rawRows.slice(1)
+              }
+            }
+
+            console.log('[Import] Data rows after filtering:', rawRows.length)
+            if (rawRows.length > 0) {
+              console.log('[Import] First data row sample:', JSON.stringify(rawRows[0]))
+            }
+
             rows = rawRows.map((row) => mapRow(Object.entries(row)))
+
+            console.log('[Import] Mapped rows:', rows.length)
+            if (rows.length > 0) {
+              console.log('[Import] First mapped row:', JSON.stringify(rows[0]))
+            }
           } else {
             const text = event.target?.result as string
             const lines = text.split('\n').filter((line) => line.trim())
+            console.log('[Import CSV] Total lines:', lines.length)
             // Detecta separador: tab (TSV) ou virgula (CSV)
             const isTsv = lines[0].includes('\t')
             const headers = isTsv
               ? lines[0].split('\t').map((h) => h.replace(/"/g, '').trim())
               : lines[0].split(',').map((h) => h.replace(/"/g, '').trim())
+            console.log('[Import CSV] Headers:', headers)
 
             for (let i = 1; i < lines.length; i++) {
               const values = isTsv
@@ -773,8 +804,14 @@ export default function ContatosPage() {
             }
           }
 
-          const validRows = rows.filter(c => c.name && c.phone)
+          // Accept contacts that have at least a name (phone is optional)
+          const validRows = rows.filter(c => c.name)
+          const totalParsed = rows.length
           const total = validRows.length
+          console.log('[Import] Total parsed:', totalParsed, '| Valid (with name):', total, '| Rejected:', totalParsed - total)
+          if (totalParsed > 0 && total === 0) {
+            console.warn('[Import] All rows rejected! First row keys:', Object.keys(rows[0] || {}), '| First row:', JSON.stringify(rows[0]))
+          }
           setImportProgress({ current: 0, total })
 
           // Build sets of existing names and documents for duplicate detection
@@ -811,10 +848,17 @@ export default function ContatosPage() {
             await setDoc(contactRef, {
               ...contact,
               orgId,
+              status: 'Lead',
               ...(importStageId && importFunnelId && {
                 funnelId: importFunnelId,
                 funnelStage: importStageId,
                 funnelStageUpdatedAt: new Date().toISOString(),
+              }),
+              // Auto-assign to current member (matches manual creation behavior)
+              ...(member?.id && {
+                assignedTo: member.id,
+                assignedToName: contact.assignedToName || member.displayName || null,
+                assignedAt: new Date().toISOString(),
               }),
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
@@ -834,16 +878,17 @@ export default function ContatosPage() {
           setImportFunnelId('')
           setImportStageId('')
           setImportProgress(null)
-          setImportResult({ success: true, count: imported, skipped })
+          console.log('[Import] Done! Imported:', imported, '| Skipped:', skipped, '| Total parsed:', totalParsed, '| Total valid:', total)
+          setImportResult({ success: true, count: imported, skipped, totalParsed, totalValid: total })
         } catch (error) {
-          console.error('Erro ao importar:', error)
+          console.error('[Import] Error during import:', error)
           setShowImportModal(false)
           setImportFile(null)
           setImportPreview([])
           setImportFunnelId('')
           setImportStageId('')
           setImportProgress(null)
-          setImportResult({ success: false, count: 0 })
+          setImportResult({ success: false, count: 0, debug: String(error) })
         } finally {
           setImporting(false)
         }
@@ -3443,14 +3488,28 @@ export default function ContatosPage() {
             <div className="p-8 text-center">
               {importResult.success ? (
                 <>
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                    <CheckIcon className="w-8 h-8 text-emerald-600" />
+                  <div className={`w-16 h-16 rounded-full ${importResult.count > 0 ? 'bg-emerald-100' : 'bg-amber-100'} flex items-center justify-center mx-auto mb-4`}>
+                    <CheckIcon className={`w-8 h-8 ${importResult.count > 0 ? 'text-emerald-600' : 'text-amber-600'}`} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Importação concluída!</h3>
-                  <p className="text-sm text-slate-500">
-                    <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
-                  </p>
-                  {importResult.skipped && importResult.skipped > 0 && (
+                  <h3 className="text-lg font-bold text-slate-800 mb-1">
+                    {importResult.count > 0 ? 'Importação concluída!' : 'Nenhum contato importado'}
+                  </h3>
+                  {importResult.count > 0 ? (
+                    <p className="text-sm text-slate-500">
+                      <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
+                    </p>
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      {importResult.totalParsed === 0
+                        ? 'O arquivo não contém dados. Verifique se há linhas preenchidas após o cabeçalho.'
+                        : (importResult.totalValid === 0
+                          ? <>Foram encontradas <strong>{importResult.totalParsed}</strong> linha{importResult.totalParsed !== 1 ? 's' : ''}, mas nenhuma possui a coluna <strong>Nome</strong> preenchida. Verifique se o cabeçalho contém &quot;Nome&quot;.</>
+                          : 'Todos os contatos já existem na base (duplicados por nome ou CPF/CNPJ).'
+                        )
+                      }
+                    </p>
+                  )}
+                  {importResult.skipped != null && importResult.skipped > 0 && (
                     <p className="text-sm text-amber-600 mt-1">
                       {importResult.skipped} contato{importResult.skipped !== 1 ? 's' : ''} ignorado{importResult.skipped !== 1 ? 's' : ''} por nome ou CPF/CNPJ duplicado.
                     </p>
@@ -3463,6 +3522,9 @@ export default function ContatosPage() {
                   </div>
                   <h3 className="text-lg font-bold text-slate-800 mb-1">Erro na importação</h3>
                   <p className="text-sm text-slate-500">Ocorreu um erro ao importar os contatos. Verifique o arquivo e tente novamente.</p>
+                  {importResult.debug && (
+                    <p className="text-xs text-red-400 mt-2 break-all">{importResult.debug}</p>
+                  )}
                 </>
               )}
             </div>
