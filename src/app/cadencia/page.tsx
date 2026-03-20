@@ -15,7 +15,7 @@ import {
   where,
   onSnapshot,
 } from 'firebase/firestore'
-import { db } from '@/lib/firebaseClient'
+import { db, auth } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
 import {
@@ -959,10 +959,36 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
     await setDoc(doc(db, 'organizations', orgId, 'automationConfig', 'global'), newConfig, { merge: true })
   }
 
+  const [triggerLoading, setTriggerLoading] = useState(false)
+  const [triggerResult, setTriggerResult] = useState<{ ok: boolean; message: string } | null>(null)
+
+  const triggerCronNow = async () => {
+    setTriggerLoading(true)
+    setTriggerResult(null)
+    try {
+      const token = await auth.currentUser?.getIdToken()
+      if (!token) throw new Error('Não autenticado')
+      const res = await fetch('/api/cadence/trigger', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setTriggerResult({ ok: true, message: `Processado: ${data.success ?? 0} ações, ${data.enrolled ?? 0} inscritos` })
+      } else {
+        setTriggerResult({ ok: false, message: data.error || 'Erro ao executar' })
+      }
+    } catch (err) {
+      setTriggerResult({ ok: false, message: (err as Error).message })
+    } finally {
+      setTriggerLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <button onClick={() => saveAutomationConfig({ enabled: !autoConfig.enabled })}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${autoConfig.enabled ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
           {autoConfig.enabled ? <><PauseIcon className="w-4 h-4" /> Pausar toda automação</> : <><PlayIcon className="w-4 h-4" /> Retomar automação</>}
@@ -976,6 +1002,22 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
             <span className="text-xs">{nextCronRun.label}</span>
           )}
         </div>
+        <button
+          onClick={triggerCronNow}
+          disabled={triggerLoading}
+          className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 disabled:opacity-50"
+        >
+          {triggerLoading ? (
+            <><ArrowPathIcon className="w-4 h-4 animate-spin" /> Executando...</>
+          ) : (
+            <><BoltIcon className="w-4 h-4" /> Executar agora</>
+          )}
+        </button>
+        {triggerResult && (
+          <span className={`text-xs px-3 py-1.5 rounded-lg ${triggerResult.ok ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+            {triggerResult.message}
+          </span>
+        )}
       </div>
 
       {/* KPI cards */}
