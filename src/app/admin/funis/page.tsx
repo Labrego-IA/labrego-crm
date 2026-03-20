@@ -76,7 +76,7 @@ export default function AdminFunisPage() {
   const isAdmin = currentMember?.role === 'admin'
 
   const [members, setMembers] = useState<MemberRow[]>([])
-  const [funnels, setFunnels] = useState<FunnelItem[]>([])
+  const [rawFunnels, setRawFunnels] = useState<FunnelItem[]>([])
   const [stages, setStages] = useState<StageItem[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -147,11 +147,7 @@ export default function AdminFunisPage() {
             createdBy: raw.createdBy || '',
           }
         })
-        // Admin vê todos os funis; não-admin vê apenas funis que ele criou
-        const filtered = isAdmin
-          ? all
-          : all.filter((f) => f.createdBy === (userEmail || '').toLowerCase())
-        setFunnels(filtered.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
+        setRawFunnels(all.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
       }, (error) => {
         console.warn('[FunisPage] Firestore error:', error.message)
       })
@@ -169,6 +165,16 @@ export default function AdminFunisPage() {
 
     return () => unsubs.forEach((u) => u())
   }, [orgId, isAdmin, userEmail])
+
+  // Admin vê todos os funis; não-admin vê seus funis + funis de seus parceiros
+  const funnels = useMemo(() => {
+    if (isAdmin) return rawFunnels
+    const currentEmail = (userEmail || '').toLowerCase()
+    const partnerEmails = new Set(members.map((m) => (m.email || '').toLowerCase()))
+    return rawFunnels.filter(
+      (f) => f.createdBy === currentEmail || partnerEmails.has((f.createdBy || '').toLowerCase())
+    )
+  }, [isAdmin, rawFunnels, members, userEmail])
 
   // Initialize access map from members' funnelAccess + funnels' visibleTo
   useEffect(() => {
