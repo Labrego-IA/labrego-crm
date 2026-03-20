@@ -8,7 +8,7 @@ export interface AppNotification {
   id: string
   orgId: string
   userId: string
-  type: 'plan_upgrade' | 'plan_expiring' | 'welcome' | 'system' | 'partner_invite'
+  type: 'plan_upgrade' | 'plan_expiring' | 'plan_subscribed' | 'welcome' | 'system' | 'partner_invite'
   title: string
   message: string
   read: boolean
@@ -83,29 +83,41 @@ export function useNotifications(orgId?: string, userId?: string) {
     daysRemaining: number,
     planLabel: string,
   ) => {
-    if (!orgId || !userId || daysRemaining > 1 || daysRemaining < 0) return
+    if (!orgId || !userId || daysRemaining > 3 || daysRemaining < 0) return
 
-    // Verificar se já existe uma notificação de expiração recente (últimas 24h)
-    const existing = notifications.find(n =>
-      n.type === 'plan_expiring' &&
-      new Date(n.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000
-    )
-    if (existing) return
+    // Determinar qual alerta disparar: 3 dias ou 1 dia
+    const thresholds = [3, 1].filter(t => daysRemaining <= t)
 
-    try {
-      await addDoc(collection(db, 'notifications'), {
-        orgId,
-        userId,
-        type: 'plan_expiring',
-        title: 'Seu plano esta prestes a expirar!',
-        message: daysRemaining <= 0
-          ? `Seu plano ${planLabel} expirou. Renove agora para continuar usando todos os recursos.`
-          : `Falta apenas 1 dia para o seu plano ${planLabel} expirar. Renove para nao perder acesso aos recursos.`,
-        read: false,
-        createdAt: new Date().toISOString(),
-      })
-    } catch (err) {
-      console.error('[useNotifications] checkAndCreateExpirationNotification error:', err)
+    for (const threshold of thresholds) {
+      // Verificar se já existe notificação para esse threshold (últimas 24h)
+      const tagMessage = threshold === 3 ? 'Faltam 3 dias' : 'Falta apenas 1 dia'
+      const existing = notifications.find(n =>
+        n.type === 'plan_expiring' &&
+        n.message.includes(tagMessage) &&
+        new Date(n.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000
+      )
+      if (existing) continue
+
+      try {
+        const title = threshold === 3
+          ? 'Seu plano expira em breve!'
+          : 'Seu plano esta prestes a expirar!'
+        const message = threshold === 3
+          ? `Faltam 3 dias para o seu plano ${planLabel} expirar. Renove agora para não perder acesso aos recursos.`
+          : `Falta apenas 1 dia para o seu plano ${planLabel} expirar. Renove para não perder acesso aos recursos.`
+
+        await addDoc(collection(db, 'notifications'), {
+          orgId,
+          userId,
+          type: 'plan_expiring',
+          title,
+          message,
+          read: false,
+          createdAt: new Date().toISOString(),
+        })
+      } catch (err) {
+        console.error('[useNotifications] checkAndCreateExpirationNotification error:', err)
+      }
     }
   }, [orgId, userId, notifications])
 
