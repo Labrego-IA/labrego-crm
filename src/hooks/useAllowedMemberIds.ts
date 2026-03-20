@@ -5,14 +5,19 @@ import { collection, query, where, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from './usePermissions'
+import { usePartnerView } from '@/contexts/PartnerViewContext'
 
 /**
  * Hook that computes the set of member IDs whose data the current user can see.
  *
- * Rules:
+ * Rules (when user has multiple views — personal + partner):
+ * - Personal view: sees ONLY own data (regardless of admin status)
+ * - Partner view: sees own data + inviter's data
+ *
+ * Rules (when user has a single view):
  * - Admin or viewScope !== 'own': returns null (no filter — see all)
  * - Partner (has invitedBy): sees own data + inviter's data
- * - Owner (no invitedBy): sees own data + data from partners they invited
+ * - Owner (no invitedBy): sees own data only
  *
  * Returns:
  * - allowedMemberIds: Set of member IDs visible (null = no filter)
@@ -22,15 +27,30 @@ import { usePermissions } from './usePermissions'
 export function useAllowedMemberIds() {
   const { orgId, member, userEmail } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { activeView, hasMultipleViews } = usePartnerView()
 
   const [allowedMemberIds, setAllowedMemberIds] = useState<Set<string> | null>(null)
   const [allowedEmails, setAllowedEmails] = useState<Set<string> | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const hasFullAccess = viewScope !== 'own'
+  // When user has multiple views and is in personal view, always filter to own data only
+  const isPersonalViewWithMultipleViews = hasMultipleViews && activeView === 'personal'
+  const hasFullAccess = viewScope !== 'own' && !isPersonalViewWithMultipleViews
 
   useEffect(() => {
     if (!orgId || !member) {
+      setLoading(false)
+      return
+    }
+
+    // Personal view with multiple views: always restrict to own data only
+    if (isPersonalViewWithMultipleViews) {
+      const ids = new Set<string>()
+      const emails = new Set<string>()
+      if (member.id) ids.add(member.id)
+      if (userEmail) emails.add(userEmail.toLowerCase())
+      setAllowedMemberIds(ids)
+      setAllowedEmails(emails)
       setLoading(false)
       return
     }
@@ -67,16 +87,8 @@ export function useAllowedMemberIds() {
               if (data.email) emails.add(data.email.toLowerCase())
             }
           })
-        } else if (userEmail) {
-          // Current user is org owner: include partners they invited
-          membersSnap.docs.forEach((d) => {
-            const data = d.data()
-            if (data.invitedBy === userEmail.toLowerCase()) {
-              ids.add(d.id)
-              if (data.email) emails.add(data.email.toLowerCase())
-            }
-          })
         }
+        // Note: org owners without invitedBy only see their own data
 
         setAllowedMemberIds(ids)
         setAllowedEmails(emails)
@@ -95,7 +107,7 @@ export function useAllowedMemberIds() {
     }
 
     fetchAllowed()
-  }, [orgId, member, hasFullAccess, userEmail])
+  }, [orgId, member, hasFullAccess, isPersonalViewWithMultipleViews, userEmail])
 
   return { allowedMemberIds, allowedEmails, loading, hasFullAccess }
 }

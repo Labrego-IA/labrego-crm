@@ -305,13 +305,11 @@ export default function ProdutividadePage() {
       const clientsMap: { [id: string]: { name: string; stage: string } } = {}
       clientsSnap.docs.forEach((doc) => {
         const data = doc.data()
-        // Apply viewScope filter: restricted users see only their + partner's contacts
-        if (viewScope === 'own' && member?.id) {
-          if (allowedMemberIds) {
-            if (!data.assignedTo || !allowedMemberIds.has(data.assignedTo)) return
-          } else if (data.assignedTo !== member.id) {
-            return
-          }
+        // Apply view filter: filter by allowedMemberIds when set (personal view or restricted scope)
+        if (allowedMemberIds && member?.id) {
+          if (!data.assignedTo || !allowedMemberIds.has(data.assignedTo)) return
+        } else if (viewScope === 'own' && member?.id) {
+          if (data.assignedTo !== member.id) return
         }
         const stageName = data.funnelStage ? stagesMap[data.funnelStage] || 'Sem etapa' : 'Sem etapa'
         clientsMap[doc.id] = {

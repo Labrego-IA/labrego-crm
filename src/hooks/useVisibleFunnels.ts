@@ -9,11 +9,9 @@ import type { Funnel } from '@/types/funnel'
 
 export function useVisibleFunnels() {
   const { orgId, member, userEmail } = useCrmUser()
-  const { allowedEmails } = useAllowedMemberIds()
+  const { allowedEmails, hasFullAccess } = useAllowedMemberIds()
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [loading, setLoading] = useState(true)
-
-  const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
 
   useEffect(() => {
     if (!orgId) {
@@ -31,11 +29,11 @@ export function useVisibleFunnels() {
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as Funnel))
 
-        if (isAdmin) {
-          // Admin sees all funnels
+        if (hasFullAccess) {
+          // Full access (admin without personal view restriction): sees all funnels
           setFunnels(all)
         } else if (allowedEmails) {
-          // Restricted user: see only funnels created by allowed emails (self + partner)
+          // Restricted: see only funnels created by allowed emails
           const visible = all.filter(f =>
             f.createdBy && allowedEmails.has(f.createdBy.toLowerCase())
           )
@@ -56,7 +54,7 @@ export function useVisibleFunnels() {
     )
 
     return () => unsub()
-  }, [orgId, member?.id, isAdmin, userEmail, allowedEmails])
+  }, [orgId, member?.id, hasFullAccess, userEmail, allowedEmails])
 
   return { funnels, loading }
 }
