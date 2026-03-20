@@ -51,7 +51,7 @@ type ClientBasic = {
 
 export default function FunnelHubPage() {
   const router = useRouter()
-  const { orgId, member } = useCrmUser()
+  const { orgId, member, userEmail } = useCrmUser()
   const { funnels, loading: loadingFunnels } = useVisibleFunnels()
   const { can, viewScope } = usePermissions()
   const { limits } = usePlan()
@@ -205,6 +205,7 @@ export default function FunnelHubPage() {
         isDefault: isFirst,
         order: maxOrder + 1,
         visibleTo: [],
+        createdBy: (userEmail || '').toLowerCase(),
         createdAt: now,
         updatedAt: now,
       })

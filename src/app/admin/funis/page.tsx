@@ -60,6 +60,7 @@ type FunnelItem = {
   color: string
   isDefault: boolean
   visibleTo: string[]
+  createdBy?: string
 }
 
 type StageItem = {
@@ -70,8 +71,9 @@ type StageItem = {
 }
 
 export default function AdminFunisPage() {
-  const { orgId } = useCrmUser()
+  const { orgId, member: currentMember, userEmail } = useCrmUser()
   const { can } = usePermissions()
+  const isAdmin = currentMember?.role === 'admin'
 
   const [members, setMembers] = useState<MemberRow[]>([])
   const [funnels, setFunnels] = useState<FunnelItem[]>([])
@@ -118,8 +120,13 @@ export default function AdminFunisPage() {
     if (!orgId) return
     const unsubs: (() => void)[] = []
 
+    // Admin vê todos os membros ativos; não-admin vê apenas seus companheiros (invitedBy)
+    const membersQuery = isAdmin
+      ? query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'))
+      : query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'), where('invitedBy', '==', (userEmail || '').toLowerCase()))
+
     unsubs.push(
-      onSnapshot(query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active')), (snap) => {
+      onSnapshot(membersQuery, (snap) => {
         const data = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as MemberRow[]
         setMembers(data.sort((a, b) => a.displayName.localeCompare(b.displayName)))
       }, (error) => {
@@ -129,7 +136,7 @@ export default function AdminFunisPage() {
 
     unsubs.push(
       onSnapshot(query(collection(db, 'organizations', orgId, 'funnels')), (snap) => {
-        const data = snap.docs.map((d) => {
+        const all = snap.docs.map((d) => {
           const raw = d.data()
           return {
             id: d.id,
@@ -137,9 +144,14 @@ export default function AdminFunisPage() {
             color: raw.color || '#4f46e5',
             isDefault: raw.isDefault || false,
             visibleTo: Array.isArray(raw.visibleTo) ? raw.visibleTo : [],
+            createdBy: raw.createdBy || '',
           }
         })
-        setFunnels(data.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
+        // Admin vê todos os funis; não-admin vê apenas funis que ele criou
+        const filtered = isAdmin
+          ? all
+          : all.filter((f) => f.createdBy === (userEmail || '').toLowerCase())
+        setFunnels(filtered.sort((a, b) => (a.isDefault ? -1 : b.isDefault ? 1 : a.name.localeCompare(b.name))))
       }, (error) => {
         console.warn('[FunisPage] Firestore error:', error.message)
       })
@@ -156,7 +168,7 @@ export default function AdminFunisPage() {
     )
 
     return () => unsubs.forEach((u) => u())
-  }, [orgId])
+  }, [orgId, isAdmin, userEmail])
 
   // Initialize access map from members' funnelAccess + funnels' visibleTo
   useEffect(() => {
