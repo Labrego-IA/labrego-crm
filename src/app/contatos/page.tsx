@@ -751,6 +751,14 @@ export default function ContatosPage() {
               }
             }
 
+            // Skip template example row if present (first data row with known example values)
+            if (rawRows.length > 0) {
+              const firstVals = Object.values(rawRows[0]).map(v => String(v ?? '').trim().toLowerCase())
+              if (firstVals.includes('joão da silva') && firstVals.some(v => v.includes('99999'))) {
+                rawRows = rawRows.slice(1)
+              }
+            }
+
             rows = rawRows.map((row) => mapRow(Object.entries(row)))
           } else {
             const text = event.target?.result as string
@@ -811,10 +819,17 @@ export default function ContatosPage() {
             await setDoc(contactRef, {
               ...contact,
               orgId,
+              status: 'Lead',
               ...(importStageId && importFunnelId && {
                 funnelId: importFunnelId,
                 funnelStage: importStageId,
                 funnelStageUpdatedAt: new Date().toISOString(),
+              }),
+              // Auto-assign to current member (matches manual creation behavior)
+              ...(member?.id && {
+                assignedTo: member.id,
+                assignedToName: contact.assignedToName || member.displayName || null,
+                assignedAt: new Date().toISOString(),
               }),
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
@@ -3443,13 +3458,21 @@ export default function ContatosPage() {
             <div className="p-8 text-center">
               {importResult.success ? (
                 <>
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                    <CheckIcon className="w-8 h-8 text-emerald-600" />
+                  <div className={`w-16 h-16 rounded-full ${importResult.count > 0 ? 'bg-emerald-100' : 'bg-amber-100'} flex items-center justify-center mx-auto mb-4`}>
+                    <CheckIcon className={`w-8 h-8 ${importResult.count > 0 ? 'text-emerald-600' : 'text-amber-600'}`} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Importação concluída!</h3>
-                  <p className="text-sm text-slate-500">
-                    <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
-                  </p>
+                  <h3 className="text-lg font-bold text-slate-800 mb-1">
+                    {importResult.count > 0 ? 'Importação concluída!' : 'Nenhum contato importado'}
+                  </h3>
+                  {importResult.count > 0 ? (
+                    <p className="text-sm text-slate-500">
+                      <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
+                    </p>
+                  ) : (
+                    <p className="text-sm text-slate-500">
+                      Verifique se o arquivo contém as colunas <strong>Nome</strong> e <strong>Telefone</strong> preenchidas.
+                    </p>
+                  )}
                   {importResult.skipped && importResult.skipped > 0 && (
                     <p className="text-sm text-amber-600 mt-1">
                       {importResult.skipped} contato{importResult.skipped !== 1 ? 's' : ''} ignorado{importResult.skipped !== 1 ? 's' : ''} por nome ou CPF/CNPJ duplicado.
