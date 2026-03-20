@@ -230,8 +230,11 @@ export default function AnalyticsPage() {
 }
 
 function AnalyticsDashboard() {
-  const { orgId, member } = useCrmUser()
-  const { viewScope } = usePermissions()
+  const { orgId, member, userEmail } = useCrmUser()
+  const { isSystemAdmin, isPartner } = usePermissions()
+
+  // Admin (systemRole or role) sees all; others see own + partners
+  const isAdmin = isSystemAdmin || member?.role === 'admin'
 
   /* ─── State ─── */
   const [activeTab, setActiveTab] = useState<TabId>('overview')
@@ -240,6 +243,7 @@ function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dataVersion, setDataVersion] = useState(0)
+  const [allowedMemberIds, setAllowedMemberIds] = useState<Set<string> | null>(null) // null = no filter (admin)
 
   /* ─── Data cache ─── */
   const clientsRef = useRef<Client[]>([])
@@ -253,6 +257,61 @@ function AnalyticsDashboard() {
       setLoading(false)
     }
   }, [orgId])
+
+  // Fetch allowed member IDs (partner group) for non-admin users
+  useEffect(() => {
+    if (!orgId || !member || isAdmin) {
+      setAllowedMemberIds(null) // Admin sees all
+      return
+    }
+
+    const fetchPartnerGroup = async () => {
+      try {
+        const membersSnap = await getDocs(
+          query(collection(db, 'organizations', orgId, 'members'), where('status', '==', 'active'))
+        )
+        const allowed = new Set<string>()
+
+        // Always include self
+        allowed.add(member.id)
+
+        const currentEmail = (userEmail || '').toLowerCase()
+
+        if (isPartner && member.invitedBy) {
+          // I'm a partner: include companions (same invitedBy) + the inviter
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            // Companions: same invitedBy value
+            if (data.invitedBy === member.invitedBy) {
+              allowed.add(d.id)
+            }
+            // The inviter themselves
+            if (data.email === member.invitedBy) {
+              allowed.add(d.id)
+            }
+          })
+        } else {
+          // I'm not a partner: include members I invited
+          membersSnap.docs.forEach((d) => {
+            const data = d.data()
+            if (data.invitedBy === currentEmail) {
+              allowed.add(d.id)
+            }
+          })
+        }
+
+        setAllowedMemberIds(allowed)
+      } catch (err) {
+        console.error('Erro ao carregar grupo de parceiros:', err)
+        // Fallback: only show own data
+        const fallback = new Set<string>()
+        fallback.add(member.id)
+        setAllowedMemberIds(fallback)
+      }
+    }
+
+    fetchPartnerGroup()
+  }, [orgId, member, isAdmin, isPartner, userEmail])
 
   /* ─── Load data ─── */
   const loadData = useCallback(async () => {
@@ -294,16 +353,16 @@ function AnalyticsDashboard() {
 
   const filteredClients = useMemo(() => {
     let list = clientsRef.current
-    // Apply viewScope filter: non-admin users with 'own' scope see only their contacts
-    if (viewScope === 'own' && member?.id) {
-      list = list.filter(c => c.assignedTo === member.id)
+    // Non-admin users: filter to own + partners' contacts
+    if (allowedMemberIds && member?.id) {
+      list = list.filter(c => allowedMemberIds.has(c.assignedTo as string))
     }
     if (selectedFunnel !== 'all') {
       const funnelStageIds = new Set(stagesRef.current.filter(s => s.funnelId === selectedFunnel).map(s => s.id))
       list = list.filter(c => funnelStageIds.has(c.funnelStage as string))
     }
     return list
-  }, [selectedFunnel, dataVersion, viewScope, member?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedFunnel, dataVersion, allowedMemberIds, member?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredStages = useMemo(() => {
     if (selectedFunnel === 'all') return stagesRef.current
