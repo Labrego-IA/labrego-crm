@@ -18,8 +18,19 @@ interface UserRecord {
   orgId: string | null
   memberId: string | null
   role: string | null
+  systemRole: string | null
   orgCreatedAt: string | null
   orgUpdatedAt: string | null
+}
+
+const SYSTEM_ROLE_LABELS: Record<string, string> = {
+  admin: 'Administrador',
+  usuario: 'Usuário',
+}
+
+const SYSTEM_ROLE_BADGE: Record<string, string> = {
+  admin: 'bg-purple-100 text-purple-800',
+  usuario: 'bg-slate-100 text-slate-700',
 }
 
 function timeAgo(dateStr: string): string {
@@ -80,8 +91,8 @@ export default function SuperAdminUsuariosPage() {
   const [openMenuUid, setOpenMenuUid] = useState<string | null>(null)
   // Edit modal
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null)
-  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false })
-  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false })
+  const [editForm, setEditForm] = useState({ orgName: '', plan: '', disabled: false, systemRole: '' })
+  const [editInitialForm, setEditInitialForm] = useState({ orgName: '', plan: '', disabled: false, systemRole: '' })
   const [editSubmitting, setEditSubmitting] = useState(false)
   const [editError, setEditError] = useState('')
   const [showConfirmClose, setShowConfirmClose] = useState(false)
@@ -164,6 +175,7 @@ export default function SuperAdminUsuariosPage() {
       orgName: user.orgName || '',
       plan: user.plan || '',
       disabled: user.disabled,
+      systemRole: user.systemRole || 'usuario',
     }
     setEditForm(form)
     setEditInitialForm(form)
@@ -175,7 +187,8 @@ export default function SuperAdminUsuariosPage() {
     return (
       editForm.orgName !== editInitialForm.orgName ||
       editForm.plan !== editInitialForm.plan ||
-      editForm.disabled !== editInitialForm.disabled
+      editForm.disabled !== editInitialForm.disabled ||
+      editForm.systemRole !== editInitialForm.systemRole
     )
   }, [editForm, editInitialForm])
 
@@ -200,6 +213,7 @@ export default function SuperAdminUsuariosPage() {
         orgName: editForm.orgName,
         plan: editForm.plan,
         disabled: String(editForm.disabled),
+        systemRole: editForm.systemRole,
       })
       setEditingUser(null)
       await fetchUsers()
@@ -260,6 +274,7 @@ export default function SuperAdminUsuariosPage() {
                 <tr className="border-b border-gray-100 bg-gray-50">
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600">Cargo</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Empresa</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Plano</th>
                   <th className="text-left px-4 py-3 font-medium text-gray-600">Cadastro</th>
@@ -273,6 +288,16 @@ export default function SuperAdminUsuariosPage() {
                   <tr key={user.uid} className="border-b border-gray-50 hover:bg-gray-50 transition">
                     <td className="px-4 py-3 font-medium text-gray-900">{user.displayName || '—'}</td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{user.email}</td>
+                    <td className="px-4 py-3">
+                      {(() => {
+                        const sr = user.systemRole || 'usuario'
+                        return (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${SYSTEM_ROLE_BADGE[sr] || SYSTEM_ROLE_BADGE.usuario}`}>
+                            {SYSTEM_ROLE_LABELS[sr] || 'Usuário'}
+                          </span>
+                        )
+                      })()}
+                    </td>
                     <td className="px-4 py-3 text-gray-600 text-xs">{user.orgName || '—'}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
@@ -355,9 +380,19 @@ export default function SuperAdminUsuariosPage() {
                       {user.displayName || '—'}
                     </h3>
                     <p className="text-sm text-gray-500 truncate mt-0.5">{user.email}</p>
-                    {user.orgName && (
-                      <p className="text-xs text-gray-400 mt-0.5">{user.orgName}</p>
-                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      {(() => {
+                        const sr = user.systemRole || 'usuario'
+                        return (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${SYSTEM_ROLE_BADGE[sr] || SYSTEM_ROLE_BADGE.usuario}`}>
+                            {SYSTEM_ROLE_LABELS[sr] || 'Usuário'}
+                          </span>
+                        )
+                      })()}
+                      {user.orgName && (
+                        <span className="text-xs text-gray-400">{user.orgName}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="relative shrink-0">
                     <button
@@ -442,6 +477,18 @@ export default function SuperAdminUsuariosPage() {
               <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Email:</span> {editingUser.email}</p>
             </div>
             <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                <select
+                  value={editForm.systemRole}
+                  onChange={(e) => setEditForm({ ...editForm, systemRole: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                >
+                  <option value="admin">Administrador</option>
+                  <option value="usuario">Usuário</option>
+                </select>
+                <p className="text-xs text-gray-400 mt-1">Administradores veem todos os dados. Usuários veem apenas seus proprios dados e companheiros.</p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
                 <input

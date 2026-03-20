@@ -41,18 +41,21 @@ export async function GET(req: NextRequest) {
     })
 
     // Get all members across all organizations to map userId -> org
-    const userOrgMap = new Map<string, { orgId: string; memberId: string; orgName: string; plan: string; role: string; orgCreatedAt: string; orgUpdatedAt: string }>()
+    const userOrgMap = new Map<string, { orgId: string; memberId: string; orgName: string; plan: string; role: string; systemRole: string; orgCreatedAt: string; orgUpdatedAt: string }>()
     for (const [orgId, orgData] of orgMap) {
       const membersSnap = await db.collection('organizations').doc(orgId).collection('members').get()
       membersSnap.docs.forEach((doc) => {
         const member = doc.data()
         if (member.userId) {
+          // Derive systemRole: explicit field > infer from invitedBy (no invitedBy = admin)
+          const systemRole = member.systemRole || (!member.invitedBy ? 'admin' : 'usuario')
           userOrgMap.set(member.userId, {
             orgId,
             memberId: doc.id,
             orgName: orgData.name,
             plan: member.plan || orgData.plan,
             role: member.role || 'user',
+            systemRole,
             orgCreatedAt: orgData.createdAt,
             orgUpdatedAt: orgData.updatedAt,
           })
@@ -74,6 +77,7 @@ export async function GET(req: NextRequest) {
         orgId: orgInfo?.orgId || null,
         memberId: orgInfo?.memberId || null,
         role: orgInfo?.role || null,
+        systemRole: orgInfo?.systemRole || null,
         orgCreatedAt: orgInfo?.orgCreatedAt || null,
         orgUpdatedAt: orgInfo?.orgUpdatedAt || null,
       }
@@ -119,6 +123,18 @@ export async function PUT(req: NextRequest) {
         // Update organization name if orgId is provided
         if (body.orgId && body.orgName !== undefined) {
           await db.collection('organizations').doc(body.orgId).update({ name: body.orgName })
+        }
+        // Update systemRole on member document
+        if (body.orgId && body.memberId && body.systemRole !== undefined) {
+          const validRoles = ['admin', 'usuario']
+          if (validRoles.includes(body.systemRole)) {
+            await db
+              .collection('organizations')
+              .doc(body.orgId)
+              .collection('members')
+              .doc(body.memberId)
+              .update({ systemRole: body.systemRole })
+          }
         }
         // Update plan on the organization and all members
         if (body.orgId && body.plan !== undefined) {

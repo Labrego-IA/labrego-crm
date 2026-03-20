@@ -25,11 +25,14 @@ export interface OrgLimits {
   maxContacts: number
 }
 
+export type SystemRole = 'admin' | 'usuario'
+
 export interface OrgMember {
   id: string
   userId: string
   email: string
   role: 'admin' | 'manager' | 'seller' | 'viewer' | 'cliente'
+  systemRole?: SystemRole
   displayName: string
   photoUrl?: string
   permissions: MemberPermissions
