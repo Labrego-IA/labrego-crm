@@ -63,7 +63,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
   const isPublicPage = pathname === '/login' || pathname === '/auth/forgot-password' || pathname === '/auth/reset-password' || pathname === '/reset-password'
   const { actionBalance, minuteBalance, loading: creditsLoading } = useCredits(orgId ?? undefined, orgPlan)
   // Apenas admin da organização pode usar "Ver como"
-  const isAdmin = member?.role === 'admin'
+  // systemRole 'admin' (definido via super-admin) também concede acesso
+  const isAdmin = member?.systemRole === 'admin' || member?.role === 'admin'
 
   // Fechar menu do usuario ao clicar fora
   useEffect(() => {

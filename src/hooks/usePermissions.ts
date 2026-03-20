@@ -14,15 +14,19 @@ export function usePermissions() {
   // Restrições de acesso só se aplicam a parceiros/companheiros vinculados a outro usuário
   const isPartner = !!member?.invitedBy
 
+  // systemRole 'admin' (definido via super-admin) concede acesso total,
+  // independente do role granular definido em /admin/usuarios
+  const isSystemAdmin = member?.systemRole === 'admin'
+
   const can = (action: keyof MemberActions): boolean => {
     if (!member) return false
-    if (member.role === 'admin' || !isPartner) return true
+    if (isSystemAdmin || member.role === 'admin' || !isPartner) return true
     return member.permissions?.actions?.[action] ?? false
   }
 
   const canAccessPage = (path: string): boolean => {
     if (!member) return false
-    if (member.role === 'admin' || !isPartner) return true
+    if (isSystemAdmin || member.role === 'admin' || !isPartner) return true
     const pages = member.permissions?.pages
     if (!pages) return false
 
@@ -37,5 +41,5 @@ export function usePermissions() {
 
   const viewScope = member?.role === 'admin' ? 'all' : (member?.permissions?.viewScope ?? 'own')
 
-  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer', isPartner }
+  return { can, canAccessPage, viewScope, role: member?.role ?? 'viewer', isPartner, isSystemAdmin }
 }
