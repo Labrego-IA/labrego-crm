@@ -1806,7 +1806,7 @@ export default function ContatosPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-slate-500">Total de Contatos</p>
-              <p className="text-2xl font-bold text-slate-800">{clients.length}</p>
+              <p className="text-2xl font-bold text-slate-800">{filteredClients.length}</p>
             </div>
           </div>
         </div>
@@ -1820,7 +1820,7 @@ export default function ContatosPage() {
             <div>
               <p className="text-sm font-medium text-slate-500">Clientes Ativos</p>
               <p className="text-2xl font-bold text-slate-800">
-                {clients.filter(c => {
+                {filteredClients.filter(c => {
                   const stage = funnelStages.find(s => s.id === c.funnelStage)
                   return stage?.name === 'Ativo'
                 }).length}
