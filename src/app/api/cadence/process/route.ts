@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { getAutomationConfig, getTodayActionCount, getTodayPhoneCallCount, getTodayPhoneCallCountByStage } from '@/lib/automationConfig'
 import { executeCadenceStep, logCadenceExecution, determineBestStage } from '@/lib/cadenceExecutors'
-import { createCadenceCallQueue, getCallQueue, processQueue } from '@/lib/callQueue'
+import { createCadenceCallQueue, addItemsToCadenceQueue, getCallQueue, processQueue } from '@/lib/callQueue'
 import { canMakeCall } from '@/lib/credits'
 import type { CadenceStep, CadenceExecutionLog, AutomationConfig } from '@/types/cadence'
 
@@ -342,18 +342,19 @@ async function processOrg(
   const nonPhoneEligible = eligible.filter(e => e.step.contactMethod !== 'phone')
 
   // ---- PHONE: Power Dialer via CallQueue ----
-  // SEMPRE verificar se há fila running para avançar (independente de novos elegíveis)
+  // Verificar se há fila running para avançar (independente de novos elegíveis)
   const existingQueue = await getCallQueue(undefined, orgId)
   const hasCadenceQueue = existingQueue && existingQueue.status === 'running' &&
     (existingQueue as unknown as Record<string, unknown>).type === 'cadence'
 
+  // Sempre avançar/destravar fila existente
   if (hasCadenceQueue) {
-    // Queue já existe — chamar processQueue para avançar
-    // (detecta chamadas travadas e dispara novas se houver vagas)
     console.log(`[CADENCE] Cadence queue already running (${existingQueue.id}), processing to unstick/advance`)
     await processQueue(existingQueue.id)
-    results.skipped += phoneEligible.length
-  } else if (phoneEligible.length > 0) {
+  }
+
+  // Processar novos contatos elegíveis (independente de fila existente)
+  if (phoneEligible.length > 0) {
     // Calculate per-stage phone budgets
     const stagePhoneCounts = await getTodayPhoneCallCountByStage(orgId)
     const todayPhoneCount = await getTodayPhoneCallCount(orgId)
@@ -425,8 +426,67 @@ async function processOrg(
 
       if (phonesToEnqueue.length === 0) {
         results.skipped += skippedCount
+      } else if (hasCadenceQueue) {
+        // Fila já existe — adicionar novos contatos à fila existente
+        const added = await addItemsToCadenceQueue(existingQueue.id, queueContacts)
+
+        if (added > 0) {
+          // Mark added contacts as pending call result
+          const nowStr = new Date().toISOString()
+          for (let i = 0; i < phonesToEnqueue.length; i += 450) {
+            const writeBatch = db.batch()
+            const chunk = phonesToEnqueue.slice(i, i + 450)
+            for (const { contact } of chunk) {
+              writeBatch.update(db.collection('clients').doc(contact.id), {
+                cadencePendingCallResult: true,
+                lastCadenceActionAt: nowStr,
+              })
+            }
+            await writeBatch.commit()
+          }
+
+          // Log cadence executions for added contacts
+          for (const { contact, step, stage } of phonesToEnqueue) {
+            await logCadenceExecution(db, orgId, contact.id, {
+              stepId: step.id,
+              stepName: step.name,
+              channel: 'phone',
+              stageId: stage.id,
+              stageName: stage.name,
+              success: true,
+              error: '',
+              templatePreview: step.name.slice(0, 100),
+            })
+
+            const logEntry: Omit<CadenceExecutionLog, 'id'> = {
+              orgId,
+              clientId: contact.id,
+              clientName: (contact.name as string) || '',
+              stepId: step.id,
+              stepName: step.name,
+              stageId: stage.id,
+              stageName: stage.name,
+              channel: 'phone',
+              status: 'success',
+              error: '',
+              executedAt: now.toISOString(),
+              retryCount: 0,
+            }
+            await db.collection('organizations').doc(orgId).collection('cadenceExecutionLog').add(logEntry)
+          }
+
+          results.processed += added
+          results.success += added
+          actionsLeft -= added
+          console.log(`[CADENCE] Added ${added} contacts to existing queue ${existingQueue.id}`)
+        }
+
+        results.skipped += skippedCount + (phonesToEnqueue.length - added)
+
+        // Process queue again to start new pending items
+        await processQueue(existingQueue.id)
       } else {
-      // Create queue and start processing
+      // Create new queue and start processing
       const maxConcurrent = config.maxConcurrentCalls ?? 10
       const callStaggerDelayMs = config.callStaggerDelayMs ?? 10000
       const { queueId, totalItems } = await createCadenceCallQueue({
