@@ -186,6 +186,80 @@ export async function createCadenceCallQueue(options: {
 }
 
 /**
+ * Adiciona novos contatos a uma fila de cadência já existente (running).
+ * Evita que uma fila travada bloqueie novos contatos elegíveis.
+ * Contatos já presentes na fila (por clientId) são ignorados para evitar duplicação.
+ */
+export async function addItemsToCadenceQueue(
+  queueId: string,
+  contacts: Array<{
+    id: string
+    name: string
+    phone: string
+    company?: string
+    industry?: string
+    partners?: string
+    stageId?: string
+    cadenceStepId: string
+    cadenceOverrides?: { systemPrompt?: string; firstMessage?: string }
+  }>
+): Promise<number> {
+  if (contacts.length === 0) return 0
+
+  const db = getAdminDb()
+
+  // Get existing items to find max position and detect duplicates
+  const existingItems = await getQueueItems(queueId)
+  const existingClientIds = new Set(existingItems.map(i => i.clientId))
+  const maxPosition = existingItems.reduce((max, i) => Math.max(max, i.position), -1)
+
+  // Filter out contacts already in the queue
+  const newContacts = contacts.filter(c => !existingClientIds.has(c.id))
+  if (newContacts.length === 0) {
+    console.log(`[CALL-QUEUE] All ${contacts.length} contacts already in queue ${queueId}, skipping`)
+    return 0
+  }
+
+  const now = new Date().toISOString()
+  const batchSize = 450
+  for (let batchStart = 0; batchStart < newContacts.length; batchStart += batchSize) {
+    const batch = db.batch()
+    const batchEnd = Math.min(batchStart + batchSize, newContacts.length)
+    for (let i = batchStart; i < batchEnd; i++) {
+      const c = newContacts[i]
+      const itemRef = db.collection(COLLECTION_QUEUE_ITEMS).doc()
+      const item: Omit<CallQueueItem, 'id'> = {
+        queueId,
+        clientId: c.id,
+        name: c.name,
+        phone: c.phone,
+        ...(c.company != null && { company: c.company }),
+        ...(c.industry != null && { industry: c.industry }),
+        ...(c.partners != null && { partners: c.partners }),
+        status: 'pending',
+        position: maxPosition + 1 + i,
+        createdAt: now,
+        updatedAt: now,
+        ...(c.stageId && { stageId: c.stageId }),
+        cadenceStepId: c.cadenceStepId,
+        ...(c.cadenceOverrides && { cadenceOverrides: c.cadenceOverrides }),
+      }
+      batch.set(itemRef, { ...item, id: itemRef.id })
+    }
+    await batch.commit()
+  }
+
+  // Update queue totalItems
+  await db.collection(COLLECTION_QUEUE).doc(queueId).update({
+    totalItems: FieldValue.increment(newContacts.length),
+    updatedAt: now,
+  })
+
+  console.log(`[CALL-QUEUE] Added ${newContacts.length} contacts to existing queue ${queueId} (${contacts.length - newContacts.length} duplicates skipped)`)
+  return newContacts.length
+}
+
+/**
  * Busca a fila ativa (ou uma fila específica por ID).
  * Usa query simples (single field) para evitar necessidade de composite index.
  */
