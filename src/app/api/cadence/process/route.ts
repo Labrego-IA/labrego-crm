@@ -423,6 +423,9 @@ async function processOrg(
         }
       })
 
+      if (phonesToEnqueue.length === 0) {
+        results.skipped += skippedCount
+      } else {
       // Create queue and start processing
       const maxConcurrent = config.maxConcurrentCalls ?? 10
       const callStaggerDelayMs = config.callStaggerDelayMs ?? 10000
@@ -487,6 +490,7 @@ async function processOrg(
       await processQueue(queueId)
 
       console.log(`[CADENCE] Power dialer started: queue ${queueId} with ${totalItems} contacts, ${maxConcurrent} concurrent, ${skippedCount} deferred`)
+      } // end if phonesToEnqueue.length > 0
     }
   }
 
