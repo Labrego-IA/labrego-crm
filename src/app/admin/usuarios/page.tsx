@@ -10,7 +10,6 @@ import { ROLE_PRESETS, ALL_PAGES, ALL_ACTIONS, type RolePreset } from '@/types/p
 import { filterPagesByPlan, filterActionsByPlan, isPageFeatureAvailable } from '@/lib/planPermissions'
 import type { OrgMember, MemberPermissions, MemberActions } from '@/types/organization'
 import { toast } from 'sonner'
-import PermissionGate from '@/components/PermissionGate'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
@@ -120,7 +119,7 @@ const ui = {
 
 export default function UsuariosPage() {
   const { orgId, userUid, userEmail } = useCrmUser()
-  const { can } = usePermissions()
+  const { can, isPartner } = usePermissions()
   const { limits, plan } = usePlan()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
@@ -202,13 +201,13 @@ export default function UsuariosPage() {
 
   /* ---------------------- Real-time subscription ------------------------ */
 
-  // Subscribe only to partners invited by the current user
+  // Partners see all org members; non-partners see only their invited partners
   useEffect(() => {
     if (!orgId || !userEmail) return
-    const q = query(
-      collection(db, 'organizations', orgId, 'members'),
-      where('invitedBy', '==', userEmail.toLowerCase()),
-    )
+    const col = collection(db, 'organizations', orgId, 'members')
+    const q = isPartner
+      ? query(col)
+      : query(col, where('invitedBy', '==', userEmail.toLowerCase()))
     const unsub = onSnapshot(
       q,
       (snap) => {
@@ -226,7 +225,7 @@ export default function UsuariosPage() {
       },
     )
     return () => unsub()
-  }, [orgId, userEmail])
+  }, [orgId, userEmail, isPartner])
 
   /* ---------------------- Search user by email --------------------------- */
 
@@ -618,48 +617,57 @@ export default function UsuariosPage() {
 
   /* ============================== Render ================================ */
 
-  return (
-    <PermissionGate
-      action="canManageUsers"
-      fallback={
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className={`${ui.card} p-8 text-center max-w-md`}>
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
-              <svg className="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">Acesso restrito</h3>
-            <p className="text-sm text-gray-500">Sem permissao para gerenciar parceiros</p>
+  // Partners without canManageUsers can view but not manage
+  const canManage = can('canManageUsers')
+
+  if (!canManage && !isPartner) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className={`${ui.card} p-8 text-center max-w-md`}>
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+            <svg className="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
           </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">Acesso restrito</h3>
+          <p className="text-sm text-gray-500">Sem permissao para gerenciar parceiros</p>
         </div>
-      }
-    >
+      </div>
+    )
+  }
+
+  return (
       <div className="space-y-6">
         {/* =================== Header =================== */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Parceiros</h2>
+            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+              {isPartner ? 'Usuarios' : 'Parceiros'}
+            </h2>
             <p className="text-sm text-gray-500 mt-0.5">
-              Gerencie os parceiros da sua conta. Cada parceiro podera visualizar os mesmos dados que voce.
+              {isPartner
+                ? 'Visualize os usuarios da organização e veja quem e o lider.'
+                : 'Gerencie os parceiros da sua conta. Cada parceiro podera visualizar os mesmos dados que voce.'}
             </p>
           </div>
-          <button
-            type="button"
-            disabled={atLimit}
-            onClick={() => guard(() => setShowAddModal(true))}
-            className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
-            title={atLimit ? 'Limite do plano atingido' : 'Adicionar parceiro'}
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-            </svg>
-            Adicionar parceiro
-          </button>
+          {!isPartner && (
+            <button
+              type="button"
+              disabled={atLimit}
+              onClick={() => guard(() => setShowAddModal(true))}
+              className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={atLimit ? 'Limite do plano atingido' : 'Adicionar parceiro'}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Adicionar parceiro
+            </button>
+          )}
         </div>
 
         {/* Mobile: FAB flutuante */}
-        {!atLimit && (
+        {!isPartner && !atLimit && (
           <button
             onClick={() => guard(() => setShowAddModal(true))}
             className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
@@ -672,7 +680,7 @@ export default function UsuariosPage() {
         )}
 
         {/* =================== Plan limit bar =================== */}
-        <div className={`${ui.card} px-5 py-4`}>
+        {!isPartner && <div className={`${ui.card} px-5 py-4`}>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
               Parceiros: {memberCount} / {maxUsers}
@@ -696,7 +704,7 @@ export default function UsuariosPage() {
               Faca upgrade do plano para adicionar mais parceiros.
             </p>
           )}
-        </div>
+        </div>}
 
         {/* =================== Search bar =================== */}
         <div className="relative">
@@ -800,7 +808,7 @@ export default function UsuariosPage() {
                           </button>
                         </th>
                       ))}
-                      <th className="px-5 py-3 text-center font-medium text-gray-600">Acoes</th>
+                      {!isPartner && <th className="px-5 py-3 text-center font-medium text-gray-600">Acoes</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -830,6 +838,11 @@ export default function UsuariosPage() {
                               <div className="min-w-0">
                                 <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
                                   {m.displayName}
+                                  {!m.invitedBy && (
+                                    <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
+                                      Lider
+                                    </span>
+                                  )}
                                   {m.status === 'suspended' && (
                                     <svg className="h-4 w-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-label="Bloqueado">
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -864,7 +877,7 @@ export default function UsuariosPage() {
                           <td className="px-5 py-3 text-center text-gray-500">
                             {formatJoinedDate(m.joinedAt)}
                           </td>
-                          <td className="px-5 py-3 text-center">
+                          {!isPartner && <td className="px-5 py-3 text-center">
                             <div className="relative inline-block" ref={openMenuId === m.id ? menuRef : undefined}>
                               <button
                                 type="button"
@@ -946,7 +959,7 @@ export default function UsuariosPage() {
                                 </div>
                               )}
                             </div>
-                          </td>
+                          </td>}
                         </tr>
                       )
                     })}
@@ -983,6 +996,11 @@ export default function UsuariosPage() {
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
                             {m.displayName}
+                            {!m.invitedBy && (
+                              <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
+                                Lider
+                              </span>
+                            )}
                             {m.status === 'suspended' && (
                               <svg className="h-4 w-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-label="Bloqueado">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
@@ -1012,7 +1030,7 @@ export default function UsuariosPage() {
                         </span>
                         <span className="text-gray-400">{formatJoinedDate(m.joinedAt)}</span>
                       </div>
-                      <div className="relative" ref={openMenuId === `mobile-${m.id}` ? menuRef : undefined}>
+                      {!isPartner && <div className="relative" ref={openMenuId === `mobile-${m.id}` ? menuRef : undefined}>
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1091,7 +1109,7 @@ export default function UsuariosPage() {
                             )}
                           </div>
                         )}
-                      </div>
+                      </div>}
                     </div>
                   </div>
                 )
@@ -1523,6 +1541,5 @@ export default function UsuariosPage() {
         {/* Free Plan Guard Dialog */}
         <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
       </div>
-    </PermissionGate>
   )
 }

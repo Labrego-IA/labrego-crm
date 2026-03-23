@@ -9,7 +9,7 @@ import { ShieldCheckIcon } from '@heroicons/react/24/outline'
 const PUBLIC_PATHS = ['/login', '/auth/', '/reset-password', '/perfil', '/guia']
 
 // Páginas que aparecem normalmente mesmo sem permissão (com funcionalidades restritas)
-const SOFT_BLOCKED_PATHS = ['/funil']
+const SOFT_BLOCKED_PATHS = ['/funil', '/admin/usuarios']
 
 interface PageAccessGuardProps {
   children: ReactNode
