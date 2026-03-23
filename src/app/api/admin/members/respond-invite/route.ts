@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAdminDb } from '@/lib/firebaseAdmin'
+import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
 import type { PlanId } from '@/types/plan'
@@ -74,6 +74,83 @@ export async function POST(req: NextRequest) {
         planId: orgPlan,
         acceptedAt: new Date().toISOString(),
       })
+
+      // Create reciprocal partner: add the inviter as a partner in the invited user's own org
+      try {
+        const inviterEmail = memberData.invitedBy
+        if (inviterEmail) {
+          // Find the invited user's own org (where they are NOT a partner — no invitedBy)
+          const callerMemberships = await db.collectionGroup('members')
+            .where('email', '==', callerEmail)
+            .where('status', 'in', ['active', 'invited'])
+            .limit(10)
+            .get()
+
+          let callerOwnOrgId: string | null = null
+          for (const d of callerMemberships.docs) {
+            const data = d.data()
+            if (!data.invitedBy) {
+              const mOrgRef = d.ref.parent.parent
+              if (mOrgRef) {
+                callerOwnOrgId = mOrgRef.id
+                break
+              }
+            }
+          }
+
+          if (callerOwnOrgId && callerOwnOrgId !== orgId) {
+            // Check if inviter is already a partner in caller's org
+            const existingPartner = await db
+              .collection('organizations').doc(callerOwnOrgId)
+              .collection('members')
+              .where('email', '==', inviterEmail)
+              .where('invitedBy', '==', callerEmail)
+              .limit(1)
+              .get()
+
+            if (existingPartner.empty) {
+              // Get inviter info for the member doc
+              const inviterAuth = await getAdminAuth().getUserByEmail(inviterEmail).catch(() => null)
+              const inviterDisplayName = inviterAuth?.displayName || inviterEmail.split('@')[0]
+
+              // Get caller's org plan
+              const callerOrgDoc = await db.collection('organizations').doc(callerOwnOrgId).get()
+              const callerOrgData = callerOrgDoc.data()
+              const callerOrgPlan = (callerOrgData?.plan as PlanId) || 'free'
+
+              const reciprocalRole = role as RolePreset
+              const reciprocalPreset = ROLE_PRESETS[reciprocalRole]
+              const reciprocalPermissions = reciprocalPreset
+                ? {
+                    ...reciprocalPreset,
+                    pages: filterPagesByPlan(reciprocalPreset.pages, callerOrgPlan),
+                    actions: filterActionsByPlan(reciprocalPreset.actions, callerOrgPlan),
+                  }
+                : permissions
+
+              const now = new Date().toISOString()
+              await db
+                .collection('organizations').doc(callerOwnOrgId)
+                .collection('members')
+                .add({
+                  userId: inviterAuth?.uid || '',
+                  email: inviterEmail,
+                  displayName: inviterDisplayName,
+                  role: reciprocalRole,
+                  permissions: reciprocalPermissions,
+                  status: 'active',
+                  joinedAt: now,
+                  acceptedAt: now,
+                  invitedBy: callerEmail,
+                  planId: callerOrgPlan,
+                })
+            }
+          }
+        }
+      } catch (reciprocalErr) {
+        console.error('[respond-invite] Reciprocal partner creation error:', reciprocalErr)
+        // Non-critical: the main invite was already accepted
+      }
     } else {
       // Reject: delete the pending member document
       await memberRef.delete()
