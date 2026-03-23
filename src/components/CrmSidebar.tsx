@@ -220,7 +220,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="flex-1 overflow-y-auto scrollbar-sidebar px-3 py-4">
         <div className={`${collapsed ? '' : 'mb-2'}`}>
           {!collapsed && (
             <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-3">
