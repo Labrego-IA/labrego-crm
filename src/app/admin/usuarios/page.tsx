@@ -118,7 +118,7 @@ const ui = {
 /* ============================== Component =============================== */
 
 export default function UsuariosPage() {
-  const { orgId, userUid, userEmail } = useCrmUser()
+  const { orgId, userUid, userEmail, member: currentMember } = useCrmUser()
   const { can, isPartner } = usePermissions()
   const { limits, plan } = usePlan()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
@@ -201,31 +201,76 @@ export default function UsuariosPage() {
 
   /* ---------------------- Real-time subscription ------------------------ */
 
-  // Partners see all org members; non-partners see only their invited partners
+  // Partners see only their team (leader + same-leader partners);
+  // Non-partners (leaders) see only their invited partners.
+  const leaderEmail = currentMember?.invitedBy?.toLowerCase() ?? null
+
   useEffect(() => {
     if (!orgId || !userEmail) return
     const col = collection(db, 'organizations', orgId, 'members')
-    const q = isPartner
-      ? query(col)
-      : query(col, where('invitedBy', '==', userEmail.toLowerCase()))
-    const unsub = onSnapshot(
-      q,
-      (snap) => {
-        const items: OrgMember[] = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })) as OrgMember[]
-        setMembers(items)
+
+    if (isPartner && leaderEmail) {
+      // Partner: two listeners — teammates (same invitedBy) + leader (by email)
+      const qTeam = query(col, where('invitedBy', '==', leaderEmail))
+      const qLeader = query(col, where('email', '==', leaderEmail))
+
+      let teamMembers: OrgMember[] = []
+      let leaderMembers: OrgMember[] = []
+      let teamLoaded = false
+      let leaderLoaded = false
+
+      const merge = () => {
+        if (!teamLoaded || !leaderLoaded) return
+        const map = new Map<string, OrgMember>()
+        for (const m of [...leaderMembers, ...teamMembers]) map.set(m.id, m)
+        setMembers(Array.from(map.values()))
         setLoading(false)
-      },
-      (error) => {
-        console.error('Error loading members:', error)
+      }
+
+      const unsubTeam = onSnapshot(qTeam, (snap) => {
+        teamMembers = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as OrgMember[]
+        teamLoaded = true
+        merge()
+      }, (error) => {
+        console.error('Error loading team members:', error)
         toast.error('Erro ao carregar membros')
-        setLoading(false)
-      },
-    )
-    return () => unsub()
-  }, [orgId, userEmail, isPartner])
+        teamLoaded = true
+        merge()
+      })
+
+      const unsubLeader = onSnapshot(qLeader, (snap) => {
+        leaderMembers = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as OrgMember[]
+        leaderLoaded = true
+        merge()
+      }, (error) => {
+        console.error('Error loading leader:', error)
+        leaderLoaded = true
+        merge()
+      })
+
+      return () => { unsubTeam(); unsubLeader() }
+    } else {
+      // Leader/non-partner: see only their invited partners
+      const q = query(col, where('invitedBy', '==', userEmail.toLowerCase()))
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          const items: OrgMember[] = snap.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+          })) as OrgMember[]
+          setMembers(items)
+          setLoading(false)
+        },
+        (error) => {
+          console.error('Error loading members:', error)
+          toast.error('Erro ao carregar membros')
+          setLoading(false)
+        },
+      )
+      return () => unsub()
+    }
+  }, [orgId, userEmail, isPartner, leaderEmail])
 
   /* ---------------------- Search user by email --------------------------- */
 
