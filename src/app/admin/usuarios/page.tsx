@@ -883,7 +883,7 @@ export default function UsuariosPage() {
                               <div className="min-w-0">
                                 <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
                                   {m.displayName}
-                                  {!m.invitedBy && (
+                                  {isPartner && leaderEmail && m.email.toLowerCase() === leaderEmail && (
                                     <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
                                       Lider
                                     </span>
@@ -1041,7 +1041,7 @@ export default function UsuariosPage() {
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
                             {m.displayName}
-                            {!m.invitedBy && (
+                            {isPartner && leaderEmail && m.email.toLowerCase() === leaderEmail && (
                               <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
                                 Lider
                               </span>
