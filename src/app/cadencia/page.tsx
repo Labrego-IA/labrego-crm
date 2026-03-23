@@ -301,10 +301,10 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
   }
 
   const handleSaveExhaustedAction = async (stageId: string, action: CadenceExhaustedAction, targetId?: string) => {
-    await updateDoc(doc(db, 'funnelStages', stageId), {
-      cadenceExhaustedAction: action,
-      ...(targetId ? { cadenceExhaustedTargetStageId: targetId } : {}),
-    })
+    const updates: Record<string, unknown> = { cadenceExhaustedAction: action }
+    if (targetId !== undefined) updates.cadenceExhaustedTargetStageId = targetId
+    await updateDoc(doc(db, 'funnelStages', stageId), updates)
+    setStages(prev => prev.map(s => s.id === stageId ? { ...s, cadenceExhaustedAction: action, ...(targetId !== undefined ? { cadenceExhaustedTargetStageId: targetId } : {}) } : s))
   }
 
   const handleSaveStageCallConfig = async (stageId: string, updates: { callStartHour?: string; callEndHour?: string; maxCallsPerDay?: number | null }) => {
