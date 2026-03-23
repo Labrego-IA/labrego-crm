@@ -54,11 +54,12 @@ export default function FunnelHubPage() {
   const router = useRouter()
   const { orgId, member, userEmail } = useCrmUser()
   const { funnels, loading: loadingFunnels } = useVisibleFunnels()
-  const { can, viewScope } = usePermissions()
+  const { can, canAccessPage, viewScope } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
   const { limits } = usePlan()
 
-  const canManage = can('canManageFunnels')
+  const pageBlocked = !canAccessPage('/funil')
+  const canManage = pageBlocked ? false : can('canManageFunnels')
 
   // Load all stages for contact counting
   const [allStages, setAllStages] = useState<FunnelStageBasic[]>([])

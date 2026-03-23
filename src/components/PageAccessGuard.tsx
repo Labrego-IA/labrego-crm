@@ -8,6 +8,9 @@ import { ShieldCheckIcon } from '@heroicons/react/24/outline'
 // Páginas que não precisam de verificação de permissão
 const PUBLIC_PATHS = ['/login', '/auth/', '/reset-password', '/perfil', '/guia']
 
+// Páginas que aparecem normalmente mesmo sem permissão (com funcionalidades restritas)
+const SOFT_BLOCKED_PATHS = ['/funil']
+
 interface PageAccessGuardProps {
   children: ReactNode
 }
@@ -26,6 +29,10 @@ export default function PageAccessGuard({ children }: PageAccessGuardProps) {
   // Páginas públicas/utilitárias não precisam de verificação
   const isPublicPath = PUBLIC_PATHS.some(p => pathname.startsWith(p))
   if (isPublicPath) return <>{children}</>
+
+  // Páginas com soft block: aparecem normalmente, com funcionalidades restritas na própria página
+  const isSoftBlocked = SOFT_BLOCKED_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+  if (isSoftBlocked) return <>{children}</>
 
   // Verifica se o usuário tem acesso à página atual (apenas para parceiros)
   if (!canAccessPage(pathname)) {
