@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
+import { sendWithFallback } from '@/lib/email/emailProvider'
 import type { PlanId } from '@/types/plan'
 
 export const runtime = 'nodejs'
@@ -9,8 +10,8 @@ export const runtime = 'nodejs'
 /**
  * POST /api/admin/members/invite
  * Creates a pending partner invitation.
- * - If user exists in Firebase Auth: creates member with status 'pending' + in-app notification.
- * - If user doesn't exist: creates Firebase Auth user, member with status 'pending', + in-app notification.
+ * - If user exists in Firebase Auth: creates member with status 'pending' + in-app notification + invite email.
+ * - If user doesn't exist: creates Firebase Auth user with provided password, member with status 'pending', + invite email.
  * The invitation must be accepted by the invited user before permissions are applied.
  */
 export async function POST(req: NextRequest) {
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { orgId, email, displayName, role } = await req.json()
+    const { orgId, email, displayName, role, password } = await req.json()
 
     if (!orgId || !email || !role) {
       return NextResponse.json({ error: 'missing required fields' }, { status: 400 })
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
     const auth = getAdminAuth()
     let userId = ''
     let resolvedDisplayName = displayName || ''
+    let isNewUser = false
 
     try {
       const existingUser = await auth.getUserByEmail(normalizedEmail).catch(() => null)
@@ -97,17 +99,18 @@ export async function POST(req: NextRequest) {
           resolvedDisplayName = existingUser.displayName || normalizedEmail.split('@')[0]
         }
       } else {
-        // User doesn't exist in Auth — create with temp password
-        const tempPassword = `Voxium@${Math.random().toString(36).slice(2, 10)}`
+        // User doesn't exist in Auth — create with provided password or temp password
+        const userPassword = password || `Voxium@${Math.random().toString(36).slice(2, 10)}`
         if (!resolvedDisplayName) {
           resolvedDisplayName = normalizedEmail.split('@')[0]
         }
         const newUser = await auth.createUser({
           email: normalizedEmail,
-          password: tempPassword,
+          password: userPassword,
           displayName: resolvedDisplayName,
         })
         userId = newUser.uid
+        isNewUser = true
       }
     } catch (authErr) {
       console.error('[invite] Auth user creation error:', authErr)
@@ -184,6 +187,98 @@ export async function POST(req: NextRequest) {
     } catch (notifErr) {
       console.error('[invite] Notification creation error:', notifErr)
       // Don't fail the request if notification fails — member was already created
+    }
+
+    // Send invite email
+    try {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin
+      const loginUrl = `${appUrl.replace(/\/$/, '')}/login`
+
+      const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#0ea5e9,#6366f1);padding:32px 32px 24px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">Convite de Parceria</h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+                Ola <strong>${resolvedDisplayName}</strong>,
+              </p>
+              <p style="margin:0 0 16px;color:#374151;font-size:15px;line-height:1.6;">
+                <strong>${callerDisplayName}</strong> convidou voce para ser parceiro(a) na organizacao <strong>${orgName}</strong>.
+              </p>
+              ${isNewUser ? `
+              <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px;margin:0 0 20px;">
+                <p style="margin:0 0 8px;color:#166534;font-size:14px;font-weight:600;">Suas credenciais de acesso:</p>
+                <p style="margin:0 0 4px;color:#374151;font-size:14px;"><strong>Email:</strong> ${normalizedEmail}</p>
+                <p style="margin:0;color:#374151;font-size:14px;"><strong>Senha:</strong> A senha definida pelo administrador</p>
+                <p style="margin:8px 0 0;color:#6b7280;font-size:12px;">Recomendamos alterar sua senha apos o primeiro acesso.</p>
+              </div>
+              ` : ''}
+              <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin:0 0 24px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="color:#6b7280;font-size:13px;padding:4px 0;">Organizacao</td>
+                    <td style="color:#111827;font-size:13px;font-weight:600;text-align:right;padding:4px 0;">${orgName}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#6b7280;font-size:13px;padding:4px 0;">Convidado por</td>
+                    <td style="color:#111827;font-size:13px;font-weight:600;text-align:right;padding:4px 0;">${callerDisplayName}</td>
+                  </tr>
+                </table>
+              </div>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="${loginUrl}" style="display:inline-block;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:10px;font-size:15px;font-weight:600;">
+                      Acessar o App
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0;color:#9ca3af;font-size:12px;text-align:center;">
+                Acesse o app e aceite o convite na area de notificacoes.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #e5e7eb;">
+              <p style="margin:0;color:#9ca3af;font-size:12px;">
+                Este email foi enviado automaticamente pelo Voxium CRM.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+
+      await sendWithFallback(
+        orgId,
+        normalizedEmail,
+        `Convite de parceria - ${orgName}`,
+        emailHtml,
+      )
+    } catch (emailErr) {
+      console.error('[invite] Email send error:', emailErr)
+      // Don't fail the request if email fails — member and notification were already created
     }
 
     return NextResponse.json({ memberId: memberRef.id, userId })

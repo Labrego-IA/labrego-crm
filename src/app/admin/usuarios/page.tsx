@@ -153,14 +153,14 @@ export default function UsuariosPage() {
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false)
-  const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset }
+  const addFormDefault = { email: '', displayName: '', role: 'seller' as RolePreset, password: '', confirmPassword: '' }
   const [addForm, setAddForm] = useState(addFormDefault)
   const [addLoading, setAddLoading] = useState(false)
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchResult, setSearchResult] = useState<{ found: boolean; user: { uid: string; email: string; displayName: string; photoUrl: string | null } | null } | null>(null)
   const [searchError, setSearchError] = useState<string | null>(null)
 
-  const addHasChanges = addForm.email !== '' || addForm.role !== 'seller'
+  const addHasChanges = addForm.email !== '' || addForm.role !== 'seller' || addForm.password !== '' || addForm.displayName !== ''
 
   // Edit modal
   const [editMember, setEditMember] = useState<OrgMember | null>(null)
@@ -306,20 +306,44 @@ export default function UsuariosPage() {
       return
     }
 
+    // Validate pre-registration fields for new users
+    const isNewUser = searchResult && !searchResult.found
+    if (isNewUser) {
+      if (!addForm.displayName.trim()) {
+        toast.error('Informe o nome do usuario')
+        return
+      }
+      if (!addForm.password || addForm.password.length < 6) {
+        toast.error('A senha deve ter pelo menos 6 caracteres')
+        return
+      }
+      if (addForm.password !== addForm.confirmPassword) {
+        toast.error('As senhas nao coincidem')
+        return
+      }
+    }
+
     setAddLoading(true)
     try {
+      const body: Record<string, string> = {
+        orgId,
+        email: addForm.email.trim(),
+        displayName: searchResult?.user?.displayName || addForm.displayName.trim() || addForm.email.trim().split('@')[0],
+        role: addForm.role,
+      }
+
+      // Include password for pre-registration of new users
+      if (isNewUser && addForm.password) {
+        body.password = addForm.password
+      }
+
       const res = await fetch('/api/admin/members/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-user-email': userEmail,
         },
-        body: JSON.stringify({
-          orgId,
-          email: addForm.email.trim(),
-          displayName: searchResult?.user?.displayName || addForm.displayName.trim() || addForm.email.trim().split('@')[0],
-          role: addForm.role,
-        }),
+        body: JSON.stringify(body),
       })
 
       if (!res.ok) {
@@ -327,8 +351,12 @@ export default function UsuariosPage() {
         throw new Error(data.error || 'Erro ao convidar membro')
       }
 
-      toast.success(`Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao para aceitar.`)
-      setAddForm({ email: '', displayName: '', role: 'seller' })
+      toast.success(
+        isNewUser
+          ? `Conta criada e convite enviado por email para ${addForm.email.trim()}.`
+          : `Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao e um email para aceitar.`,
+      )
+      setAddForm({ email: '', displayName: '', role: 'seller', password: '', confirmPassword: '' })
       setSearchResult(null)
       setSearchError(null)
       setShowAddModal(false)
@@ -1194,18 +1222,66 @@ export default function UsuariosPage() {
                   </div>
                 )}
 
-                {/* Search result: user not found */}
+                {/* Search result: user not found — show pre-registration form */}
                 {searchResult && !searchResult.found && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 space-y-4">
                     <div className="flex items-center gap-2">
-                      <svg className="h-5 w-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      <svg className="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                       </svg>
-                      <p className="text-sm font-medium text-red-800">Usuario nao cadastrado</p>
+                      <p className="text-sm font-medium text-amber-800">Usuario nao cadastrado</p>
                     </div>
-                    <p className="text-xs text-red-700">
-                      Nenhum usuario cadastrado com este email no app. O usuario precisa criar uma conta primeiro para poder ser convidado.
+                    <p className="text-xs text-amber-700">
+                      Nenhum usuario cadastrado com este email. Preencha os dados abaixo para criar a conta e enviar o convite por email.
                     </p>
+
+                    {/* Display name */}
+                    <div>
+                      <label htmlFor="add-displayName" className={ui.label}>
+                        Nome do usuario
+                      </label>
+                      <input
+                        id="add-displayName"
+                        type="text"
+                        value={addForm.displayName}
+                        onChange={(e) => setAddForm((f) => ({ ...f, displayName: e.target.value }))}
+                        placeholder="Nome completo"
+                        className={ui.input}
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                      <label htmlFor="add-password" className={ui.label}>
+                        Senha
+                      </label>
+                      <input
+                        id="add-password"
+                        type="password"
+                        value={addForm.password}
+                        onChange={(e) => setAddForm((f) => ({ ...f, password: e.target.value }))}
+                        placeholder="Minimo 6 caracteres"
+                        className={ui.input}
+                      />
+                    </div>
+
+                    {/* Confirm password */}
+                    <div>
+                      <label htmlFor="add-confirmPassword" className={ui.label}>
+                        Confirmar senha
+                      </label>
+                      <input
+                        id="add-confirmPassword"
+                        type="password"
+                        value={addForm.confirmPassword}
+                        onChange={(e) => setAddForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                        placeholder="Repita a senha"
+                        className={ui.input}
+                      />
+                      {addForm.password && addForm.confirmPassword && addForm.password !== addForm.confirmPassword && (
+                        <p className="text-xs text-red-500 mt-1">As senhas nao coincidem</p>
+                      )}
+                    </div>
                   </div>
                 )}
 
@@ -1236,7 +1312,7 @@ export default function UsuariosPage() {
                 <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
-                {searchResult?.found && !searchError && (
+                {((searchResult?.found && !searchError) || (searchResult && !searchResult.found && !searchError)) && (
                   <button
                     type="button"
                     onClick={handleAdd}
@@ -1248,8 +1324,10 @@ export default function UsuariosPage() {
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                         Enviando...
                       </>
-                    ) : (
+                    ) : searchResult?.found ? (
                       'Enviar convite'
+                    ) : (
+                      'Criar conta e enviar convite'
                     )}
                   </button>
                 )}
