@@ -98,8 +98,9 @@ type ExecutionLog = {
   stepName: string
   stageName: string
   channel: ContactMethod
-  status: 'success' | 'failed' | 'retry_pending' | 'retry_failed'
+  status: 'success' | 'failed' | 'retry_pending' | 'retry_failed' | 'skipped'
   error?: string
+  skipReason?: string
   executedAt: string
 }
 
@@ -888,6 +889,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
 
   const successToday = todayLogs.filter(l => l.status === 'success')
   const failedRecent = logs.filter(l => l.status === 'failed' || l.status === 'retry_failed')
+  const skippedRecent = logs.filter(l => l.status === 'skipped')
 
   // Calculate next cron run (every 15 minutes, respecting work hours)
   const nextCronRun = useMemo(() => {
@@ -1021,7 +1023,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Em cadência ativa</p>
           <p className="text-2xl font-bold text-slate-900 mt-1">{totalActive}</p>
@@ -1035,6 +1037,10 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
           <p className="text-xs text-slate-500">Ligações hoje</p>
           <p className="text-2xl font-bold text-blue-600 mt-1">{channelCounts['phone'] || 0}</p>
           <p className="text-xs text-slate-400 mt-0.5">de {autoConfig.maxCallsPerDay ?? 300} max</p>
+        </div>
+        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <p className="text-xs text-slate-500">Pulados (24h)</p>
+          <p className="text-2xl font-bold text-amber-600 mt-1">{skippedRecent.length}</p>
         </div>
         <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Falhas (24h)</p>
@@ -1090,6 +1096,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
                   <th className="text-left p-3 font-medium">Etapa</th>
                   <th className="text-center p-3 font-medium">Canal</th>
                   <th className="text-center p-3 font-medium">Status</th>
+                  <th className="text-left p-3 font-medium">Motivo</th>
                   <th className="text-right p-3 font-medium">Hora</th>
                 </tr>
               </thead>
@@ -1099,7 +1106,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
                     <td className="p-3">
                       <a href={`/contatos/${log.clientId}`} className="text-primary-600 hover:text-primary-800 font-medium">{log.clientName || '—'}</a>
                     </td>
-                    <td className="p-3 text-slate-600">{log.stepName}</td>
+                    <td className="p-3 text-slate-600">{log.stepName || '—'}</td>
                     <td className="p-3 text-slate-600">{log.stageName}</td>
                     <td className="p-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${CONTACT_METHOD_COLORS[log.channel]}`}>
@@ -1111,11 +1118,18 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700">
                           <CheckCircleIcon className="w-3 h-3" /> OK
                         </span>
+                      ) : log.status === 'skipped' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+                          <ExclamationTriangleIcon className="w-3 h-3" /> Pulado
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700" title={log.error}>
                           <XCircleIcon className="w-3 h-3" /> Falha
                         </span>
                       )}
+                    </td>
+                    <td className="p-3 text-xs text-slate-500 max-w-[200px] truncate" title={log.skipReason || log.error || ''}>
+                      {log.skipReason || log.error || '—'}
                     </td>
                     <td className="p-3 text-right text-slate-500 text-xs">
                       {new Date(log.executedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}

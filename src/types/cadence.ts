@@ -79,8 +79,9 @@ export interface CadenceExecutionLog {
   stageId: string
   stageName: string
   channel: ContactMethod
-  status: 'success' | 'failed' | 'retry_pending' | 'retry_failed'
+  status: 'success' | 'failed' | 'retry_pending' | 'retry_failed' | 'skipped'
   error?: string
+  skipReason?: string
   executedAt: string
   retryCount: number
 }

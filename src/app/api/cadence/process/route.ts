@@ -9,6 +9,33 @@ import type { CadenceStep, CadenceExecutionLog, AutomationConfig } from '@/types
 const BATCH_SIZE = 20
 const BATCH_DELAY_MS = 5000
 
+/** Log a skipped contact to cadenceExecutionLog so it shows on the Execução page */
+async function logSkippedContact(
+  db: FirebaseFirestore.Firestore,
+  orgId: string,
+  contact: { id: string; name?: string; [k: string]: unknown },
+  step: CadenceStep | null,
+  stageName: string,
+  stageId: string,
+  reason: string,
+) {
+  const entry: Omit<CadenceExecutionLog, 'id'> = {
+    orgId,
+    clientId: contact.id,
+    clientName: (contact.name as string) || '',
+    stepId: step?.id || '',
+    stepName: step?.name || '',
+    stageId,
+    stageName,
+    channel: step?.contactMethod || 'whatsapp',
+    status: 'skipped',
+    skipReason: reason,
+    executedAt: new Date().toISOString(),
+    retryCount: 0,
+  }
+  await db.collection('organizations').doc(orgId).collection('cadenceExecutionLog').add(entry)
+}
+
 /**
  * POST /api/cadence/process
  * Called by cron every 15 minutes.
@@ -265,7 +292,13 @@ async function processOrg(
     }
 
     const step = stepMap.get(stepId)
-    if (!step || !step.isActive) { stepNotFound++; continue }
+    if (!step || !step.isActive) {
+      stepNotFound++
+      const stageId = (contact.funnelStage as string) || ''
+      const stage = stageMap.get(stageId)
+      await logSkippedContact(db, orgId, contact, null, stage?.name || '', stageId, 'Step não encontrado ou inativo')
+      continue
+    }
 
     // Check if waiting for phone call result from webhook
     if (contact.cadencePendingCallResult === true) {
@@ -305,7 +338,12 @@ async function processOrg(
     }
 
     // Check if stage is paused
-    if (pausedStageIds.includes(step.stageId)) { stagePaused++; continue }
+    if (pausedStageIds.includes(step.stageId)) {
+      stagePaused++
+      const stage = stageMap.get(step.stageId)
+      await logSkippedContact(db, orgId, contact, step, stage?.name || '', step.stageId, 'Etapa pausada')
+      continue
+    }
 
     const stage = stageMap.get(step.stageId)
     if (!stage) { stageNotFound++; continue }
@@ -364,6 +402,9 @@ async function processOrg(
     if (globalPhoneBudget === 0) {
       console.log(`[CADENCE] Global daily phone limit reached (${todayPhoneCount}/${globalMaxPhoneDaily}), skipping phone steps`)
       results.skipped += phoneEligible.length
+      for (const { contact, step, stage } of phoneEligible) {
+        await logSkippedContact(db, orgId, contact, step, stage.name, stage.id, `Limite diário de ligações atingido (${todayPhoneCount}/${globalMaxPhoneDaily})`)
+      }
     } else {
       // Filter by per-stage hours and daily limits (usar timezone da org, não UTC)
       const tzForStage = config.timezone || 'America/Sao_Paulo'
@@ -371,23 +412,35 @@ async function processOrg(
       const [stH, stM] = localTimeStr.split(':').map(Number)
       const currentTime = `${String(stH).padStart(2, '0')}:${String(stM).padStart(2, '0')}`
       const stageBudgetsUsed = new Map<string, number>()
+      const phoneSkipped: { contact: typeof phoneEligible[0]['contact']; step: CadenceStep; stage: typeof phoneEligible[0]['stage']; reason: string }[] = []
 
-      const phoneFiltered = phoneEligible.filter(({ step, stage }) => {
+      const phoneFiltered = phoneEligible.filter(({ contact, step, stage }) => {
         const stageStartHour = stage.callStartHour || config.workHoursStart
         const stageEndHour = stage.callEndHour || config.workHoursEnd
         const stageMaxCalls = stage.maxCallsPerDay || globalMaxPhoneDaily
 
         // Check per-stage hours
-        if (currentTime < stageStartHour || currentTime > stageEndHour) return false
+        if (currentTime < stageStartHour || currentTime > stageEndHour) {
+          phoneSkipped.push({ contact, step, stage, reason: `Fora do horário de ligações (${stageStartHour}-${stageEndHour}, atual: ${currentTime})` })
+          return false
+        }
 
         // Check per-stage daily limit
         const stageUsedToday = (stagePhoneCounts.get(stage.id) || 0) + (stageBudgetsUsed.get(stage.id) || 0)
-        if (stageUsedToday >= stageMaxCalls) return false
+        if (stageUsedToday >= stageMaxCalls) {
+          phoneSkipped.push({ contact, step, stage, reason: `Limite diário de ligações da etapa atingido (${stageUsedToday}/${stageMaxCalls})` })
+          return false
+        }
 
         // Track usage
         stageBudgetsUsed.set(stage.id, (stageBudgetsUsed.get(stage.id) || 0) + 1)
         return true
       })
+
+      // Log phone skips
+      for (const { contact, step, stage, reason } of phoneSkipped) {
+        await logSkippedContact(db, orgId, contact, step, stage.name, stage.id, reason)
+      }
 
       // Check credits before enqueuing calls
       const creditCheck = await canMakeCall(orgId)
@@ -395,6 +448,9 @@ async function processOrg(
         console.log(`[CADENCE] Org ${orgId}: ${creditCheck.reason} — skipping ${phoneFiltered.length} phone steps`)
         results.failed += phoneFiltered.length
         results.errors.push(creditCheck.reason || 'Sem créditos')
+        for (const { contact, step, stage } of phoneFiltered) {
+          await logSkippedContact(db, orgId, contact, step, stage.name, stage.id, creditCheck.reason || 'Sem créditos para ligações')
+        }
         phoneFiltered.length = 0 // skip all phone steps
       }
 
@@ -559,7 +615,11 @@ async function processOrg(
     const batch = nonPhoneEligible.slice(i, i + BATCH_SIZE)
 
     for (const { contact, step, stage } of batch) {
-      if (actionsLeft <= 0) break
+      if (actionsLeft <= 0) {
+        await logSkippedContact(db, orgId, contact, step, stage.name, stage.id, `Limite diário de ações atingido (${config.maxActionsPerDay})`)
+        results.skipped++
+        continue
+      }
       results.processed++
       actionsLeft--
 
