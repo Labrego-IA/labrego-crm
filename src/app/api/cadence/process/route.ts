@@ -296,7 +296,13 @@ async function processOrg(
       stepNotFound++
       const stageId = (contact.funnelStage as string) || ''
       const stage = stageMap.get(stageId)
-      await logSkippedContact(db, orgId, contact, null, stage?.name || '', stageId, 'Step não encontrado ou inativo')
+      await logSkippedContact(db, orgId, contact, null, stage?.name || '', stageId,
+        `Step não encontrado ou inativo (stepId: ${stepId}). Cadência resetada para re-enrollment.`)
+      // Clear stale cadence reference so contact can be re-enrolled in the correct stage
+      await db.collection('clients').doc(contact.id).update({
+        currentCadenceStepId: '',
+        lastCadenceStepResponded: false,
+      })
       continue
     }
 
