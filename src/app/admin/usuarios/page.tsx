@@ -552,7 +552,7 @@ export default function UsuariosPage() {
   const closeAddModal = useCallback(() => {
     setShowAddModal(false)
     setShowAddConfirm(false)
-    setAddForm({ email: '', displayName: '', role: 'seller' })
+    setAddForm({ email: '', displayName: '', role: 'seller', password: '', confirmPassword: '' })
     setSearchResult(null)
     setSearchError(null)
   }, [])
