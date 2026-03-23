@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     const db = getAdminDb()
 
-    // Verify caller is admin of this org
+    // Verify caller is member of this org
     const callerSnap = await db
       .collection('organizations').doc(orgId)
       .collection('members')
@@ -47,9 +47,6 @@ export async function POST(req: NextRequest) {
     }
 
     const callerMember = callerSnap.docs[0].data()
-    if (callerMember.role !== 'admin') {
-      return NextResponse.json({ error: 'only admins can block/unblock members' }, { status: 403 })
-    }
 
     // Get target member — try by document ID first, then by userId field
     const membersCol = db.collection('organizations').doc(orgId).collection('members')
@@ -70,7 +67,13 @@ export async function POST(req: NextRequest) {
 
     if (!memberDoc.exists) {
       // Auth-only user (exists in Firebase Auth but not in Firestore)
-      // We can still disable/enable their Firebase Auth account
+      // Only admins can manage auth-only users
+      const isAdmin = callerMember.role === 'admin'
+      const canManageUsers = callerMember.permissions?.actions?.canManageUsers === true
+      if (!isAdmin && !canManageUsers) {
+        return NextResponse.json({ error: 'insufficient permissions to block/unblock members' }, { status: 403 })
+      }
+
       if (!userId) {
         return NextResponse.json({ error: 'member not found' }, { status: 404 })
       }
@@ -92,6 +95,14 @@ export async function POST(req: NextRequest) {
 
     const memberData = memberDoc.data()!
     const isPartner = !!memberData.invitedBy
+
+    // Authorization: admin OR canManageUsers OR inviter of the partner
+    const isAdmin = callerMember.role === 'admin'
+    const canManageUsers = callerMember.permissions?.actions?.canManageUsers === true
+    const isInviter = isPartner && memberData.invitedBy === callerEmail
+    if (!isAdmin && !canManageUsers && !isInviter) {
+      return NextResponse.json({ error: 'insufficient permissions to block/unblock members' }, { status: 403 })
+    }
 
     // Prevent self-blocking
     if (memberData.email === callerEmail) {

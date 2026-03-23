@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const db = getAdminDb()
 
-    // Verify caller is admin of this org
+    // Verify caller is member of this org
     const callerSnap = await db
       .collection('organizations').doc(orgId)
       .collection('members')
@@ -38,9 +38,6 @@ export async function POST(req: NextRequest) {
     }
 
     const callerMember = callerSnap.docs[0].data()
-    if (callerMember.role !== 'admin') {
-      return NextResponse.json({ error: 'only admins can delete members' }, { status: 403 })
-    }
 
     // Get target member
     const membersCol = db.collection('organizations').doc(orgId).collection('members')
@@ -61,6 +58,14 @@ export async function POST(req: NextRequest) {
 
     const memberData = memberDoc.data()!
     const isPartner = !!memberData.invitedBy
+
+    // Authorization: admin OR canManageUsers OR inviter of the partner
+    const isAdmin = callerMember.role === 'admin'
+    const canManageUsers = callerMember.permissions?.actions?.canManageUsers === true
+    const isInviter = isPartner && memberData.invitedBy === callerEmail
+    if (!isAdmin && !canManageUsers && !isInviter) {
+      return NextResponse.json({ error: 'insufficient permissions to delete members' }, { status: 403 })
+    }
 
     // Prevent self-deletion
     if (memberData.email === callerEmail) {
