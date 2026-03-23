@@ -154,6 +154,18 @@ const adminItems: NavItem[] = [
   },
 ]
 
+// Mapping of admin pages to the action(s) that gate access on each page.
+// If ANY listed action is allowed, the page is accessible.
+const adminPageRequiredActions: Record<string, (keyof import('@/types/organization').MemberActions)[]> = {
+  '/admin/usuarios': ['canManageUsers'],
+  '/admin/email': ['canManageSettings'],
+  '/admin/funis': ['canManageFunnels', 'canManageSettings'],
+  '/admin/icp': ['canManageFunnels', 'canManageSettings'],
+  '/admin/centros-custo': ['canManageFunnels', 'canManageSettings'],
+  '/admin/propostas': ['canManageSettings'],
+  '/admin/creditos': ['canManageSettings'],
+}
+
 interface CrmSidebarProps {
   collapsed?: boolean
   onToggleCollapse?: () => void
@@ -165,7 +177,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   const router = useRouter()
   const { isSuperAdmin } = useSuperAdmin()
   const { isFreePlan, isExpired, daysRemaining } = usePlanExpiration()
-  const { role, canAccessPage } = usePermissions()
+  const { role, canAccessPage, can, isPartner } = usePermissions()
   const isAdmin = role === 'admin'
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
@@ -375,7 +387,12 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               {filteredAdminItems.map((item) => {
                 const isActive = isItemActive(item.href)
                 const isDisabled = item.badge === 'Em breve'
-                const isLocked = !isAdmin && !isDisabled && !canAccessPage(item.href)
+                const requiredActions = adminPageRequiredActions[item.href]
+                const isLocked = !isAdmin && !isDisabled && (
+                  requiredActions
+                    ? !requiredActions.some(action => can(action))
+                    : !canAccessPage(item.href)
+                )
                 return (
                   <li key={item.href}>
                     <Link
