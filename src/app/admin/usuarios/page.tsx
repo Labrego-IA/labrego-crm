@@ -18,20 +18,21 @@ import FreePlanDialog from '@/components/FreePlanDialog'
 
 /* -------------------------------- Helpers -------------------------------- */
 
-const ROLE_LABELS: Record<RolePreset, string> = {
+const ADMIN_ROLES = ['admin', 'manager', 'seller', 'viewer'] as const
+type AdminRole = (typeof ADMIN_ROLES)[number]
+
+const ROLE_LABELS: Record<AdminRole, string> = {
   admin: 'Admin',
   manager: 'Gerente',
   seller: 'Vendedor',
   viewer: 'Visualizador',
-  cliente: 'Cliente',
 }
 
-const ROLE_BADGE: Record<RolePreset, string> = {
+const ROLE_BADGE: Record<AdminRole, string> = {
   admin: 'bg-purple-100 text-purple-800',
   manager: 'bg-blue-100 text-blue-800',
   seller: 'bg-green-100 text-green-800',
   viewer: 'bg-gray-100 text-gray-800',
-  cliente: 'bg-orange-100 text-orange-800',
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -71,7 +72,7 @@ function normalize(str: string): string {
 type SortColumn = 'name' | 'email' | 'role' | 'status' | 'joinedAt'
 type SortDirection = 'asc' | 'desc'
 
-const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3, cliente: 4 }
+const ROLE_ORDER: Record<string, number> = { admin: 0, manager: 1, seller: 2, viewer: 3 }
 const STATUS_ORDER: Record<string, number> = { active: 0, invited: 1, suspended: 2 }
 
 function defaultActions(): MemberActions {
@@ -346,9 +347,9 @@ export default function UsuariosPage() {
     setEditMember(member)
     const name = member.displayName || ''
     setEditDisplayName(name)
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'cliente']
-    const role = validRoles.includes(member.role as RolePreset)
-      ? (member.role as RolePreset)
+    const validRoles: AdminRole[] = [...ADMIN_ROLES]
+    const role = validRoles.includes(member.role as AdminRole)
+      ? (member.role as AdminRole)
       : 'viewer'
     setEditRole(role)
     const perms: MemberPermissions = {
@@ -398,8 +399,8 @@ export default function UsuariosPage() {
 
   const handleSaveEdit = async () => {
     if (!orgId || !editMember) return
-    const validRoles: RolePreset[] = ['admin', 'manager', 'seller', 'viewer', 'cliente']
-    if (!editRole || !validRoles.includes(editRole)) {
+    const validRoles: AdminRole[] = [...ADMIN_ROLES]
+    if (!editRole || !validRoles.includes(editRole as AdminRole)) {
       toast.error('Selecione um cargo valido')
       return
     }
@@ -571,12 +572,12 @@ export default function UsuariosPage() {
   const filteredMembers = useMemo(() => {
     const term = normalize(search.trim())
 
-    let result = members
+    let result = members.filter((m) => m.role !== 'cliente')
     if (term) {
-      result = members.filter((m) => {
+      result = result.filter((m) => {
         const name = normalize(m.displayName || '')
         const email = normalize(m.email || '')
-        const role = normalize(ROLE_LABELS[m.role as RolePreset] || m.role || '')
+        const role = normalize(ROLE_LABELS[m.role as AdminRole] || m.role || '')
         const status = normalize(STATUS_LABELS[m.status] || m.status || '')
         return name.includes(term) || email.includes(term) || role.includes(term) || status.includes(term)
       })
@@ -845,9 +846,9 @@ export default function UsuariosPage() {
                           <td className="px-5 py-3 text-center">
                             {m.role ? (
                               <span
-                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}
+                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800'}`}
                               >
-                                {ROLE_LABELS[m.role as RolePreset] || m.role}
+                                {ROLE_LABELS[m.role as AdminRole] || m.role}
                               </span>
                             ) : (
                               <span className="text-xs text-gray-400">&mdash;</span>
@@ -996,8 +997,8 @@ export default function UsuariosPage() {
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {m.role ? (
-                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as RolePreset] || 'bg-gray-100 text-gray-800'}`}>
-                            {ROLE_LABELS[m.role as RolePreset] || m.role}
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800'}`}>
+                            {ROLE_LABELS[m.role as AdminRole] || m.role}
                           </span>
                         ) : (
                           <span className="text-xs text-gray-400">&mdash;</span>
@@ -1219,7 +1220,7 @@ export default function UsuariosPage() {
                     onChange={(e) => setAddForm((f) => ({ ...f, role: e.target.value as RolePreset }))}
                     className={ui.select}
                   >
-                    {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                    {ADMIN_ROLES.map((role) => (
                       <option key={role} value={role}>
                         {ROLE_LABELS[role]}
                       </option>
@@ -1294,7 +1295,7 @@ export default function UsuariosPage() {
                   onChange={(e) => handleRoleChange(e.target.value as RolePreset)}
                   className={ui.select}
                 >
-                  {(Object.keys(ROLE_LABELS) as RolePreset[]).map((role) => (
+                  {ADMIN_ROLES.map((role) => (
                     <option key={role} value={role}>
                       {ROLE_LABELS[role]}
                     </option>
