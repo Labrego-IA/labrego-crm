@@ -374,32 +374,54 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             <ul className="space-y-1">
               {filteredAdminItems.map((item) => {
                 const isActive = isItemActive(item.href)
+                const isDisabled = item.badge === 'Em breve'
+                const isLocked = !isAdmin && !isDisabled && !canAccessPage(item.href)
                 return (
                   <li key={item.href}>
                     <Link
-                      href={item.href}
-                      onClick={() => onNavigate?.()}
+                      href={isDisabled || isLocked ? '#' : item.href}
+                      onClick={(e) => {
+                        if (isDisabled || isLocked) {
+                          e.preventDefault()
+                          return
+                        }
+                        onNavigate?.()
+                      }}
                       className={`
                         flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                         ${collapsed ? 'justify-center' : ''}
                         ${isActive
                           ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                          : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                          : isDisabled || isLocked
+                            ? 'text-white/30 cursor-not-allowed'
+                            : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
                         }
                       `}
                     >
                       {isActive && (
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
                       )}
-                      <span className={isActive ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                      <span className={isActive ? 'text-[#13DEFC]' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
                         {item.icon}
                       </span>
                       {!collapsed && (
-                        <span className="font-medium text-sm">{item.label}</span>
+                        <>
+                          <span className="font-medium text-sm flex-1">{item.label}</span>
+                          {isLocked && (
+                            <LockClosedIcon className="w-4 h-4 text-white/30" />
+                          )}
+                          {item.badge && (
+                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${item.badgeColor}`}>
+                              {item.badge}
+                            </span>
+                          )}
+                        </>
                       )}
                       {collapsed && (
                         <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
                           {item.label}
+                          {isLocked && <span className="ml-2 text-neutral-400">(Bloqueado)</span>}
+                          {item.badge && <span className="ml-2 text-neutral-400">({item.badge})</span>}
                         </span>
                       )}
                     </Link>
