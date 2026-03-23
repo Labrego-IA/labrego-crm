@@ -38,6 +38,14 @@ export async function POST(req: NextRequest) {
 
     // Caller is a member of this org — page-level PermissionGate already handles access control
 
+    const callerMember = callerSnap.docs[0].data()
+
+    // Check if the caller is themselves a partner of another user (has invitedBy set)
+    // Partners cannot invite other users — only account owners can
+    if (callerMember.invitedBy) {
+      return NextResponse.json({ error: 'caller_is_partner' }, { status: 403 })
+    }
+
     // Check if email is already a partner of the current user in this org
     const ownInviteSnap = await db
       .collection('organizations').doc(orgId)

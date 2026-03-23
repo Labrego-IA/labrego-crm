@@ -120,7 +120,7 @@ const ui = {
 
 export default function UsuariosPage() {
   const { orgId, userUid, userEmail } = useCrmUser()
-  const { can } = usePermissions()
+  const { can, isPartner } = usePermissions()
   const { limits, plan } = usePlan()
   const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
@@ -260,7 +260,9 @@ export default function UsuariosPage() {
 
       if (!res.ok) {
         const data = await res.json()
-        if (res.status === 409) {
+        if (res.status === 403 && data.error === 'caller_is_partner') {
+          setSearchError('Voce ja e parceiro de outro usuario e nao pode convidar parceiros')
+        } else if (res.status === 409) {
           if (data.error === 'already_partner_of_another') {
             setSearchError('Este usuario ja e parceiro de outro usuario')
           } else {
@@ -324,6 +326,11 @@ export default function UsuariosPage() {
 
       if (!res.ok) {
         const data = await res.json()
+        if (res.status === 403 && data.error === 'caller_is_partner') {
+          toast.error('Voce ja e parceiro de outro usuario e nao pode convidar parceiros')
+          setShowAddModal(false)
+          return
+        }
         throw new Error(data.error || 'Erro ao convidar membro')
       }
 
@@ -615,6 +622,7 @@ export default function UsuariosPage() {
   const memberCount = members.length
   const maxUsers = limits.maxUsers
   const atLimit = memberCount >= maxUsers
+  const cannotInvite = atLimit || isPartner
 
   /* ============================== Render ================================ */
 
@@ -646,10 +654,10 @@ export default function UsuariosPage() {
           </div>
           <button
             type="button"
-            disabled={atLimit}
+            disabled={cannotInvite}
             onClick={() => guard(() => setShowAddModal(true))}
-            className={`${ui.btnPrimary} hidden sm:inline-flex ${atLimit ? 'opacity-50 cursor-not-allowed' : ''}`}
-            title={atLimit ? 'Limite do plano atingido' : 'Adicionar parceiro'}
+            className={`${ui.btnPrimary} hidden sm:inline-flex ${cannotInvite ? 'opacity-50 cursor-not-allowed' : ''}`}
+            title={isPartner ? 'Voce ja e parceiro de outro usuario e nao pode convidar parceiros' : atLimit ? 'Limite do plano atingido' : 'Adicionar parceiro'}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -659,7 +667,7 @@ export default function UsuariosPage() {
         </div>
 
         {/* Mobile: FAB flutuante */}
-        {!atLimit && (
+        {!cannotInvite && (
           <button
             onClick={() => guard(() => setShowAddModal(true))}
             className="sm:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
@@ -669,6 +677,21 @@ export default function UsuariosPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </button>
+        )}
+
+        {/* =================== Partner restriction banner =================== */}
+        {isPartner && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 flex items-start gap-3">
+            <svg className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-sm font-medium text-amber-800">Voce e parceiro de outro usuario</p>
+              <p className="text-xs text-amber-600 mt-0.5">
+                Como voce foi convidado como parceiro, nao e possivel convidar outros usuarios para serem parceiros da sua conta.
+              </p>
+            </div>
+          </div>
         )}
 
         {/* =================== Plan limit bar =================== */}
