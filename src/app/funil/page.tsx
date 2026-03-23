@@ -397,37 +397,6 @@ export default function FunnelHubPage() {
     )
   }
 
-  // Empty state
-  if (funnels.length === 0) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 md:p-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-10 max-w-md text-center">
-          <div className="w-20 h-20 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <FunnelIcon className="w-10 h-10 text-primary-500" />
-          </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">Nenhum funil criado ainda</h3>
-          <p className="text-sm text-slate-500 mb-6">
-            {canManage
-              ? 'Crie seu primeiro funil de vendas para comecar a organizar seus leads.'
-              : 'Solicite ao administrador a criacao de um funil de vendas.'}
-          </p>
-          {canManage && (
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors"
-            >
-              <PlusIcon className="w-4 h-4" />
-              Criar seu primeiro funil
-            </button>
-          )}
-        </div>
-
-        {/* Create Modal */}
-        {showCreateModal && <FunnelModal />}
-      </div>
-    )
-  }
-
   // Main render - Funnel Hub
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
