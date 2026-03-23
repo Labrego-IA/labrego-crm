@@ -161,6 +161,24 @@ body {
     display: none;
   }
 
+  .scrollbar-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(51 65 85) rgb(15 23 42);
+  }
+  .scrollbar-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-sidebar::-webkit-scrollbar-track {
+    background: rgb(15 23 42);
+  }
+  .scrollbar-sidebar::-webkit-scrollbar-thumb {
+    background: rgb(51 65 85);
+    border-radius: 9999px;
+  }
+  .scrollbar-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgb(71 85 105);
+  }
+
   .icon {
     stroke-linecap: round;
     stroke-linejoin: round;
