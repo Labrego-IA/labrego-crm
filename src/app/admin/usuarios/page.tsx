@@ -450,7 +450,7 @@ export default function UsuariosPage() {
         const data = await res.json()
         throw new Error(data.error || 'Erro ao remover membro')
       }
-      toast.success(`${deleteMember.displayName} removido dos parceiros`)
+      toast.success(`${deleteMember.displayName} removido da sua lista de parceiros. O acesso ao seu perfil e plano foi revogado.`)
       setDeleteMember(null)
     } catch (error) {
       console.error('Error deleting member:', error)
@@ -482,8 +482,8 @@ export default function UsuariosPage() {
       }
       toast.success(
         action === 'block'
-          ? `${blockMember.displayName} foi bloqueado`
-          : `${blockMember.displayName} foi desbloqueado`,
+          ? `${blockMember.displayName} foi bloqueado e perdeu o acesso ao seu perfil e plano`
+          : `${blockMember.displayName} foi desbloqueado e o acesso ao seu perfil e plano foi restaurado`,
       )
       setBlockMember(null)
     } catch (error) {
@@ -1421,20 +1421,20 @@ export default function UsuariosPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'} usuario
+                    {blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'} parceiro
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
                     {blockMember.status === 'suspended' ? (
                       <>
                         Deseja desbloquear{' '}
                         <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
-                        ({blockMember.email})? O usuario podera acessar o sistema novamente.
+                        ({blockMember.email})? O parceiro tera acesso restaurado ao seu perfil e plano.
                       </>
                     ) : (
                       <>
                         Deseja bloquear{' '}
                         <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
-                        ({blockMember.email})? O usuario nao podera fazer login enquanto estiver bloqueado.
+                        ({blockMember.email})? O parceiro perdera o acesso ao seu perfil de companheiro e ao seu plano.
                       </>
                     )}
                   </p>
@@ -1480,7 +1480,7 @@ export default function UsuariosPage() {
                   <p className="text-sm text-gray-500 mt-1">
                     Tem certeza que deseja remover{' '}
                     <span className="font-medium text-gray-700">{deleteMember.displayName}</span>{' '}
-                    ({deleteMember.email}) dos seus parceiros? Esta acao nao pode ser desfeita.
+                    ({deleteMember.email}) da sua lista de parceiros? O usuario perdera o acesso ao seu perfil de companheiro e ao seu plano. Esta acao nao pode ser desfeita.
                   </p>
                 </div>
               </div>
