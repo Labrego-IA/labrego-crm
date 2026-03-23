@@ -18,7 +18,6 @@ const ROLE_LABELS: Record<string, string> = {
   manager: 'Gerente',
   seller: 'Vendedor',
   viewer: 'Visualizador',
-  cliente: 'Cliente',
 }
 
 export default function PartnerInvitePopup({
