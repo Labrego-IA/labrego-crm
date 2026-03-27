@@ -6,6 +6,8 @@ import { db } from '@/lib/firebaseClient'
 import type { AgentWizardAnswers } from '@/types/callRouting'
 import { calculateAgentStrength, assemblePromptFromWizard, migrateKnowledgeToWizard } from '@/lib/promptAssembler'
 import type { CallAgentKnowledge } from '@/types/callRouting'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import WizardProgress from './WizardProgress'
 import PromptPreview from './PromptPreview'
 import {
@@ -132,6 +134,7 @@ interface AgentWizardProps {
 }
 
 export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, onKnowledgeUpdate }: AgentWizardProps) {
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [answers, setAnswers] = useState<AgentWizardAnswers>(initialAnswers || EMPTY_WIZARD_ANSWERS)
   const [currentPhase, setCurrentPhase] = useState(1)
   const [saving, setSaving] = useState(false)
@@ -346,7 +349,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
             <p className="text-sm font-medium text-amber-800">Seu agente esta configurado!</p>
             <p className="text-xs text-amber-600 mt-0.5">Use o wizard para melhorar ainda mais. Seus dados atuais podem ser migrados automaticamente.</p>
           </div>
-          <button onClick={handleMigrate} className="btn-primary text-xs whitespace-nowrap">
+          <button onClick={() => guard(handleMigrate)} className="btn-primary text-xs whitespace-nowrap">
             Migrar para o Wizard
           </button>
         </div>
@@ -423,7 +426,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
                 <span className="hidden sm:inline">Ver Prompt</span>
               </button>
               <button
-                onClick={handleSaveAgent}
+                onClick={() => guard(handleSaveAgent)}
                 disabled={saving}
                 className={`btn-primary text-xs gap-1.5 ${saveSuccess ? '!bg-emerald-600' : ''}`}
               >
@@ -494,7 +497,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
 
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span>{advancedPrompt.length.toLocaleString()} caracteres</span>
-            <button onClick={handleSaveAgent} disabled={saving} className="btn-primary text-xs">
+            <button onClick={() => guard(handleSaveAgent)} disabled={saving} className="btn-primary text-xs">
               {saving ? 'Salvando...' : 'Salvar Prompt'}
             </button>
           </div>
@@ -509,6 +512,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
         onSave={handleSaveEditedPrompt}
         savedCustomPrompt={customPrompt}
       />
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

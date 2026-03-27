@@ -7797,14 +7797,14 @@ export default function FunilDetailPage() {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => handleClientResponse(false)}
+                onClick={() => guard(() => handleClientResponse(false))}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm transition-colors"
               >
                 <XMarkIcon className="w-5 h-5" />
                 Não Respondeu
               </button>
               <button
-                onClick={() => handleClientResponse(true)}
+                onClick={() => guard(() => handleClientResponse(true))}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white rounded-xl font-medium text-sm transition-colors"
               >
                 <CheckIcon className="w-5 h-5" />
@@ -8120,7 +8120,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={executeBulkMove}
+                onClick={() => guard(executeBulkMove)}
                 disabled={executingBulkMove}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all disabled:opacity-50"
               >
@@ -9021,7 +9021,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSaveNewContact}
+                onClick={() => guard(handleSaveNewContact)}
                 disabled={savingNewContact}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -9257,7 +9257,7 @@ export default function FunilDetailPage() {
                   Cancelar
                 </button>
                 <button
-                  onClick={handleSendWhatsAppMessage}
+                  onClick={() => guard(handleSendWhatsAppMessage)}
                   disabled={!whatsappMessage.trim() || sendingWhatsApp}
                   className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -9340,7 +9340,7 @@ export default function FunilDetailPage() {
             </div>
             <div className="flex items-center justify-between p-4 border-t border-slate-200 bg-slate-50">
               <button
-                onClick={async () => {
+                onClick={() => guard(async () => {
                   if (!emailSubject.trim() || !emailBody.trim()) return
                   const name = window.prompt('Nome do template:')
                   if (!name?.trim() || !orgId) return
@@ -9362,7 +9362,7 @@ export default function FunilDetailPage() {
                   } finally {
                     setSavingTemplate(false)
                   }
-                }}
+                })}
                 disabled={!emailSubject.trim() || !emailBody.trim() || savingTemplate}
                 className="text-sm text-slate-500 hover:text-slate-700 underline decoration-dotted disabled:opacity-40 disabled:no-underline"
               >
@@ -9379,7 +9379,7 @@ export default function FunilDetailPage() {
                   Cancelar
                 </button>
                 <button
-                  onClick={handleSendEmailMessage}
+                  onClick={() => guard(handleSendEmailMessage)}
                   disabled={!emailSubject.trim() || !emailBody.trim() || sendingEmail}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
