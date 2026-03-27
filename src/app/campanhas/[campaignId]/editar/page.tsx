@@ -6,6 +6,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { doc, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 import {
@@ -32,6 +33,7 @@ function EditCampaignContent() {
   const params = useParams()
   const campaignId = params.campaignId as string
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -105,6 +107,7 @@ function EditCampaignContent() {
   /* ----------------------------- Save handler --------------------------- */
 
   const handleSave = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !campaignId || !campaign) return
 
     if (!name.trim()) {

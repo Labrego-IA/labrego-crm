@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import PlanGate from '@/components/PlanGate'
 import {
   ArrowPathIcon,
@@ -69,6 +70,7 @@ function generateId() {
 
 function ReengajamentoContent() {
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const [tab, setTab] = useState<Tab>('config')
   const [config, setConfig] = useState<ReengagementConfig | null>(null)
   const [enrollments, setEnrollments] = useState<ReengagementEnrollment[]>([])
@@ -145,6 +147,7 @@ function ReengajamentoContent() {
   }, [orgId])
 
   const saveConfig = useCallback(async (updates: Partial<ReengagementConfig>) => {
+    if (isPlanBlocked) return
     if (!config || !orgId) return
     setSaving(true)
     try {
@@ -166,7 +169,7 @@ function ReengajamentoContent() {
     } finally {
       setSaving(false)
     }
-  }, [config, orgId])
+  }, [config, orgId, isPlanBlocked])
 
   if (loading) {
     return (

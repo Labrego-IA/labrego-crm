@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import type { OrgMember } from '@/types/organization'
 import { toast } from 'sonner'
 import {
@@ -59,6 +60,7 @@ const EMPTY_FORM: CostCenterForm = {
 export default function AdminCentrosCustoPage() {
   const { orgId, userEmail, member } = useCrmUser()
   const { can, isSystemAdmin } = usePermissions()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   const isAdmin = isSystemAdmin || member?.role === 'admin'
 
@@ -203,6 +205,7 @@ export default function AdminCentrosCustoPage() {
   }
 
   const handleSave = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !form.name.trim()) {
       toast.error('Nome do centro de custo e obrigatorio')
       return
@@ -243,7 +246,7 @@ export default function AdminCentrosCustoPage() {
   }
 
   const handleDelete = async () => {
-    if (!orgId || !deleteTarget) return
+    if (isPlanBlocked || !orgId || !deleteTarget) return
     setDeleting(true)
     try {
       await deleteDoc(doc(db, 'organizations', orgId, 'costCenters', deleteTarget.id))

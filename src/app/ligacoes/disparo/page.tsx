@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import {
   ReloadIcon,
   PlayIcon,
@@ -23,6 +24,7 @@ type TabType = 'trigger' | 'reports'
 
 export default function DisparoPage() {
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const [activeTab, setActiveTab] = useState<TabType>('trigger')
 
   // Trigger state (queue-based)
@@ -184,6 +186,7 @@ export default function DisparoPage() {
 
   // Trigger calls via streaming /api/call-routing/trigger
   const handleTriggerCalls = async () => {
+    if (isPlanBlocked) return
     if (abortRef.current) abortRef.current.abort()
     const abortController = new AbortController()
     abortRef.current = abortController
@@ -341,6 +344,7 @@ export default function DisparoPage() {
   }
 
   const handleCancelTrigger = async () => {
+    if (isPlanBlocked) return
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = null
     if (pollingRef.current) { clearInterval(pollingRef.current); pollingRef.current = null }

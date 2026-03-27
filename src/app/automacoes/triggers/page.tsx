@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { db } from '@/lib/firebaseClient'
 import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
@@ -33,6 +34,7 @@ import {
 
 function TriggersPageContent() {
   const { orgId, userUid, userEmail } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const { allowedUserIds, loading: allowedLoading, hasFullAccess } = useAllowedMemberIds()
 
   const [allTriggers, setAllTriggers] = useState<AutomationTrigger[]>([])
@@ -119,6 +121,7 @@ function TriggersPageContent() {
 
   /* ---- CRUD ---- */
   const handleSave = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !formName.trim()) return
     setSaving(true)
     try {
@@ -159,6 +162,7 @@ function TriggersPageContent() {
   }
 
   const toggleActive = async (id: string, current: boolean) => {
+    if (isPlanBlocked) return
     try {
       await updateDoc(doc(db, 'automationTriggers', id), { isActive: !current, updatedAt: new Date().toISOString() })
       toast.success(current ? 'Trigger desativado' : 'Trigger ativado')
@@ -168,6 +172,7 @@ function TriggersPageContent() {
   }
 
   const deleteTrigger = async (id: string) => {
+    if (isPlanBlocked) return
     try {
       await deleteDoc(doc(db, 'automationTriggers', id))
       toast.success('Trigger excluído')

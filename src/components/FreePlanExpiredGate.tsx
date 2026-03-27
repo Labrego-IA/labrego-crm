@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { usePlanExpiration } from '@/hooks/usePlanExpiration'
-import { usePermissions } from '@/hooks/usePermissions'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 import { usePartnerView } from '@/contexts/PartnerViewContext'
 
@@ -25,6 +24,8 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
   const { isSuperAdmin } = useSuperAdmin()
   const { activeView } = usePartnerView()
 
+  // Super admin always has full access (platform management)
+  if (isSuperAdmin) return <>{children}</>
   const isViewingAsPartner = isPartner || activeView === 'partner'
 
   // Super admin always has full access

@@ -5,6 +5,7 @@ import { collection, query, where, onSnapshot, doc, updateDoc, writeBatch } from
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import { toast } from 'sonner'
 import {
   CheckIcon,
@@ -73,6 +74,7 @@ type StageItem = {
 export default function AdminFunisPage() {
   const { orgId, member: currentMember, userEmail } = useCrmUser()
   const { can } = usePermissions()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const isAdmin = currentMember?.role === 'admin'
 
   const [members, setMembers] = useState<MemberRow[]>([])
@@ -324,7 +326,7 @@ export default function AdminFunisPage() {
   }
 
   const handleSave = async () => {
-    if (!orgId) return
+    if (isPlanBlocked || !orgId) return
     setSaving(true)
     try {
       const batch = writeBatch(db)

@@ -272,7 +272,7 @@ export default function FunilDetailPage() {
   const { viewScope, can } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
   const { filterStages } = useVisibleStages(funnelId)
-  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   // Responsible filter (admin/manager)
   const [filterAssignedTo, setFilterAssignedTo] = useState<string>('')
@@ -1740,6 +1740,7 @@ export default function FunilDetailPage() {
 
   // Handle drag and drop
   const handleDragEnd = async (result: DropResult) => {
+    if (isPlanBlocked) return
     const { destination, source, draggableId, type } = result
 
     if (!destination) return
@@ -1831,7 +1832,7 @@ export default function FunilDetailPage() {
 
   // Add new stage
   const handleAddStage = async () => {
-    if (!newStageName.trim()) return
+    if (isPlanBlocked || !newStageName.trim()) return
     setSavingStage(true)
     try {
       const stageData: Record<string, unknown> = {
@@ -1865,7 +1866,7 @@ export default function FunilDetailPage() {
 
   // Update stage
   const handleUpdateStage = async () => {
-    if (!editingStage) return
+    if (isPlanBlocked || !editingStage) return
     setSavingStage(true)
     try {
       await updateDoc(doc(db, 'funnelStages', editingStage.id), {
@@ -1889,6 +1890,7 @@ export default function FunilDetailPage() {
 
   // Delete stage
   const handleDeleteStage = async (stageId: string) => {
+    if (isPlanBlocked) return
     try {
       // Move all clients from this stage to unassigned
       const clientsInStage = clients.filter((c) => c.funnelStage === stageId)
@@ -1908,6 +1910,7 @@ export default function FunilDetailPage() {
 
   // Reorder stages
   const handleReorderStage = async (stageId: string, direction: 'up' | 'down') => {
+    if (isPlanBlocked) return
     const currentIndex = funnelStages.findIndex((s) => s.id === stageId)
     if (currentIndex === -1) return
 
@@ -1929,6 +1932,7 @@ export default function FunilDetailPage() {
 
   // Inline column name editing (from Kanban header)
   const handleInlineColumnRename = async (stageId: string, newName: string) => {
+    if (isPlanBlocked) return
     const trimmed = newName.trim()
     if (!trimmed) {
       setInlineEditingColumnId(null)
@@ -1955,7 +1959,7 @@ export default function FunilDetailPage() {
 
   // Add new macro stage
   const handleAddMacroStage = async () => {
-    if (!newMacroStageName.trim()) return
+    if (isPlanBlocked || !newMacroStageName.trim()) return
     setSavingMacroStage(true)
     try {
       await addDoc(collection(db, 'macroStages'), {
@@ -1975,6 +1979,7 @@ export default function FunilDetailPage() {
 
   // Update macro stage
   const handleUpdateMacroStage = async () => {
+    if (isPlanBlocked) return
     if (!editingMacroStage) return
     setSavingMacroStage(true)
     try {
@@ -1992,6 +1997,7 @@ export default function FunilDetailPage() {
 
   // Delete macro stage
   const handleDeleteMacroStage = async (macroStageId: string) => {
+    if (isPlanBlocked) return
     try {
       // Remove macroStageId from all stages that belong to this macro stage
       const stagesInMacro = funnelStages.filter((s) => s.macroStageId === macroStageId)
@@ -2009,7 +2015,7 @@ export default function FunilDetailPage() {
 
   // Delete client (card)
   const handleDeleteClient = async (client: Cliente) => {
-    if (!orgId) return
+    if (isPlanBlocked || !orgId) return
     setDeletingClientLoading(true)
     try {
       // Delete subcollections (followups and logs)
@@ -2037,6 +2043,7 @@ export default function FunilDetailPage() {
 
   // Reorder macro stages
   const handleReorderMacroStage = async (macroStageId: string, direction: 'up' | 'down') => {
+    if (isPlanBlocked) return
     const currentIndex = macroStages.findIndex((s) => s.id === macroStageId)
     if (currentIndex === -1) return
 
@@ -2058,6 +2065,7 @@ export default function FunilDetailPage() {
 
   // Save new contact
   const handleSaveNewContact = async () => {
+    if (isPlanBlocked) return
     const errors: Record<string, string> = {}
     if (!newContactForm.name.trim()) {
       errors.name = 'Nome é obrigatório'
@@ -2136,7 +2144,7 @@ export default function FunilDetailPage() {
 
   // Save note
   const handleSaveNote = async () => {
-    if (!selectedClient || !newNote.trim()) return
+    if (isPlanBlocked || !selectedClient || !newNote.trim()) return
     setSavingNote(true)
     try {
       const now = new Date().toISOString()
@@ -2165,7 +2173,7 @@ export default function FunilDetailPage() {
 
   // Send WhatsApp message from detail panel
   const handleSendWhatsAppMessage = async () => {
-    if (!selectedClient?.phone || !whatsappMessage.trim()) return
+    if (isPlanBlocked || !selectedClient?.phone || !whatsappMessage.trim()) return
     setSendingWhatsApp(true)
     try {
       const response = await fetch('/api/extension/messages', {
@@ -2201,7 +2209,7 @@ export default function FunilDetailPage() {
 
   // Send Email from detail panel
   const handleSendEmailMessage = async () => {
-    if (!selectedClient?.email || !emailSubject.trim() || !emailBody.trim()) return
+    if (isPlanBlocked || !selectedClient?.email || !emailSubject.trim() || !emailBody.trim()) return
     setSendingEmail(true)
     try {
       const response = await fetch('/api/email/send', {
@@ -2493,7 +2501,7 @@ export default function FunilDetailPage() {
 
   // Save sales speech
   const handleSaveComments = async () => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     try {
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         needsDetail: contactComments,
@@ -2507,7 +2515,7 @@ export default function FunilDetailPage() {
 
   // Assign responsible member (Story 11.4)
   const handleAssignResponsible = async (memberId: string, memberName: string) => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     try {
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         assignedTo: memberId || '',
@@ -2526,7 +2534,7 @@ export default function FunilDetailPage() {
 
   // Update cost center
   const handleUpdateCostCenter = async (costCenterId: string | null) => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     try {
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         costCenterId: costCenterId || deleteField(),
@@ -2542,7 +2550,7 @@ export default function FunilDetailPage() {
 
   // Update deal value
   const handleUpdateDealValue = async (value: number | null) => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     try {
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         dealValue: value !== null ? value : deleteField(),
@@ -2558,7 +2566,7 @@ export default function FunilDetailPage() {
 
   // Update closing probability (Story 21.2)
   const handleUpdateProbability = async (value: number | null) => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     try {
       await updateDoc(doc(db, 'clients', selectedClient.id), {
         closingProbability: value !== null ? value : deleteField(),
@@ -2600,7 +2608,7 @@ export default function FunilDetailPage() {
 
   // Save edit contact
   const handleSaveEditContact = async () => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     if (!editContactForm.name.trim()) {
       toast.error('Nome é obrigatório')
       return
@@ -2660,7 +2668,7 @@ export default function FunilDetailPage() {
 
   // Move client to another funnel (Story 21.2, updated Story 24.1 — inline dropdown)
   const handleMoveToFunnel = async (targetFunnelOverride?: string, targetStageOverride?: string) => {
-    if (!selectedClient) return
+    if (isPlanBlocked || !selectedClient) return
     const targetFunnel = targetFunnelOverride || moveFunnelTarget
     const targetStage = targetStageOverride || moveFunnelStage
     if (!targetFunnel || !targetStage) return
@@ -2719,7 +2727,7 @@ export default function FunilDetailPage() {
 
   // Quick follow-up from table
   const handleQuickFollowUp = async () => {
-    if (!quickFollowUpClient || !quickFollowUpText.trim()) return
+    if (isPlanBlocked || !quickFollowUpClient || !quickFollowUpText.trim()) return
     setSavingQuickFollowUp(true)
     try {
       const now = new Date().toISOString()
@@ -2745,6 +2753,7 @@ export default function FunilDetailPage() {
 
   // Quick stage change from table
   const handleQuickStageChange = async (clientId: string, newStageId: string | null) => {
+    if (isPlanBlocked) return
     try {
       const now = new Date().toISOString()
       const updateData: Record<string, unknown> = {
@@ -2777,7 +2786,7 @@ export default function FunilDetailPage() {
 
   // Schedule return for client
   const handleScheduleReturn = async () => {
-    if (!schedulingReturnClient || !selectedReturnDate) return
+    if (isPlanBlocked || !schedulingReturnClient || !selectedReturnDate) return
     setSavingReturn(true)
     try {
       // Use T12:00:00 to create date in local timezone at noon, preserving the selected date
@@ -2815,6 +2824,7 @@ export default function FunilDetailPage() {
 
   // Remove scheduled return
   const handleRemoveScheduledReturn = async (clientId: string) => {
+    if (isPlanBlocked) return
     try {
       await updateDoc(doc(db, 'clients', clientId), {
         scheduledReturn: deleteField(),
@@ -2930,7 +2940,7 @@ export default function FunilDetailPage() {
 
   // Handle call contact via voice agent
   const handleCallContact = async () => {
-    if (!selectedClient || callingContact) return
+    if (isPlanBlocked || !selectedClient || callingContact) return
     setCallingContact(true)
     // Mostrar status imediatamente enquanto a API responde
     setActiveCallStatus({
