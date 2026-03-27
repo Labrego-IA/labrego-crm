@@ -4,7 +4,8 @@ import admin from 'firebase-admin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
 import type { PlanId } from '@/types/plan'
-import { sendEmail } from '@/lib/email'
+import { sendWithFallback } from '@/lib/email/emailProvider'
+import { render } from '@react-email/render'
 import React from 'react'
 import WelcomeInviteEmail from '@/lib/email/WelcomeInviteEmail'
 
@@ -203,10 +204,8 @@ export async function POST(req: NextRequest) {
     // Send welcome email with credentials to new users
     if (isNewUser && tempPassword) {
       try {
-        await sendEmail({
-          to: normalizedEmail,
-          subject: `Voce foi convidado(a) para o ${orgName} - Labrego CRM`,
-          react: React.createElement(WelcomeInviteEmail, {
+        const emailHtml = await render(
+          React.createElement(WelcomeInviteEmail, {
             displayName: resolvedDisplayName,
             email: normalizedEmail,
             password: tempPassword,
@@ -214,7 +213,16 @@ export async function POST(req: NextRequest) {
             orgName,
             role,
           }),
-        })
+        )
+        const emailResult = await sendWithFallback(
+          orgId,
+          normalizedEmail,
+          `Voce foi convidado(a) para o ${orgName} - Labrego CRM`,
+          emailHtml,
+        )
+        if (!emailResult.success) {
+          console.error('[invite] Welcome email failed:', emailResult.error)
+        }
       } catch (emailErr) {
         console.error('[invite] Welcome email sending error:', emailErr)
         // Don't fail the request if email fails — member was already created
