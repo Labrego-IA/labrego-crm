@@ -234,7 +234,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               )}
               <button
                 type="button"
-                onClick={() => watermarkInputRef.current?.click()}
+                onClick={() => guard(() => watermarkInputRef.current?.click())}
                 disabled={uploadingWatermark}
                 className="px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
               >
@@ -372,7 +372,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
       {/* Save */}
       <div className="flex justify-end">
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving}
           className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
         >

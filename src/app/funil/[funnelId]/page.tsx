@@ -6492,13 +6492,13 @@ export default function FunilDetailPage() {
                               })}
                               <div className="border-t border-slate-100 mt-1 pt-1">
                                 <button
-                                  onClick={async () => {
+                                  onClick={() => guard(async () => {
                                     if (selectedClient.funnelStage) {
                                       await handleQuickStageChange(selectedClient.id, '')
                                       setSelectedClient({ ...selectedClient, funnelStage: undefined })
                                     }
                                     setStageDropdownOpen(false)
-                                  }}
+                                  })}
                                   className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors ${
                                     !selectedClient.funnelStage ? 'bg-slate-100' : ''
                                   }`}
@@ -7511,7 +7511,7 @@ export default function FunilDetailPage() {
                 return (
                   <button
                     key={stage.id}
-                    onClick={() => handleQuickStageChange(changingStageClient.id, stage.id)}
+                    onClick={() => guard(() => handleQuickStageChange(changingStageClient.id, stage.id))}
                     disabled={isCurrentStage}
                     className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                       isCurrentStage
