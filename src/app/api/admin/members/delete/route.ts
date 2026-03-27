@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ensurePartnerHasOwnOrg } from '@/lib/partnerOrg'
+import { unlinkLeaderPartners } from '@/lib/unlinkLeaderPartners'
 
 export const runtime = 'nodejs'
 
@@ -77,6 +78,9 @@ export async function POST(req: NextRequest) {
     if (isPartner && (memberData.userId || userId)) {
       await ensurePartnerHasOwnOrg(db, memberData.email, memberData.userId || userId, memberData.displayName)
     }
+
+    // If this member is a leader (invited partners), unlink all their partners first
+    await unlinkLeaderPartners(db, memberData.email, orgId)
 
     // Disable Firebase Auth account — but NOT for partners (they need to log into their own org)
     const targetUserId = memberData.userId || userId

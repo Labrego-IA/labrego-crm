@@ -10,7 +10,7 @@ import {
   updatePassword,
   deleteUser,
 } from 'firebase/auth'
-import { doc, updateDoc, deleteDoc, getDoc } from 'firebase/firestore'
+import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -178,14 +178,37 @@ export default function PerfilPage() {
 
     setDeleting(true)
     try {
+      // Re-authenticate to confirm identity
       const credential = EmailAuthProvider.credential(userEmail, deletePassword)
       await reauthenticateWithCredential(auth.currentUser, credential)
 
+      // Use server-side API to unlink partners and delete account
       if (orgId && member?.id) {
-        await deleteDoc(doc(db, 'organizations', orgId, 'members', member.id))
+        const idToken = await auth.currentUser.getIdToken()
+        const res = await fetch('/api/account/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-email': userEmail,
+            'x-user-uid': auth.currentUser.uid,
+            'Authorization': `Bearer ${idToken}`,
+          },
+          body: JSON.stringify({
+            orgId,
+            memberId: member.id,
+            password: deletePassword,
+          }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          throw new Error(data.error || 'Erro ao excluir conta')
+        }
+      } else {
+        // Fallback: if no org/member, just delete auth user
+        await deleteUser(auth.currentUser)
       }
 
-      await deleteUser(auth.currentUser)
       toast.success('Conta excluída com sucesso.')
       router.replace('/login')
     } catch (err: any) {

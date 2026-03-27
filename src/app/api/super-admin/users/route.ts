@@ -3,6 +3,7 @@ import { isSuperAdmin } from '@/lib/superAdmin'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { PLAN_LIMITS } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
+import { unlinkLeaderPartners } from '@/lib/unlinkLeaderPartners'
 
 async function requireSuperAdmin(req: NextRequest): Promise<string | NextResponse> {
   const email = req.headers.get('x-user-email')?.toLowerCase()
@@ -110,9 +111,31 @@ export async function PUT(req: NextRequest) {
       case 'enable':
         await auth.updateUser(uid, { disabled: false })
         break
-      case 'delete':
+      case 'delete': {
+        // Before deleting, unlink all partners invited by this user
+        const db = getAdminDb()
+        try {
+          const deletedUser = await auth.getUser(uid)
+          const deletedEmail = deletedUser.email?.toLowerCase()
+          if (deletedEmail) {
+            // Find all orgs where this user is a member (as leader/owner)
+            const memberships = await db.collectionGroup('members')
+              .where('email', '==', deletedEmail)
+              .get()
+
+            for (const memberDoc of memberships.docs) {
+              const orgRef = memberDoc.ref.parent.parent
+              if (orgRef) {
+                await unlinkLeaderPartners(db, deletedEmail, orgRef.id)
+              }
+            }
+          }
+        } catch (lookupErr) {
+          console.error('[super-admin/users] Error unlinking partners before delete:', lookupErr)
+        }
         await auth.deleteUser(uid)
         break
+      }
       case 'update': {
         const db = getAdminDb()
         // Update user disabled status if provided
