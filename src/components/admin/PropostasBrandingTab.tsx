@@ -9,6 +9,8 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage
 import { toast } from 'sonner'
 import type { ProposalBranding } from '@/types/proposalBranding'
 import { DEFAULT_PROPOSAL_BRANDING } from '@/types/proposalBranding'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 interface PropostasBrandingTabProps {
   onDirtyChange?: (dirty: boolean) => void
@@ -18,6 +20,7 @@ interface PropostasBrandingTabProps {
 export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: PropostasBrandingTabProps) {
   const { orgId } = useCrmUser()
   const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [form, setForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
   const [initialForm, setInitialForm] = useState<ProposalBranding>(DEFAULT_PROPOSAL_BRANDING)
   const [loading, setLoading] = useState(true)
@@ -200,7 +203,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               )}
               <button
                 type="button"
-                onClick={() => logoInputRef.current?.click()}
+                onClick={() => guard(() => logoInputRef.current?.click())}
                 disabled={uploadingLogo}
                 className="px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition-colors disabled:opacity-50"
               >
