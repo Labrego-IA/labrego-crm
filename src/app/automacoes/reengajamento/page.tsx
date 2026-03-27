@@ -242,6 +242,7 @@ function ConfigSection({ config, onSave, saving }: {
   onSave: (updates: Partial<ReengagementConfig>) => Promise<void>
   saving: boolean
 }) {
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [expandSteps, setExpandSteps] = useState(true)
 
   const addStep = () => {
@@ -479,6 +480,7 @@ function ConfigSection({ config, onSave, saving }: {
           <li>• Os steps são executados na ordem configurada, com o intervalo de dias definido</li>
         </ul>
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
