@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
+import admin from 'firebase-admin'
 import { ROLE_PRESETS, type RolePreset } from '@/types/permissions'
 import { filterPagesByPlan, filterActionsByPlan } from '@/lib/planPermissions'
 import type { PlanId } from '@/types/plan'
+import { sendWithFallback } from '@/lib/email/emailProvider'
+import { render } from '@react-email/render'
+import React from 'react'
+import WelcomeInviteEmail from '@/lib/email/WelcomeInviteEmail'
 
 export const runtime = 'nodejs'
 
@@ -87,6 +92,8 @@ export async function POST(req: NextRequest) {
     const auth = getAdminAuth()
     let userId = ''
     let resolvedDisplayName = displayName || ''
+    let isNewUser = false
+    let tempPassword = ''
 
     try {
       const existingUser = await auth.getUserByEmail(normalizedEmail).catch(() => null)
@@ -98,7 +105,7 @@ export async function POST(req: NextRequest) {
         }
       } else {
         // User doesn't exist in Auth — create with temp password
-        const tempPassword = `Voxium@${Math.random().toString(36).slice(2, 10)}`
+        tempPassword = `Labrego@${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 6).toUpperCase()}`
         if (!resolvedDisplayName) {
           resolvedDisplayName = normalizedEmail.split('@')[0]
         }
@@ -108,6 +115,14 @@ export async function POST(req: NextRequest) {
           displayName: resolvedDisplayName,
         })
         userId = newUser.uid
+        isNewUser = true
+
+        // Create user document in Firestore
+        await db.collection('users').doc(normalizedEmail).set({
+          displayName: resolvedDisplayName,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdViaInvite: true,
+        })
       }
     } catch (authErr) {
       console.error('[invite] Auth user creation error:', authErr)
@@ -186,7 +201,35 @@ export async function POST(req: NextRequest) {
       // Don't fail the request if notification fails — member was already created
     }
 
-    return NextResponse.json({ memberId: memberRef.id, userId })
+    // Send welcome email with credentials to new users
+    if (isNewUser && tempPassword) {
+      try {
+        const emailHtml = await render(
+          React.createElement(WelcomeInviteEmail, {
+            displayName: resolvedDisplayName,
+            email: normalizedEmail,
+            password: tempPassword,
+            inviterName: callerDisplayName,
+            orgName,
+            role,
+          }),
+        )
+        const emailResult = await sendWithFallback(
+          orgId,
+          normalizedEmail,
+          `Voce foi convidado(a) para o ${orgName} - Labrego CRM`,
+          emailHtml,
+        )
+        if (!emailResult.success) {
+          console.error('[invite] Welcome email failed:', emailResult.error)
+        }
+      } catch (emailErr) {
+        console.error('[invite] Welcome email sending error:', emailErr)
+        // Don't fail the request if email fails — member was already created
+      }
+    }
+
+    return NextResponse.json({ memberId: memberRef.id, userId, isNewUser })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error'
     console.error('[invite] Error:', error)
