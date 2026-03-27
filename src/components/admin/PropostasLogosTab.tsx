@@ -16,6 +16,8 @@ import {
 } from 'firebase/firestore'
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { toast } from 'sonner'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 interface LogoItem {
   id: string
@@ -28,6 +30,7 @@ interface LogoItem {
 export default function PropostasLogosTab() {
   const { orgId, userUid } = useCrmUser()
   const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [logos, setLogos] = useState<LogoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -119,7 +122,7 @@ export default function PropostasLogosTab() {
           </p>
         </div>
         <button
-          onClick={() => inputRef.current?.click()}
+          onClick={() => guard(() => inputRef.current?.click())}
           disabled={uploading}
           className="px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
         >

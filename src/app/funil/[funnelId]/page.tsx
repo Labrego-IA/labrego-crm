@@ -5699,7 +5699,7 @@ export default function FunilDetailPage() {
                                 Cancelar
                               </button>
                               <button
-                                onClick={handleUpdateStage}
+                                onClick={() => guard(handleUpdateStage)}
                                 disabled={savingStage}
                                 className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                               >
@@ -5717,14 +5717,14 @@ export default function FunilDetailPage() {
                             <div className="flex items-center gap-3">
                               <div className="flex flex-col gap-0.5">
                                 <button
-                                  onClick={() => handleReorderStage(stage.id, 'up')}
+                                  onClick={() => guard(() => handleReorderStage(stage.id, 'up'))}
                                   disabled={index === 0}
                                   className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
                                 >
                                   <ChevronUpIcon className="w-3 h-3 text-slate-400" />
                                 </button>
                                 <button
-                                  onClick={() => handleReorderStage(stage.id, 'down')}
+                                  onClick={() => guard(() => handleReorderStage(stage.id, 'down'))}
                                   disabled={index === funnelStages.length - 1}
                                   className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
                                 >
@@ -6035,7 +6035,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={() => handleDeleteStage(deletingStageId)}
+                onClick={() => guard(() => handleDeleteStage(deletingStageId))}
                 className="px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors"
               >
                 Excluir etapa
@@ -6263,7 +6263,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSaveEditContact}
+                onClick={() => guard(handleSaveEditContact)}
                 disabled={savingEditContact}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -6309,7 +6309,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={() => handleDeleteClient(deletingClient)}
+                onClick={() => guard(() => handleDeleteClient(deletingClient))}
                 disabled={deletingClientLoading}
                 className="px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
@@ -6534,7 +6534,7 @@ export default function FunilDetailPage() {
                               return
                             }
                             if (val !== (selectedClient.closingProbability ?? null)) {
-                              handleUpdateProbability(val)
+                              guard(() => handleUpdateProbability(val))
                             }
                           }}
                           className="w-10 text-center bg-transparent border-b border-amber-300 focus:border-amber-500 focus:outline-none text-xs text-amber-700 font-semibold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

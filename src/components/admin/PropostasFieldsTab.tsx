@@ -280,7 +280,7 @@ export default function PropostasFieldsTab() {
           </h3>
           <button
             type="button"
-            onClick={openCreate}
+            onClick={() => guard(openCreate)}
             disabled={saving}
             className="hidden md:inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
           >
@@ -291,7 +291,7 @@ export default function PropostasFieldsTab() {
 
         {/* Mobile: FAB flutuante */}
         <button
-          onClick={openCreate}
+          onClick={() => guard(openCreate)}
           disabled={saving}
           className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all disabled:opacity-50"
           aria-label="Novo campo"
@@ -313,7 +313,7 @@ export default function PropostasFieldsTab() {
                 <div className="flex flex-col gap-0.5">
                   <button
                     type="button"
-                    onClick={() => handleReorder(idx, -1)}
+                    onClick={() => guard(() => handleReorder(idx, -1))}
                     disabled={idx === 0 || saving}
                     className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
                   >
@@ -321,7 +321,7 @@ export default function PropostasFieldsTab() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleReorder(idx, 1)}
+                    onClick={() => guard(() => handleReorder(idx, 1))}
                     disabled={idx === fields.length - 1 || saving}
                     className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
                   >
@@ -352,7 +352,7 @@ export default function PropostasFieldsTab() {
 
                 <button
                   type="button"
-                  onClick={() => openEdit(field)}
+                  onClick={() => guard(() => openEdit(field))}
                   disabled={saving}
                   className="text-gray-400 hover:text-primary-600 disabled:opacity-50"
                 >
@@ -498,7 +498,7 @@ export default function PropostasFieldsTab() {
             </button>
             <button
               type="button"
-              onClick={handleSaveField}
+              onClick={() => guard(handleSaveField)}
               disabled={saving}
               className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-50"
             >
@@ -523,6 +523,7 @@ export default function PropostasFieldsTab() {
         confirmText="Sim, excluir"
         cancelText="Cancelar"
       />
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
