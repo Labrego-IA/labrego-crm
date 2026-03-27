@@ -22,6 +22,7 @@ import { usePartnerView } from '@/contexts/PartnerViewContext'
  * Returns:
  * - allowedMemberIds: Set of member IDs visible (null = no filter)
  * - allowedEmails: Set of emails visible (null = no filter) — useful for createdBy checks
+ * - allowedUserIds: Set of auth UIDs visible (null = no filter) — useful for createdBy checks on campaigns/triggers
  * - loading: whether the data is still loading
  */
 export function useAllowedMemberIds() {
@@ -31,6 +32,7 @@ export function useAllowedMemberIds() {
 
   const [allowedMemberIds, setAllowedMemberIds] = useState<Set<string> | null>(null)
   const [allowedEmails, setAllowedEmails] = useState<Set<string> | null>(null)
+  const [allowedUserIds, setAllowedUserIds] = useState<Set<string> | null>(null)
   const [loading, setLoading] = useState(true)
 
   // When user has multiple views and is in personal view, always filter to own data only
@@ -47,10 +49,13 @@ export function useAllowedMemberIds() {
     if (isPersonalViewWithMultipleViews) {
       const ids = new Set<string>()
       const emails = new Set<string>()
+      const uids = new Set<string>()
       if (member.id) ids.add(member.id)
       if (userEmail) emails.add(userEmail.toLowerCase())
+      if (member.userId) uids.add(member.userId)
       setAllowedMemberIds(ids)
       setAllowedEmails(emails)
+      setAllowedUserIds(uids)
       setLoading(false)
       return
     }
@@ -58,6 +63,7 @@ export function useAllowedMemberIds() {
     if (hasFullAccess) {
       setAllowedMemberIds(null)
       setAllowedEmails(null)
+      setAllowedUserIds(null)
       setLoading(false)
       return
     }
@@ -73,10 +79,12 @@ export function useAllowedMemberIds() {
 
         const ids = new Set<string>()
         const emails = new Set<string>()
+        const uids = new Set<string>()
 
         // Always include self
         if (member.id) ids.add(member.id)
         if (userEmail) emails.add(userEmail.toLowerCase())
+        if (member.userId) uids.add(member.userId)
 
         if (member.invitedBy) {
           // Current user is a partner: include ONLY the inviter
@@ -85,6 +93,7 @@ export function useAllowedMemberIds() {
             if (data.email === member.invitedBy) {
               ids.add(d.id)
               if (data.email) emails.add(data.email.toLowerCase())
+              if (data.userId) uids.add(data.userId)
             }
           })
         }
@@ -92,15 +101,19 @@ export function useAllowedMemberIds() {
 
         setAllowedMemberIds(ids)
         setAllowedEmails(emails)
+        setAllowedUserIds(uids)
       } catch (error) {
         console.error('[useAllowedMemberIds] Erro ao carregar parceiros:', error)
         // Fallback: only own data
         const fallbackIds = new Set<string>()
         const fallbackEmails = new Set<string>()
+        const fallbackUids = new Set<string>()
         if (member.id) fallbackIds.add(member.id)
         if (userEmail) fallbackEmails.add(userEmail.toLowerCase())
+        if (member.userId) fallbackUids.add(member.userId)
         setAllowedMemberIds(fallbackIds)
         setAllowedEmails(fallbackEmails)
+        setAllowedUserIds(fallbackUids)
       } finally {
         setLoading(false)
       }
@@ -109,5 +122,5 @@ export function useAllowedMemberIds() {
     fetchAllowed()
   }, [orgId, member, hasFullAccess, isPersonalViewWithMultipleViews, userEmail])
 
-  return { allowedMemberIds, allowedEmails, loading, hasFullAccess }
+  return { allowedMemberIds, allowedEmails, allowedUserIds, loading, hasFullAccess }
 }
