@@ -516,7 +516,7 @@ export default function PropostasProdutosTab() {
         <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
           <p className="text-gray-400 text-sm">Nenhum produto cadastrado ainda.</p>
           <button
-            onClick={openNew}
+            onClick={() => guard(openNew)}
             className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
             Criar primeiro produto

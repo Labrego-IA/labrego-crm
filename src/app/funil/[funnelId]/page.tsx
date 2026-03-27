@@ -6996,7 +6996,7 @@ export default function FunilDetailPage() {
                           </div>
                         </div>
                         <button
-                          onClick={() => handleRemoveScheduledReturn(selectedClient.id)}
+                          onClick={() => guard(() => handleRemoveScheduledReturn(selectedClient.id))}
                           className="p-2 hover:bg-amber-100 rounded-lg transition-colors"
                           title="Remover retorno agendado"
                         >
@@ -7246,7 +7246,7 @@ export default function FunilDetailPage() {
                         Cancelar
                       </button>
                       <button
-                        onClick={handleSaveComments}
+                        onClick={() => guard(handleSaveComments)}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors"
                       >
                         <CheckIcon className="w-3.5 h-3.5" />
@@ -7309,7 +7309,7 @@ export default function FunilDetailPage() {
                   />
                   <div className="flex justify-end mt-2">
                     <button
-                      onClick={handleSaveNote}
+                      onClick={() => guard(handleSaveNote)}
                       disabled={!newNote.trim() || savingNote}
                       className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-primary-700 hover:to-purple-700 transition-all shadow-md shadow-primary-200 disabled:opacity-50"
                     >
