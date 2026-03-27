@@ -145,7 +145,7 @@ export default function PropostasLogosTab() {
         <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
           <p className="text-gray-400 text-sm">Nenhum logo de cliente cadastrado.</p>
           <button
-            onClick={() => inputRef.current?.click()}
+            onClick={() => guard(() => inputRef.current?.click())}
             className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
           >
             Enviar primeiro logo
@@ -186,6 +186,7 @@ export default function PropostasLogosTab() {
         confirmText="Sim, excluir"
         cancelText="Cancelar"
       />
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

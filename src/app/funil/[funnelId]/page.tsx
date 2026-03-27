@@ -6804,7 +6804,7 @@ export default function FunilDetailPage() {
                       onBlur={(e) => {
                         const val = e.target.value ? parseFloat(e.target.value) : null
                         if (val !== (selectedClient.dealValue ?? null)) {
-                          handleUpdateDealValue(val)
+                          guard(() => handleUpdateDealValue(val))
                         }
                       }}
                       className="w-full px-3 py-2 text-sm bg-white border border-emerald-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
@@ -6821,7 +6821,7 @@ export default function FunilDetailPage() {
                     <p className="text-xs text-primary-600 mb-2 font-medium">Centro de Custos</p>
                     <select
                       value={selectedClient.costCenterId || ''}
-                      onChange={(e) => handleUpdateCostCenter(e.target.value || null)}
+                      onChange={(e) => guard(() => handleUpdateCostCenter(e.target.value || null))}
                       className="w-full px-3 py-2 text-sm bg-white border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Selecionar centro de custos...</option>
