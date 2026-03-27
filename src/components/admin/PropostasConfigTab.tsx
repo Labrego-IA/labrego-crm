@@ -9,6 +9,8 @@ import { toast } from 'sonner'
 import type { ProposalConfig } from '@/types/proposalConfig'
 import { DEFAULT_PROPOSAL_CONFIG } from '@/types/proposalConfig'
 import { Pencil1Icon } from '@radix-ui/react-icons'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 interface PropostasConfigTabProps {
   onDirtyChange?: (dirty: boolean) => void
@@ -18,6 +20,7 @@ interface PropostasConfigTabProps {
 export default function PropostasConfigTab({ onDirtyChange, onResetRef }: PropostasConfigTabProps) {
   const { orgId } = useCrmUser()
   const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [form, setForm] = useState<ProposalConfig>(DEFAULT_PROPOSAL_CONFIG)
   const [initialForm, setInitialForm] = useState<ProposalConfig>(DEFAULT_PROPOSAL_CONFIG)
   const [loading, setLoading] = useState(true)
@@ -234,7 +237,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
             Cancelar
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => guard(handleSave)}
             disabled={saving}
             className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
           >
@@ -242,6 +245,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
           </button>
         </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

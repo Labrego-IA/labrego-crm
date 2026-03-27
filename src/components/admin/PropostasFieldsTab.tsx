@@ -13,6 +13,8 @@ import {
 } from '@heroicons/react/20/solid'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import type {
   ProposalCustomField,
   ProposalCustomFieldType,
@@ -68,6 +70,7 @@ const EMPTY_FIELD: EditingField = {
 export default function PropostasFieldsTab() {
   const { orgId } = useCrmUser()
   const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [fields, setFields] = useState<ProposalCustomField[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)

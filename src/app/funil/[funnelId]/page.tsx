@@ -4861,7 +4861,7 @@ export default function FunilDetailPage() {
           <ActivityLogView clients={clients} />
         ) : (
           /* Kanban View */
-          <DragDropContext onDragEnd={handleDragEnd}>
+          <DragDropContext onDragEnd={(result) => guard(() => handleDragEnd(result))}>
             <Droppable droppableId="board" type="COLUMN" direction="horizontal">
               {(boardProvided) => (
             <div ref={boardProvided.innerRef} {...boardProvided.droppableProps} className="flex gap-4 min-w-max pb-4">
@@ -4909,9 +4909,9 @@ export default function FunilDetailPage() {
                                             type="text"
                                             value={inlineEditingColumnName}
                                             onChange={(e) => setInlineEditingColumnName(e.target.value)}
-                                            onBlur={() => handleInlineColumnRename(stage.id, inlineEditingColumnName)}
+                                            onBlur={() => guard(() => handleInlineColumnRename(stage.id, inlineEditingColumnName))}
                                             onKeyDown={(e) => {
-                                              if (e.key === 'Enter') handleInlineColumnRename(stage.id, inlineEditingColumnName)
+                                              if (e.key === 'Enter') guard(() => handleInlineColumnRename(stage.id, inlineEditingColumnName))
                                               if (e.key === 'Escape') { setInlineEditingColumnId(null); setInlineEditingColumnName('') }
                                             }}
                                             autoFocus
@@ -5214,8 +5214,7 @@ export default function FunilDetailPage() {
                           autoFocus
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && newStageName.trim()) {
-                              handleAddStage()
-                              setShowQuickAddStage(false)
+                              guard(() => { handleAddStage(); setShowQuickAddStage(false) })
                             }
                             if (e.key === 'Escape') guardedClose(
                               !!newStageName.trim(),
@@ -5262,10 +5261,10 @@ export default function FunilDetailPage() {
                           Cancelar
                         </button>
                         <button
-                          onClick={() => {
+                          onClick={() => guard(() => {
                             handleAddStage()
                             setShowQuickAddStage(false)
-                          }}
+                          })}
                           disabled={!newStageName.trim() || savingStage}
                           className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-primary-700 hover:to-purple-700 transition-all disabled:opacity-50"
                         >
@@ -5381,7 +5380,7 @@ export default function FunilDetailPage() {
                                 Cancelar
                               </button>
                               <button
-                                onClick={handleUpdateMacroStage}
+                                onClick={() => guard(handleUpdateMacroStage)}
                                 disabled={savingMacroStage}
                                 className="flex items-center gap-1 px-3 py-1.5 bg-primary-600 text-white rounded-lg text-xs font-medium hover:bg-primary-700 transition-colors disabled:opacity-50"
                               >
@@ -5399,14 +5398,14 @@ export default function FunilDetailPage() {
                             <div className="flex items-center gap-3">
                               <div className="flex flex-col gap-0.5">
                                 <button
-                                  onClick={() => handleReorderMacroStage(macroStage.id, 'up')}
+                                  onClick={() => guard(() => handleReorderMacroStage(macroStage.id, 'up'))}
                                   disabled={index === 0}
                                   className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
                                 >
                                   <ChevronUpIcon className="w-3 h-3 text-slate-400" />
                                 </button>
                                 <button
-                                  onClick={() => handleReorderMacroStage(macroStage.id, 'down')}
+                                  onClick={() => guard(() => handleReorderMacroStage(macroStage.id, 'down'))}
                                   disabled={index === macroStages.length - 1}
                                   className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
                                 >
@@ -5450,7 +5449,7 @@ export default function FunilDetailPage() {
                                 Cancelar
                               </button>
                               <button
-                                onClick={() => handleDeleteMacroStage(macroStage.id)}
+                                onClick={() => guard(() => handleDeleteMacroStage(macroStage.id))}
                                 className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
                               >
                                 Excluir
@@ -5492,7 +5491,7 @@ export default function FunilDetailPage() {
                     </div>
                   </div>
                   <button
-                    onClick={handleAddMacroStage}
+                    onClick={() => guard(handleAddMacroStage)}
                     disabled={!newMacroStageName.trim() || savingMacroStage}
                     className="mt-3 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-blue-600 text-white rounded-lg text-sm font-medium hover:from-primary-700 hover:to-blue-700 transition-all disabled:opacity-50"
                   >
@@ -5949,7 +5948,7 @@ export default function FunilDetailPage() {
                     </p>
                   </div>
                   <button
-                    onClick={handleAddStage}
+                    onClick={() => guard(handleAddStage)}
                     disabled={!newStageName.trim() || savingStage}
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50"
                   >

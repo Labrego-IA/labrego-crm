@@ -8,10 +8,13 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { toast } from 'sonner'
 import type { ProposalStructure, PdfSection } from '@/types/proposalStructure'
 import { DEFAULT_PROPOSAL_STRUCTURE, ALL_PDF_SECTIONS } from '@/types/proposalStructure'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 export default function PropostasEstruturaTab() {
   const { orgId } = useCrmUser()
   const { settingsOwnerId, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [sections, setSections] = useState<PdfSection[]>(ALL_PDF_SECTIONS)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -192,13 +195,14 @@ export default function PropostasEstruturaTab() {
           Restaurar padrao
         </button>
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving}
           className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
         >
           {saving ? 'Salvando...' : 'Salvar Estrutura'}
         </button>
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
