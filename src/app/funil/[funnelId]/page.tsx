@@ -7537,7 +7537,7 @@ export default function FunilDetailPage() {
                 )
               })}
               <button
-                onClick={() => handleQuickStageChange(changingStageClient.id, '')}
+                onClick={() => guard(() => handleQuickStageChange(changingStageClient.id, ''))}
                 disabled={!changingStageClient.funnelStage}
                 className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                   !changingStageClient.funnelStage
@@ -7682,7 +7682,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleScheduleReturn}
+                onClick={() => guard(handleScheduleReturn)}
                 disabled={!selectedReturnDate || savingReturn}
                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all disabled:opacity-50"
               >
@@ -7751,7 +7751,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={executeCadenceAction}
+                onClick={() => guard(executeCadenceAction)}
                 disabled={executingCadenceAction}
                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all disabled:opacity-50"
               >

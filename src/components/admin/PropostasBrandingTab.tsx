@@ -379,6 +379,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
           {saving ? 'Salvando...' : 'Salvar Configuracoes'}
         </button>
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
