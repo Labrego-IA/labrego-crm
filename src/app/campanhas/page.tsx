@@ -3,8 +3,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { db } from '@/lib/firebaseClient'
-import { collection, query, orderBy, where, onSnapshot } from 'firebase/firestore'
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
 import { formatDate, formatDateTimeAt } from '@/lib/format'
 import { toast } from 'sonner'
@@ -29,7 +30,6 @@ import {
 } from '@heroicons/react/24/outline'
 import Skeleton from '@/components/shared/Skeleton'
 import EmptyState from '@/components/shared/EmptyState'
-import type { OrgMember } from '@/types/organization'
 
 /* ================================= Constants ================================= */
 
@@ -83,8 +83,8 @@ const CAMPAIGN_TYPE_ORDER: Record<string, number> = {
 
 function CampanhasContent() {
   const router = useRouter()
-  const { orgId, member, userEmail } = useCrmUser()
-  const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
+  const { orgId } = useCrmUser()
+  const { allowedUserIds, loading: allowedLoading, hasFullAccess } = useAllowedMemberIds()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -103,9 +103,6 @@ function CampanhasContent() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Partner user IDs (for non-admin access filtering)
-  const [partnerUserIds, setPartnerUserIds] = useState<Set<string>>(new Set())
-
   // Delete confirmation
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
@@ -116,30 +113,6 @@ function CampanhasContent() {
       setLoading(false)
     }
   }, [orgId])
-
-  /* ------------------- Partner members subscription ------------------- */
-
-  useEffect(() => {
-    if (!orgId || !userEmail || isAdmin) return
-    const partnersQuery = query(
-      collection(db, 'organizations', orgId, 'members'),
-      where('status', '==', 'active'),
-      where('invitedBy', '==', userEmail.toLowerCase()),
-    )
-    const unsub = onSnapshot(
-      partnersQuery,
-      (snap) => {
-        const ids = new Set(
-          snap.docs.map((d) => (d.data() as OrgMember).userId),
-        )
-        setPartnerUserIds(ids)
-      },
-      (error) => {
-        console.warn('[CampanhasPage] Error loading partners:', error.message)
-      },
-    )
-    return () => unsub()
-  }, [orgId, userEmail, isAdmin])
 
   /* ---------------------- Real-time subscription ------------------------ */
 
@@ -210,14 +183,14 @@ function CampanhasContent() {
 
   /* ----------------------------- Derived -------------------------------- */
 
-  // Campanhas visíveis ao usuário (filtragem por acesso)
+  // Campanhas visíveis ao usuário (filtragem por acesso — respeita visão pessoal/parceiro)
   const accessFiltered = useMemo(() => {
-    if (isAdmin || !member?.userId) return campaigns
-    const currentUserId = member.userId
+    if (hasFullAccess || allowedLoading) return campaigns
+    if (!allowedUserIds) return campaigns
     return campaigns.filter(
-      (c) => c.createdBy === currentUserId || partnerUserIds.has(c.createdBy),
+      (c) => allowedUserIds.has(c.createdBy),
     )
-  }, [campaigns, isAdmin, member?.userId, partnerUserIds])
+  }, [campaigns, hasFullAccess, allowedLoading, allowedUserIds])
 
   const filtered = useMemo(() => {
     let result = accessFiltered

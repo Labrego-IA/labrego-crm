@@ -17,6 +17,7 @@ import {
 } from 'firebase/firestore'
 import { db, auth } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import PlanGate from '@/components/PlanGate'
 import {
   ChatBubbleLeftRightIcon,
@@ -139,8 +140,12 @@ function CadenciaDashboard() {
   const [mainTab, setMainTab] = useState<MainTab>('config')
   const [loading, setLoading] = useState(true)
 
-  // Data
-  const [funnels, setFunnels] = useState<Funnel[]>([])
+  // Data — funnels filtrados pela visão pessoal/parceiro
+  const { funnels: visibleFunnelsRaw, loading: funnelsLoading } = useVisibleFunnels()
+  const funnels = useMemo<Funnel[]>(
+    () => visibleFunnelsRaw.map(f => ({ id: f.id, name: f.name })),
+    [visibleFunnelsRaw],
+  )
   const [stages, setStages] = useState<FunnelStage[]>([])
   const [steps, setSteps] = useState<CadenceStep[]>([])
   const [selectedFunnel, setSelectedFunnel] = useState<string>('')
@@ -155,21 +160,21 @@ function CadenciaDashboard() {
     }
   }, [orgId])
 
-  // Load data
+  // Select funnel when funnels are loaded
+  useEffect(() => {
+    if (funnelsLoading || funnels.length === 0) return
+    if (funnelIdParam && funnels.some(f => f.id === funnelIdParam)) {
+      setSelectedFunnel(funnelIdParam)
+    } else if (!selectedFunnel || !funnels.some(f => f.id === selectedFunnel)) {
+      setSelectedFunnel(funnels[0].id)
+    }
+  }, [funnels, funnelsLoading, funnelIdParam, selectedFunnel])
+
+  // Load stages, steps, and automation config
   useEffect(() => {
     if (!orgId) return
     const loadData = async () => {
       try {
-        // Load funnels
-        const funnelsSnap = await getDocs(collection(db, 'organizations', orgId, 'funnels'))
-        const funnelsData = funnelsSnap.docs.map(d => ({ id: d.id, name: d.data().name }))
-        setFunnels(funnelsData)
-        if (funnelIdParam && funnelsData.some(f => f.id === funnelIdParam)) {
-          setSelectedFunnel(funnelIdParam)
-        } else if (funnelsData.length > 0) {
-          setSelectedFunnel(funnelsData[0].id)
-        }
-
         // Load stages (from funnelStages collection)
         const stagesSnap = await getDocs(
           query(collection(db, 'funnelStages'), where('orgId', '==', orgId), orderBy('order', 'asc'))

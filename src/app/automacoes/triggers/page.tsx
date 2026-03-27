@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { db } from '@/lib/firebaseClient'
 import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
@@ -32,9 +33,10 @@ import {
 
 function TriggersPageContent() {
   const { orgId, userUid, userEmail } = useCrmUser()
+  const { allowedUserIds, loading: allowedLoading, hasFullAccess } = useAllowedMemberIds()
 
-  const [triggers, setTriggers] = useState<AutomationTrigger[]>([])
-  const [logs, setLogs] = useState<AutomationLog[]>([])
+  const [allTriggers, setAllTriggers] = useState<AutomationTrigger[]>([])
+  const [allLogs, setAllLogs] = useState<AutomationLog[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -62,18 +64,32 @@ function TriggersPageContent() {
 
     const triggersQ = query(collection(db, 'automationTriggers'), where('orgId', '==', orgId))
     const unsubTriggers = onSnapshot(triggersQ, (snap) => {
-      setTriggers(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as AutomationTrigger[])
+      setAllTriggers(snap.docs.map((d) => ({ id: d.id, ...d.data() })) as AutomationTrigger[])
       setLoading(false)
     }, (err) => { console.error('Triggers listener error:', err); setLoading(false) })
 
     const logsQ = query(collection(db, 'automationLogs'), where('orgId', '==', orgId))
     const unsubLogs = onSnapshot(logsQ, (snap) => {
       const items = snap.docs.map((d) => ({ id: d.id, ...d.data() })) as AutomationLog[]
-      setLogs(items.sort((a, b) => b.executedAt.localeCompare(a.executedAt)).slice(0, 100))
+      setAllLogs(items.sort((a, b) => b.executedAt.localeCompare(a.executedAt)).slice(0, 100))
     }, (err) => { console.error('Automation logs listener error:', err) })
 
     return () => { unsubTriggers(); unsubLogs() }
   }, [orgId])
+
+  // Filtra triggers e logs pela visão pessoal/parceiro
+  const triggers = useMemo(() => {
+    if (hasFullAccess || allowedLoading) return allTriggers
+    if (!allowedUserIds) return allTriggers
+    return allTriggers.filter((t) => allowedUserIds.has(t.createdBy))
+  }, [allTriggers, hasFullAccess, allowedLoading, allowedUserIds])
+
+  const logs = useMemo(() => {
+    if (hasFullAccess || allowedLoading) return allLogs
+    if (!allowedUserIds) return allLogs
+    const triggerIds = new Set(triggers.map((t) => t.id))
+    return allLogs.filter((l) => triggerIds.has(l.triggerId))
+  }, [allLogs, triggers, hasFullAccess, allowedLoading, allowedUserIds])
 
   /* ---- Helpers ---- */
   const resetForm = () => {
