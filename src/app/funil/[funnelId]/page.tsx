@@ -8237,7 +8237,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={executeBulkCostCenterChange}
+                onClick={() => guard(executeBulkCostCenterChange)}
                 disabled={!bulkCostCenterStage || bulkCostCenterClients.length === 0 || executingBulkCostCenter}
                 className="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-500 to-primary-500 text-white rounded-xl font-medium text-sm hover:from-primary-600 hover:to-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-200"
               >
@@ -9201,7 +9201,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={executeCrossFunnelTransfer}
+                onClick={() => guard(executeCrossFunnelTransfer)}
                 disabled={!crossFunnelTargetStage || executingCrossFunnel}
                 className="px-4 py-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
