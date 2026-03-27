@@ -581,13 +581,13 @@ export default function PropostasProdutosTab() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        onClick={() => openEdit(p)}
+                        onClick={() => guard(() => openEdit(p))}
                         className="text-primary-600 hover:text-primary-700 text-xs font-medium"
                       >
                         Editar
                       </button>
                       <button
-                        onClick={() => setDeletingProduct(p)}
+                        onClick={() => guard(() => setDeletingProduct(p))}
                         className="text-red-400 hover:text-red-600 text-xs font-medium"
                       >
                         Excluir
@@ -600,6 +600,7 @@ export default function PropostasProdutosTab() {
           </table>
         </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

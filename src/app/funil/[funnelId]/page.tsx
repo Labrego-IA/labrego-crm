@@ -6468,13 +6468,13 @@ export default function FunilDetailPage() {
                                 return (
                                   <button
                                     key={stage.id}
-                                    onClick={async () => {
+                                    onClick={() => guard(async () => {
                                       if (!isCurrentStage) {
                                         await handleQuickStageChange(selectedClient.id, stage.id)
                                         setSelectedClient({ ...selectedClient, funnelStage: stage.id })
                                       }
                                       setStageDropdownOpen(false)
-                                    }}
+                                    })}
                                     className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors ${
                                       isCurrentStage ? 'bg-primary-50' : ''
                                     }`}
@@ -7473,7 +7473,7 @@ export default function FunilDetailPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleQuickFollowUp}
+                onClick={() => guard(handleQuickFollowUp)}
                 disabled={!quickFollowUpText.trim() || savingQuickFollowUp}
                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all disabled:opacity-50"
               >
