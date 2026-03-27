@@ -159,7 +159,7 @@ export default function UsuariosPage() {
   const [searchResult, setSearchResult] = useState<{ found: boolean; user: { uid: string; email: string; displayName: string; photoUrl: string | null } | null } | null>(null)
   const [searchError, setSearchError] = useState<string | null>(null)
 
-  const addHasChanges = addForm.email !== '' || addForm.role !== 'seller'
+  const addHasChanges = addForm.email !== '' || addForm.displayName !== '' || addForm.role !== 'seller'
 
   // Edit modal
   const [editMember, setEditMember] = useState<OrgMember | null>(null)
@@ -342,6 +342,13 @@ export default function UsuariosPage() {
       return
     }
 
+    // Validate name for new users (not found in search)
+    const isNewUser = searchResult && !searchResult.found
+    if (isNewUser && !addForm.displayName.trim()) {
+      toast.error('Informe o nome do usuario para cadastra-lo')
+      return
+    }
+
     const emailExists = members.some(
       (m) => m.email.toLowerCase() === addForm.email.trim().toLowerCase(),
     )
@@ -371,7 +378,13 @@ export default function UsuariosPage() {
         throw new Error(data.error || 'Erro ao convidar membro')
       }
 
-      toast.success(`Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao para aceitar.`)
+      const data = await res.json()
+
+      if (data.isNewUser) {
+        toast.success(`${addForm.displayName.trim()} foi cadastrado(a) e recebera um email com as credenciais de acesso e o convite de parceria.`)
+      } else {
+        toast.success(`Convite enviado para ${addForm.email.trim()}. O usuario recebera uma notificacao para aceitar.`)
+      }
       setAddForm({ email: '', displayName: '', role: 'seller' })
       setSearchResult(null)
       setSearchError(null)
@@ -1257,18 +1270,31 @@ export default function UsuariosPage() {
                   </div>
                 )}
 
-                {/* Search result: user not found */}
+                {/* Search result: user not found — show registration form */}
                 {searchResult && !searchResult.found && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 space-y-3">
                     <div className="flex items-center gap-2">
-                      <svg className="h-5 w-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                      <svg className="h-5 w-5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
                       </svg>
-                      <p className="text-sm font-medium text-red-800">Usuario nao cadastrado</p>
+                      <p className="text-sm font-medium text-amber-800">Novo usuario</p>
                     </div>
-                    <p className="text-xs text-red-700">
-                      Nenhum usuario cadastrado com este email no app. O usuario precisa criar uma conta primeiro para poder ser convidado.
+                    <p className="text-xs text-amber-700">
+                      Nenhum usuario cadastrado com este email. Preencha o nome abaixo para cadastra-lo automaticamente. Uma senha sera gerada e enviada por email ao usuario.
                     </p>
+                    <div>
+                      <label htmlFor="add-displayName" className={ui.label}>
+                        Nome do usuario
+                      </label>
+                      <input
+                        id="add-displayName"
+                        type="text"
+                        value={addForm.displayName}
+                        onChange={(e) => setAddForm((f) => ({ ...f, displayName: e.target.value }))}
+                        placeholder="Nome completo do usuario"
+                        className={ui.input}
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -1299,7 +1325,7 @@ export default function UsuariosPage() {
                 <button type="button" onClick={requestCloseAddModal} className={ui.btn}>
                   Cancelar
                 </button>
-                {searchResult?.found && !searchError && (
+                {searchResult && !searchError && (searchResult.found || (!searchResult.found && addForm.displayName.trim())) && (
                   <button
                     type="button"
                     onClick={handleAdd}
@@ -1309,10 +1335,10 @@ export default function UsuariosPage() {
                     {addLoading ? (
                       <>
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                        Enviando...
+                        {searchResult.found ? 'Enviando...' : 'Cadastrando...'}
                       </>
                     ) : (
-                      'Enviar convite'
+                      searchResult.found ? 'Enviar convite' : 'Cadastrar e enviar convite'
                     )}
                   </button>
                 )}
