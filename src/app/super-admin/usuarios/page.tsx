@@ -268,7 +268,7 @@ export default function SuperAdminUsuariosPage() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-visible">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50">
@@ -345,7 +345,7 @@ export default function SuperAdminUsuariosPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                       {openMenuUid === user.uid && (
-                        <div data-actions-menu className="absolute right-4 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                        <div data-actions-menu className="absolute right-4 bottom-full mb-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                           <button
                             onClick={() => { openEdit(user); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -402,7 +402,7 @@ export default function SuperAdminUsuariosPage() {
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
                     {openMenuUid === user.uid && (
-                      <div data-actions-menu className="absolute right-0 top-full mt-1 z-20 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                      <div data-actions-menu className="absolute right-0 bottom-full mb-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
                         <button
                           onClick={() => { openEdit(user); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
