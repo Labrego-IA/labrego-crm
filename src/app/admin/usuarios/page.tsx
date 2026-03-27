@@ -121,7 +121,7 @@ export default function UsuariosPage() {
   const { orgId, userUid, userEmail, member: currentMember } = useCrmUser()
   const { can, isPartner } = usePermissions()
   const { limits, plan } = usePlan()
-  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   /* ---------------------- Plan-filtered pages & actions ------------------ */
 
@@ -442,7 +442,7 @@ export default function UsuariosPage() {
   }
 
   const handleSaveEdit = async () => {
-    if (!orgId || !editMember) return
+    if (isPlanBlocked || !orgId || !editMember) return
     const validRoles: AdminRole[] = [...ADMIN_ROLES]
     if (!editRole || !validRoles.includes(editRole as AdminRole)) {
       toast.error('Selecione um cargo valido')

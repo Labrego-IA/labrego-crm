@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import {
   BookOpenIcon,
   BuildingOfficeIcon,
@@ -111,6 +112,7 @@ const BACKUP_KEY = 'estrategia-playbook-backup'
 
 export default function EstrategiaComercialPage() {
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const router = useRouter()
   const [data, setData] = useState<PlaybookData>({})
   const [savedData, setSavedData] = useState<PlaybookData>({})
@@ -251,7 +253,7 @@ export default function EstrategiaComercialPage() {
   }, [])
 
   const handleSave = async () => {
-    if (!orgId) return
+    if (isPlanBlocked || !orgId) return
     setSaving(true)
     try {
       const docRef = doc(db, 'organizations', orgId, 'settings', 'playbook')

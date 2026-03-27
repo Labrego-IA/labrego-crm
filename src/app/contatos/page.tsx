@@ -188,7 +188,7 @@ export default function ContatosPage() {
   const { userEmail, orgId, orgPlan, member } = useCrmUser()
   const { viewScope, can } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
-  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
   const [clients, setClients] = useState<Cliente[]>([])
   const [funnelStages, setFunnelStages] = useState<FunnelStage[]>([])
   const [costCenters, setCostCenters] = useState<CostCenter[]>([])
@@ -393,7 +393,7 @@ export default function ContatosPage() {
 
   // Handle stage change
   const handleStageChange = async () => {
-    if (!stageChangeClient || !newStageId) return
+    if (isPlanBlocked || !stageChangeClient || !newStageId) return
     setSavingStage(true)
     try {
       const fromStageName = funnelStages.find(s => s.id === stageChangeClient.funnelStage)?.name || 'Sem etapa'
@@ -434,7 +434,7 @@ export default function ContatosPage() {
 
   // Handle follow-up registration
   const handleFollowUp = async () => {
-    if (!followUpClient) return
+    if (isPlanBlocked || !followUpClient) return
     setSavingFollowUp(true)
     try {
       const now = new Date().toISOString()
@@ -576,7 +576,7 @@ export default function ContatosPage() {
 
   // Import contacts from CSV or XLSX
   const handleImport = async () => {
-    if (!importFile) return
+    if (isPlanBlocked || !importFile) return
 
     const fieldMap: Record<string, string> = {
       // Nome
@@ -1326,7 +1326,7 @@ export default function ContatosPage() {
 
   // Upload partners
   const handleUploadPartners = async () => {
-    if (!partnersFile) return
+    if (isPlanBlocked || !partnersFile) return
 
     setUploadingPartners(true)
     const isExcel = partnersFile.name.endsWith('.xlsx') || partnersFile.name.endsWith('.xls')
@@ -1504,6 +1504,7 @@ export default function ContatosPage() {
 
   // Save client
   const handleSave = async () => {
+    if (isPlanBlocked) return
     // Verificar permissão de criar/editar contato
     if (!editingId && !can('canCreateContacts')) return
     if (editingId && !can('canEditContacts')) return
@@ -1605,7 +1606,7 @@ export default function ContatosPage() {
 
   // Delete client
   const handleDelete = async () => {
-    if (!deleteId || !can('canDeleteContacts')) return
+    if (isPlanBlocked || !deleteId || !can('canDeleteContacts')) return
     try {
       await deleteDoc(doc(db, 'clients', deleteId))
       setDeleteId(null)
@@ -1642,7 +1643,7 @@ export default function ContatosPage() {
   }
 
   const handleBulkDelete = async () => {
-    if (selectedIds.size === 0 || !can('canDeleteContacts')) return
+    if (isPlanBlocked || selectedIds.size === 0 || !can('canDeleteContacts')) return
     setDeletingBulk(true)
     try {
       const deletePromises = Array.from(selectedIds).map((id) =>
@@ -1661,7 +1662,7 @@ export default function ContatosPage() {
   }
 
   const handleBulkMove = async () => {
-    if (selectedIds.size === 0 || !bulkFunnelId || !bulkStageId) return
+    if (isPlanBlocked || selectedIds.size === 0 || !bulkFunnelId || !bulkStageId) return
     setSavingBulkMove(true)
     try {
       const ids = Array.from(selectedIds)

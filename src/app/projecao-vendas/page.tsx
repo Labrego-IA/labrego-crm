@@ -15,6 +15,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -82,6 +83,7 @@ function formatCurrencyShort(value: number): string {
 export default function ProjecaoVendasPage() {
   const { orgId, member, userEmail } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [stages, setStages] = useState<FunnelStage[]>([])
@@ -346,6 +348,7 @@ export default function ProjecaoVendasPage() {
 
   // Inline edit handlers
   const handleInlineDealValue = async (clientId: string, value: string) => {
+    if (isPlanBlocked) return
     const num = value ? parseFloat(value) : null
     try {
       await updateDoc(doc(db, 'clients', clientId), {
@@ -359,6 +362,7 @@ export default function ProjecaoVendasPage() {
   }
 
   const handleInlineProbability = async (clientId: string, value: string) => {
+    if (isPlanBlocked) return
     const num = value ? parseInt(value) : null
     if (num !== null && (num < 0 || num > 100)) {
       toast.error('Probabilidade deve ser entre 0 e 100')
@@ -376,6 +380,7 @@ export default function ProjecaoVendasPage() {
   }
 
   const handleInlineStageChange = async (clientId: string, stageId: string, funnelId: string) => {
+    if (isPlanBlocked) return
     try {
       await updateDoc(doc(db, 'clients', clientId), {
         funnelStage: stageId,

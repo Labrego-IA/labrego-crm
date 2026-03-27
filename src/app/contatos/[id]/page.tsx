@@ -21,6 +21,8 @@ import {
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { leadSourceIcons, leadTypeOptions, leadSourceOptions } from '@/lib/leadSources'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -241,6 +243,7 @@ export default function ContactDetailsPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { userEmail, orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
   const id = params?.id
 
   // Data states
@@ -506,7 +509,7 @@ export default function ContactDetailsPage() {
 
   // Save follow-up
   const handleSaveFollowUp = async () => {
-    if (!newFollowUp.trim() || !id) return
+    if (isPlanBlocked || !newFollowUp.trim() || !id) return
     setSavingFollowUp(true)
     try {
       const now = new Date().toISOString()
@@ -543,7 +546,7 @@ export default function ContactDetailsPage() {
 
   // Save needs detail
   const handleSaveNeeds = async () => {
-    if (!id) return
+    if (isPlanBlocked || !id) return
     try {
       await updateDoc(doc(db, 'clients', id), { needsDetail })
       setClient((prev) => (prev ? { ...prev, needsDetail } : prev))
@@ -555,7 +558,7 @@ export default function ContactDetailsPage() {
 
   // Save lead type
   const handleSaveLeadType = async (newLeadType: string) => {
-    if (!id) return
+    if (isPlanBlocked || !id) return
     setSavingLeadType(true)
     try {
       await updateDoc(doc(db, 'clients', id), {
@@ -573,7 +576,7 @@ export default function ContactDetailsPage() {
 
   // Save funnel + stage
   const handleSaveFunnelStage = async (newFunnelId: string, newStageId: string) => {
-    if (!id) return
+    if (isPlanBlocked || !id) return
     setSavingFunnel(true)
     try {
       const now = new Date().toISOString()
@@ -620,6 +623,7 @@ export default function ContactDetailsPage() {
 
   // Save client edit
   const handleSaveEdit = async () => {
+    if (isPlanBlocked) return
     if (!editForm.name.trim() || !editForm.phone.trim() || !id) {
       alert('Nome e telefone são obrigatórios')
       return
@@ -725,7 +729,7 @@ export default function ContactDetailsPage() {
   }
 
   const handleSavePartners = async () => {
-    if (!id) return
+    if (isPlanBlocked || !id) return
     setSavingPartners(true)
     try {
       const partnersStr = partnersList.length > 0 ? partnersList.join(', ') : null
@@ -747,7 +751,7 @@ export default function ContactDetailsPage() {
 
   // Delete client
   const handleDeleteClient = async () => {
-    if (!id) return
+    if (isPlanBlocked || !id) return
 
     setDeleting(true)
     try {
@@ -763,7 +767,7 @@ export default function ContactDetailsPage() {
 
   // Create folder
   const handleCreateFolder = async () => {
-    if (!newFolderName.trim() || !id) return
+    if (isPlanBlocked || !newFolderName.trim() || !id) return
     setCreatingFolder(true)
     try {
       const folderRef = doc(collection(db, 'clients', id, 'folders'))
@@ -786,7 +790,7 @@ export default function ContactDetailsPage() {
   // Upload file
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file || !id) return
+    if (isPlanBlocked || !file || !id) return
 
     setUploadingFile(true)
     try {
@@ -817,7 +821,7 @@ export default function ContactDetailsPage() {
 
   // Delete folder or file
   const handleDelete = async () => {
-    if (!deletingItem || !id) return
+    if (isPlanBlocked || !deletingItem || !id) return
     try {
       if (deletingItem.type === 'folder') {
         // Check for nested content
@@ -2609,6 +2613,7 @@ export default function ContactDetailsPage() {
           </div>
         </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { usePlanExpiration } from '@/hooks/usePlanExpiration'
-import { usePermissions } from '@/hooks/usePermissions'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 
 const ALLOWED_PATHS = ['/plano', '/perfil', '/login']
@@ -20,11 +19,10 @@ interface FreePlanExpiredGateProps {
 export default function FreePlanExpiredGate({ children }: FreePlanExpiredGateProps) {
   const pathname = usePathname()
   const { isExpired, isFreePlan } = usePlanExpiration()
-  const { role } = usePermissions()
   const { isSuperAdmin } = useSuperAdmin()
 
-  // Super admin and org admin always have full access
-  if (isSuperAdmin || role === 'admin') return <>{children}</>
+  // Super admin always has full access (platform management)
+  if (isSuperAdmin) return <>{children}</>
 
   // If plan is not expired or path is allowed, show content
   if (!isExpired || isAllowedPath(pathname)) {

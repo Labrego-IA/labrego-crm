@@ -18,6 +18,7 @@ import {
   doc,
 } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
@@ -98,6 +99,7 @@ const STATUS_OPTIONS = [
 function NovasCampanhasContent() {
   const router = useRouter()
   const { orgId, member } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const { viewScope } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
 
@@ -405,6 +407,7 @@ function NovasCampanhasContent() {
   }, [])
 
   const handleSaveSegment = useCallback(async () => {
+    if (isPlanBlocked) return
     if (!orgId || !segmentName.trim()) return
     setSavingSegment(true)
     try {
@@ -426,10 +429,11 @@ function NovasCampanhasContent() {
       toast.error('Erro ao salvar segmento')
     }
     setSavingSegment(false)
-  }, [orgId, segmentName, filters, member])
+  }, [isPlanBlocked, orgId, segmentName, filters, member])
 
   const handleDeleteSegment = useCallback(
     async (segId: string) => {
+      if (isPlanBlocked) return
       if (!orgId) return
       try {
         await deleteDoc(doc(db, 'organizations', orgId, 'savedSegments', segId))
@@ -439,7 +443,7 @@ function NovasCampanhasContent() {
         toast.error('Erro ao remover segmento')
       }
     },
-    [orgId],
+    [isPlanBlocked, orgId],
   )
 
   const insertVariable = useCallback((varKey: string) => {
@@ -449,6 +453,7 @@ function NovasCampanhasContent() {
   /* ==================== Submit ==================== */
 
   const handleSubmit = useCallback(async () => {
+    if (isPlanBlocked) return
     if (!orgId || selectedIds.size === 0) return
     setSubmitting(true)
 
@@ -549,6 +554,7 @@ function NovasCampanhasContent() {
     }
     setSubmitting(false)
   }, [
+    isPlanBlocked,
     orgId,
     selectedIds,
     selectedClients,

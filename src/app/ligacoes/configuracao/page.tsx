@@ -25,6 +25,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { CallRoutingConfig, CallAgentKnowledge, DEFAULT_AGENT_KNOWLEDGE } from '@/types/callRouting'
 import { assemblePromptFromWizard } from '@/lib/promptAssembler'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import AgentWizard from '@/components/ligacoes/AgentWizard'
 import IntegrationsPanel from '@/components/ligacoes/IntegrationsPanel'
 import VoiceSelector from '@/components/ligacoes/VoiceSelector'
@@ -95,6 +96,7 @@ function ExpandableTextarea({
 
 export default function ConfiguracaoPage() {
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const [activeTab, setActiveTab] = useState<TabType>('config')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -200,6 +202,7 @@ export default function ConfiguracaoPage() {
 
   // Save config — regenerates prompt from wizard (reverts custom edits)
   const handleSaveConfig = async () => {
+    if (isPlanBlocked) return
     if (!config || !orgId) return
     setSaving(true)
     try {

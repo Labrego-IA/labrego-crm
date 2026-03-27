@@ -14,6 +14,7 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import type { OrgMember } from '@/types/organization'
 import { toast } from 'sonner'
 import {
@@ -43,6 +44,7 @@ type ProductItem = { id: string; name: string }
 export default function AdminIcpPage() {
   const { orgId, userEmail, member } = useCrmUser()
   const { can, isSystemAdmin } = usePermissions()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const isAdmin = isSystemAdmin || member?.role === 'admin'
 
   const [allProfiles, setAllProfiles] = useState<IcpProfile[]>([])
@@ -179,6 +181,7 @@ export default function AdminIcpPage() {
   }
 
   const handleSave = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !form.name.trim()) {
       toast.error('Nome do perfil ICP e obrigatorio')
       return
@@ -224,7 +227,7 @@ export default function AdminIcpPage() {
   }
 
   const confirmDelete = async () => {
-    if (!deleteConfirm.id) return
+    if (isPlanBlocked || !deleteConfirm.id) return
     try {
       await deleteDoc(doc(db, 'icpProfiles', deleteConfirm.id))
       toast.success('Perfil ICP excluido')

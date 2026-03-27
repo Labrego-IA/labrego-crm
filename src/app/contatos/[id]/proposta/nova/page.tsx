@@ -38,6 +38,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { formatCurrency } from '@/lib/format'
 import { convertLogosToBase64 } from '@/lib/imageUtils'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import { useProposalBranding } from '@/hooks/useProposalBranding'
 import { useProposalStructure } from '@/hooks/useProposalStructure'
 import { useProposalCustomFields } from '@/hooks/useProposalCustomFields'
@@ -53,6 +54,7 @@ export default function NewProposalCRMPage() {
   const params = useParams<{ id: string }>()
   const clientId = params?.id
   const { orgId } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
   const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
   const { branding } = useProposalBranding()
   const { structure } = useProposalStructure()
@@ -220,6 +222,7 @@ export default function NewProposalCRMPage() {
   }))
 
   const transformContext = async () => {
+    if (isPlanBlocked) return
     const text = watch('context')
     if (!text) return
     setTransforming(true)
@@ -240,6 +243,7 @@ export default function NewProposalCRMPage() {
   }
 
   const onSubmit = async (data: FormData) => {
+    if (isPlanBlocked) return
     if (generating) return
     setGenerating(true)
     try {

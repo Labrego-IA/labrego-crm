@@ -6,6 +6,7 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, getDoc, setDoc, addDoc, getDocs, query, where, orderBy, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import EmailEditor from '@/components/email-editor/EmailEditor'
 import { type EmailBlockData, type EmailTemplate, blocksToHtml } from '@/types/emailTemplate'
@@ -16,6 +17,7 @@ function EditorPageContent() {
   const searchParams = useSearchParams()
   const templateId = searchParams.get('templateId')
   const { orgId, userUid, userEmail } = useCrmUser()
+  const { isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   const [initialBlocks, setInitialBlocks] = useState<EmailBlockData[]>([])
   const [initialSubject, setInitialSubject] = useState('')
@@ -102,6 +104,7 @@ function EditorPageContent() {
 
   /* Save template to Firestore */
   const saveTemplate = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !pendingSave || !saveName.trim()) return
     try {
       const data = {
@@ -149,6 +152,7 @@ function EditorPageContent() {
 
   /* Delete a template */
   const handleDeleteTemplate = async (id: string) => {
+    if (isPlanBlocked) return
     if (!confirm('Tem certeza que deseja excluir este template?')) return
     try {
       await deleteDoc(doc(db, 'emailTemplates', id))

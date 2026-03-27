@@ -9,7 +9,9 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { usePlan } from '@/hooks/usePlan'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import UpgradePrompt from '@/components/UpgradePrompt'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
 import {
@@ -57,6 +59,7 @@ export default function FunnelHubPage() {
   const { can, canAccessPage, viewScope } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
   const { limits } = usePlan()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
 
   const pageBlocked = !canAccessPage('/funil')
   const canManage = pageBlocked ? false : can('canManageFunnels')
@@ -194,6 +197,7 @@ export default function FunnelHubPage() {
 
   // Create funnel
   const handleCreate = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !formName.trim()) return
     setSaving(true)
     try {
@@ -230,6 +234,7 @@ export default function FunnelHubPage() {
 
   // Update funnel
   const handleUpdate = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !editingFunnel || !formName.trim()) return
     setSaving(true)
     try {
@@ -266,6 +271,7 @@ export default function FunnelHubPage() {
 
   // Delete funnel
   const handleDelete = async () => {
+    if (isPlanBlocked) return
     if (!orgId || !deletingFunnel) return
     setSaving(true)
     try {
@@ -737,6 +743,8 @@ export default function FunnelHubPage() {
           </div>
         )
       })()}
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 

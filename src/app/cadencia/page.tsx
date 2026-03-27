@@ -19,6 +19,8 @@ import { db, auth } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   ChatBubbleLeftRightIcon,
   EnvelopeIcon,
@@ -134,6 +136,7 @@ export default function CadenciaPage() {
 
 function CadenciaDashboard() {
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog, isBlocked: isPlanBlocked } = useFreePlanGuard()
   const router = useRouter()
   const searchParams = useSearchParams()
   const funnelIdParam = searchParams.get('funnelId')
@@ -254,11 +257,12 @@ function CadenciaDashboard() {
           </div>
         ) : mainTab === 'config' ? (
           <ConfigTab orgId={orgId!} stages={filteredStages} allStages={stages} steps={steps} setSteps={setSteps}
-            autoConfig={autoConfig} setAutoConfig={setAutoConfig} setStages={setStages} />
+            autoConfig={autoConfig} setAutoConfig={setAutoConfig} setStages={setStages} isPlanBlocked={isPlanBlocked} />
         ) : (
-          <ExecutionTab orgId={orgId!} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} />
+          <ExecutionTab orgId={orgId!} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} isPlanBlocked={isPlanBlocked} />
         )}
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
@@ -267,11 +271,12 @@ function CadenciaDashboard() {
 /*  CONFIG TAB                                                */
 /* ═══════════════════════════════════════════════════════════ */
 
-function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setAutoConfig, setStages }: {
+function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setAutoConfig, setStages, isPlanBlocked }: {
   orgId: string; stages: FunnelStage[]; allStages: FunnelStage[]; steps: CadenceStep[]
   setSteps: React.Dispatch<React.SetStateAction<CadenceStep[]>>
   autoConfig: AutomationConfig; setAutoConfig: React.Dispatch<React.SetStateAction<AutomationConfig>>
   setStages: React.Dispatch<React.SetStateAction<FunnelStage[]>>
+  isPlanBlocked: boolean
 }) {
   const [expandedStages, setExpandedStages] = useState<Set<string>>(new Set())
   const [editStep, setEditStep] = useState<CadenceStep | null>(null)
@@ -291,22 +296,26 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
     steps.filter(s => s.stageId === stageId && !s.parentStepId).sort((a, b) => a.order - b.order)
 
   const handleDeleteStep = async (stepId: string) => {
+    if (isPlanBlocked) return
     await deleteDoc(doc(db, 'cadenceSteps', stepId))
     setSteps(prev => prev.filter(s => s.id !== stepId))
   }
 
   const handleToggleStep = async (stepId: string, isActive: boolean) => {
+    if (isPlanBlocked) return
     await updateDoc(doc(db, 'cadenceSteps', stepId), { isActive: !isActive })
     setSteps(prev => prev.map(s => s.id === stepId ? { ...s, isActive: !isActive } : s))
   }
 
   const saveAutomationConfig = async (updates: Partial<AutomationConfig>) => {
+    if (isPlanBlocked) return
     const newConfig = { ...autoConfig, ...updates }
     setAutoConfig(newConfig)
     await setDoc(doc(db, 'organizations', orgId, 'automationConfig', 'global'), newConfig, { merge: true })
   }
 
   const handleSaveExhaustedAction = async (stageId: string, action: CadenceExhaustedAction, targetId?: string) => {
+    if (isPlanBlocked) return
     const updates: Record<string, unknown> = { cadenceExhaustedAction: action }
     if (targetId !== undefined) updates.cadenceExhaustedTargetStageId = targetId
     await updateDoc(doc(db, 'funnelStages', stageId), updates)
@@ -314,6 +323,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
   }
 
   const handleSaveStageCallConfig = async (stageId: string, updates: { callStartHour?: string; callEndHour?: string; maxCallsPerDay?: number | null }) => {
+    if (isPlanBlocked) return
     const stage = stages.find(s => s.id === stageId)
     const currentConfig = stage?.automationConfig || {}
     const merged: Record<string, unknown> = { ...currentConfig, ...updates }
@@ -605,6 +615,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
           stageId={addingToStage || editStep!.stageId}
           step={editStep}
           existingSteps={steps}
+          isPlanBlocked={isPlanBlocked}
           onClose={() => { setAddingToStage(null); setEditStep(null) }}
           onSaved={(newStep) => {
             if (editStep) {
@@ -625,9 +636,9 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 /*  STEP MODAL                                                */
 /* ═══════════════════════════════════════════════════════════ */
 
-function StepModal({ orgId, stageId, step, existingSteps, onClose, onSaved }: {
+function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose, onSaved }: {
   orgId: string; stageId: string; step: CadenceStep | null; existingSteps: CadenceStep[]
-  onClose: () => void; onSaved: (step: CadenceStep) => void
+  isPlanBlocked: boolean; onClose: () => void; onSaved: (step: CadenceStep) => void
 }) {
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
@@ -644,6 +655,7 @@ function StepModal({ orgId, stageId, step, existingSteps, onClose, onSaved }: {
   })
 
   const handleSave = async () => {
+    if (isPlanBlocked) return
     if (!form.name.trim()) return
     setSaving(true)
     try {
@@ -830,9 +842,10 @@ function VariableButtons({ onInsert }: { onInsert: (key: string) => void }) {
 /*  EXECUTION TAB                                             */
 /* ═══════════════════════════════════════════════════════════ */
 
-function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
+function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanBlocked }: {
   orgId: string; stages: FunnelStage[]; steps: CadenceStep[]; autoConfig: AutomationConfig
   setAutoConfig: React.Dispatch<React.SetStateAction<AutomationConfig>>
+  isPlanBlocked: boolean
 }) {
   const [logs, setLogs] = useState<ExecutionLog[]>([])
   const [activeCounts, setActiveCounts] = useState<Record<string, number>>({})
@@ -961,6 +974,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
   }, [successToday])
 
   const saveAutomationConfig = async (updates: Partial<AutomationConfig>) => {
+    if (isPlanBlocked) return
     const newConfig = { ...autoConfig, ...updates }
     setAutoConfig(newConfig)
     await setDoc(doc(db, 'organizations', orgId, 'automationConfig', 'global'), newConfig, { merge: true })
@@ -970,6 +984,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
   const [triggerResult, setTriggerResult] = useState<{ ok: boolean; message: string } | null>(null)
 
   const triggerCronNow = async () => {
+    if (isPlanBlocked) return
     setTriggerLoading(true)
     setTriggerResult(null)
     try {
