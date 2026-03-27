@@ -18,11 +18,14 @@ import {
   XCircleIcon,
   ArrowLeftIcon,
 } from '@heroicons/react/24/outline'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 type TabType = 'trigger' | 'reports'
 
 export default function DisparoPage() {
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [activeTab, setActiveTab] = useState<TabType>('trigger')
 
   // Trigger state (queue-based)
@@ -515,7 +518,7 @@ export default function DisparoPage() {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={handleTriggerCalls}
+                    onClick={() => guard(handleTriggerCalls)}
                     disabled={triggering}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors"
                   >
@@ -538,7 +541,7 @@ export default function DisparoPage() {
                   </button>
                   {triggering && (
                     <button
-                      onClick={handleCancelTrigger}
+                      onClick={() => guard(handleCancelTrigger)}
                       className="px-4 py-3 bg-red-100 text-red-700 font-medium rounded-xl hover:bg-red-200 transition-colors"
                       title="Cancelar"
                     >
@@ -671,7 +674,7 @@ export default function DisparoPage() {
                 {triggerProgress.phase === 'calling' && (
                   <div className="mb-4">
                     <button
-                      onClick={handleCancelTrigger}
+                      onClick={() => guard(handleCancelTrigger)}
                       className="text-sm text-red-500 hover:text-red-700 underline"
                     >
                       Cancelar disparo (ligacoes ja iniciadas continuam, pendentes sao canceladas)
@@ -947,6 +950,7 @@ export default function DisparoPage() {
           </div>
         )}
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

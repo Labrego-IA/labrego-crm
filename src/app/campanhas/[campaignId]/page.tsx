@@ -6,6 +6,8 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import { formatDate, formatDateTimeAt } from '@/lib/format'
 import { toast } from 'sonner'
 import {
@@ -39,6 +41,7 @@ function CampaignDetailsContent() {
   const params = useParams()
   const campaignId = params.campaignId as string
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -265,7 +268,7 @@ function CampaignDetailsContent() {
                 <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 shadow-sm">
                   <span className="text-xs text-red-700 font-medium">Excluir?</span>
                   <button
-                    onClick={handleDelete}
+                    onClick={() => guard(handleDelete)}
                     disabled={deleting}
                     className="rounded-lg px-2.5 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
                   >
@@ -558,7 +561,7 @@ function CampaignDetailsContent() {
 
           {counts.failed > 0 && (
             <button
-              onClick={handleResendFailed}
+              onClick={() => guard(handleResendFailed)}
               disabled={resending}
               className="flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 transition-colors"
             >
@@ -613,6 +616,7 @@ function CampaignDetailsContent() {
           </div>
         )}
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

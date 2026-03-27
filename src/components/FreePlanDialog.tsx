@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
 
 interface FreePlanDialogProps {
   isOpen: boolean
@@ -9,6 +10,7 @@ interface FreePlanDialogProps {
 
 export default function FreePlanDialog({ isOpen, onClose }: FreePlanDialogProps) {
   const router = useRouter()
+  const { isFreePlan } = usePlanExpiration()
 
   if (!isOpen) return null
 
@@ -38,13 +40,14 @@ export default function FreePlanDialog({ isOpen, onClose }: FreePlanDialogProps)
 
         {/* Title */}
         <h3 className="text-lg font-bold text-slate-800 mb-3">
-          Periodo de teste expirado
+          {isFreePlan ? 'Periodo de teste expirado' : 'Assinatura expirada'}
         </h3>
 
         {/* Description */}
         <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-          Seu periodo gratuito de 7 dias chegou ao fim.
-          Assine um plano para continuar usando todas as funcionalidades.
+          {isFreePlan
+            ? 'Seu periodo gratuito de 7 dias chegou ao fim. Assine um plano para continuar usando todas as funcionalidades.'
+            : 'O periodo da sua assinatura atual chegou ao fim. Renove seu plano para continuar usando todas as funcionalidades.'}
         </p>
 
         {/* Buttons */}
@@ -62,7 +65,7 @@ export default function FreePlanDialog({ isOpen, onClose }: FreePlanDialogProps)
             }}
             className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 rounded-xl transition-all shadow-lg shadow-primary-200"
           >
-            Ver planos
+            {isFreePlan ? 'Ver planos' : 'Renovar plano'}
           </button>
         </div>
       </div>

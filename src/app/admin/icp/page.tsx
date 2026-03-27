@@ -36,6 +36,8 @@ import {
   ESTADOS_BR,
 } from '@/types/icp'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 type FunnelItem = { id: string; name: string; color: string }
 type ProductItem = { id: string; name: string }
@@ -43,6 +45,7 @@ type ProductItem = { id: string; name: string }
 export default function AdminIcpPage() {
   const { orgId, userEmail, member } = useCrmUser()
   const { can, isSystemAdmin } = usePermissions()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const isAdmin = isSystemAdmin || member?.role === 'admin'
 
   const [allProfiles, setAllProfiles] = useState<IcpProfile[]>([])
@@ -312,7 +315,7 @@ export default function AdminIcpPage() {
           </p>
         </div>
         <button
-          onClick={openCreate}
+          onClick={() => guard(openCreate)}
           className="btn-primary hidden md:inline-flex items-center gap-2"
         >
           <PlusIcon className="w-4 h-4" />
@@ -322,7 +325,7 @@ export default function AdminIcpPage() {
 
       {/* Mobile: FAB flutuante */}
       <button
-        onClick={openCreate}
+        onClick={() => guard(openCreate)}
         className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
         aria-label="Novo perfil ICP"
       >
@@ -345,7 +348,7 @@ export default function AdminIcpPage() {
             Crie perfis de cliente ideal para segmentar seus leads e direciona-los
             automaticamente para os funis corretos.
           </p>
-          <button onClick={openCreate} className="btn-primary">
+          <button onClick={() => guard(openCreate)} className="btn-primary">
             Criar primeiro perfil
           </button>
         </div>
@@ -383,13 +386,13 @@ export default function AdminIcpPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => openEdit(profile)}
+                    onClick={() => guard(() => openEdit(profile))}
                     className="p-2 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                   >
                     <PencilIcon className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(profile.id)}
+                    onClick={() => guard(() => handleDelete(profile.id))}
                     className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     <TrashIcon className="w-4 h-4" />
@@ -466,7 +469,7 @@ export default function AdminIcpPage() {
                   Cancelar
                 </button>
                 <button
-                  onClick={confirmDelete}
+                  onClick={() => guard(confirmDelete)}
                   className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors duration-200"
                 >
                   Sim, excluir
@@ -485,6 +488,8 @@ export default function AdminIcpPage() {
       />
 
       {/* Modal */}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
+
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
@@ -831,7 +836,7 @@ export default function AdminIcpPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => guard(handleSave)}
                 disabled={saving}
                 className="btn-primary flex items-center gap-2"
               >

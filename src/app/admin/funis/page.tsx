@@ -15,6 +15,8 @@ import {
   XMarkIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -73,6 +75,7 @@ type StageItem = {
 export default function AdminFunisPage() {
   const { orgId, member: currentMember, userEmail } = useCrmUser()
   const { can } = usePermissions()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const isAdmin = currentMember?.role === 'admin'
 
   const [members, setMembers] = useState<MemberRow[]>([])
@@ -505,7 +508,7 @@ export default function AdminFunisPage() {
           <p className="text-sm text-slate-500 mt-1">Configure quais membros podem ver cada funil e suas etapas</p>
         </div>
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving}
           className="w-full sm:w-auto px-5 py-3 sm:py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 shadow-sm"
         >
@@ -1011,6 +1014,7 @@ export default function AdminFunisPage() {
         })}
       </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

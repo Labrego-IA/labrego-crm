@@ -25,6 +25,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { CallRoutingConfig, CallAgentKnowledge, DEFAULT_AGENT_KNOWLEDGE } from '@/types/callRouting'
 import { assemblePromptFromWizard } from '@/lib/promptAssembler'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import AgentWizard from '@/components/ligacoes/AgentWizard'
 import IntegrationsPanel from '@/components/ligacoes/IntegrationsPanel'
 import VoiceSelector from '@/components/ligacoes/VoiceSelector'
@@ -95,6 +97,7 @@ function ExpandableTextarea({
 
 export default function ConfiguracaoPage() {
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [activeTab, setActiveTab] = useState<TabType>('config')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -311,7 +314,7 @@ export default function ConfiguracaoPage() {
           {/* Save button */}
           {(activeTab === 'config' || activeTab === 'knowledge') && (
             <button
-              onClick={handleSaveConfig}
+              onClick={() => guard(handleSaveConfig)}
               disabled={!hasChanges || saving}
               className={`flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex-shrink-0 ${
                 hasChanges
@@ -830,6 +833,7 @@ export default function ConfiguracaoPage() {
           />
         )}
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

@@ -18,6 +18,8 @@ import {
 import { db, auth } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   ChatBubbleLeftRightIcon,
   EnvelopeIcon,
@@ -138,6 +140,7 @@ function CadenciaDashboard() {
   const funnelIdParam = searchParams.get('funnelId')
   const [mainTab, setMainTab] = useState<MainTab>('config')
   const [loading, setLoading] = useState(true)
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   // Data
   const [funnels, setFunnels] = useState<Funnel[]>([])
@@ -249,11 +252,12 @@ function CadenciaDashboard() {
           </div>
         ) : mainTab === 'config' ? (
           <ConfigTab orgId={orgId!} stages={filteredStages} allStages={stages} steps={steps} setSteps={setSteps}
-            autoConfig={autoConfig} setAutoConfig={setAutoConfig} setStages={setStages} />
+            autoConfig={autoConfig} setAutoConfig={setAutoConfig} setStages={setStages} guard={guard} />
         ) : (
-          <ExecutionTab orgId={orgId!} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} />
+          <ExecutionTab orgId={orgId!} stages={filteredStages} steps={steps} autoConfig={autoConfig} setAutoConfig={setAutoConfig} guard={guard} />
         )}
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
@@ -262,11 +266,12 @@ function CadenciaDashboard() {
 /*  CONFIG TAB                                                */
 /* ═══════════════════════════════════════════════════════════ */
 
-function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setAutoConfig, setStages }: {
+function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setAutoConfig, setStages, guard }: {
   orgId: string; stages: FunnelStage[]; allStages: FunnelStage[]; steps: CadenceStep[]
   setSteps: React.Dispatch<React.SetStateAction<CadenceStep[]>>
   autoConfig: AutomationConfig; setAutoConfig: React.Dispatch<React.SetStateAction<AutomationConfig>>
   setStages: React.Dispatch<React.SetStateAction<FunnelStage[]>>
+  guard: (fn: () => void | Promise<void>) => void
 }) {
   const [expandedStages, setExpandedStages] = useState<Set<string>>(new Set())
   const [editStep, setEditStep] = useState<CadenceStep | null>(null)
@@ -338,19 +343,19 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Horário de início</label>
               <input type="time" value={autoConfig.workHoursStart}
-                onChange={e => saveAutomationConfig({ workHoursStart: e.target.value })}
+                onChange={e => guard(() => saveAutomationConfig({ workHoursStart: e.target.value }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Horário de término</label>
               <input type="time" value={autoConfig.workHoursEnd}
-                onChange={e => saveAutomationConfig({ workHoursEnd: e.target.value })}
+                onChange={e => guard(() => saveAutomationConfig({ workHoursEnd: e.target.value }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ações/dia</label>
               <input type="number" value={autoConfig.maxActionsPerDay} min={1} max={5000}
-                onChange={e => saveAutomationConfig({ maxActionsPerDay: parseInt(e.target.value) || 100 })}
+                onChange={e => guard(() => saveAutomationConfig({ maxActionsPerDay: parseInt(e.target.value) || 100 }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
             </div>
           </div>
@@ -358,28 +363,28 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ligações simultâneas</label>
               <input type="number" value={autoConfig.maxConcurrentCalls ?? 10} min={1} max={50}
-                onChange={e => saveAutomationConfig({ maxConcurrentCalls: parseInt(e.target.value) || 10 })}
+                onChange={e => guard(() => saveAutomationConfig({ maxConcurrentCalls: parseInt(e.target.value) || 10 }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Limite VAPI (free: 10)</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ligações/dia</label>
               <input type="number" value={autoConfig.maxCallsPerDay ?? 300} min={1} max={5000}
-                onChange={e => saveAutomationConfig({ maxCallsPerDay: parseInt(e.target.value) || 300 })}
+                onChange={e => guard(() => saveAutomationConfig({ maxCallsPerDay: parseInt(e.target.value) || 300 }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Independente do limite total de ações</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Intervalo entre ligações (seg)</label>
               <input type="number" value={Math.round((autoConfig.callStaggerDelayMs ?? 10000) / 1000)} min={0} max={120}
-                onChange={e => saveAutomationConfig({ callStaggerDelayMs: (parseInt(e.target.value) || 10) * 1000 })}
+                onChange={e => guard(() => saveAutomationConfig({ callStaggerDelayMs: (parseInt(e.target.value) || 10) * 1000 }))}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Tempo entre disparos consecutivos</p>
             </div>
           </div>
           <div className="flex items-center gap-3 pt-2">
             <span className="text-sm text-slate-600">Automação ativa</span>
-            <button onClick={() => saveAutomationConfig({ enabled: !autoConfig.enabled })}
+            <button onClick={() => guard(() => saveAutomationConfig({ enabled: !autoConfig.enabled }))}
               className={`relative w-11 h-6 rounded-full transition-colors ${autoConfig.enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}>
               <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${autoConfig.enabled ? 'translate-x-5' : ''}`} />
             </button>
@@ -463,7 +468,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                                 )}
                               </div>
                               <div className="flex items-center gap-1 shrink-0">
-                                <button onClick={(e) => { e.stopPropagation(); handleToggleStep(step.id, step.isActive) }}
+                                <button onClick={(e) => { e.stopPropagation(); guard(() => handleToggleStep(step.id, step.isActive)) }}
                                   className={`p-1.5 rounded-lg transition-colors ${step.isActive ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-400 hover:bg-slate-100'}`}
                                   title={step.isActive ? 'Desativar' : 'Ativar'}>
                                   {step.isActive ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
@@ -472,7 +477,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                                   className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600">
                                   <PencilSquareIcon className="w-4 h-4" />
                                 </button>
-                                <button onClick={(e) => { e.stopPropagation(); handleDeleteStep(step.id) }}
+                                <button onClick={(e) => { e.stopPropagation(); guard(() => handleDeleteStep(step.id)) }}
                                   className="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600">
                                   <TrashIcon className="w-4 h-4" />
                                 </button>
@@ -497,7 +502,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {(['keep', 'move', 'notify'] as CadenceExhaustedAction[]).map(action => (
-                        <button key={action} onClick={() => handleSaveExhaustedAction(stage.id, action)}
+                        <button key={action} onClick={() => guard(() => handleSaveExhaustedAction(stage.id, action))}
                           className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${(stage.cadenceExhaustedAction || 'keep') === action ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
                           {action === 'keep' && 'Manter na etapa'}
                           {action === 'move' && 'Mover para etapa'}
@@ -507,7 +512,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                       {stage.cadenceExhaustedAction === 'move' && (
                         <select
                           value={stage.cadenceExhaustedTargetStageId || ''}
-                          onChange={e => handleSaveExhaustedAction(stage.id, 'move', e.target.value)}
+                          onChange={e => guard(() => handleSaveExhaustedAction(stage.id, 'move', e.target.value))}
                           className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white">
                           <option value="">Selecionar etapa...</option>
                           {allStages.filter(s => s.id !== stage.id).map(s => (
@@ -531,7 +536,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                           <input type="time"
                             value={stage.automationConfig?.callStartHour || ''}
                             placeholder={autoConfig.workHoursStart}
-                            onChange={e => handleSaveStageCallConfig(stage.id, { callStartHour: e.target.value })}
+                            onChange={e => guard(() => handleSaveStageCallConfig(stage.id, { callStartHour: e.target.value }))}
                             className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.callStartHour && (
                             <span className="text-[10px] text-slate-300">Global: {autoConfig.workHoursStart}</span>
@@ -542,7 +547,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                           <input type="time"
                             value={stage.automationConfig?.callEndHour || ''}
                             placeholder={autoConfig.workHoursEnd}
-                            onChange={e => handleSaveStageCallConfig(stage.id, { callEndHour: e.target.value })}
+                            onChange={e => guard(() => handleSaveStageCallConfig(stage.id, { callEndHour: e.target.value }))}
                             className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.callEndHour && (
                             <span className="text-[10px] text-slate-300">Global: {autoConfig.workHoursEnd}</span>
@@ -556,7 +561,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                             min={1} max={5000}
                             onChange={e => {
                               const val = e.target.value ? parseInt(e.target.value) : null
-                              handleSaveStageCallConfig(stage.id, { maxCallsPerDay: val })
+                              guard(() => handleSaveStageCallConfig(stage.id, { maxCallsPerDay: val }))
                             }}
                             className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.maxCallsPerDay && (
@@ -566,7 +571,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                       </div>
                       {(stage.automationConfig?.callStartHour || stage.automationConfig?.callEndHour || stage.automationConfig?.maxCallsPerDay) && (
                         <button
-                          onClick={() => handleSaveStageCallConfig(stage.id, { callStartHour: '', callEndHour: '', maxCallsPerDay: null })}
+                          onClick={() => guard(() => handleSaveStageCallConfig(stage.id, { callStartHour: '', callEndHour: '', maxCallsPerDay: null }))}
                           className="mt-2 text-[10px] text-slate-400 hover:text-slate-600 underline">
                           Usar padrão global
                         </button>
@@ -576,12 +581,12 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 
                   {/* Pause toggle for this stage */}
                   <div className="mt-3 flex items-center gap-2">
-                    <button onClick={() => {
+                    <button onClick={() => guard(() => {
                       const newPaused = isPaused
                         ? autoConfig.pausedStageIds.filter(id => id !== stage.id)
                         : [...autoConfig.pausedStageIds, stage.id]
-                      saveAutomationConfig({ pausedStageIds: newPaused })
-                    }}
+                      return saveAutomationConfig({ pausedStageIds: newPaused })
+                    })}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${isPaused ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
                       {isPaused ? <><PlayIcon className="w-3 h-3" /> Retomar cadência</> : <><PauseIcon className="w-3 h-3" /> Pausar cadência</>}
                     </button>
@@ -600,6 +605,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
           stageId={addingToStage || editStep!.stageId}
           step={editStep}
           existingSteps={steps}
+          guard={guard}
           onClose={() => { setAddingToStage(null); setEditStep(null) }}
           onSaved={(newStep) => {
             if (editStep) {
@@ -620,8 +626,9 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 /*  STEP MODAL                                                */
 /* ═══════════════════════════════════════════════════════════ */
 
-function StepModal({ orgId, stageId, step, existingSteps, onClose, onSaved }: {
+function StepModal({ orgId, stageId, step, existingSteps, guard, onClose, onSaved }: {
   orgId: string; stageId: string; step: CadenceStep | null; existingSteps: CadenceStep[]
+  guard: (fn: () => void | Promise<void>) => void
   onClose: () => void; onSaved: (step: CadenceStep) => void
 }) {
   const [saving, setSaving] = useState(false)
@@ -798,7 +805,7 @@ function StepModal({ orgId, stageId, step, existingSteps, onClose, onSaved }: {
         {/* Actions */}
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
           <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-xl hover:bg-slate-100">Cancelar</button>
-          <button onClick={handleSave} disabled={saving || !form.name.trim()}
+          <button onClick={() => guard(() => handleSave())} disabled={saving || !form.name.trim()}
             className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-xl hover:bg-primary-700 disabled:opacity-50">
             {saving ? 'Salvando...' : step ? 'Salvar' : 'Criar Step'}
           </button>
@@ -825,9 +832,10 @@ function VariableButtons({ onInsert }: { onInsert: (key: string) => void }) {
 /*  EXECUTION TAB                                             */
 /* ═══════════════════════════════════════════════════════════ */
 
-function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
+function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, guard }: {
   orgId: string; stages: FunnelStage[]; steps: CadenceStep[]; autoConfig: AutomationConfig
   setAutoConfig: React.Dispatch<React.SetStateAction<AutomationConfig>>
+  guard: (fn: () => void | Promise<void>) => void
 }) {
   const [logs, setLogs] = useState<ExecutionLog[]>([])
   const [activeCounts, setActiveCounts] = useState<Record<string, number>>({})
@@ -991,7 +999,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
     <div className="space-y-6">
       {/* Controls */}
       <div className="flex items-center gap-3 flex-wrap">
-        <button onClick={() => saveAutomationConfig({ enabled: !autoConfig.enabled })}
+        <button onClick={() => guard(() => saveAutomationConfig({ enabled: !autoConfig.enabled }))}
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${autoConfig.enabled ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
           {autoConfig.enabled ? <><PauseIcon className="w-4 h-4" /> Pausar toda automação</> : <><PlayIcon className="w-4 h-4" /> Retomar automação</>}
         </button>
@@ -1005,7 +1013,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig }: {
           )}
         </div>
         <button
-          onClick={triggerCronNow}
+          onClick={() => guard(() => triggerCronNow())}
           disabled={triggerLoading}
           className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 disabled:opacity-50"
         >

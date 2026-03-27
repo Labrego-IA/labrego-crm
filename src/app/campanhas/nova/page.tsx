@@ -18,6 +18,8 @@ import {
   doc,
 } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
@@ -100,6 +102,7 @@ function NovasCampanhasContent() {
   const { orgId, member } = useCrmUser()
   const { viewScope } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   /* ----------------------------- Wizard State -------------------------------- */
 
@@ -637,7 +640,7 @@ function NovasCampanhasContent() {
                     {seg.name}
                   </button>
                   <button
-                    onClick={() => handleDeleteSegment(seg.id)}
+                    onClick={() => guard(() => handleDeleteSegment(seg.id))}
                     className="rounded-full p-1 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                   >
                     <TrashIcon className="h-3 w-3" />
@@ -1313,7 +1316,7 @@ function NovasCampanhasContent() {
           </button>
         ) : (
           <button
-            onClick={handleSubmit}
+            onClick={() => guard(handleSubmit)}
             disabled={!canProceed || submitting}
             className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
@@ -1380,7 +1383,7 @@ function NovasCampanhasContent() {
                 Cancelar
               </button>
               <button
-                onClick={handleSaveSegment}
+                onClick={() => guard(handleSaveSegment)}
                 disabled={!segmentName.trim() || savingSegment}
                 className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:opacity-40"
               >
@@ -1401,6 +1404,8 @@ function NovasCampanhasContent() {
         }}
         onCancel={() => setShowConfirmCloseSegment(false)}
       />
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

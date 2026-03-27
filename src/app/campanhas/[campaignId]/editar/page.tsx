@@ -6,6 +6,8 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { doc, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 import {
@@ -32,6 +34,7 @@ function EditCampaignContent() {
   const params = useParams()
   const campaignId = params.campaignId as string
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -239,7 +242,7 @@ function EditCampaignContent() {
           </div>
         </div>
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving}
           className="flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-700 disabled:opacity-50 transition-colors"
         >
@@ -431,7 +434,7 @@ function EditCampaignContent() {
       {/* Save button (bottom) */}
       <div className="flex justify-end">
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving}
           className="flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-primary-700 disabled:opacity-50 transition-colors"
         >
@@ -439,6 +442,7 @@ function EditCampaignContent() {
           {saving ? 'Salvando...' : 'Salvar alterações'}
         </button>
       </div>
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

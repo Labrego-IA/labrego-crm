@@ -2821,7 +2821,7 @@ export default function ContatosPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => guard(handleSave)}
                 disabled={saving}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -3083,7 +3083,7 @@ export default function ContatosPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleStageChange}
+                onClick={() => guard(handleStageChange)}
                 disabled={savingStage || !newStageId}
                 className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium text-sm hover:from-amber-600 hover:to-orange-600 transition-all shadow-md shadow-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -3153,7 +3153,7 @@ export default function ContatosPage() {
                 />
                 <div className="flex justify-end mt-3">
                   <button
-                    onClick={handleFollowUp}
+                    onClick={() => guard(handleFollowUp)}
                     disabled={savingFollowUp}
                     className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-lg font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-md shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >

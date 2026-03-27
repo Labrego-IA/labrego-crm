@@ -6,6 +6,8 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, query, orderBy, where, onSnapshot } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import { formatDate, formatDateTimeAt } from '@/lib/format'
 import { toast } from 'sonner'
 import {
@@ -85,6 +87,7 @@ function CampanhasContent() {
   const router = useRouter()
   const { orgId, member, userEmail } = useCrmUser()
   const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   /* ----------------------------- State ---------------------------------- */
 
@@ -528,7 +531,7 @@ function CampanhasContent() {
                             {deleteConfirmId === c.id ? (
                               <div className="flex items-center gap-1">
                                 <button
-                                  onClick={() => handleDelete(c.id)}
+                                  onClick={() => guard(() => handleDelete(c.id))}
                                   disabled={deletingId === c.id}
                                   className="rounded-lg px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
                                 >
@@ -600,7 +603,7 @@ function CampanhasContent() {
                         {deleteConfirmId === c.id ? (
                           <div className="flex items-center gap-1">
                             <button
-                              onClick={() => handleDelete(c.id)}
+                              onClick={() => guard(() => handleDelete(c.id))}
                               disabled={deletingId === c.id}
                               className="rounded-lg px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
                             >
@@ -675,6 +678,7 @@ function CampanhasContent() {
           )}
         </>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

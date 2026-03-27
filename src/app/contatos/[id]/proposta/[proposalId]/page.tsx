@@ -35,6 +35,8 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline'
 import { formatCurrency, formatDate } from '@/lib/format'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import { useProposalBranding } from '@/hooks/useProposalBranding'
 import { useProposalStructure } from '@/hooks/useProposalStructure'
 import { useProposalCustomFields } from '@/hooks/useProposalCustomFields'
@@ -66,6 +68,7 @@ export default function EditProposalCRMPage() {
   const { branding } = useProposalBranding()
   const { structure } = useProposalStructure()
   const { fields: customFields } = useProposalCustomFields()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const pdfRef = useRef<ProposalPdfHandle>(null)
 
   const { control, register, handleSubmit, setValue, watch } =
@@ -400,7 +403,7 @@ export default function EditProposalCRMPage() {
                 <p className="text-lg font-bold text-primary-600">{formatCurrency(total)}</p>
               </div>
               <button
-                onClick={handleSubmit(onSubmit)}
+                onClick={() => guard(handleSubmit(onSubmit))}
                 disabled={generating}
                 className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 shadow-lg shadow-primary-200"
               >
@@ -423,7 +426,7 @@ export default function EditProposalCRMPage() {
 
       {/* Content */}
       <div className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <form onSubmit={(e) => { e.preventDefault(); guard(handleSubmit(onSubmit)); }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Form */}
           <div className="lg:col-span-2 space-y-4">
             {/* Status and Proposal Name */}
@@ -874,6 +877,7 @@ export default function EditProposalCRMPage() {
           </div>
         </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

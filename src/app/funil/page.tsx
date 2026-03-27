@@ -9,6 +9,8 @@ import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { usePlan } from '@/hooks/usePlan'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import UpgradePrompt from '@/components/UpgradePrompt'
 import type { Funnel } from '@/types/funnel'
 import type { IcpProfile } from '@/types/icp'
@@ -57,6 +59,7 @@ export default function FunnelHubPage() {
   const { can, canAccessPage, viewScope } = usePermissions()
   const { allowedMemberIds } = useAllowedMemberIds()
   const { limits } = usePlan()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   const pageBlocked = !canAccessPage('/funil')
   const canManage = pageBlocked ? false : can('canManageFunnels')
@@ -724,7 +727,7 @@ export default function FunnelHubPage() {
                       Cancelar
                     </button>
                     <button
-                      onClick={handleDelete}
+                      onClick={() => guard(handleDelete)}
                       disabled={saving || (canMove && deleteMode === 'move' && !moveValid)}
                       className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
                     >
@@ -737,6 +740,8 @@ export default function FunnelHubPage() {
           </div>
         )
       })()}
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 
@@ -809,7 +814,7 @@ export default function FunnelHubPage() {
               Cancelar
             </button>
             <button
-              onClick={save}
+              onClick={() => guard(save)}
               disabled={saving || !formName.trim()}
               className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
             >

@@ -5,6 +5,8 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, onSnapshot, query, where, addDoc, doc, updateDoc, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import { toast } from 'sonner'
 import {
   type AutomationTrigger,
@@ -32,6 +34,7 @@ import {
 
 function TriggersPageContent() {
   const { orgId, userUid, userEmail } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   const [triggers, setTriggers] = useState<AutomationTrigger[]>([])
   const [logs, setLogs] = useState<AutomationLog[]>([])
@@ -192,7 +195,7 @@ function TriggersPageContent() {
           <p className="text-sm text-slate-500">Configure ações automáticas baseadas em eventos</p>
         </div>
         <button
-          onClick={() => { resetForm(); setShowForm(true) }}
+          onClick={() => guard(() => { resetForm(); setShowForm(true) })}
           className="flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors"
         >
           <PlusIcon className="h-4 w-4" />
@@ -259,13 +262,13 @@ function TriggersPageContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => toggleActive(t.id, t.isActive)} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors" title={t.isActive ? 'Desativar' : 'Ativar'}>
+                    <button onClick={() => guard(() => toggleActive(t.id, t.isActive))} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors" title={t.isActive ? 'Desativar' : 'Ativar'}>
                       {t.isActive ? <PauseIcon className="h-4 w-4 text-amber-500" /> : <PlayIcon className="h-4 w-4 text-emerald-500" />}
                     </button>
-                    <button onClick={() => openEditForm(t)} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors">
+                    <button onClick={() => guard(() => openEditForm(t))} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors">
                       <PencilIcon className="h-4 w-4 text-slate-500" />
                     </button>
-                    <button onClick={() => deleteTrigger(t.id)} className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
+                    <button onClick={() => guard(() => deleteTrigger(t.id))} className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
                       <TrashIcon className="h-4 w-4 text-red-500" />
                     </button>
                   </div>
@@ -512,7 +515,7 @@ function TriggersPageContent() {
                 Cancelar
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => guard(handleSave)}
                 disabled={!formName.trim() || saving}
                 className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
               >
@@ -522,6 +525,8 @@ function TriggersPageContent() {
           </div>
         </div>
       )}
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

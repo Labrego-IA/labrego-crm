@@ -6,6 +6,8 @@ import { useCrmUser } from '@/contexts/CrmUserContext'
 import { db } from '@/lib/firebaseClient'
 import { collection, doc, getDoc, setDoc, addDoc, getDocs, query, where, orderBy, deleteDoc } from 'firebase/firestore'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import EmailEditor from '@/components/email-editor/EmailEditor'
 import { type EmailBlockData, type EmailTemplate, blocksToHtml } from '@/types/emailTemplate'
@@ -16,6 +18,7 @@ function EditorPageContent() {
   const searchParams = useSearchParams()
   const templateId = searchParams.get('templateId')
   const { orgId, userUid, userEmail } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   const [initialBlocks, setInitialBlocks] = useState<EmailBlockData[]>([])
   const [initialSubject, setInitialSubject] = useState('')
@@ -253,7 +256,7 @@ function EditorPageContent() {
                 Cancelar
               </button>
               <button
-                onClick={saveTemplate}
+                onClick={() => guard(saveTemplate)}
                 disabled={!saveName.trim()}
                 className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
               >
@@ -301,7 +304,7 @@ function EditorPageContent() {
                       <p className="text-xs text-slate-400">{tmpl.subject || 'Sem assunto'} &middot; {tmpl.blocks?.length || 0} blocos</p>
                     </button>
                     <button
-                      onClick={() => handleDeleteTemplate(tmpl.id)}
+                      onClick={() => guard(() => handleDeleteTemplate(tmpl.id))}
                       className="text-xs text-red-500 hover:text-red-700 px-2 py-1"
                     >
                       Excluir
@@ -321,6 +324,8 @@ function EditorPageContent() {
           </div>
         </div>
       )}
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

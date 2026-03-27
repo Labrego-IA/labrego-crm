@@ -20,6 +20,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { toast } from 'sonner'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 type PlaybookSection = {
   key: string
@@ -112,6 +114,7 @@ const BACKUP_KEY = 'estrategia-playbook-backup'
 export default function EstrategiaComercialPage() {
   const { orgId } = useCrmUser()
   const router = useRouter()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [data, setData] = useState<PlaybookData>({})
   const [savedData, setSavedData] = useState<PlaybookData>({})
   const [loading, setLoading] = useState(true)
@@ -337,7 +340,7 @@ export default function EstrategiaComercialPage() {
               {filledCount}/{SECTIONS.length} seções preenchidas
             </span>
             <button
-              onClick={handleSave}
+              onClick={() => guard(handleSave)}
               disabled={saving || !hasChanges}
               className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
@@ -430,7 +433,7 @@ export default function EstrategiaComercialPage() {
       {/* Footer Save */}
       <div className="mt-6 flex justify-end">
         <button
-          onClick={handleSave}
+          onClick={() => guard(handleSave)}
           disabled={saving || !hasChanges}
           className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
         >
@@ -464,6 +467,7 @@ export default function EstrategiaComercialPage() {
         confirmText="Restaurar"
         cancelText="Descartar"
       />
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

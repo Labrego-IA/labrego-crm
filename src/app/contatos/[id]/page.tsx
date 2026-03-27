@@ -21,6 +21,8 @@ import {
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import { leadSourceIcons, leadTypeOptions, leadSourceOptions } from '@/lib/leadSources'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -241,6 +243,7 @@ export default function ContactDetailsPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { userEmail, orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const id = params?.id
 
   // Data states
@@ -1007,7 +1010,7 @@ export default function ContactDetailsPage() {
                         onChange={(e) => {
                           const newFunnelId = e.target.value
                           // When funnel changes, clear stage
-                          handleSaveFunnelStage(newFunnelId, '')
+                          guard(() => handleSaveFunnelStage(newFunnelId, ''))
                         }}
                         disabled={savingFunnel}
                         className="px-2 py-1 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
@@ -1021,7 +1024,7 @@ export default function ContactDetailsPage() {
                         <select
                           value={client.funnelStage || ''}
                           onChange={(e) => {
-                            handleSaveFunnelStage(client.funnelId || '', e.target.value)
+                            guard(() => handleSaveFunnelStage(client.funnelId || '', e.target.value))
                           }}
                           disabled={savingFunnel}
                           className="px-2 py-1 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
@@ -1196,7 +1199,7 @@ export default function ContactDetailsPage() {
                         <div className="flex items-center gap-2 mt-1">
                           <select
                             value={client.leadType || ''}
-                            onChange={(e) => handleSaveLeadType(e.target.value)}
+                            onChange={(e) => guard(() => handleSaveLeadType(e.target.value))}
                             disabled={savingLeadType}
                             className="px-2 py-1 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white"
                             autoFocus
@@ -1444,7 +1447,7 @@ export default function ContactDetailsPage() {
                               Cancelar
                             </button>
                             <button
-                              onClick={handleSavePartners}
+                              onClick={() => guard(() => handleSavePartners())}
                               disabled={savingPartners}
                               className="px-3 py-1.5 text-xs bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
                             >
@@ -1515,7 +1518,7 @@ export default function ContactDetailsPage() {
                         Cancelar
                       </button>
                       <button
-                        onClick={handleSaveNeeds}
+                        onClick={() => guard(() => handleSaveNeeds())}
                         className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                       >
                         Salvar
@@ -1778,7 +1781,7 @@ export default function ContactDetailsPage() {
                             Cancelar
                           </button>
                           <button
-                            onClick={handleSaveFollowUp}
+                            onClick={() => guard(() => handleSaveFollowUp())}
                             disabled={!newFollowUp.trim() || savingFollowUp}
                             className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
                           >
@@ -1859,7 +1862,7 @@ export default function ContactDetailsPage() {
                         <label className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-xl transition-colors cursor-pointer">
                           <input
                             type="file"
-                            onChange={handleFileUpload}
+                            onChange={(e) => guard(() => handleFileUpload(e))}
                             className="sr-only"
                             disabled={uploadingFile}
                           />
@@ -2049,7 +2052,7 @@ export default function ContactDetailsPage() {
                 placeholder="Ex: Documentos fiscais"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                 autoFocus
-                onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                onKeyDown={(e) => e.key === 'Enter' && guard(() => handleCreateFolder())}
               />
             </div>
             <div className="flex justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
@@ -2063,7 +2066,7 @@ export default function ContactDetailsPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleCreateFolder}
+                onClick={() => guard(() => handleCreateFolder())}
                 disabled={!newFolderName.trim() || creatingFolder}
                 className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-xl font-medium text-sm hover:bg-primary-700 transition-colors disabled:opacity-50"
               >
@@ -2109,7 +2112,7 @@ export default function ContactDetailsPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleDelete}
+                onClick={() => guard(() => handleDelete())}
                 className="px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors"
               >
                 Excluir
@@ -2543,7 +2546,7 @@ export default function ContactDetailsPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSaveEdit}
+                onClick={() => guard(() => handleSaveEdit())}
                 disabled={savingEdit}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -2592,7 +2595,7 @@ export default function ContactDetailsPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleDeleteClient}
+                onClick={() => guard(() => handleDeleteClient())}
                 disabled={deleting}
                 className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl font-medium text-sm hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -2609,6 +2612,8 @@ export default function ContactDetailsPage() {
           </div>
         </div>
       )}
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

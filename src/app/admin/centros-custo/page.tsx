@@ -24,6 +24,8 @@ import {
   BuildingOfficeIcon,
 } from '@heroicons/react/24/outline'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 const COST_CENTER_COLORS = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
@@ -59,6 +61,7 @@ const EMPTY_FORM: CostCenterForm = {
 export default function AdminCentrosCustoPage() {
   const { orgId, userEmail, member } = useCrmUser()
   const { can, isSystemAdmin } = usePermissions()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   const isAdmin = isSystemAdmin || member?.role === 'admin'
 
@@ -279,7 +282,7 @@ export default function AdminCentrosCustoPage() {
         </div>
         {/* Desktop: botão inline no header */}
         <button
-          onClick={openCreate}
+          onClick={() => guard(openCreate)}
           className="btn-primary hidden md:inline-flex items-center gap-2"
         >
           <PlusIcon className="w-4 h-4" />
@@ -289,7 +292,7 @@ export default function AdminCentrosCustoPage() {
 
       {/* Mobile: FAB flutuante */}
       <button
-        onClick={openCreate}
+        onClick={() => guard(openCreate)}
         className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
         aria-label="Novo centro de custo"
       >
@@ -312,7 +315,7 @@ export default function AdminCentrosCustoPage() {
             Crie centros de custo para organizar e categorizar seus clientes
             por area ou departamento.
           </p>
-          <button onClick={openCreate} className="btn-primary">
+          <button onClick={() => guard(openCreate)} className="btn-primary">
             Criar primeiro centro de custo
           </button>
         </div>
@@ -354,13 +357,13 @@ export default function AdminCentrosCustoPage() {
                   </span>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => openEdit(cc)}
+                      onClick={() => guard(() => openEdit(cc))}
                       className="p-2 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                     >
                       <PencilIcon className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => openDeleteConfirm(cc)}
+                      onClick={() => guard(() => openDeleteConfirm(cc))}
                       className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <TrashIcon className="w-4 h-4" />
@@ -482,7 +485,7 @@ export default function AdminCentrosCustoPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleSave}
+                onClick={() => guard(handleSave)}
                 disabled={saving}
                 className="btn-primary flex items-center gap-2"
               >
@@ -526,7 +529,7 @@ export default function AdminCentrosCustoPage() {
                 Cancelar
               </button>
               <button
-                onClick={handleDelete}
+                onClick={() => guard(handleDelete)}
                 disabled={deleting}
                 className="flex-1 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 border-l border-neutral-200 transition-colors"
               >
@@ -536,6 +539,7 @@ export default function AdminCentrosCustoPage() {
           </div>
         </div>
       )}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

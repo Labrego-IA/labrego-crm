@@ -2,15 +2,16 @@
 
 import { useState, useCallback } from 'react'
 import { usePlanExpiration } from '@/hooks/usePlanExpiration'
-import { usePermissions } from '@/hooks/usePermissions'
+import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 
 export function useFreePlanGuard() {
   const { isExpired } = usePlanExpiration()
-  const { role } = usePermissions()
+  const { isSuperAdmin } = useSuperAdmin()
   const [showDialog, setShowDialog] = useState(false)
 
-  // Block when any plan (free or paid) is expired
-  const isBlocked = isExpired && role !== 'admin'
+  // Block ALL users (including admins) when plan is expired
+  // Only super admins bypass the block
+  const isBlocked = isExpired && !isSuperAdmin
 
   const guard = useCallback(
     (action: () => void) => {

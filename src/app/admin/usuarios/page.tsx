@@ -1446,7 +1446,7 @@ export default function UsuariosPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSaveEdit}
+                  onClick={() => guard(handleSaveEdit)}
                   disabled={editLoading}
                   className={`${ui.btnPrimary} ${editLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >

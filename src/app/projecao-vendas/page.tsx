@@ -15,6 +15,8 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import {
@@ -82,6 +84,7 @@ function formatCurrencyShort(value: number): string {
 export default function ProjecaoVendasPage() {
   const { orgId, member, userEmail } = useCrmUser()
   const { viewScope } = usePermissions()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
 
   const [funnels, setFunnels] = useState<Funnel[]>([])
   const [stages, setStages] = useState<FunnelStage[]>([])
@@ -702,7 +705,7 @@ export default function ProjecaoVendasPage() {
                       <select
                         defaultValue={client.funnelStage || ''}
                         key={`stage-m-${client.id}-${client.funnelStage ?? ''}`}
-                        onChange={(e) => handleInlineStageChange(client.id, e.target.value, funnel.id)}
+                        onChange={(e) => guard(() => handleInlineStageChange(client.id, e.target.value, funnel.id))}
                         className="w-full px-2 py-1.5 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                       >
                         {funnelStages.map(s => (
@@ -721,7 +724,7 @@ export default function ProjecaoVendasPage() {
                           step="0.01"
                           defaultValue={client.dealValue ?? ''}
                           key={`deal-m-${client.id}-${client.dealValue ?? ''}`}
-                          onBlur={(e) => handleInlineDealValue(client.id, e.target.value)}
+                          onBlur={(e) => guard(() => handleInlineDealValue(client.id, e.target.value))}
                           className="w-full px-2 py-1.5 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                         />
                       </div>
@@ -733,7 +736,7 @@ export default function ProjecaoVendasPage() {
                           max="100"
                           defaultValue={client.closingProbability ?? stage?.probability ?? 0}
                           key={`prob-m-${client.id}-${client.closingProbability ?? ''}`}
-                          onBlur={(e) => handleInlineProbability(client.id, e.target.value)}
+                          onBlur={(e) => guard(() => handleInlineProbability(client.id, e.target.value))}
                           className="w-full px-2 py-1.5 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                         />
                       </div>
@@ -820,7 +823,7 @@ export default function ProjecaoVendasPage() {
                             <select
                               defaultValue={client.funnelStage || ''}
                               key={`stage-${client.id}-${client.funnelStage ?? ''}`}
-                              onChange={(e) => handleInlineStageChange(client.id, e.target.value, funnel.id)}
+                              onChange={(e) => guard(() => handleInlineStageChange(client.id, e.target.value, funnel.id))}
                               className="px-2 py-1 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                             >
                               {funnelStages.map(s => (
@@ -835,7 +838,7 @@ export default function ProjecaoVendasPage() {
                               max="100"
                               defaultValue={client.closingProbability ?? stage?.probability ?? 0}
                               key={`prob-${client.id}-${client.closingProbability ?? ''}`}
-                              onBlur={(e) => handleInlineProbability(client.id, e.target.value)}
+                              onBlur={(e) => guard(() => handleInlineProbability(client.id, e.target.value))}
                               className="w-16 px-2 py-1 text-xs text-center bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                             />
                           </td>
@@ -846,7 +849,7 @@ export default function ProjecaoVendasPage() {
                               step="0.01"
                               defaultValue={client.dealValue ?? ''}
                               key={`deal-${client.id}-${client.dealValue ?? ''}`}
-                              onBlur={(e) => handleInlineDealValue(client.id, e.target.value)}
+                              onBlur={(e) => guard(() => handleInlineDealValue(client.id, e.target.value))}
                               className="w-28 px-2 py-1 text-xs text-right bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
                             />
                           </td>
@@ -890,6 +893,7 @@ export default function ProjecaoVendasPage() {
           </div>
         )
       })}
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }

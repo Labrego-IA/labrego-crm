@@ -14,6 +14,8 @@ import {
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import PlanGate from '@/components/PlanGate'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 import {
   ArrowPathIcon,
   BoltIcon,
@@ -69,6 +71,7 @@ function generateId() {
 
 function ReengajamentoContent() {
   const { orgId } = useCrmUser()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [tab, setTab] = useState<Tab>('config')
   const [config, setConfig] = useState<ReengagementConfig | null>(null)
   const [enrollments, setEnrollments] = useState<ReengagementEnrollment[]>([])
@@ -195,7 +198,7 @@ function ReengajamentoContent() {
           </div>
           {config && (
             <button
-              onClick={() => saveConfig({ enabled: !config.enabled })}
+              onClick={() => guard(() => saveConfig({ enabled: !config.enabled }))}
               className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all ${config.enabled ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}
             >
               {config.enabled ? 'Desativar' : 'Ativar reengajamento'}
@@ -224,6 +227,8 @@ function ReengajamentoContent() {
           <DashboardSection enrollments={enrollments} logs={logs} />
         )}
       </div>
+
+      <FreePlanDialog isOpen={showFreePlanDialog} onClose={closeFreePlanDialog} />
     </div>
   )
 }
@@ -453,7 +458,7 @@ function ConfigSection({ config, onSave, saving }: {
             )}
 
             <button
-              onClick={addStep}
+              onClick={() => guard(addStep)}
               disabled={saving}
               className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50/30 transition-all"
             >
