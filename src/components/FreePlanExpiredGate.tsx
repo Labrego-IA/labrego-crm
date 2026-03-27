@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { usePlanExpiration } from '@/hooks/usePlanExpiration'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 import { usePartnerView } from '@/contexts/PartnerViewContext'
 
