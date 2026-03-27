@@ -19,6 +19,8 @@ import type { Product, ProductScheduleEntry } from '@/types/product'
 import { EMPTY_PRODUCT } from '@/types/product'
 import Modal from '@/components/Modal'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
+import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
+import FreePlanDialog from '@/components/FreePlanDialog'
 
 function normalize(str: string): string {
   return str
@@ -33,6 +35,7 @@ type SortDirection = 'asc' | 'desc'
 export default function PropostasProdutosTab() {
   const { orgId, userUid } = useCrmUser()
   const { filterByAccess, loading: accessLoading } = useProposalDataAccess()
+  const { guard, showDialog: showFreePlanDialog, closeDialog: closeFreePlanDialog } = useFreePlanGuard()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<Product | null>(null)
@@ -400,7 +403,7 @@ export default function PropostasProdutosTab() {
             Cancelar
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => guard(handleSave)}
             disabled={saving}
             className="px-6 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
           >
@@ -460,7 +463,7 @@ export default function PropostasProdutosTab() {
           }
         </p>
         <button
-          onClick={openNew}
+          onClick={() => guard(openNew)}
           className="hidden md:inline-flex px-4 py-2 bg-primary-600 text-white rounded-xl text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm"
         >
           + Novo Produto
@@ -469,7 +472,7 @@ export default function PropostasProdutosTab() {
 
       {/* Mobile: FAB flutuante */}
       <button
-        onClick={openNew}
+        onClick={() => guard(openNew)}
         className="md:hidden fixed bottom-6 right-6 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 active:scale-95 transition-all"
         aria-label="Novo produto"
       >

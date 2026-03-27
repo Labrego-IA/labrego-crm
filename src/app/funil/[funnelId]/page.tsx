@@ -6864,7 +6864,7 @@ export default function FunilDetailPage() {
                               {orgMembers.map((m) => (
                                 <button
                                   key={m.id}
-                                  onClick={() => handleAssignResponsible(m.id, m.displayName)}
+                                  onClick={() => guard(() => handleAssignResponsible(m.id, m.displayName))}
                                   className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-primary-50 transition-colors ${selectedClient.assignedTo === m.id ? 'bg-primary-50' : ''}`}
                                 >
                                   <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
@@ -6882,7 +6882,7 @@ export default function FunilDetailPage() {
                               {selectedClient.assignedTo && (
                                 <div className="border-t border-slate-100 mt-1 pt-1">
                                   <button
-                                    onClick={() => handleAssignResponsible('', '')}
+                                    onClick={() => guard(() => handleAssignResponsible('', ''))}
                                     className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-red-50 transition-colors text-red-600"
                                   >
                                     <Cross2Icon className="w-4 h-4" />
@@ -6933,7 +6933,7 @@ export default function FunilDetailPage() {
                               return
                             }
                             if (val !== (selectedClient.closingProbability ?? null)) {
-                              handleUpdateProbability(val)
+                              guard(() => handleUpdateProbability(val))
                             }
                           }}
                           onKeyDown={(e) => {
