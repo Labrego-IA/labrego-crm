@@ -15,7 +15,7 @@ import {
   type PlanCategory,
 } from '@/types/plan'
 import EmailProviderSection from '@/components/EmailProviderSection'
-import { toast } from 'sonner'
+import CheckoutDrawer from '@/components/CheckoutDrawer'
 
 /* -------------------------------- Helpers -------------------------------- */
 
@@ -50,40 +50,10 @@ function formatCurrency(value: number): string {
 export default function PlanoPage() {
   const { plan: currentPlan, limits: currentLimits, display: currentDisplay } = usePlan()
   const { org, loading } = useOrganization()
-  const { orgId, userEmail } = useCrmUser()
-  const [changingPlan, setChangingPlan] = useState<PlanId | null>(null)
+  const { orgId, userEmail, member } = useCrmUser()
   const { isExpired } = usePlanExpiration()
-  const [contactSent, setContactSent] = useState<PlanId | null>(null)
   const [viewCategory, setViewCategory] = useState<PlanCategory>(PLAN_CATEGORY[currentPlan] || 'direct')
-  const [confirmPlan, setConfirmPlan] = useState<PlanId | null>(null)
-  const [showSuccess, setShowSuccess] = useState<PlanId | null>(null)
-
-  const handleChangePlan = async (targetPlan: PlanId) => {
-    if (!orgId || !userEmail) {
-      toast.error('Erro: organizacao ou usuario nao identificados.')
-      return
-    }
-    setChangingPlan(targetPlan)
-    setConfirmPlan(null)
-    try {
-      const res = await fetch('/api/admin/change-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgId, newPlan: targetPlan, userEmail }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        toast.error(data.error || 'Erro ao alterar o plano.')
-        return
-      }
-      setShowSuccess(targetPlan)
-    } catch (err) {
-      console.error('[plano] change plan error:', err)
-      toast.error('Erro ao alterar o plano. Tente novamente.')
-    } finally {
-      setChangingPlan(null)
-    }
-  }
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanId | null>(null)
 
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
   const isHigherPlan = (target: PlanId) => {
@@ -287,15 +257,14 @@ export default function PlanoPage() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => setConfirmPlan(planId)}
-                    disabled={changingPlan === planId}
+                    onClick={() => setCheckoutPlan(planId)}
                     className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
                       isUpgrade
                         ? 'bg-primary-600 text-white hover:bg-primary-700'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    } ${changingPlan === planId ? 'cursor-not-allowed opacity-60' : ''}`}
+                    }`}
                   >
-                    {changingPlan === planId ? 'Alterando...' : isUpgrade ? 'Fazer upgrade' : 'Fazer downgrade'}
+                    {isUpgrade ? 'Assinar plano' : 'Mudar para este plano'}
                   </button>
                 )}
               </div>
@@ -307,65 +276,15 @@ export default function PlanoPage() {
       {/* Email Provider Config */}
       <EmailProviderSection />
 
-      {/* Modal de Confirmacao */}
-      {confirmPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-slate-900">Confirmar alteracao de plano</h3>
-            <p className="mt-3 text-sm text-slate-600">
-              Deseja realmente assinar o plano{' '}
-              <span className="font-semibold text-slate-900">{PLAN_DISPLAY[confirmPlan].displayName}</span>{' '}
-              por{' '}
-              <span className="font-semibold text-primary-600">
-                R$ {formatCurrency(PLAN_DISPLAY[confirmPlan].price)}/mes
-              </span>
-              ?
-            </p>
-            <div className="mt-6 flex gap-3">
-              <button
-                onClick={() => setConfirmPlan(null)}
-                className="flex-1 rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => handleChangePlan(confirmPlan)}
-                disabled={changingPlan !== null}
-                className="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {changingPlan ? 'Processando...' : 'Confirmar assinatura'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Parabenizacao */}
-      {showSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-              <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-slate-900">Parabens!</h3>
-            <p className="mt-2 text-sm text-slate-600">
-              Voce assinou o plano{' '}
-              <span className="font-semibold text-primary-600">{PLAN_DISPLAY[showSuccess].displayName}</span>{' '}
-              com sucesso! Seus acessos e recursos ja foram atualizados.
-            </p>
-            <button
-              onClick={() => {
-                setShowSuccess(null)
-                window.location.reload()
-              }}
-              className="mt-6 w-full rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition"
-            >
-              Comecar a usar
-            </button>
-          </div>
-        </div>
+      {/* Checkout Drawer */}
+      {checkoutPlan && orgId && userEmail && (
+        <CheckoutDrawer
+          planId={checkoutPlan}
+          orgId={orgId}
+          userEmail={userEmail}
+          userName={member?.displayName || ''}
+          onClose={() => setCheckoutPlan(null)}
+        />
       )}
     </div>
   )
