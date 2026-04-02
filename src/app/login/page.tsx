@@ -8,6 +8,7 @@ import {
   updateProfile,
   sendPasswordResetEmail,
   signInWithPopup,
+  signOut,
   GoogleAuthProvider,
   getAdditionalUserInfo,
 } from 'firebase/auth'
@@ -103,7 +104,7 @@ function LoginPage() {
     } catch (err: any) {
       const code = err?.code || ''
       if (code === 'auth/email-already-in-use') {
-        setCadastroError('Já existe uma conta com esse e-mail.')
+        setCadastroError('Já existe uma conta com esse e-mail. Use a aba "Entre" para fazer login.')
       } else if (code === 'auth/invalid-email') {
         setCadastroError('E-mail inválido.')
       } else if (code === 'auth/weak-password') {
@@ -133,6 +134,12 @@ function LoginPage() {
         email: result.user.email,
         isNewUser: additionalInfo?.isNewUser,
       })
+
+      if (activeTab === 'cadastro' && !additionalInfo?.isNewUser) {
+        await signOut(auth)
+        setCadastroError('Já existe uma conta com esse e-mail. Use a aba "Entre" para fazer login.')
+        return
+      }
 
       router.replace('/contatos')
     } catch (err: any) {
