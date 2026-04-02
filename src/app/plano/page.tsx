@@ -58,8 +58,12 @@ export default function PlanoPage() {
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
   const hasPaidPlan = currentPlan !== 'free' && !isExpired
 
-  const getPlanChangeType = (target: PlanId): 'upgrade' | 'downgrade' | 'cross' => {
-    if (PLAN_CATEGORY[target] !== currentCategory) return 'cross'
+  const getPlanChangeType = (target: PlanId): 'upgrade' | 'downgrade' => {
+    const targetPrice = PLAN_DISPLAY[target].price
+    const currentPrice = PLAN_DISPLAY[currentPlan].price
+    if (PLAN_CATEGORY[target] !== currentCategory) {
+      return targetPrice >= currentPrice ? 'upgrade' : 'downgrade'
+    }
     return PLAN_ORDER[target] > PLAN_ORDER[currentPlan] ? 'upgrade' : 'downgrade'
   }
 
@@ -288,9 +292,7 @@ export default function PlanoPage() {
                       ? 'Assinar plano'
                       : changeType === 'upgrade'
                         ? 'Fazer upgrade'
-                        : changeType === 'downgrade'
-                          ? 'Fazer downgrade'
-                          : 'Mudar para este plano'}
+                        : 'Fazer downgrade'}
                   </button>
                 )}
               </div>
