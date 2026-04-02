@@ -293,7 +293,6 @@ export default function PerfilPage() {
           : 'Cancelamento solicitado com sucesso.'
       )
       setShowCancelPlanModal(false)
-      setTimeout(() => window.location.reload(), 2000)
     } catch (err) {
       console.error('[perfil] cancel plan error:', err)
       toast.error('Erro ao cancelar o plano. Tente novamente.')
@@ -706,7 +705,7 @@ export default function PerfilPage() {
     <div className="space-y-6">
       {/* Current Plan Hero */}
       <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
-        <div className="relative p-6 bg-gradient-to-r from-primary-600 via-primary-500 to-accent overflow-hidden">
+        <div className={`relative p-6 overflow-hidden ${isCanceling ? 'bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500' : 'bg-gradient-to-r from-primary-600 via-primary-500 to-accent'}`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-40" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -727,7 +726,9 @@ export default function PerfilPage() {
                     Plano ativo
                   </span>
                 )}
-                <h3 className="text-2xl font-bold text-white">{display.displayName}</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  {display.displayName}{isCanceling ? ' (cancelado)' : ''}
+                </h3>
               </div>
             </div>
             <div className="text-left sm:text-right">
