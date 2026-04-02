@@ -52,14 +52,21 @@ export async function GET(req: NextRequest) {
     const invoices = await stripe.invoices.list({
       customer: stripeCustomerId,
       limit: 100,
-      expand: ['data.subscription'],
     })
 
     const items: PaymentHistoryItem[] = []
 
     for (const invoice of invoices.data) {
-      const subscription = invoice.subscription as any
-      const planId = subscription?.metadata?.planId || orgData.plan || 'free'
+      // Retrieve plan info from subscription metadata if available
+      let subPlanId: string | undefined
+      const subId = (invoice as any).subscription
+      if (subId && typeof subId === 'string') {
+        try {
+          const sub = await stripe.subscriptions.retrieve(subId)
+          subPlanId = sub.metadata?.planId
+        } catch { /* subscription may have been deleted */ }
+      }
+      const planId = subPlanId || orgData.plan || 'free'
       const planDisplay = PLAN_DISPLAY[planId as PlanId]
       const planName = planDisplay?.displayName || planId
 
