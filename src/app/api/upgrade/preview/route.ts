@@ -4,7 +4,6 @@ import { getAdminDb } from '@/lib/firebaseAdmin'
 import { getStripePriceId, isPaidPlan } from '@/lib/stripePrices'
 import { PLAN_LIMITS, PLAN_DISPLAY } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
-import type Stripe from 'stripe'
 
 function isValidPlan(plan: string): plan is PlanId {
   return plan in PLAN_LIMITS
@@ -78,13 +77,15 @@ export async function POST(req: NextRequest) {
     const proration = await stripe.invoices.createPreview({
       customer: subscription.customer as string,
       subscription: stripeSubscriptionId,
-      subscription_items: [
-        {
-          id: currentItem.id,
-          price: newPriceId,
-        },
-      ],
-      subscription_proration_behavior: 'create_prorations',
+      subscription_details: {
+        items: [
+          {
+            id: currentItem.id,
+            price: newPriceId,
+          },
+        ],
+        proration_behavior: 'create_prorations',
+      },
     })
 
     // Calcular valores
@@ -93,22 +94,28 @@ export async function POST(req: NextRequest) {
     const newDisplay = PLAN_DISPLAY[newPlanId]
 
     // Extrair linhas de proration do invoice preview
-    const prorationLines = proration.lines.data.filter(
-      (line: Stripe.InvoiceLineItem) => line.proration
-    )
-
-    // Valor total da proration (credito do plano atual + debito do novo plano)
-    const prorationAmount = prorationLines.reduce(
-      (sum: number, line: Stripe.InvoiceLineItem) => sum + line.amount,
-      0
-    )
+    // Na API Stripe v21+, proration esta em parent.subscription_item_details.proration
+    const prorationLines = proration.lines.data.filter((line) => {
+      const subItemDetails = line.parent?.subscription_item_details
+      return subItemDetails?.proration === true
+    })
 
     // Calcular dias restantes
     const now = Math.floor(Date.now() / 1000)
-    const periodEnd = subscription.items.data[0]?.current_period_end ?? now
-    const periodStart = subscription.items.data[0]?.current_period_start ?? now
+    const periodEnd = currentItem.current_period_end ?? now
+    const periodStart = currentItem.current_period_start ?? now
     const totalDays = Math.ceil((periodEnd - periodStart) / 86400)
     const remainingDays = Math.max(0, Math.ceil((periodEnd - now) / 86400))
+
+    // Credito do plano atual (linhas com valor negativo)
+    const creditAmount = prorationLines
+      .filter((l) => l.amount < 0)
+      .reduce((sum, l) => sum + l.amount, 0)
+
+    // Debito do novo plano (linhas com valor positivo)
+    const debitAmount = prorationLines
+      .filter((l) => l.amount > 0)
+      .reduce((sum, l) => sum + l.amount, 0)
 
     return NextResponse.json({
       currentPlan: {
@@ -122,22 +129,12 @@ export async function POST(req: NextRequest) {
         price: newDisplay?.price || 0,
       },
       proration: {
-        // Valor em centavos convertido para reais
         amountDue: Math.max(0, proration.amount_due / 100),
-        // Credito do plano atual (valor negativo = credito)
-        credit: Math.abs(
-          prorationLines
-            .filter((l: Stripe.InvoiceLineItem) => l.amount < 0)
-            .reduce((sum: number, l: Stripe.InvoiceLineItem) => sum + l.amount, 0)
-        ) / 100,
-        // Debito do novo plano
-        debit: prorationLines
-          .filter((l: Stripe.InvoiceLineItem) => l.amount > 0)
-          .reduce((sum: number, l: Stripe.InvoiceLineItem) => sum + l.amount, 0) / 100,
+        credit: Math.abs(creditAmount) / 100,
+        debit: debitAmount / 100,
         totalDays,
         remainingDays,
       },
-      // Subtotal do invoice preview
       subtotal: proration.subtotal / 100,
       total: proration.total / 100,
     })
