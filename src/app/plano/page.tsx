@@ -56,6 +56,13 @@ export default function PlanoPage() {
   const [checkoutPlan, setCheckoutPlan] = useState<PlanId | null>(null)
 
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
+  const hasPaidPlan = currentPlan !== 'free' && !isExpired
+
+  const getPlanChangeType = (target: PlanId): 'upgrade' | 'downgrade' | 'cross' => {
+    if (PLAN_CATEGORY[target] !== currentCategory) return 'cross'
+    return PLAN_ORDER[target] > PLAN_ORDER[currentPlan] ? 'upgrade' : 'downgrade'
+  }
+
   const isHigherPlan = (target: PlanId) => {
     if (isExpired) return true
     if (PLAN_CATEGORY[target] !== currentCategory) return true
@@ -173,6 +180,7 @@ export default function PlanoPage() {
           const overage = PLAN_OVERAGE[planId]
           const isCurrent = planId === currentPlan && !isExpired
           const isUpgrade = isHigherPlan(planId)
+          const changeType = hasPaidPlan ? getPlanChangeType(planId) : null
           const isTopPlan = planId === 'agency_scale' || planId === 'direct_scale'
 
           return (
@@ -190,6 +198,18 @@ export default function PlanoPage() {
               {isCurrent && (
                 <span className="absolute -top-3 right-4 rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-semibold text-white shadow-sm">
                   Plano atual
+                </span>
+              )}
+              {!isCurrent && changeType === 'upgrade' && (
+                <span className="absolute -top-3 right-4 rounded-full bg-blue-500 px-3 py-0.5 text-xs font-semibold text-white shadow-sm flex items-center gap-1">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" /></svg>
+                  Upgrade
+                </span>
+              )}
+              {!isCurrent && changeType === 'downgrade' && (
+                <span className="absolute -top-3 right-4 rounded-full bg-amber-500 px-3 py-0.5 text-xs font-semibold text-white shadow-sm flex items-center gap-1">
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>
+                  Downgrade
                 </span>
               )}
 
@@ -259,12 +279,18 @@ export default function PlanoPage() {
                   <button
                     onClick={() => setCheckoutPlan(planId)}
                     className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
-                      isUpgrade
-                        ? 'bg-primary-600 text-white hover:bg-primary-700'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      changeType === 'downgrade'
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                        : 'bg-primary-600 text-white hover:bg-primary-700'
                     }`}
                   >
-                    {isUpgrade ? 'Assinar plano' : 'Mudar para este plano'}
+                    {!hasPaidPlan
+                      ? 'Assinar plano'
+                      : changeType === 'upgrade'
+                        ? 'Fazer upgrade'
+                        : changeType === 'downgrade'
+                          ? 'Fazer downgrade'
+                          : 'Mudar para este plano'}
                   </button>
                 )}
               </div>
