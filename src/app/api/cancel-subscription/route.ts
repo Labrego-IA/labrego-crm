@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
       cancel_at_period_end: true,
     })
 
-    const cancelAt = subscription.current_period_end
-      ? new Date(subscription.current_period_end * 1000).toISOString()
+    const cancelAt = subscription.cancel_at
+      ? new Date(subscription.cancel_at * 1000).toISOString()
       : null
 
     await orgRef.update({
