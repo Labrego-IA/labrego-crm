@@ -19,6 +19,7 @@ import Tabs from '@/components/Tabs'
 import Modal from '@/components/Modal'
 import { usePlan } from '@/hooks/usePlan'
 import { PLAN_LIMITS, PLAN_OVERAGE, PLAN_DISPLAY, FEATURE_LABELS, type PlanId } from '@/types/plan'
+import type { PaymentHistoryItem } from '@/app/api/payment-history/route'
 
 const ROLE_LABELS: Record<string, string> = {
   admin: 'Administrador',
@@ -89,6 +90,31 @@ export default function PerfilPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [deletePassword, setDeletePassword] = useState('')
   const [deleting, setDeleting] = useState(false)
+
+  // Payment history
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistoryItem[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+  const [historyError, setHistoryError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!orgId) return
+    setLoadingHistory(true)
+    setHistoryError(null)
+    fetch(`/api/payment-history?orgId=${encodeURIComponent(orgId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          setHistoryError(data.error)
+        } else {
+          setPaymentHistory(data.items || [])
+        }
+      })
+      .catch((err) => {
+        console.error('[perfil] Failed to load payment history:', err)
+        setHistoryError('Erro ao carregar historico de pagamentos.')
+      })
+      .finally(() => setLoadingHistory(false))
+  }, [orgId])
 
   const displayPhoto = photoPreview || userPhoto
 
@@ -849,6 +875,191 @@ export default function PerfilPage() {
     </div>
   )
 
+  const formatDate = (iso: string) => {
+    const d = new Date(iso)
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  }
+
+  const formatDateTime = (iso: string) => {
+    const d = new Date(iso)
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+      ' às ' +
+      d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  }
+
+  const formatCurrency = (cents: number) => {
+    return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+  }
+
+  const getTypeLabel = (type: PaymentHistoryItem['type']) => {
+    switch (type) {
+      case 'payment': return 'Assinatura'
+      case 'renewal': return 'Renovação'
+      case 'cancellation': return 'Cancelamento'
+    }
+  }
+
+  const getTypeBadgeClasses = (type: PaymentHistoryItem['type']) => {
+    switch (type) {
+      case 'payment': return 'bg-emerald-100 text-emerald-700'
+      case 'renewal': return 'bg-blue-100 text-blue-700'
+      case 'cancellation': return 'bg-red-100 text-red-700'
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'paid': return 'Pago'
+      case 'open': return 'Em aberto'
+      case 'void': return 'Anulado'
+      case 'draft': return 'Rascunho'
+      case 'uncollectible': return 'Não cobrável'
+      case 'canceled': return 'Cancelado'
+      default: return status
+    }
+  }
+
+  const historyTab = (
+    <div className="space-y-6">
+      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div className="p-6 border-b border-slate-100">
+          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Histórico de Pagamentos
+          </h3>
+          <p className="text-sm text-slate-500 mt-1">
+            Todas as assinaturas, renovações e cancelamentos da sua organização.
+          </p>
+        </div>
+
+        <div className="p-6">
+          {loadingHistory ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <svg className="w-8 h-8 text-primary-500 animate-spin mb-3" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <p className="text-sm text-slate-500">Carregando histórico...</p>
+            </div>
+          ) : historyError ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-sm text-slate-600">{historyError}</p>
+            </div>
+          ) : paymentHistory.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="text-sm font-medium text-slate-700">Nenhum registro encontrado</p>
+              <p className="text-xs text-slate-500 mt-1">
+                O histórico de pagamentos aparecerá aqui após a primeira assinatura.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {paymentHistory.map((item) => (
+                <div
+                  key={item.id}
+                  className={`rounded-xl border p-4 transition-colors ${
+                    item.type === 'cancellation'
+                      ? 'border-red-200 bg-red-50/50'
+                      : 'border-slate-200 bg-slate-50/50 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        item.type === 'payment' ? 'bg-emerald-100 text-emerald-600' :
+                        item.type === 'renewal' ? 'bg-blue-100 text-blue-600' :
+                        'bg-red-100 text-red-600'
+                      }`}>
+                        {item.type === 'cancellation' ? (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-slate-900">
+                            {item.planName}
+                          </span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getTypeBadgeClasses(item.type)}`}>
+                            {getTypeLabel(item.type)}
+                          </span>
+                          {item.type !== 'cancellation' && (
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                              item.status === 'paid' ? 'bg-emerald-100 text-emerald-700' :
+                              item.status === 'open' ? 'bg-amber-100 text-amber-700' :
+                              'bg-slate-100 text-slate-600'
+                            }`}>
+                              {getStatusLabel(item.status)}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-xs text-slate-500 mt-1">
+                          {formatDateTime(item.date)}
+                        </p>
+
+                        {item.type === 'cancellation' && item.cancelledAt && (
+                          <p className="text-xs text-red-600 mt-1 font-medium">
+                            Cancelado em {formatDateTime(item.cancelledAt)}
+                          </p>
+                        )}
+
+                        {item.periodStart && item.periodEnd && item.type !== 'cancellation' && (
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            Período: {formatDate(item.periodStart)} - {formatDate(item.periodEnd)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 sm:flex-col sm:items-end">
+                      {item.type !== 'cancellation' && (
+                        <span className="text-base font-bold text-slate-900">
+                          {formatCurrency(item.amount)}
+                        </span>
+                      )}
+                      {item.invoiceUrl && (
+                        <a
+                          href={item.invoiceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                          Ver fatura
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+
   const tabs = isPartnerView
     ? [
         { key: 'info', label: 'Informações', content: infoTab },
@@ -858,6 +1069,7 @@ export default function PerfilPage() {
         { key: 'info', label: 'Informações', content: infoTab },
         { key: 'security', label: 'Segurança', content: securityTab },
         { key: 'plan', label: 'Meu Plano', content: planTab },
+        { key: 'history', label: 'Histórico', content: historyTab },
       ]
 
   // Reset to 'info' tab when switching views if current tab doesn't exist
