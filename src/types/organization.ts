@@ -11,6 +11,10 @@ export interface Organization {
   createdAt: string
   updatedAt: string
   planSubscribedAt?: string
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+  stripeSubscriptionStatus?: 'active' | 'canceling' | 'canceled' | 'past_due' | 'unpaid'
+  stripeCancelAt?: string
 }
 
 export interface OrgSettings {

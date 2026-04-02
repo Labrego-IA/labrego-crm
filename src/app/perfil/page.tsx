@@ -18,6 +18,8 @@ import Image from 'next/image'
 import Tabs from '@/components/Tabs'
 import Modal from '@/components/Modal'
 import { usePlan } from '@/hooks/usePlan'
+import { usePlanExpiration } from '@/hooks/usePlanExpiration'
+import { useOrganization } from '@/hooks/useOrganization'
 import { PLAN_LIMITS, PLAN_OVERAGE, PLAN_DISPLAY, FEATURE_LABELS, type PlanId } from '@/types/plan'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -42,6 +44,11 @@ export default function PerfilPage() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { plan, limits, display } = usePlan()
+  const { daysRemaining, isExpired, isFreePlan } = usePlanExpiration()
+  const { org } = useOrganization()
+
+  const isCanceling = org?.stripeSubscriptionStatus === 'canceling'
+  const cancelAt = org?.stripeCancelAt ? new Date(org.stripeCancelAt) : null
 
   // Tabs
   const [activeTab, setActiveTab] = useState('info')
@@ -709,10 +716,17 @@ export default function PerfilPage() {
                 </svg>
               </div>
               <div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white/90 bg-white/20 px-2 py-0.5 rounded-full mb-1">
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                  Plano ativo
-                </span>
+                {isCanceling ? (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-100 bg-amber-500/30 px-2 py-0.5 rounded-full mb-1">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                    Cancelamento solicitado
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white/90 bg-white/20 px-2 py-0.5 rounded-full mb-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    Plano ativo
+                  </span>
+                )}
                 <h3 className="text-2xl font-bold text-white">{display.displayName}</h3>
               </div>
             </div>
@@ -721,9 +735,40 @@ export default function PerfilPage() {
                 {display.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
               <p className="text-sm text-white/70">por mês</p>
+              {!isFreePlan && daysRemaining > 0 && (
+                <p className="text-sm font-medium text-white/90 mt-1">
+                  <svg className="w-3.5 h-3.5 inline-block mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {daysRemaining} {daysRemaining === 1 ? 'dia restante' : 'dias restantes'}
+                </p>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Cancellation Banner */}
+        {isCanceling && (
+          <div className="mx-6 mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">Cancelamento solicitado</p>
+              <p className="text-sm text-amber-700 mt-0.5">
+                Seu plano foi cancelado mas permanece ativo
+                {cancelAt ? ` ate ${cancelAt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}` : ''}.
+                {' '}Apos essa data, sua conta sera convertida para o plano gratuito.
+              </p>
+              {daysRemaining > 0 && (
+                <p className="text-xs font-bold text-amber-800 mt-2 inline-flex items-center gap-1.5 bg-amber-100 px-2.5 py-1 rounded-lg">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {daysRemaining} {daysRemaining === 1 ? 'dia restante' : 'dias restantes'} de acesso
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="p-6">
           <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Limites incluídos</h4>
@@ -887,7 +932,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Cancel Plan */}
-      {plan !== 'free' && member?.role === 'admin' && (
+      {plan !== 'free' && member?.role === 'admin' && !isCanceling && (
         <div className="bg-white rounded-2xl border border-red-200/60 shadow-sm p-6">
           <h3 className="text-base font-semibold text-red-600 flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

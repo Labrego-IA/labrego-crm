@@ -98,6 +98,55 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 }
 
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  const orgId = subscription.metadata?.orgId
+
+  if (!orgId) return
+
+  const db = getAdminDb()
+  const orgRef = db.collection('organizations').doc(orgId)
+  const now = new Date().toISOString()
+
+  const freeLimits = PLAN_LIMITS['free']
+
+  await orgRef.update({
+    plan: 'free',
+    limits: {
+      maxUsers: freeLimits.maxUsers,
+      maxFunnels: freeLimits.maxFunnels,
+      maxContacts: freeLimits.maxContacts,
+    },
+    stripeSubscriptionStatus: 'canceled',
+    stripeCancelAt: null,
+    updatedAt: now,
+  })
+
+  const allMembersSnap = await orgRef.collection('members').get()
+  const batch = db.batch()
+
+  allMembersSnap.docs.forEach((memberDoc: any) => {
+    batch.update(memberDoc.ref, { plan: 'free' })
+  })
+
+  allMembersSnap.docs.forEach((memberDoc: any) => {
+    const memberData = memberDoc.data()
+    if (!memberData.userId) return
+    const notifRef = db.collection('notifications').doc()
+    batch.set(notifRef, {
+      orgId,
+      userId: memberData.userId,
+      type: 'plan_expired',
+      title: 'Plano expirado',
+      message: 'Sua assinatura expirou e sua conta foi convertida para o plano gratuito. Faca upgrade para recuperar todos os recursos.',
+      read: false,
+      createdAt: now,
+    })
+  })
+
+  await batch.commit()
+  console.log(`[stripe-webhook] Subscription deleted, org ${orgId} downgraded to free`)
+}
+
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   const subscriptionId = (invoice as any).subscription as string | null
 
@@ -172,7 +221,7 @@ export async function POST(req: NextRequest) {
         break
 
       case 'customer.subscription.deleted':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
+        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
         break
 
       case 'invoice.payment_failed':
