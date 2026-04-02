@@ -116,7 +116,7 @@ function ResetPasswordForm() {
         </div>
 
         <Link
-          href="/reset-password"
+          href="/auth/forgot-password"
           className="block w-full text-center bg-gradient-to-r from-[#13DEFC] to-[#09B00F] hover:from-[#11c8e3] hover:to-[#089e0d] text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#13DEFC]/10 hover:shadow-[#13DEFC]/20"
         >
           Solicitar novo link

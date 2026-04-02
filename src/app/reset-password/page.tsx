@@ -17,7 +17,11 @@ export default function ResetPasswordPage() {
     setLoading(true)
 
     try {
-      await sendPasswordResetEmail(auth, email.trim())
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.voxium.com.br'
+      await sendPasswordResetEmail(auth, email.trim(), {
+        url: `${appUrl}/auth/reset-password`,
+        handleCodeInApp: true,
+      })
       setSent(true)
       toast.success('E-mail de recuperação enviado! Verifique sua caixa de entrada.')
     } catch (err: any) {
