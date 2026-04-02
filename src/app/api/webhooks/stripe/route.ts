@@ -4,6 +4,10 @@ import { getAdminDb } from '@/lib/firebaseAdmin'
 import { PLAN_LIMITS, PLAN_DISPLAY } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
 import type Stripe from 'stripe'
+import { render } from '@react-email/render'
+import React from 'react'
+import BoletoInvoiceEmail from '@/lib/email/BoletoInvoiceEmail'
+import { sendWithFallback } from '@/lib/email/emailProvider'
 
 function isValidPlan(plan: string): plan is PlanId {
   return plan in PLAN_LIMITS
@@ -74,6 +78,95 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
   await batch.commit()
   console.log(`[stripe-webhook] Plan ${planId} activated for org ${orgId}`)
+}
+
+async function sendBoletoEmail(
+  email: string,
+  orgId: string,
+  planName: string,
+  amount: number,
+  paymentIntent: Stripe.PaymentIntent,
+  hostedInvoiceUrl?: string | null,
+) {
+  try {
+    const boletoDetails = paymentIntent.next_action?.boleto_display_details
+    const formattedAmount = (amount / 100).toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+
+    const expirationDate = boletoDetails?.expires_at
+      ? new Date(boletoDetails.expires_at * 1000).toLocaleDateString('pt-BR')
+      : undefined
+
+    const html = await render(
+      React.createElement(BoletoInvoiceEmail, {
+        customerName: '',
+        planName,
+        amount: formattedAmount,
+        boletoNumber: boletoDetails?.number || undefined,
+        expirationDate,
+        hostedVoucherUrl: boletoDetails?.hosted_voucher_url || undefined,
+        hostedInvoiceUrl: hostedInvoiceUrl || undefined,
+      }),
+    )
+
+    const result = await sendWithFallback(
+      orgId,
+      email,
+      `Boleto disponivel - Plano ${planName}`,
+      html,
+    )
+
+    if (result.success) {
+      console.log(`[stripe-webhook] Boleto email sent to ${email} for org ${orgId}`)
+    } else {
+      console.error(`[stripe-webhook] Failed to send boleto email to ${email}:`, result.error)
+    }
+  } catch (error) {
+    console.error('[stripe-webhook] Error sending boleto email:', error)
+  }
+}
+
+async function handleInvoiceFinalized(invoice: Stripe.Invoice) {
+  const paymentIntentId = invoice.payment_intent as string | null
+  if (!paymentIntentId) return
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+
+  // Only send email if payment method is boleto and payment is pending
+  if (
+    paymentIntent.status !== 'requires_action' ||
+    !paymentIntent.next_action?.boleto_display_details
+  ) {
+    return
+  }
+
+  const subscriptionId = invoice.subscription as string | null
+  if (!subscriptionId) return
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const orgId = subscription.metadata?.orgId
+  const planId = subscription.metadata?.planId
+
+  if (!orgId || !planId) return
+
+  const customerEmail = invoice.customer_email
+  if (!customerEmail) return
+
+  const displayName =
+    planId && isValidPlan(planId)
+      ? PLAN_DISPLAY[planId]?.displayName || planId
+      : `Assinatura`
+
+  await sendBoletoEmail(
+    customerEmail,
+    orgId,
+    displayName,
+    invoice.amount_due,
+    paymentIntent,
+    invoice.hosted_invoice_url,
+  )
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
@@ -177,6 +270,10 @@ export async function POST(req: NextRequest) {
 
       case 'invoice.payment_failed':
         await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
+        break
+
+      case 'invoice.finalized':
+        await handleInvoiceFinalized(event.data.object as Stripe.Invoice)
         break
 
       default:
