@@ -84,16 +84,46 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   const db = getAdminDb()
   const orgRef = db.collection('organizations').doc(orgId)
+  const now = new Date().toISOString()
 
   if (subscription.status === 'active') {
-    await orgRef.update({
+    const updateData: Record<string, unknown> = {
       stripeSubscriptionStatus: 'active',
-      updatedAt: new Date().toISOString(),
-    })
+      updatedAt: now,
+    }
+
+    // Se o planId na metadata mudou, atualizar o plano (upgrade via Stripe)
+    if (planId && isValidPlan(planId)) {
+      const orgSnap = await orgRef.get()
+      const currentPlan = orgSnap.data()?.plan
+
+      if (currentPlan !== planId) {
+        const newLimits = PLAN_LIMITS[planId]
+        updateData.plan = planId
+        updateData.limits = {
+          maxUsers: newLimits.maxUsers,
+          maxFunnels: newLimits.maxFunnels,
+          maxContacts: newLimits.maxContacts,
+        }
+        updateData.planUpgradedAt = now
+
+        // Atualizar plano nos membros
+        const allMembersSnap = await orgRef.collection('members').get()
+        const batch = db.batch()
+        allMembersSnap.docs.forEach((memberDoc: any) => {
+          batch.update(memberDoc.ref, { plan: planId })
+        })
+        await batch.commit()
+
+        console.log(`[stripe-webhook] Plan upgraded to ${planId} for org ${orgId}`)
+      }
+    }
+
+    await orgRef.update(updateData)
   } else if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
     await orgRef.update({
       stripeSubscriptionStatus: subscription.status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: now,
     })
   }
 }

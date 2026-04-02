@@ -56,9 +56,25 @@ export default function PlanoPage() {
   const [checkoutPlan, setCheckoutPlan] = useState<PlanId | null>(null)
 
   const currentCategory = PLAN_CATEGORY[currentPlan] || 'direct'
+
+  // Verificar se a org tem assinatura ativa no Stripe
+  const hasActiveSubscription = !!(
+    org &&
+    (org as any).stripeSubscriptionId &&
+    (org as any).stripeSubscriptionStatus === 'active' &&
+    currentPlan !== 'free'
+  )
+
   const isHigherPlan = (target: PlanId) => {
     if (isExpired) return true
     if (PLAN_CATEGORY[target] !== currentCategory) return true
+    return PLAN_ORDER[target] > PLAN_ORDER[currentPlan]
+  }
+
+  // Determina se o plano alvo eh um upgrade elegivel para proration
+  const isUpgradeEligible = (target: PlanId) => {
+    if (!hasActiveSubscription) return false
+    if (PLAN_CATEGORY[target] !== currentCategory) return false
     return PLAN_ORDER[target] > PLAN_ORDER[currentPlan]
   }
 
@@ -264,7 +280,12 @@ export default function PlanoPage() {
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
-                    {isUpgrade ? 'Assinar plano' : 'Mudar para este plano'}
+                    {isUpgradeEligible(planId)
+                      ? 'Fazer upgrade (proporcional)'
+                      : isUpgrade
+                        ? 'Assinar plano'
+                        : 'Mudar para este plano'
+                    }
                   </button>
                 )}
               </div>
@@ -283,6 +304,8 @@ export default function PlanoPage() {
           orgId={orgId}
           userEmail={userEmail}
           userName={member?.displayName || ''}
+          isUpgrade={isUpgradeEligible(checkoutPlan)}
+          currentPlan={currentPlan}
           onClose={() => setCheckoutPlan(null)}
         />
       )}

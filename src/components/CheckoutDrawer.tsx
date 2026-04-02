@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PLAN_DISPLAY, PLAN_LIMITS, PLAN_OVERAGE, FEATURE_LABELS, type PlanId, type PlanCategory } from '@/types/plan'
 import { toast } from 'sonner'
 
@@ -9,7 +9,23 @@ interface CheckoutDrawerProps {
   orgId: string
   userEmail: string
   userName?: string
+  isUpgrade?: boolean
+  currentPlan?: PlanId
   onClose: () => void
+}
+
+interface ProrationPreview {
+  currentPlan: { id: string; name: string; price: number }
+  newPlan: { id: string; name: string; price: number }
+  proration: {
+    amountDue: number
+    credit: number
+    debit: number
+    totalDays: number
+    remainingDays: number
+  }
+  subtotal: number
+  total: number
 }
 
 function formatCurrency(value: number): string {
@@ -22,44 +38,105 @@ function formatLimit(value: number): string {
   return String(value)
 }
 
-export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onClose }: CheckoutDrawerProps) {
+export default function CheckoutDrawer({ planId, orgId, userEmail, userName, isUpgrade, currentPlan, onClose }: CheckoutDrawerProps) {
   const [loading, setLoading] = useState(false)
   const [phone, setPhone] = useState('')
+  const [prorationPreview, setProrationPreview] = useState<ProrationPreview | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
 
   const display = PLAN_DISPLAY[planId]
   const limits = PLAN_LIMITS[planId]
   const overage = PLAN_OVERAGE[planId]
   const category = display.category
 
+  // Carregar preview de proration quando for upgrade
+  useEffect(() => {
+    if (!isUpgrade || !currentPlan) return
+
+    const fetchPreview = async () => {
+      setPreviewLoading(true)
+      setPreviewError(null)
+      try {
+        const res = await fetch('/api/upgrade/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orgId, newPlanId: planId }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          setPreviewError(data.error || 'Erro ao calcular preview')
+          return
+        }
+
+        setProrationPreview(data)
+      } catch (err) {
+        console.error('[CheckoutDrawer] preview error:', err)
+        setPreviewError('Erro ao calcular valor proporcional')
+      } finally {
+        setPreviewLoading(false)
+      }
+    }
+
+    fetchPreview()
+  }, [isUpgrade, currentPlan, orgId, planId])
+
   const handleCheckout = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          planId,
-          orgId,
-          userEmail,
-          userName: userName || '',
-          userPhone: phone,
-        }),
-      })
+      if (isUpgrade && currentPlan) {
+        // Upgrade com proration
+        const res = await fetch('/api/upgrade', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orgId,
+            newPlanId: planId,
+            userEmail,
+          }),
+        })
 
-      const data = await res.json()
+        const data = await res.json()
 
-      if (!res.ok) {
-        toast.error(data.error || 'Erro ao iniciar checkout')
-        setLoading(false)
-        return
-      }
+        if (!res.ok) {
+          toast.error(data.error || 'Erro ao processar upgrade')
+          setLoading(false)
+          return
+        }
 
-      if (data.url) {
-        window.location.href = data.url
+        toast.success('Plano atualizado com sucesso! Os novos recursos ja estao disponiveis.')
+        onClose()
+      } else {
+        // Nova assinatura (checkout normal)
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            planId,
+            orgId,
+            userEmail,
+            userName: userName || '',
+            userPhone: phone,
+          }),
+        })
+
+        const data = await res.json()
+
+        if (!res.ok) {
+          toast.error(data.error || 'Erro ao iniciar checkout')
+          setLoading(false)
+          return
+        }
+
+        if (data.url) {
+          window.location.href = data.url
+        }
       }
     } catch (err) {
       console.error('[CheckoutDrawer] error:', err)
-      toast.error('Erro ao iniciar checkout. Tente novamente.')
+      toast.error('Erro ao processar. Tente novamente.')
       setLoading(false)
     }
   }
@@ -83,7 +160,9 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
             </button>
-            <h2 className="text-lg font-bold text-slate-900">Resumo da assinatura</h2>
+            <h2 className="text-lg font-bold text-slate-900">
+              {isUpgrade ? 'Upgrade de plano' : 'Resumo da assinatura'}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -106,7 +185,9 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
                   {category === 'agency' ? 'Agency' : 'Direct'}
                 </span>
                 <h3 className="text-xl font-bold text-slate-900">{display.displayName}</h3>
-                <p className="text-sm text-slate-500 mt-1">Assinatura mensal recorrente</p>
+                <p className="text-sm text-slate-500 mt-1">
+                  {isUpgrade ? 'Upgrade imediato com valor proporcional' : 'Assinatura mensal recorrente'}
+                </p>
               </div>
               <div className="text-right">
                 <p className="text-2xl font-bold text-primary-600">R$ {formatCurrency(display.price)}</p>
@@ -114,6 +195,61 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
               </div>
             </div>
           </div>
+
+          {/* Proration Preview (upgrade only) */}
+          {isUpgrade && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                </svg>
+                <h4 className="text-sm font-bold text-emerald-800">Calculo proporcional</h4>
+              </div>
+
+              {previewLoading && (
+                <div className="flex items-center gap-2 py-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-300 border-t-emerald-600" />
+                  <span className="text-sm text-emerald-700">Calculando valor proporcional...</span>
+                </div>
+              )}
+
+              {previewError && (
+                <p className="text-sm text-red-600">{previewError}</p>
+              )}
+
+              {prorationPreview && !previewLoading && (
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Dias restantes no ciclo</span>
+                    <span className="font-semibold">
+                      {prorationPreview.proration.remainingDays} de {prorationPreview.proration.totalDays} dias
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Credito do plano atual ({prorationPreview.currentPlan.name})</span>
+                    <span className="font-semibold text-emerald-600">
+                      - R$ {formatCurrency(prorationPreview.proration.credit)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-emerald-700">
+                    <span>Valor proporcional do novo plano</span>
+                    <span className="font-semibold">
+                      R$ {formatCurrency(prorationPreview.proration.debit)}
+                    </span>
+                  </div>
+                  <div className="border-t border-emerald-200 pt-2 mt-2">
+                    <div className="flex justify-between text-emerald-900 font-bold">
+                      <span>Valor a pagar agora</span>
+                      <span>R$ {formatCurrency(prorationPreview.proration.amountDue)}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-emerald-600 mt-1">
+                    A partir do proximo ciclo, sera cobrado o valor integral de R$ {formatCurrency(display.price)}/mes.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* What's included */}
           <div>
@@ -179,35 +315,44 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
             </div>
           )}
 
-          {/* Phone field */}
-          <div>
-            <label htmlFor="checkout-phone" className="block text-sm font-medium text-slate-700 mb-1">
-              Telefone (opcional)
-            </label>
-            <input
-              id="checkout-phone"
-              type="tel"
-              placeholder="(11) 99999-9999"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition"
-            />
-            <p className="mt-1 text-xs text-slate-400">
-              Os demais dados serao solicitados na tela de pagamento seguro.
-            </p>
-          </div>
+          {/* Phone field (only for new subscriptions) */}
+          {!isUpgrade && (
+            <div>
+              <label htmlFor="checkout-phone" className="block text-sm font-medium text-slate-700 mb-1">
+                Telefone (opcional)
+              </label>
+              <input
+                id="checkout-phone"
+                type="tel"
+                placeholder="(11) 99999-9999"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition"
+              />
+              <p className="mt-1 text-xs text-slate-400">
+                Os demais dados serao solicitados na tela de pagamento seguro.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer - total + CTA */}
         <div className="border-t border-slate-200 px-6 py-4 space-y-3 bg-white">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">Total mensal</span>
-            <span className="text-xl font-bold text-slate-900">R$ {formatCurrency(display.price)}</span>
+            <span className="text-sm font-medium text-slate-500">
+              {isUpgrade ? 'Valor proporcional' : 'Total mensal'}
+            </span>
+            <span className="text-xl font-bold text-slate-900">
+              {isUpgrade && prorationPreview
+                ? `R$ ${formatCurrency(prorationPreview.proration.amountDue)}`
+                : `R$ ${formatCurrency(display.price)}`
+              }
+            </span>
           </div>
 
           <button
             onClick={handleCheckout}
-            disabled={loading}
+            disabled={loading || (isUpgrade && previewLoading)}
             className="w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-primary-700 active:scale-[0.98] transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
@@ -216,8 +361,10 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Redirecionando para pagamento...
+                {isUpgrade ? 'Processando upgrade...' : 'Redirecionando para pagamento...'}
               </span>
+            ) : isUpgrade ? (
+              'Confirmar upgrade'
             ) : (
               'Ir para pagamento seguro'
             )}
