@@ -87,6 +87,7 @@ export default function FunnelHubPage() {
   const [formName, setFormName] = useState('')
   const [formDescription, setFormDescription] = useState('')
   const [formColor, setFormColor] = useState(FUNNEL_COLORS[0])
+  const [formStages, setFormStages] = useState<string[]>(['Novo', 'Qualificado', 'Proposta', 'Negociacao', 'Fechado'])
   const [saving, setSaving] = useState(false)
 
   // When orgId is not available, stop loading immediately
@@ -220,6 +221,23 @@ export default function FunnelHubPage() {
         createdAt: now,
         updatedAt: now,
       })
+
+      // Criar stages/colunas configuradas
+      const stagesRef = collection(db, 'organizations', orgId, 'funnelStages')
+      for (let i = 0; i < formStages.length; i++) {
+        const stageName = formStages[i].trim()
+        if (!stageName) continue
+        await setDoc(doc(stagesRef), {
+          orgId,
+          funnelId: newFunnelRef.id,
+          name: stageName,
+          order: i,
+          color: '',
+          probability: Math.round(((i + 1) / formStages.length) * 100),
+          createdAt: now,
+          updatedAt: now,
+        })
+      }
 
       toast.success('Funil criado com sucesso!')
       setShowCreateModal(false)
@@ -807,6 +825,47 @@ export default function FunnelHubPage() {
                 ))}
               </div>
             </div>
+
+            {/* Stages/Colunas - apenas na criacao */}
+            {!isEdit && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Colunas do Funil</label>
+                <div className="space-y-2">
+                  {formStages.map((stage, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <span className="text-xs text-slate-400 w-5">{idx + 1}</span>
+                      <input
+                        type="text"
+                        value={stage}
+                        onChange={e => {
+                          const updated = [...formStages]
+                          updated[idx] = e.target.value
+                          setFormStages(updated)
+                        }}
+                        placeholder="Nome da coluna"
+                        className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                      />
+                      {formStages.length > 1 && (
+                        <button
+                          onClick={() => setFormStages(formStages.filter((_, i) => i !== idx))}
+                          className="p-1 text-slate-400 hover:text-red-500 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => setFormStages([...formStages, ''])}
+                    className="w-full px-3 py-2 text-sm text-primary-600 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    + Adicionar coluna
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 mt-6">

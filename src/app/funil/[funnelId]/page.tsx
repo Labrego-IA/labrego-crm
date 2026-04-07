@@ -7156,7 +7156,7 @@ export default function FunilDetailPage() {
                     Propostas
                   </h4>
                   <button
-                    onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/nova`)}
+                    onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/nova?returnUrl=${encodeURIComponent(`/funil/${funnelId}`)}`)}
                     className="flex items-center gap-1 px-2.5 py-1 bg-primary-100 text-primary-700 rounded-lg text-xs font-medium hover:bg-primary-200 transition-colors"
                   >
                     <PlusIcon className="w-3 h-3" />
@@ -7171,7 +7171,7 @@ export default function FunilDetailPage() {
                   <div className="p-4 bg-slate-50 rounded-xl text-center">
                     <p className="text-xs text-slate-400">Nenhuma proposta encontrada</p>
                     <button
-                      onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/nova`)}
+                      onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/nova?returnUrl=${encodeURIComponent(`/funil/${funnelId}`)}`)}
                       className="mt-2 text-xs text-primary-600 hover:text-primary-700 font-medium"
                     >
                       Criar primeira proposta

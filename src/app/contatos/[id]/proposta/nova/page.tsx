@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { useForm, useFieldArray, useWatch } from 'react-hook-form'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -52,6 +52,8 @@ import type {
 export default function NewProposalCRMPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
+  const returnUrl = searchParams.get('returnUrl')
   const clientId = params?.id
   const { orgId } = useCrmUser()
   const { isBlocked: isPlanBlocked } = useFreePlanGuard()
@@ -277,7 +279,7 @@ export default function NewProposalCRMPage() {
 
       await pdfRef.current?.generatePdf(pdfName)
 
-      router.push(`/contatos/${clientId}`)
+      router.push(returnUrl || `/contatos/${clientId}`)
     } catch (error) {
       console.error('Erro ao criar proposta', error)
       alert('Erro ao criar proposta. Tente novamente.')
