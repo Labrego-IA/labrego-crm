@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import TextAgentWizard from '@/components/agentes/TextAgentWizard'
 import FAQManager from '@/components/agentes/FAQManager'
@@ -81,10 +82,10 @@ export default function EmailConfigPage() {
     )
   }
 
-  const tabs: { id: TabId; label: string; icon: string }[] = [
-    { id: 'wizard', label: 'Conhecimento', icon: '🧠' },
-    { id: 'faq', label: 'FAQ', icon: '❓' },
-    { id: 'configuracoes', label: 'Configuracoes', icon: '⚙️' },
+  const tabs: { id: TabId; label: string }[] = [
+    { id: 'wizard', label: 'Conhecimento' },
+    { id: 'faq', label: 'FAQ' },
+    { id: 'configuracoes', label: 'Configuracoes' },
   ]
 
   return (
@@ -93,7 +94,7 @@ export default function EmailConfigPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-            <span className="text-3xl">📧</span>
+            <EnvelopeIcon className="w-7 h-7 text-cyan-600" />
             Agente Email
           </h1>
           <p className="text-slate-500 mt-1">Configure seu agente de atendimento automatico por email.</p>
@@ -150,7 +151,6 @@ export default function EmailConfigPage() {
                 : 'text-slate-500 hover:text-slate-600 hover:bg-slate-50'
             }`}
           >
-            <span>{tab.icon}</span>
             {tab.label}
           </button>
         ))}

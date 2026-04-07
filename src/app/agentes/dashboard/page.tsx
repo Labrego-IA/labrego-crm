@@ -171,8 +171,10 @@ export default function AgentesDashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-slate-800 text-sm font-medium truncate">{conv.contactName}</span>
-                    <span className="text-slate-200 text-xs">
-                      {conv.channel === 'whatsapp' ? '💬' : '📧'}
+                    <span className={`px-1 py-0.5 rounded text-[10px] font-medium ${
+                      conv.channel === 'whatsapp' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'
+                    }`}>
+                      {conv.channel === 'whatsapp' ? 'WA' : 'Email'}
                     </span>
                   </div>
                   <p className="text-slate-400 text-xs truncate">{conv.lastMessagePreview}</p>

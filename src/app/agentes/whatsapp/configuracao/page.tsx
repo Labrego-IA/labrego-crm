@@ -6,10 +6,11 @@ import WhatsAppQRConnect from '@/components/agentes/WhatsAppQRConnect'
 import TextAgentWizard from '@/components/agentes/TextAgentWizard'
 import FAQManager from '@/components/agentes/FAQManager'
 import { calculateTextAgentStrength } from '@/lib/agentEngine'
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'
 import type { AgentConfig, TextAgentWizardAnswers, FAQItem, WhatsAppConnectionStatus } from '@/types/agentConfig'
 import { DEFAULT_AGENT_CONFIG, DEFAULT_WIZARD_ANSWERS } from '@/types/agentConfig'
 
-type TabId = 'conexao' | 'wizard' | 'faq' | 'configuracoes'
+type TabId = 'conexao' | 'wizard' | 'faq' | 'ferramentas' | 'configuracoes'
 
 export default function WhatsAppConfigPage() {
   const { orgId } = useCrmUser()
@@ -91,10 +92,11 @@ export default function WhatsAppConfigPage() {
   }
 
   const tabs: { id: TabId; label: string; icon: string }[] = [
-    { id: 'conexao', label: 'Conexao', icon: '🔗' },
-    { id: 'wizard', label: 'Conhecimento', icon: '🧠' },
-    { id: 'faq', label: 'FAQ', icon: '❓' },
-    { id: 'configuracoes', label: 'Configuracoes', icon: '⚙️' },
+    { id: 'conexao', label: 'Conexao', icon: '' },
+    { id: 'wizard', label: 'Conhecimento', icon: '' },
+    { id: 'faq', label: 'FAQ', icon: '' },
+    { id: 'ferramentas', label: 'Ferramentas', icon: '' },
+    { id: 'configuracoes', label: 'Ajustes', icon: '' },
   ]
 
   return (
@@ -103,7 +105,7 @@ export default function WhatsAppConfigPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
-            <span className="text-3xl">🤖</span>
+            <ChatBubbleLeftRightIcon className="w-7 h-7 text-green-600" />
             Agente WhatsApp
           </h1>
           <p className="text-slate-500 mt-1">Configure seu agente de atendimento automatico por WhatsApp.</p>
@@ -180,93 +182,170 @@ export default function WhatsAppConfigPage() {
           <FAQManager items={config.faq || []} onChange={updateFAQ} />
         )}
 
-        {/* Configuracoes */}
-        {activeTab === 'configuracoes' && (
+        {/* Ferramentas */}
+        {activeTab === 'ferramentas' && (
           <div className="space-y-6">
-            {/* Modelo LLM */}
+            {/* Acoes automaticas */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Modelo de IA</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-slate-600 text-sm font-medium mb-1">Modelo</label>
-                  <select
-                    value={config.shared.llmModel}
-                    onChange={e => updateConfig({ shared: { ...config.shared, llmModel: e.target.value } })}
-                    className="w-64 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="gpt-4o-mini">GPT-4o Mini (Rapido e economico)</option>
-                    <option value="gpt-4o">GPT-4o (Mais inteligente)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-600 text-sm font-medium mb-1">
-                    Temperatura: {config.shared.temperature}
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Acoes Automaticas</h3>
+              <p className="text-slate-500 text-sm mb-4">Ative o que o agente pode fazer automaticamente durante as conversas.</p>
+              <div className="space-y-3">
+                {[
+                  { key: 'autoCreateContact', label: 'Salvar contato no CRM', desc: 'Quando alguem novo envia mensagem, o contato e salvo automaticamente.', icon: '' },
+                  { key: 'autoTagContacts', label: 'Aplicar etiquetas', desc: 'Marcar contatos com tags para organizar sua base.', icon: '' },
+                ].map(tool => (
+                  <label key={tool.key} className="flex items-start gap-3 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={tool.key === 'autoCreateContact' ? config.crmActions.autoCreateContact : config.crmActions.autoTagContacts}
+                      onChange={e => updateConfig({ crmActions: { ...config.crmActions, [tool.key]: e.target.checked } })}
+                      className="w-4 h-4 mt-0.5 rounded border-slate-300 text-cyan-600"
+                    />
+                    <div className="flex-1">
+                      <span className="text-slate-700 text-sm font-medium">{tool.icon} {tool.label}</span>
+                      <p className="text-slate-400 text-xs mt-0.5">{tool.desc}</p>
+                    </div>
                   </label>
-                  <input
-                    type="range"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={config.shared.temperature}
-                    onChange={e => updateConfig({ shared: { ...config.shared, temperature: parseFloat(e.target.value) } })}
-                    className="w-64"
-                  />
-                  <p className="text-slate-300 text-xs mt-1">Mais baixo = mais preciso. Mais alto = mais criativo.</p>
-                </div>
+                ))}
               </div>
             </div>
 
-            {/* Horario de Atendimento */}
+            {/* Integracoes */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-800">Horario de Atendimento</h3>
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Integracoes</h3>
+              <p className="text-slate-500 text-sm mb-4">Conecte ferramentas externas para o agente usar durante o atendimento.</p>
+              <div className="space-y-3">
+                {/* Google Calendar */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-sm font-bold text-blue-600">CAL</div>
+                    <div>
+                      <span className="text-slate-700 text-sm font-medium">Google Agenda</span>
+                      <p className="text-slate-400 text-xs">O agente pode verificar horarios disponiveis e agendar reunioes.</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
+                </div>
+
+                {/* Follow-up */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-sm font-bold text-green-600">FUP</div>
+                    <div>
+                      <span className="text-slate-700 text-sm font-medium">Follow-up automatico</span>
+                      <p className="text-slate-400 text-xs">Criar lembretes de retorno com o contato apos a conversa.</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
+                </div>
+
+                {/* Mover no funil */}
+                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-sm font-bold text-purple-600">FNL</div>
+                    <div>
+                      <span className="text-slate-700 text-sm font-medium">Mover no funil</span>
+                      <p className="text-slate-400 text-xs">Mover contatos entre estagios do funil automaticamente.</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Ajustes */}
+        {activeTab === 'configuracoes' && (
+          <div className="space-y-6">
+            {/* Nivel de inteligencia */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Nivel de Inteligencia</h3>
+              <p className="text-slate-500 text-sm mb-4">Escolha como o agente deve responder.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
-                  onClick={() => updateConfig({
-                    shared: {
-                      ...config.shared,
-                      workHours: { ...config.shared.workHours, enabled: !config.shared.workHours.enabled }
-                    }
-                  })}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${
-                    config.shared.workHours.enabled ? 'bg-green-500' : 'bg-slate-600'
+                  onClick={() => updateConfig({ shared: { ...config.shared, llmModel: 'gpt-4o-mini', temperature: 0.7 } })}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                    config.shared.llmModel === 'gpt-4o-mini'
+                      ? 'border-cyan-500 bg-cyan-50'
+                      : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
-                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-cyan-600">R</span>
+                    <span className="font-medium text-slate-800">Rapido</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Respostas rapidas e objetivas. Ideal para a maioria dos atendimentos.</p>
+                  {config.shared.llmModel === 'gpt-4o-mini' && <span className="inline-block mt-2 text-xs text-cyan-600 font-medium">Selecionado</span>}
+                </button>
+                <button
+                  onClick={() => updateConfig({ shared: { ...config.shared, llmModel: 'gpt-4o', temperature: 0.5 } })}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                    config.shared.llmModel === 'gpt-4o'
+                      ? 'border-cyan-500 bg-cyan-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-indigo-600">A</span>
+                    <span className="font-medium text-slate-800">Avancado</span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">Respostas mais elaboradas e detalhadas. Para conversas complexas.</p>
+                  {config.shared.llmModel === 'gpt-4o' && <span className="inline-block mt-2 text-xs text-cyan-600 font-medium">Selecionado</span>}
+                </button>
+              </div>
+            </div>
+
+            {/* Horario de atendimento */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800">Horario de Atendimento</h3>
+                  <p className="text-slate-500 text-sm">Defina quando o agente deve responder automaticamente.</p>
+                </div>
+                <button
+                  onClick={() => updateConfig({
+                    shared: { ...config.shared, workHours: { ...config.shared.workHours, enabled: !config.shared.workHours.enabled } }
+                  })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    config.shared.workHours.enabled ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
                     config.shared.workHours.enabled ? 'translate-x-6' : ''
                   }`} />
                 </button>
               </div>
-
+              {!config.shared.workHours.enabled && (
+                <p className="text-slate-400 text-xs mt-2">Desativado — o agente responde 24 horas por dia, 7 dias por semana.</p>
+              )}
               {config.shared.workHours.enabled && (
-                <div className="space-y-4">
-                  <div className="flex gap-4">
+                <div className="space-y-4 mt-4">
+                  <div className="flex gap-4 items-end">
                     <div>
-                      <label className="block text-slate-600 text-sm mb-1">Inicio</label>
-                      <input
-                        type="number"
-                        min={0} max={23}
+                      <label className="block text-slate-600 text-sm mb-1">De</label>
+                      <select
                         value={config.shared.workHours.startHour}
-                        onChange={e => updateConfig({
-                          shared: { ...config.shared, workHours: { ...config.shared.workHours, startHour: parseInt(e.target.value) } }
-                        })}
-                        className="w-20 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
-                      />
+                        onChange={e => updateConfig({ shared: { ...config.shared, workHours: { ...config.shared.workHours, startHour: parseInt(e.target.value) } } })}
+                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
+                      >
+                        {Array.from({ length: 24 }, (_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>)}
+                      </select>
                     </div>
+                    <span className="text-slate-400 pb-2.5">ate</span>
                     <div>
-                      <label className="block text-slate-600 text-sm mb-1">Fim</label>
-                      <input
-                        type="number"
-                        min={0} max={23}
+                      <label className="block text-slate-600 text-sm mb-1">Ate</label>
+                      <select
                         value={config.shared.workHours.endHour}
-                        onChange={e => updateConfig({
-                          shared: { ...config.shared, workHours: { ...config.shared.workHours, endHour: parseInt(e.target.value) } }
-                        })}
-                        className="w-20 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
-                      />
+                        onChange={e => updateConfig({ shared: { ...config.shared, workHours: { ...config.shared.workHours, endHour: parseInt(e.target.value) } } })}
+                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
+                      >
+                        {Array.from({ length: 24 }, (_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>)}
+                      </select>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-slate-600 text-sm font-medium mb-2">Dias de Atendimento</label>
+                    <label className="block text-slate-600 text-sm font-medium mb-2">Dias</label>
                     <div className="flex gap-2">
                       {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((day, i) => (
                         <button
@@ -280,13 +359,9 @@ export default function WhatsAppConfigPage() {
                             }
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                            config.shared.workHours.workDays.includes(i)
-                              ? 'bg-cyan-50 text-cyan-600 border border-cyan-300'
-                              : 'bg-slate-100 text-slate-400 border border-slate-300'
+                            config.shared.workHours.workDays.includes(i) ? 'bg-cyan-50 text-cyan-600 border border-cyan-300' : 'bg-slate-50 text-slate-400 border border-slate-200'
                           }`}
-                        >
-                          {day}
-                        </button>
+                        >{day}</button>
                       ))}
                     </div>
                   </div>
@@ -294,35 +369,60 @@ export default function WhatsAppConfigPage() {
               )}
             </div>
 
-            {/* Audio (ElevenLabs) */}
+            {/* Voz do agente */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-800">Respostas em Audio</h3>
-                  <p className="text-slate-400 text-sm">Gerar audio das respostas via ElevenLabs</p>
+                  <h3 className="text-lg font-semibold text-slate-800">Voz do Agente</h3>
+                  <p className="text-slate-500 text-sm">O agente pode enviar respostas em audio com voz realista.</p>
                 </div>
                 <button
                   onClick={() => updateConfig({ audio: { ...config.audio, enabled: !config.audio.enabled } })}
                   className={`relative w-12 h-6 rounded-full transition-colors ${
-                    config.audio.enabled ? 'bg-green-500' : 'bg-slate-600'
+                    config.audio.enabled ? 'bg-green-500' : 'bg-slate-300'
                   }`}
                 >
-                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
                     config.audio.enabled ? 'translate-x-6' : ''
                   }`} />
                 </button>
               </div>
-
               {config.audio.enabled && (
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   <div>
-                    <label className="block text-slate-600 text-sm font-medium mb-1">Voice ID (ElevenLabs)</label>
+                    <label className="block text-slate-600 text-sm font-medium mb-2">Escolha uma voz</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {[
+                        { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', desc: 'Feminina, profissional', lang: 'PT-BR' },
+                        { id: '21m00Tcm4TlvDq8ikWAM', name: 'Rachel', desc: 'Feminina, acolhedora', lang: 'EN' },
+                        { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam', desc: 'Masculina, confiante', lang: 'EN' },
+                        { id: 'onwK4e9ZLuTAKqWW03F9', name: 'Daniel', desc: 'Masculino, amigavel', lang: 'PT-BR' },
+                      ].map(voice => (
+                        <button
+                          key={voice.id}
+                          onClick={() => updateConfig({ audio: { ...config.audio, voiceId: voice.id } })}
+                          className={`flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all ${
+                            config.audio.voiceId === voice.id ? 'border-cyan-500 bg-cyan-50' : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-sm">
+                            {voice.name[0]}
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium text-slate-800">{voice.name}</div>
+                            <div className="text-xs text-slate-400">{voice.desc}</div>
+                          </div>
+                          <span className="text-[10px] text-slate-300 font-medium">{voice.lang}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-slate-400 text-xs mt-2">Ou cole um codigo de voz personalizado:</p>
                     <input
                       type="text"
                       value={config.audio.voiceId}
                       onChange={e => updateConfig({ audio: { ...config.audio, voiceId: e.target.value } })}
-                      placeholder="Cole o Voice ID do ElevenLabs"
-                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+                      placeholder="Codigo da voz"
+                      className="w-full mt-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                     />
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -330,37 +430,12 @@ export default function WhatsAppConfigPage() {
                       type="checkbox"
                       checked={config.audio.respondWithAudio}
                       onChange={e => updateConfig({ audio: { ...config.audio, respondWithAudio: e.target.checked } })}
-                      className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
+                      className="w-4 h-4 rounded border-slate-300 text-cyan-600"
                     />
-                    <span className="text-slate-600 text-sm">Enviar audio junto com texto nas respostas</span>
+                    <span className="text-slate-600 text-sm">Enviar audio junto com a mensagem de texto</span>
                   </label>
                 </div>
               )}
-            </div>
-
-            {/* Acoes CRM */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Acoes no CRM</h3>
-              <div className="space-y-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={config.crmActions.autoCreateContact}
-                    onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoCreateContact: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
-                  />
-                  <span className="text-slate-600 text-sm">Criar contato automaticamente no CRM</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={config.crmActions.autoTagContacts}
-                    onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoTagContacts: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
-                  />
-                  <span className="text-slate-600 text-sm">Aplicar tags automaticas nos contatos</span>
-                </label>
-              </div>
             </div>
           </div>
         )}

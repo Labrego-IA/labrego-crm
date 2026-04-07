@@ -11,11 +11,11 @@ interface TextAgentWizardProps {
 }
 
 const PHASES = [
-  { id: 1, name: 'Identidade', icon: '🎭', description: 'Quem e seu agente?' },
-  { id: 2, name: 'Conhecimento', icon: '📚', description: 'O que ele sabe?' },
-  { id: 3, name: 'Comportamento', icon: '💬', description: 'Como ele age?' },
-  { id: 4, name: 'Regras', icon: '📋', description: 'Quais sao os limites?' },
-  { id: 5, name: 'Personalizacao', icon: '✨', description: 'Detalhes finais' },
+  { id: 1, name: 'Identidade', description: 'Quem e seu agente?' },
+  { id: 2, name: 'Conhecimento', description: 'O que ele sabe?' },
+  { id: 3, name: 'Comportamento', description: 'Como ele age?' },
+  { id: 4, name: 'Regras', description: 'Quais sao os limites?' },
+  { id: 5, name: 'Personalizacao', description: 'Detalhes finais' },
 ]
 
 export default function TextAgentWizard({ answers, onChange, strengthScore }: TextAgentWizardProps) {
@@ -78,7 +78,6 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
                   : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
             }`}
           >
-            <span>{phase.icon}</span>
             <span>{phase.name}</span>
             {isPhaseComplete(phase.id) && <CheckCircleIcon className="w-4 h-4 text-green-400" />}
           </button>
@@ -88,7 +87,7 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
       {/* Phase Content */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6">
         <h3 className="text-lg font-semibold text-slate-800 mb-1">
-          {PHASES[activePhase - 1].icon} {PHASES[activePhase - 1].name}
+          {PHASES[activePhase - 1].name}
         </h3>
         <p className="text-slate-500 text-sm mb-6">{PHASES[activePhase - 1].description}</p>
 

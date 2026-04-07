@@ -142,6 +142,12 @@ const agentesItems: NavItem[] = [
     icon: <InboxIcon className="w-5 h-5" />,
     section: 'agentes-ia',
   },
+  {
+    label: 'Logs da IA',
+    href: '/agentes/logs',
+    icon: <DocumentTextIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
+  },
 ]
 
 const adminItems: NavItem[] = [
@@ -519,6 +525,27 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     <span className="absolute left-full ml-3 px-3 py-1.5 bg-neutral-900 text-white text-xs font-medium rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
                       Painel SaaS
                     </span>
+                  )}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/super-admin/ai-usage"
+                  onClick={() => onNavigate?.()}
+                  className={`
+                    flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
+                    ${collapsed ? 'justify-center' : ''}
+                    ${pathname?.startsWith('/super-admin/ai-usage')
+                      ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+                      : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                    }
+                  `}
+                >
+                  <span className={pathname?.startsWith('/super-admin/ai-usage') ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                    <CreditCardIcon className="w-5 h-5" />
+                  </span>
+                  {!collapsed && (
+                    <span className="font-medium text-sm">Uso de IA</span>
                   )}
                 </Link>
               </li>
