@@ -30,6 +30,9 @@ import {
   EnvelopeIcon,
   QuestionMarkCircleIcon,
   LockClosedIcon,
+  ChatBubbleLeftRightIcon,
+  SparklesIcon,
+  InboxIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { signOut } from 'firebase/auth'
@@ -108,6 +111,36 @@ const agentesItems: NavItem[] = [
     label: 'Historico de Ligacoes',
     href: '/ligacoes/historico',
     icon: <ClockIcon className="w-5 h-5" />,
+  },
+  {
+    label: 'Painel Agentes IA',
+    href: '/agentes/dashboard',
+    icon: <SparklesIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
+  },
+  {
+    label: 'WhatsApp IA',
+    href: '/agentes/whatsapp/configuracao',
+    icon: <ChatBubbleLeftRightIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
+  },
+  {
+    label: 'Conversas WhatsApp',
+    href: '/agentes/whatsapp/conversas',
+    icon: <InboxIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
+  },
+  {
+    label: 'Email IA',
+    href: '/agentes/email/configuracao',
+    icon: <EnvelopeIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
+  },
+  {
+    label: 'Conversas Email',
+    href: '/agentes/email/conversas',
+    icon: <InboxIcon className="w-5 h-5" />,
+    section: 'agentes-ia',
   },
 ]
 

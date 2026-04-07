@@ -6,6 +6,8 @@ const BYPASS_PATHS = [
   '/api/vapi/webhook',
   '/api/meta/webhooks',
   '/api/n8n/',
+  '/api/agent/whatsapp/webhook',
+  '/api/agent/email/webhook',
   '/api/health',
   '/login',
   '/auth/forgot-password',

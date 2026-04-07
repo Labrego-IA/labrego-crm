@@ -16,6 +16,7 @@ export type FeatureKey =
   | 'crm_automation'
   | 'voice_agent'
   | 'whatsapp_agent'
+  | 'email_agent'
   | 'ai_reports'
 
 export interface Plan {
@@ -49,7 +50,7 @@ export interface OveragePricing {
 const ALL_FEATURES: FeatureKey[] = [
   'funnel', 'contacts', 'proposals', 'cadence', 'productivity',
   'whatsapp_plugin', 'email_automation', 'crm_automation',
-  'voice_agent', 'whatsapp_agent', 'ai_reports',
+  'voice_agent', 'whatsapp_agent', 'email_agent', 'ai_reports',
 ]
 
 export const PLAN_FEATURES: Record<PlanId, FeatureKey[]> = {
@@ -114,5 +115,6 @@ export const FEATURE_LABELS: Record<FeatureKey, string> = {
   crm_automation: 'Automacao de CRM e nutricao de leads',
   voice_agent: 'Agente de prospeccao ativa por voz',
   whatsapp_agent: 'Agente de prospeccao ativa por WhatsApp',
+  email_agent: 'Agente de atendimento por Email',
   ai_reports: 'Relatorios da IA',
 }

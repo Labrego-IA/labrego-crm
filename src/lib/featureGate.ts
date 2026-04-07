@@ -18,6 +18,9 @@ const ROUTE_FEATURE_MAP: Record<string, FeatureKey> = {
   '/ligacoes': 'voice_agent',
   '/campanhas': 'email_automation',
   '/analytics': 'ai_reports',
+  '/agentes/whatsapp': 'whatsapp_agent',
+  '/agentes/email': 'email_agent',
+  '/agentes/dashboard': 'whatsapp_agent',
 }
 
 const API_FEATURE_MAP: Record<string, FeatureKey> = {
@@ -25,6 +28,10 @@ const API_FEATURE_MAP: Record<string, FeatureKey> = {
   '/api/vapi': 'voice_agent',
   '/api/send-notification': 'email_automation',
   '/api/extension': 'whatsapp_plugin',
+  '/api/agent/whatsapp': 'whatsapp_agent',
+  '/api/agent/email': 'email_agent',
+  '/api/agent/config': 'whatsapp_agent',
+  '/api/agent/conversations': 'whatsapp_agent',
 }
 
 export function getRequiredFeatureForRoute(path: string): FeatureKey | null {
