@@ -43,6 +43,22 @@ interface CrmLayoutProps {
 export default function RootLayout({ children }: CrmLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+
+  // Dark mode: read preference on mount, sync to <html> class
+  useEffect(() => {
+    const saved = localStorage.getItem('theme')
+    const prefersDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    setDarkMode(prefersDark)
+    document.documentElement.classList.toggle('dark', prefersDark)
+  }, [])
+
+  const toggleDarkMode = () => {
+    const next = !darkMode
+    setDarkMode(next)
+    document.documentElement.classList.toggle('dark', next)
+    localStorage.setItem('theme', next ? 'dark' : 'light')
+  }
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [userUid, setUserUid] = useState<string | null>(null)
@@ -514,7 +530,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         <link rel="icon" href="/icon-192.png" />
         <link rel="apple-touch-icon" href="/icon-512.png" />
       </head>
-      <body className="bg-slate-50">
+      <body className="bg-slate-50 dark:bg-[#0F0A2E] dark:text-white">
         <ImpersonationProvider>
         <PartnerViewProvider memberships={allMemberships}>
         <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} orgPlanSubscribedAt={orgPlanSubscribedAt} member={member}>
@@ -562,12 +578,12 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           {/* Main content */}
           <main className="flex-1 flex flex-col overflow-hidden">
             {/* Header */}
-            <header className="flex-shrink-0 bg-white border-b border-slate-200/60 px-4 py-3">
+            <header className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200/60 dark:border-navy-mid px-4 py-3">
               <div className="flex items-center justify-between">
                 {/* Mobile menu button */}
                 <button
                   onClick={() => setMobileOpen(true)}
-                  className="md:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors"
+                  className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                 >
                   <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -575,7 +591,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 </button>
 
                 {/* Greeting - mobile */}
-                <span className="md:hidden text-sm font-semibold text-slate-700 truncate max-w-[180px]">
+                <span className="md:hidden text-sm font-semibold text-slate-700 dark:text-white truncate max-w-[180px]">
                   {(() => {
                     const h = currentTime.getHours()
                     const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
@@ -589,7 +605,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
                 {/* Greeting - desktop */}
                 <div className="hidden md:flex items-center gap-2">
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-slate-700 dark:text-slate-200">
                     {(() => {
                       const h = currentTime.getHours()
                       const greeting = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'
@@ -703,6 +719,23 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     </span>
                   )}
 
+                  {/* Dark Mode Toggle */}
+                  <button
+                    onClick={toggleDarkMode}
+                    className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                    title={darkMode ? 'Modo claro' : 'Modo escuro'}
+                  >
+                    {darkMode ? (
+                      <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                      </svg>
+                    )}
+                  </button>
+
                   {/* Notification Bell */}
                   <NotificationBell />
 
@@ -727,7 +760,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     </div>
                   )}
 
-                  <span className="hidden md:inline text-sm text-slate-500">{formatDateTime(currentTime)}</span>
+                  <span className="hidden md:inline text-sm text-slate-500 dark:text-slate-400">{formatDateTime(currentTime)}</span>
                   <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -755,9 +788,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
 
                     {/* Dropdown */}
                     {userMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-scale-in">
-                        <div className="px-4 py-3 border-b border-slate-100">
-                          <p className="text-sm font-semibold text-slate-800 truncate">{userEmail}</p>
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-navy-mid rounded-xl shadow-lg border border-slate-200 dark:border-primary-900 py-2 z-50 animate-scale-in">
+                        <div className="px-4 py-3 border-b border-slate-100 dark:border-primary-900">
+                          <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{userEmail}</p>
                           {orgName && (
                             <p className="text-xs text-slate-500 mt-0.5 truncate">{orgName}</p>
                           )}
@@ -791,7 +824,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
             </header>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto dark:bg-[#0F0A2E]">
                 <FreePlanExpiredGate>
                   <PageAccessGuard>
                     {children}
