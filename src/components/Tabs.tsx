@@ -48,7 +48,7 @@ export default function Tabs({
                   aria-pressed={isActive}
                   className={`relative inline-flex min-w-[120px] items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
                     isActive
-                      ? 'bg-gradient-to-r from-orange-600 via-orange-500 to-amber-400 text-white shadow-lg shadow-orange-200/60'
+                      ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30'
                       : 'text-gray-600 hover:bg-white hover:text-gray-900'
                   }`}
                 >

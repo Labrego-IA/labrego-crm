@@ -43,14 +43,14 @@ export default function ResetPasswordPage() {
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `linear-gradient(rgba(19,222,252,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(19,222,252,0.3) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(139,92,246,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.3) 1px, transparent 1px)`,
             backgroundSize: '60px 60px',
           }}
         />
         {/* Glow orbs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#13DEFC]/10 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#09B00F]/10 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#13DEFC]/5 rounded-full blur-[160px]" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-secondary/10 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[160px]" />
       </div>
 
       {/* Left side — Hero/Branding (hidden on mobile) */}
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
           </div>
 
           {/* Glass card */}
-          <div className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 shadow-[0_0_60px_rgba(19,222,252,0.06)]">
+          <div className="backdrop-blur-xl bg-white/[0.04] border border-white/[0.08] rounded-3xl p-8 shadow-[0_0_60px_rgba(139,92,246,0.06)]">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white">
                 Recuperar senha
@@ -122,7 +122,7 @@ export default function ResetPasswordPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/40 focus:border-[#13DEFC]/40 transition-all"
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all"
                     placeholder="seu@email.com"
                     autoFocus
                   />
@@ -131,7 +131,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-[#13DEFC] to-[#09B00F] hover:from-[#11c8e3] hover:to-[#089e0d] disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#13DEFC]/10 hover:shadow-[#13DEFC]/20"
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary/20 hover:shadow-glow-violet"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
@@ -156,8 +156,8 @@ export default function ResetPasswordPage() {
             ) : (
               <div className="space-y-5">
                 <div className="flex justify-center">
-                  <div className="w-16 h-16 rounded-full bg-[#09B00F]/10 border border-[#09B00F]/20 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#09B00F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-16 h-16 rounded-full bg-success/10 border border-success/20 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                       <polyline points="22 4 12 14.01 9 11.01" />
                     </svg>

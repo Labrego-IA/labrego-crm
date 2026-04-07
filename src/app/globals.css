@@ -4,33 +4,39 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --color-primary: #13DEFC;
-  --color-primary-600: #06B3D4;
-  --color-primary-500: #13DEFC;
-  --color-primary-400: #3CD4F5;
-  --color-secondary: #ffffff;
-  --color-black: #171717;
+  --foreground: #1E1B4B;
+  --color-primary: #8B5CF6;
+  --color-primary-600: #6D28D9;
+  --color-primary-500: #8B5CF6;
+  --color-primary-400: #A78BFA;
+  --color-primary-300: #C4B5FD;
+  --color-secondary: #06B6D4;
+  --color-black: #1E1B4B;
   --color-light: #ffffff;
-  --color-accent: #09B00F;
-  --color-success: #47c799;
-  --color-warning: #fbbc05;
-  --color-error: #f28b82;
-  --gradient-header: linear-gradient(90deg, #078EA9 0%, #13DEFC 50%, #09B00F 100%);
+  --color-accent: #C084FC;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-surface: #F5F3FF;
+  --color-surface-mid: #EDE9FE;
+  --gradient-header: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
 }
 
 .dark {
-  --background: #0A0A0A;
+  --background: #0F0A2E;
   --foreground: #E5E5E5;
-  --color-primary: #3CD4F5;
-  --color-primary-600: #13DEFC;
-  --color-primary-500: #3CD4F5;
-  --color-primary-400: #7AE4F9;
-  --color-secondary: #171717;
+  --color-primary: #A78BFA;
+  --color-primary-600: #8B5CF6;
+  --color-primary-500: #A78BFA;
+  --color-primary-400: #C4B5FD;
+  --color-primary-300: #DDD6FE;
+  --color-secondary: #22D3EE;
   --color-black: #E5E5E5;
-  --color-light: #171717;
-  --color-accent: #34D399;
-  --gradient-header: linear-gradient(90deg, #0B7189 0%, #06B3D4 50%, #078EA9 100%);
+  --color-light: #1E1B4B;
+  --color-accent: #C084FC;
+  --color-surface: #1E1B4B;
+  --color-surface-mid: #312E81;
+  --gradient-header: linear-gradient(135deg, #6D28D9 0%, #0891B2 100%);
 }
 
 body {
@@ -55,6 +61,7 @@ body {
 }
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 border border-primary-600 shadow-sm transition active:scale-[0.99] min-h-[44px];
+  &:hover { box-shadow: 0 0 25px rgba(139,92,246,0.4); }
 }
 .btn-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-dark bg-secondary hover:bg-primary/10 transition active:scale-[0.99] min-h-[44px];
@@ -92,7 +99,31 @@ body {
 }
 
   .brand-gradient {
-    background-image: linear-gradient(to right, #13DEFC, #09B00F);
+    background-image: linear-gradient(135deg, #8B5CF6, #06B6D4);
+  }
+
+  /* Glass morphism effects — Brand Book */
+  .glass-card {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .glass-card-dark {
+    background: rgba(30,27,75,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(139,92,246,0.15);
+  }
+
+  /* Animated gradient text — Brand Book */
+  .gradient-text {
+    background: linear-gradient(135deg, #8B5CF6, #06B6D4, #C084FC, #8B5CF6);
+    background-size: 300% 300%;
+    animation: gradient-shift 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .pdf-page {
     width: 794px;
@@ -330,4 +361,10 @@ body {
   100% {
     transform: translateX(100%);
   }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

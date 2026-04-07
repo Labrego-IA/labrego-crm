@@ -264,7 +264,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   }
 
   return (
-    <nav className="h-full flex flex-col bg-slate-900 border-r border-slate-800">
+    <nav className="h-full flex flex-col bg-navy-mid border-r border-primary-900">
       {/* Header */}
       <div className={`border-b border-white/10 ${collapsed ? 'p-2' : 'p-4'}`}>
         <button
@@ -318,17 +318,17 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${isActive
-                      ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+                      ? 'bg-primary/10 text-primary'
                       : isDisabled || isLocked
                         ? 'text-white/30 cursor-not-allowed'
-                        : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                        : 'text-white/60 hover:bg-white/5 hover:text-primary'
                     }
                   `}
                 >
                   {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
                   )}
-                  <span className={isActive ? 'text-[#13DEFC]' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                  <span className={isActive ? 'text-primary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
                     {item.icon}
                   </span>
                   {!collapsed && (
@@ -364,15 +364,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                 ${collapsed ? 'justify-center' : ''}
                 ${isAgentesSubItemActive
-                  ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                  : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-white/60 hover:bg-white/5 hover:text-primary'
                 }
               `}
             >
               {isAgentesSubItemActive && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
               )}
-              <span className={isAgentesSubItemActive ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+              <span className={isAgentesSubItemActive ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
                 <UsersIcon className="w-5 h-5" />
               </span>
               {!collapsed && (
@@ -406,14 +406,14 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                         className={`
                           flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group relative
                           ${isActive
-                            ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+                            ? 'bg-primary/10 text-primary'
                             : isLocked
                               ? 'text-white/30 cursor-not-allowed'
-                              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                              : 'text-white/60 hover:bg-white/5 hover:text-primary'
                           }
                         `}
                       >
-                        <span className={isActive ? 'text-[#13DEFC]' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                        <span className={isActive ? 'text-primary' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
                           {item.icon}
                         </span>
                         <span className="font-medium text-sm flex-1">{item.label}</span>
@@ -465,17 +465,17 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                         flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                         ${collapsed ? 'justify-center' : ''}
                         ${isActive
-                          ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
+                          ? 'bg-primary/10 text-primary'
                           : isDisabled || isLocked
                             ? 'text-white/30 cursor-not-allowed'
-                            : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                            : 'text-white/60 hover:bg-white/5 hover:text-primary'
                         }
                       `}
                     >
                       {isActive && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
                       )}
-                      <span className={isActive ? 'text-[#13DEFC]' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                      <span className={isActive ? 'text-primary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
                         {item.icon}
                       </span>
                       {!collapsed && (
@@ -525,15 +525,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${pathname?.startsWith('/super-admin')
-                      ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                      : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-white/60 hover:bg-white/5 hover:text-primary'
                     }
                   `}
                 >
                   {pathname?.startsWith('/super-admin') && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
                   )}
-                  <span className={pathname?.startsWith('/super-admin') ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                  <span className={pathname?.startsWith('/super-admin') ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
                     <ShieldCheckIcon className="w-5 h-5" />
                   </span>
                   {!collapsed && (
@@ -554,12 +554,12 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${pathname?.startsWith('/super-admin/ai-usage')
-                      ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-                      : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-white/60 hover:bg-white/5 hover:text-primary'
                     }
                   `}
                 >
-                  <span className={pathname?.startsWith('/super-admin/ai-usage') ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}>
+                  <span className={pathname?.startsWith('/super-admin/ai-usage') ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
                     <CreditCardIcon className="w-5 h-5" />
                   </span>
                   {!collapsed && (
@@ -609,15 +609,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
             ${collapsed ? 'justify-center' : ''}
             ${pathname === '/plano'
-              ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+              ? 'bg-primary/10 text-primary'
+              : 'text-white/60 hover:bg-white/5 hover:text-primary'
             }
           `}
         >
           {pathname === '/plano' && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
           )}
-          <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}`} />
+          <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-primary' : 'text-white/50 group-hover:text-primary'}`} />
           {!collapsed && (
             <span className="font-medium text-sm">Planos</span>
           )}
@@ -634,15 +634,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
             ${collapsed ? 'justify-center' : ''}
             ${pathname === '/guia'
-              ? 'bg-[#13DEFC]/10 text-[#13DEFC]'
-              : 'text-white/60 hover:bg-white/5 hover:text-[#13DEFC]'
+              ? 'bg-primary/10 text-primary'
+              : 'text-white/60 hover:bg-white/5 hover:text-primary'
             }
           `}
         >
           {pathname === '/guia' && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#13DEFC] rounded-r-full" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
           )}
-          <QuestionMarkCircleIcon className={`w-5 h-5 ${pathname === '/guia' ? 'text-[#13DEFC]' : 'text-white/50 group-hover:text-[#13DEFC]'}`} />
+          <QuestionMarkCircleIcon className={`w-5 h-5 ${pathname === '/guia' ? 'text-primary' : 'text-white/50 group-hover:text-primary'}`} />
           {!collapsed && (
             <span className="font-medium text-sm">Guia</span>
           )}
@@ -676,10 +676,10 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center">
           <div
-            className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-navy/70 backdrop-blur-sm"
             onClick={() => setShowLogoutConfirm(false)}
           />
-          <div className="relative bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-navy-mid border border-primary-800 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
                 <ArrowRightOnRectangleIcon className="w-6 h-6 text-red-400" />
@@ -693,7 +693,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
               <div className="flex gap-3 w-full">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}
-                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white/70 bg-slate-700 hover:bg-slate-600 transition-colors duration-200"
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium text-white/70 bg-navy hover:bg-primary-800 transition-colors duration-200"
                 >
                   Cancelar
                 </button>
