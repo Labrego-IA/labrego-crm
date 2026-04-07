@@ -31,11 +31,12 @@ export default function SuperAdminAIUsagePage() {
   const [sortBy, setSortBy] = useState<'tokens' | 'cost' | 'messages'>('cost')
 
   useEffect(() => {
+    // isSuperAdmin pode ser undefined (loading), false (nao e admin), ou true
+    if (isSuperAdmin === undefined) return // Ainda carregando
     if (isSuperAdmin === false) {
       router.replace('/')
       return
     }
-    if (!isSuperAdmin) return
 
     async function loadUsage() {
       try {
