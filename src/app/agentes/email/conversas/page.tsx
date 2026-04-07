@@ -113,10 +113,10 @@ export default function EmailConversasPage() {
           loading={listLoading}
         />
       </div>
-      <div className="flex-1 bg-slate-900/50">
+      <div className="flex-1 bg-slate-50">
         {!selectedId ? (
-          <div className="flex flex-col items-center justify-center h-full text-white/30">
-            <svg className="w-16 h-16 mb-4 text-white/10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex flex-col items-center justify-center h-full text-slate-300">
+            <svg className="w-16 h-16 mb-4 text-slate-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <p className="text-lg font-medium">Selecione uma conversa</p>
@@ -124,7 +124,7 @@ export default function EmailConversasPage() {
           </div>
         ) : threadLoading && !selectedConv ? (
           <div className="flex items-center justify-center h-full">
-            <div className="animate-spin w-8 h-8 border-2 border-[#13DEFC] border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-cyan-600 border-t-transparent rounded-full" />
           </div>
         ) : selectedConv ? (
           <ConversationThread

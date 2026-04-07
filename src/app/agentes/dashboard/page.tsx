@@ -70,7 +70,7 @@ export default function AgentesDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin w-8 h-8 border-2 border-[#13DEFC] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-cyan-600 border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -79,11 +79,11 @@ export default function AgentesDashboardPage() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <SparklesIcon className="w-7 h-7 text-[#13DEFC]" />
+        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          <SparklesIcon className="w-7 h-7 text-cyan-600" />
           Painel de Agentes IA
         </h1>
-        <p className="text-white/50 mt-1">Visao geral do atendimento automatizado.</p>
+        <p className="text-slate-500 mt-1">Visao geral do atendimento automatizado.</p>
       </div>
 
       {/* Stats Grid */}
@@ -92,22 +92,22 @@ export default function AgentesDashboardPage() {
           icon={<ChatBubbleLeftRightIcon className="w-5 h-5" />}
           label="Total Conversas"
           value={stats?.totalConversations || 0}
-          color="text-[#13DEFC]"
-          bgColor="bg-[#13DEFC]/10"
+          color="text-cyan-600"
+          bgColor="bg-cyan-50"
         />
         <StatCard
           icon={<CpuChipIcon className="w-5 h-5" />}
           label="Atendimento IA"
           value={stats?.activeConversations || 0}
-          color="text-[#13DEFC]"
-          bgColor="bg-[#13DEFC]/10"
+          color="text-cyan-600"
+          bgColor="bg-cyan-50"
         />
         <StatCard
           icon={<ArrowsRightLeftIcon className="w-5 h-5" />}
           label="Handoff Humano"
           value={stats?.handoffConversations || 0}
           color="text-yellow-400"
-          bgColor="bg-yellow-500/10"
+          bgColor="bg-yellow-50"
           subtitle={stats ? `${stats.handoffRate}% do total` : ''}
         />
         <StatCard
@@ -115,73 +115,73 @@ export default function AgentesDashboardPage() {
           label="Resolvidas"
           value={stats?.resolvedConversations || 0}
           color="text-green-400"
-          bgColor="bg-green-500/10"
+          bgColor="bg-green-50"
           subtitle={stats ? `${stats.resolutionRate}% do total` : ''}
         />
       </div>
 
       {/* Channel Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+          <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
             <ChatBubbleLeftRightIcon className="w-5 h-5 text-green-400" />
             WhatsApp
           </h3>
-          <div className="text-3xl font-bold text-white mb-1">{stats?.whatsappCount || 0}</div>
-          <p className="text-white/40 text-sm">conversas</p>
-          <a href="/agentes/whatsapp/conversas" className="mt-4 inline-block text-[#13DEFC] text-sm hover:underline">
+          <div className="text-3xl font-bold text-slate-800 mb-1">{stats?.whatsappCount || 0}</div>
+          <p className="text-slate-400 text-sm">conversas</p>
+          <a href="/agentes/whatsapp/conversas" className="mt-4 inline-block text-cyan-600 text-sm hover:underline">
             Ver conversas →
           </a>
         </div>
-        <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+          <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
             <EnvelopeIcon className="w-5 h-5 text-blue-400" />
             Email
           </h3>
-          <div className="text-3xl font-bold text-white mb-1">{stats?.emailCount || 0}</div>
-          <p className="text-white/40 text-sm">conversas</p>
-          <a href="/agentes/email/conversas" className="mt-4 inline-block text-[#13DEFC] text-sm hover:underline">
+          <div className="text-3xl font-bold text-slate-800 mb-1">{stats?.emailCount || 0}</div>
+          <p className="text-slate-400 text-sm">conversas</p>
+          <a href="/agentes/email/conversas" className="mt-4 inline-block text-cyan-600 text-sm hover:underline">
             Ver conversas →
           </a>
         </div>
       </div>
 
       {/* Recent Conversations */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-        <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-          <ClockIcon className="w-5 h-5 text-white/40" />
+      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+        <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
+          <ClockIcon className="w-5 h-5 text-slate-400" />
           Conversas Recentes
         </h3>
         {conversations.length === 0 ? (
-          <p className="text-white/30 text-sm py-8 text-center">Nenhuma conversa ainda. Conecte seu WhatsApp ou Email para comecar.</p>
+          <p className="text-slate-300 text-sm py-8 text-center">Nenhuma conversa ainda. Conecte seu WhatsApp ou Email para comecar.</p>
         ) : (
           <div className="space-y-2">
             {conversations.slice(0, 10).map(conv => (
               <a
                 key={conv.id}
                 href={`/agentes/${conv.channel}/conversas`}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-700/30 transition-colors"
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors"
               >
                 {/* Avatar */}
-                <div className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center text-white/60 text-sm font-medium flex-shrink-0">
+                <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 text-sm font-medium flex-shrink-0">
                   {(conv.contactName || '?')[0].toUpperCase()}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-white text-sm font-medium truncate">{conv.contactName}</span>
-                    <span className="text-white/20 text-xs">
+                    <span className="text-slate-800 text-sm font-medium truncate">{conv.contactName}</span>
+                    <span className="text-slate-200 text-xs">
                       {conv.channel === 'whatsapp' ? '💬' : '📧'}
                     </span>
                   </div>
-                  <p className="text-white/40 text-xs truncate">{conv.lastMessagePreview}</p>
+                  <p className="text-slate-400 text-xs truncate">{conv.lastMessagePreview}</p>
                 </div>
 
                 {/* Status + Time */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <StatusBadge status={conv.status} />
-                  <span className="text-white/20 text-[10px]">
+                  <span className="text-slate-200 text-[10px]">
                     {conv.lastMessageAt ? new Date(conv.lastMessageAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
                   </span>
                 </div>
@@ -198,20 +198,20 @@ function StatCard({ icon, label, value, color, bgColor, subtitle }: {
   icon: React.ReactNode; label: string; value: number; color: string; bgColor: string; subtitle?: string
 }) {
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-5">
+    <div className="bg-white border border-slate-200 rounded-2xl p-5">
       <div className={`w-10 h-10 ${bgColor} rounded-xl flex items-center justify-center ${color} mb-3`}>
         {icon}
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
-      <div className="text-white/40 text-sm">{label}</div>
-      {subtitle && <div className="text-white/25 text-xs mt-0.5">{subtitle}</div>}
+      <div className="text-2xl font-bold text-slate-800">{value}</div>
+      <div className="text-slate-400 text-sm">{label}</div>
+      {subtitle && <div className="text-slate-300 text-xs mt-0.5">{subtitle}</div>}
     </div>
   )
 }
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; color: string }> = {
-    active: { label: 'IA', color: 'bg-[#13DEFC]/20 text-[#13DEFC]' },
+    active: { label: 'IA', color: 'bg-[#13DEFC]/20 text-cyan-600' },
     human_handoff: { label: 'Humano', color: 'bg-yellow-500/20 text-yellow-400' },
     resolved: { label: 'Resolvido', color: 'bg-green-500/20 text-green-400' },
     expired: { label: 'Expirado', color: 'bg-slate-500/20 text-slate-400' },

@@ -47,12 +47,12 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-white">Perguntas Frequentes (FAQ)</h3>
-          <p className="text-white/50 text-sm">Cadastre perguntas e respostas para o agente usar como referencia.</p>
+          <h3 className="text-lg font-semibold text-slate-800">Perguntas Frequentes (FAQ)</h3>
+          <p className="text-slate-500 text-sm">Cadastre perguntas e respostas para o agente usar como referencia.</p>
         </div>
         <button
           onClick={addItem}
-          className="flex items-center gap-2 px-4 py-2 bg-[#13DEFC]/10 hover:bg-[#13DEFC]/20 text-[#13DEFC] font-medium rounded-xl transition-colors text-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-cyan-50 hover:bg-[#13DEFC]/20 text-cyan-600 font-medium rounded-xl transition-colors text-sm"
         >
           <PlusIcon className="w-4 h-4" />
           Adicionar
@@ -60,36 +60,36 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
       </div>
 
       {items.length === 0 && (
-        <div className="text-center py-8 bg-slate-800/30 rounded-xl border border-dashed border-slate-700">
-          <p className="text-white/40">Nenhuma pergunta cadastrada ainda.</p>
-          <p className="text-white/30 text-sm mt-1">Clique em &quot;Adicionar&quot; para comecar.</p>
+        <div className="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+          <p className="text-slate-400">Nenhuma pergunta cadastrada ainda.</p>
+          <p className="text-slate-300 text-sm mt-1">Clique em &quot;Adicionar&quot; para comecar.</p>
         </div>
       )}
 
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div key={item.id} className="bg-slate-800/50 border border-slate-700 rounded-xl overflow-hidden">
+          <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             {/* Header */}
             <div
-              className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-700/30 transition-colors"
+              className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50 transition-colors"
               onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
             >
-              <span className="text-white/40 text-sm font-mono w-6">#{index + 1}</span>
-              <span className="flex-1 text-white/80 text-sm truncate">
+              <span className="text-slate-400 text-sm font-mono w-6">#{index + 1}</span>
+              <span className="flex-1 text-slate-700 text-sm truncate">
                 {item.question || 'Nova pergunta...'}
               </span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={(e) => { e.stopPropagation(); moveItem(index, 'up') }}
                   disabled={index === 0}
-                  className="p-1 text-white/30 hover:text-white/60 disabled:opacity-30"
+                  className="p-1 text-slate-300 hover:text-slate-500 disabled:opacity-30"
                 >
                   <ChevronUpIcon className="w-4 h-4" />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); moveItem(index, 'down') }}
                   disabled={index === items.length - 1}
-                  className="p-1 text-white/30 hover:text-white/60 disabled:opacity-30"
+                  className="p-1 text-slate-300 hover:text-slate-500 disabled:opacity-30"
                 >
                   <ChevronDownIcon className="w-4 h-4" />
                 </button>
@@ -104,25 +104,25 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
 
             {/* Content */}
             {expandedId === item.id && (
-              <div className="px-4 pb-4 space-y-3 border-t border-slate-700/50 pt-3">
+              <div className="px-4 pb-4 space-y-3 border-t border-slate-200 pt-3">
                 <div>
-                  <label className="block text-white/50 text-xs font-medium mb-1">Pergunta</label>
+                  <label className="block text-slate-500 text-xs font-medium mb-1">Pergunta</label>
                   <input
                     type="text"
                     value={item.question}
                     onChange={(e) => updateItem(item.id, 'question', e.target.value)}
                     placeholder="Ex: Qual o prazo de entrega?"
-                    className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-white/50 text-xs font-medium mb-1">Resposta</label>
+                  <label className="block text-slate-500 text-xs font-medium mb-1">Resposta</label>
                   <textarea
                     value={item.answer}
                     onChange={(e) => updateItem(item.id, 'answer', e.target.value)}
                     placeholder="Ex: Nosso prazo de entrega e de 3 a 5 dias uteis..."
                     rows={3}
-                    className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50 resize-none"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
                   />
                 </div>
               </div>
@@ -132,7 +132,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
       </div>
 
       {items.length > 0 && (
-        <p className="text-white/30 text-xs text-center">
+        <p className="text-slate-300 text-xs text-center">
           {items.length} pergunta{items.length > 1 ? 's' : ''} cadastrada{items.length > 1 ? 's' : ''}
         </p>
       )}

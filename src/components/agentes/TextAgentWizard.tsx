@@ -41,9 +41,9 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
   return (
     <div className="space-y-6">
       {/* Strength Score */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-white/60 text-sm">Forca do Agente</span>
+          <span className="text-slate-600 text-sm">Forca do Agente</span>
           <span className={`text-lg font-bold ${
             strengthScore >= 80 ? 'text-green-400' :
             strengthScore >= 50 ? 'text-yellow-400' :
@@ -52,7 +52,7 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
             {strengthScore}%
           </span>
         </div>
-        <div className="w-full bg-slate-700 rounded-full h-2">
+        <div className="w-full bg-slate-200 rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all duration-500 ${
               strengthScore >= 80 ? 'bg-green-400' :
@@ -72,10 +72,10 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
             onClick={() => setActivePhase(phase.id)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               activePhase === phase.id
-                ? 'bg-[#13DEFC]/10 text-[#13DEFC] border border-[#13DEFC]/30'
+                ? 'bg-cyan-50 text-cyan-600 border border-cyan-300'
                 : isPhaseComplete(phase.id)
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'bg-slate-800/50 text-white/50 border border-slate-700 hover:bg-slate-700/50'
+                  ? 'bg-green-50 text-green-400 border border-green-200'
+                  : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'
             }`}
           >
             <span>{phase.icon}</span>
@@ -86,11 +86,11 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
       </div>
 
       {/* Phase Content */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-1">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+        <h3 className="text-lg font-semibold text-slate-800 mb-1">
           {PHASES[activePhase - 1].icon} {PHASES[activePhase - 1].name}
         </h3>
-        <p className="text-white/50 text-sm mb-6">{PHASES[activePhase - 1].description}</p>
+        <p className="text-slate-500 text-sm mb-6">{PHASES[activePhase - 1].description}</p>
 
         {/* Fase 1: Identidade */}
         {activePhase === 1 && (
@@ -128,18 +128,18 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
             <TextArea label="Mensagem Fora do Horario" placeholder="Mensagem quando nao esta no horario de atendimento..."
               value={answers.offHoursMessage} onChange={v => update('offHoursMessage', v)} />
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-1">Maximo de mensagens antes de sugerir humano</label>
+              <label className="block text-slate-600 text-sm font-medium mb-1">Maximo de mensagens antes de sugerir humano</label>
               <input
                 type="number"
                 min={3}
                 max={50}
                 value={answers.maxTurnsBeforeHandoff || 10}
                 onChange={e => update('maxTurnsBeforeHandoff', parseInt(e.target.value) || 10)}
-                className="w-32 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#13DEFC]/50"
+                className="w-32 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-cyan-500"
               />
             </div>
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-2">Estilo de Resposta</label>
+              <label className="block text-slate-600 text-sm font-medium mb-2">Estilo de Resposta</label>
               <div className="flex gap-3">
                 {(['formal', 'balanced', 'informal'] as const).map(style => (
                   <button
@@ -147,8 +147,8 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
                     onClick={() => update('responseStyle', style)}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                       answers.responseStyle === style
-                        ? 'bg-[#13DEFC]/10 text-[#13DEFC] border border-[#13DEFC]/30'
-                        : 'bg-slate-800 text-white/50 border border-slate-600 hover:bg-slate-700'
+                        ? 'bg-cyan-50 text-cyan-600 border border-cyan-300'
+                        : 'bg-slate-100 text-slate-500 border border-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     {style === 'formal' ? 'Formal' : style === 'balanced' ? 'Equilibrado' : 'Informal'}
@@ -163,14 +163,14 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
         {activePhase === 4 && (
           <div className="space-y-4">
             <div>
-              <label className="block text-white/60 text-sm font-medium mb-1">Palavras-chave para Handoff Humano</label>
-              <p className="text-white/30 text-xs mb-2">Quando o cliente usar essas palavras, o agente transfere para um humano.</p>
+              <label className="block text-slate-600 text-sm font-medium mb-1">Palavras-chave para Handoff Humano</label>
+              <p className="text-slate-300 text-xs mb-2">Quando o cliente usar essas palavras, o agente transfere para um humano.</p>
               <input
                 type="text"
                 value={answers.handoffKeywords?.join(', ') || ''}
                 onChange={e => update('handoffKeywords', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
                 placeholder="falar com humano, atendente, gerente, reclamacao"
-                className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
               />
             </div>
             <TextArea label="Temas Proibidos" placeholder="Temas que o agente NAO deve abordar..."
@@ -198,14 +198,14 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
         <button
           onClick={() => setActivePhase(Math.max(1, activePhase - 1))}
           disabled={activePhase === 1}
-          className="px-4 py-2 text-white/50 hover:text-white/80 text-sm transition-colors disabled:opacity-30"
+          className="px-4 py-2 text-slate-500 hover:text-slate-600 text-sm transition-colors disabled:opacity-30"
         >
           Anterior
         </button>
         <button
           onClick={() => setActivePhase(Math.min(5, activePhase + 1))}
           disabled={activePhase === 5}
-          className="px-6 py-2 bg-[#13DEFC]/10 hover:bg-[#13DEFC]/20 text-[#13DEFC] font-medium rounded-xl transition-colors text-sm disabled:opacity-30"
+          className="px-6 py-2 bg-cyan-50 hover:bg-[#13DEFC]/20 text-cyan-600 font-medium rounded-xl transition-colors text-sm disabled:opacity-30"
         >
           Proximo
         </button>
@@ -221,13 +221,13 @@ function Field({ label, placeholder, value, onChange }: {
 }) {
   return (
     <div>
-      <label className="block text-white/60 text-sm font-medium mb-1">{label}</label>
+      <label className="block text-slate-600 text-sm font-medium mb-1">{label}</label>
       <input
         type="text"
         value={value || ''}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50"
+        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
       />
     </div>
   )
@@ -238,13 +238,13 @@ function TextArea({ label, placeholder, value, onChange }: {
 }) {
   return (
     <div>
-      <label className="block text-white/60 text-sm font-medium mb-1">{label}</label>
+      <label className="block text-slate-600 text-sm font-medium mb-1">{label}</label>
       <textarea
         value={value || ''}
         onChange={e => onChange(e.target.value)}
         placeholder={placeholder}
         rows={3}
-        className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50 resize-none"
+        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
       />
     </div>
   )

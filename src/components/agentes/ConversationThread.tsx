@@ -61,14 +61,14 @@ export default function ConversationThread({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-slate-800/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center text-white/60 font-medium">
+          <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
             {(conversation.contactName || '?')[0].toUpperCase()}
           </div>
           <div>
-            <h3 className="text-white font-medium text-sm">{conversation.contactName}</h3>
-            <p className="text-white/40 text-xs">
+            <h3 className="text-slate-800 font-medium text-sm">{conversation.contactName}</h3>
+            <p className="text-slate-400 text-xs">
               {conversation.contactPhone || conversation.contactEmail}
             </p>
           </div>
@@ -78,7 +78,7 @@ export default function ConversationThread({
             <button
               onClick={() => handleAction(onHandoff)}
               disabled={actionLoading}
-              className="px-3 py-1.5 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 bg-yellow-50 hover:bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               Assumir conversa
             </button>
@@ -87,7 +87,7 @@ export default function ConversationThread({
             <button
               onClick={() => handleAction(onResolve)}
               disabled={actionLoading}
-              className="flex items-center gap-1 px-3 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-500/20 text-green-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               <CheckCircleIcon className="w-3.5 h-3.5" />
               Resolver
@@ -103,7 +103,7 @@ export default function ConversationThread({
 
       {/* Resolved Banner */}
       {conversation.status === 'resolved' && (
-        <div className="flex items-center justify-between px-4 py-3 bg-green-500/10 border-b border-green-500/20">
+        <div className="flex items-center justify-between px-4 py-3 bg-green-50 border-b border-green-200">
           <div className="flex items-center gap-2">
             <CheckCircleIcon className="w-4 h-4 text-green-400" />
             <span className="text-green-400 text-sm font-medium">Conversa resolvida</span>
@@ -111,7 +111,7 @@ export default function ConversationThread({
           <button
             onClick={() => handleAction(onResumeAI)}
             disabled={actionLoading}
-            className="flex items-center gap-1 px-3 py-1.5 bg-slate-700/50 hover:bg-slate-700 text-white/60 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
             Reabrir
@@ -123,7 +123,7 @@ export default function ConversationThread({
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {messages.length === 0 && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-white/30 text-sm">Nenhuma mensagem ainda.</p>
+            <p className="text-slate-300 text-sm">Nenhuma mensagem ainda.</p>
           </div>
         )}
         {messages.map(msg => (
@@ -134,7 +134,7 @@ export default function ConversationThread({
 
       {/* Input (apenas se nao resolvida) */}
       {conversation.status !== 'resolved' && (
-        <div className="px-4 py-3 border-t border-slate-700 bg-slate-800/50">
+        <div className="px-4 py-3 border-t border-slate-200 bg-white">
           <div className="flex items-end gap-2">
             <textarea
               value={newMessage}
@@ -146,7 +146,7 @@ export default function ConversationThread({
                   : 'Enviar mensagem manual (o agente IA esta respondendo)...'
               }
               rows={1}
-              className="flex-1 px-4 py-2.5 bg-slate-900/50 border border-slate-600 rounded-xl text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50 resize-none"
+              className="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
             />
             <button
               onClick={handleSend}

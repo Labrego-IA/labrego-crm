@@ -85,7 +85,7 @@ export default function WhatsAppConfigPage() {
   if (loading || !config) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin w-8 h-8 border-2 border-[#13DEFC] border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-cyan-600 border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -102,16 +102,16 @@ export default function WhatsAppConfigPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
             <span className="text-3xl">🤖</span>
             Agente WhatsApp
           </h1>
-          <p className="text-white/50 mt-1">Configure seu agente de atendimento automatico por WhatsApp.</p>
+          <p className="text-slate-500 mt-1">Configure seu agente de atendimento automatico por WhatsApp.</p>
         </div>
         <div className="flex items-center gap-3">
           {/* Toggle Ativar/Desativar */}
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-white/60 text-sm">{config.whatsapp.enabled ? 'Ativo' : 'Inativo'}</span>
+            <span className="text-slate-600 text-sm">{config.whatsapp.enabled ? 'Ativo' : 'Inativo'}</span>
             <button
               onClick={() => updateConfig({
                 whatsapp: { ...config.whatsapp, enabled: !config.whatsapp.enabled }
@@ -133,7 +133,7 @@ export default function WhatsAppConfigPage() {
             className={`px-6 py-2 rounded-xl font-medium text-sm transition-all ${
               dirty
                 ? 'bg-[#13DEFC] text-slate-900 hover:bg-[#13DEFC]/90'
-                : 'bg-slate-700 text-white/30 cursor-not-allowed'
+                : 'bg-slate-200 text-slate-300 cursor-not-allowed'
             }`}
           >
             {saving ? 'Salvando...' : 'Salvar'}
@@ -142,15 +142,15 @@ export default function WhatsAppConfigPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-700 pb-px">
+      <div className="flex gap-2 border-b border-slate-200 pb-px">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all ${
               activeTab === tab.id
-                ? 'bg-slate-800/80 text-[#13DEFC] border-b-2 border-[#13DEFC]'
-                : 'text-white/50 hover:text-white/80 hover:bg-slate-800/30'
+                ? 'bg-white text-cyan-600 border-b-2 border-[#13DEFC]'
+                : 'text-slate-500 hover:text-slate-600 hover:bg-slate-50'
             }`}
           >
             <span>{tab.icon}</span>
@@ -184,22 +184,22 @@ export default function WhatsAppConfigPage() {
         {activeTab === 'configuracoes' && (
           <div className="space-y-6">
             {/* Modelo LLM */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Modelo de IA</h3>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">Modelo de IA</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-white/60 text-sm font-medium mb-1">Modelo</label>
+                  <label className="block text-slate-600 text-sm font-medium mb-1">Modelo</label>
                   <select
                     value={config.shared.llmModel}
                     onChange={e => updateConfig({ shared: { ...config.shared, llmModel: e.target.value } })}
-                    className="w-64 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm focus:outline-none focus:border-[#13DEFC]/50"
+                    className="w-64 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-cyan-500"
                   >
                     <option value="gpt-4o-mini">GPT-4o Mini (Rapido e economico)</option>
                     <option value="gpt-4o">GPT-4o (Mais inteligente)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-white/60 text-sm font-medium mb-1">
+                  <label className="block text-slate-600 text-sm font-medium mb-1">
                     Temperatura: {config.shared.temperature}
                   </label>
                   <input
@@ -211,15 +211,15 @@ export default function WhatsAppConfigPage() {
                     onChange={e => updateConfig({ shared: { ...config.shared, temperature: parseFloat(e.target.value) } })}
                     className="w-64"
                   />
-                  <p className="text-white/30 text-xs mt-1">Mais baixo = mais preciso. Mais alto = mais criativo.</p>
+                  <p className="text-slate-300 text-xs mt-1">Mais baixo = mais preciso. Mais alto = mais criativo.</p>
                 </div>
               </div>
             </div>
 
             {/* Horario de Atendimento */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">Horario de Atendimento</h3>
+                <h3 className="text-lg font-semibold text-slate-800">Horario de Atendimento</h3>
                 <button
                   onClick={() => updateConfig({
                     shared: {
@@ -241,7 +241,7 @@ export default function WhatsAppConfigPage() {
                 <div className="space-y-4">
                   <div className="flex gap-4">
                     <div>
-                      <label className="block text-white/60 text-sm mb-1">Inicio</label>
+                      <label className="block text-slate-600 text-sm mb-1">Inicio</label>
                       <input
                         type="number"
                         min={0} max={23}
@@ -249,11 +249,11 @@ export default function WhatsAppConfigPage() {
                         onChange={e => updateConfig({
                           shared: { ...config.shared, workHours: { ...config.shared.workHours, startHour: parseInt(e.target.value) } }
                         })}
-                        className="w-20 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm"
+                        className="w-20 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/60 text-sm mb-1">Fim</label>
+                      <label className="block text-slate-600 text-sm mb-1">Fim</label>
                       <input
                         type="number"
                         min={0} max={23}
@@ -261,12 +261,12 @@ export default function WhatsAppConfigPage() {
                         onChange={e => updateConfig({
                           shared: { ...config.shared, workHours: { ...config.shared.workHours, endHour: parseInt(e.target.value) } }
                         })}
-                        className="w-20 px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm"
+                        className="w-20 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-white/60 text-sm font-medium mb-2">Dias de Atendimento</label>
+                    <label className="block text-slate-600 text-sm font-medium mb-2">Dias de Atendimento</label>
                     <div className="flex gap-2">
                       {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'].map((day, i) => (
                         <button
@@ -281,8 +281,8 @@ export default function WhatsAppConfigPage() {
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             config.shared.workHours.workDays.includes(i)
-                              ? 'bg-[#13DEFC]/10 text-[#13DEFC] border border-[#13DEFC]/30'
-                              : 'bg-slate-800 text-white/40 border border-slate-600'
+                              ? 'bg-cyan-50 text-cyan-600 border border-cyan-300'
+                              : 'bg-slate-100 text-slate-400 border border-slate-300'
                           }`}
                         >
                           {day}
@@ -295,11 +295,11 @@ export default function WhatsAppConfigPage() {
             </div>
 
             {/* Audio (ElevenLabs) */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Respostas em Audio</h3>
-                  <p className="text-white/40 text-sm">Gerar audio das respostas via ElevenLabs</p>
+                  <h3 className="text-lg font-semibold text-slate-800">Respostas em Audio</h3>
+                  <p className="text-slate-400 text-sm">Gerar audio das respostas via ElevenLabs</p>
                 </div>
                 <button
                   onClick={() => updateConfig({ audio: { ...config.audio, enabled: !config.audio.enabled } })}
@@ -316,13 +316,13 @@ export default function WhatsAppConfigPage() {
               {config.audio.enabled && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-white/60 text-sm font-medium mb-1">Voice ID (ElevenLabs)</label>
+                    <label className="block text-slate-600 text-sm font-medium mb-1">Voice ID (ElevenLabs)</label>
                     <input
                       type="text"
                       value={config.audio.voiceId}
                       onChange={e => updateConfig({ audio: { ...config.audio, voiceId: e.target.value } })}
                       placeholder="Cole o Voice ID do ElevenLabs"
-                      className="w-full px-3 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#13DEFC]/50"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                     />
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -330,35 +330,35 @@ export default function WhatsAppConfigPage() {
                       type="checkbox"
                       checked={config.audio.respondWithAudio}
                       onChange={e => updateConfig({ audio: { ...config.audio, respondWithAudio: e.target.checked } })}
-                      className="w-4 h-4 rounded border-slate-600 bg-slate-900 text-[#13DEFC]"
+                      className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
                     />
-                    <span className="text-white/60 text-sm">Enviar audio junto com texto nas respostas</span>
+                    <span className="text-slate-600 text-sm">Enviar audio junto com texto nas respostas</span>
                   </label>
                 </div>
               )}
             </div>
 
             {/* Acoes CRM */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Acoes no CRM</h3>
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-slate-800 mb-4">Acoes no CRM</h3>
               <div className="space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.crmActions.autoCreateContact}
                     onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoCreateContact: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-600 bg-slate-900 text-[#13DEFC]"
+                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
                   />
-                  <span className="text-white/60 text-sm">Criar contato automaticamente no CRM</span>
+                  <span className="text-slate-600 text-sm">Criar contato automaticamente no CRM</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.crmActions.autoTagContacts}
                     onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoTagContacts: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-600 bg-slate-900 text-[#13DEFC]"
+                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
                   />
-                  <span className="text-white/60 text-sm">Aplicar tags automaticas nos contatos</span>
+                  <span className="text-slate-600 text-sm">Aplicar tags automaticas nos contatos</span>
                 </label>
               </div>
             </div>
