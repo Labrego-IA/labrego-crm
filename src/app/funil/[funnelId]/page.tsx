@@ -3566,8 +3566,8 @@ export default function FunilDetailPage() {
       {/* Header with KPIs */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-20">
         <div className="px-6 py-3">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+            <div className="flex items-center gap-6 min-w-0">
               <button
                 onClick={() => router.push('/funil')}
                 className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
@@ -3580,7 +3580,7 @@ export default function FunilDetailPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: funnelColor }} />
-                  <h1 className="text-xl font-bold text-slate-800 truncate">{funnelName || 'Funil de Vendas'}</h1>
+                  <h1 className="text-xl font-bold text-slate-800 truncate max-w-[200px] sm:max-w-[300px] lg:max-w-none">{funnelName || 'Funil de Vendas'}</h1>
                   <span className="hidden sm:inline text-slate-300">·</span>
                   <span className="hidden sm:inline text-sm text-slate-500 flex-shrink-0">{globalMetrics.totalContacts} contato{globalMetrics.totalContacts !== 1 ? 's' : ''}</span>
                   {/* Automation Status Pill (clicável) */}
@@ -3714,7 +3714,7 @@ export default function FunilDetailPage() {
               </div>
 
               {/* KPI Pills */}
-              <div className="hidden lg:flex items-center gap-1.5 ml-3">
+              <div className="hidden xl:flex items-center gap-1.5 ml-3 flex-shrink-0 overflow-x-auto scrollbar-hide max-w-[50vw]">
                 <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                   globalMetrics.overduePercent > 30
                     ? 'bg-red-50 text-red-700'

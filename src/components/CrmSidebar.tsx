@@ -264,7 +264,7 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
   }
 
   return (
-    <nav className="h-full flex flex-col bg-navy-mid border-r border-primary-900">
+    <nav className="h-full flex flex-col bg-navy border-r border-navy-mid">
       {/* Header */}
       <div className={`border-b border-white/10 ${collapsed ? 'p-2' : 'p-4'}`}>
         <button
@@ -318,17 +318,17 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${isActive
-                      ? 'bg-primary/10 text-primary'
+                      ? 'bg-secondary/10 text-secondary'
                       : isDisabled || isLocked
                         ? 'text-white/30 cursor-not-allowed'
-                        : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                        : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                     }
                   `}
                 >
                   {isActive && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
                   )}
-                  <span className={isActive ? 'text-primary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
+                  <span className={isActive ? 'text-secondary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-secondary'}>
                     {item.icon}
                   </span>
                   {!collapsed && (
@@ -364,15 +364,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                 w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                 ${collapsed ? 'justify-center' : ''}
                 ${isAgentesSubItemActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                  ? 'bg-secondary/10 text-secondary'
+                  : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                 }
               `}
             >
               {isAgentesSubItemActive && (
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
               )}
-              <span className={isAgentesSubItemActive ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
+              <span className={isAgentesSubItemActive ? 'text-secondary' : 'text-white/50 group-hover:text-secondary'}>
                 <UsersIcon className="w-5 h-5" />
               </span>
               {!collapsed && (
@@ -406,14 +406,14 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                         className={`
                           flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group relative
                           ${isActive
-                            ? 'bg-primary/10 text-primary'
+                            ? 'bg-secondary/10 text-secondary'
                             : isLocked
                               ? 'text-white/30 cursor-not-allowed'
-                              : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                              : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                           }
                         `}
                       >
-                        <span className={isActive ? 'text-primary' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
+                        <span className={isActive ? 'text-secondary' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-secondary'}>
                           {item.icon}
                         </span>
                         <span className="font-medium text-sm flex-1">{item.label}</span>
@@ -465,17 +465,17 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                         flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                         ${collapsed ? 'justify-center' : ''}
                         ${isActive
-                          ? 'bg-primary/10 text-primary'
+                          ? 'bg-secondary/10 text-secondary'
                           : isDisabled || isLocked
                             ? 'text-white/30 cursor-not-allowed'
-                            : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                            : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                         }
                       `}
                     >
                       {isActive && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
                       )}
-                      <span className={isActive ? 'text-primary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-primary'}>
+                      <span className={isActive ? 'text-secondary' : isDisabled || isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-secondary'}>
                         {item.icon}
                       </span>
                       {!collapsed && (
@@ -525,15 +525,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${pathname?.startsWith('/super-admin')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                      ? 'bg-secondary/10 text-secondary'
+                      : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                     }
                   `}
                 >
                   {pathname?.startsWith('/super-admin') && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
                   )}
-                  <span className={pathname?.startsWith('/super-admin') ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
+                  <span className={pathname?.startsWith('/super-admin') ? 'text-secondary' : 'text-white/50 group-hover:text-secondary'}>
                     <ShieldCheckIcon className="w-5 h-5" />
                   </span>
                   {!collapsed && (
@@ -554,12 +554,12 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
                     flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
                     ${collapsed ? 'justify-center' : ''}
                     ${pathname?.startsWith('/super-admin/ai-usage')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-white/60 hover:bg-white/5 hover:text-primary'
+                      ? 'bg-secondary/10 text-secondary'
+                      : 'text-white/60 hover:bg-white/5 hover:text-secondary'
                     }
                   `}
                 >
-                  <span className={pathname?.startsWith('/super-admin/ai-usage') ? 'text-primary' : 'text-white/50 group-hover:text-primary'}>
+                  <span className={pathname?.startsWith('/super-admin/ai-usage') ? 'text-secondary' : 'text-white/50 group-hover:text-secondary'}>
                     <CreditCardIcon className="w-5 h-5" />
                   </span>
                   {!collapsed && (
@@ -609,15 +609,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
             ${collapsed ? 'justify-center' : ''}
             ${pathname === '/plano'
-              ? 'bg-primary/10 text-primary'
-              : 'text-white/60 hover:bg-white/5 hover:text-primary'
+              ? 'bg-secondary/10 text-secondary'
+              : 'text-white/60 hover:bg-white/5 hover:text-secondary'
             }
           `}
         >
           {pathname === '/plano' && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
           )}
-          <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-primary' : 'text-white/50 group-hover:text-primary'}`} />
+          <Cog6ToothIcon className={`w-5 h-5 ${pathname === '/plano' ? 'text-secondary' : 'text-white/50 group-hover:text-secondary'}`} />
           {!collapsed && (
             <span className="font-medium text-sm">Planos</span>
           )}
@@ -634,15 +634,15 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative
             ${collapsed ? 'justify-center' : ''}
             ${pathname === '/guia'
-              ? 'bg-primary/10 text-primary'
-              : 'text-white/60 hover:bg-white/5 hover:text-primary'
+              ? 'bg-secondary/10 text-secondary'
+              : 'text-white/60 hover:bg-white/5 hover:text-secondary'
             }
           `}
         >
           {pathname === '/guia' && (
-            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-secondary rounded-r-full" />
           )}
-          <QuestionMarkCircleIcon className={`w-5 h-5 ${pathname === '/guia' ? 'text-primary' : 'text-white/50 group-hover:text-primary'}`} />
+          <QuestionMarkCircleIcon className={`w-5 h-5 ${pathname === '/guia' ? 'text-secondary' : 'text-white/50 group-hover:text-secondary'}`} />
           {!collapsed && (
             <span className="font-medium text-sm">Guia</span>
           )}

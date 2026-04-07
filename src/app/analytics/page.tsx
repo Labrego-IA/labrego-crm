@@ -964,17 +964,17 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
         {kpiCards.map(card => (
-          <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <span className={`p-2 rounded-xl ${card.color}`}>
                 <card.icon className="w-4 h-4" />
               </span>
             </div>
-            <p className="text-2xl font-bold text-slate-900">{typeof card.value === 'number' ? card.value.toLocaleString('pt-BR') : card.value}</p>
-            <p className="text-xs text-slate-500 mt-1">{card.label}</p>
-            {card.sub && <p className="text-xs text-slate-400 mt-0.5">{card.sub}</p>}
+            <p className="text-lg xl:text-xl font-bold text-slate-900 truncate">{typeof card.value === 'number' ? card.value.toLocaleString('pt-BR') : card.value}</p>
+            <p className="text-xs text-slate-500 mt-1 truncate">{card.label}</p>
+            {card.sub && <p className="text-xs text-slate-400 mt-0.5 truncate">{card.sub}</p>}
           </div>
         ))}
       </div>
