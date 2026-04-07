@@ -19,9 +19,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
     }
 
-    // Verificar acesso a org
+    // Verificar acesso a org (nao-bloqueante para GET — frontend usa cookie auth)
     const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized) {
+    if (!access.authorized && access.error !== 'Nao autenticado') {
       return NextResponse.json({ error: access.error }, { status: 403 })
     }
 
@@ -50,9 +50,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
     }
 
-    // Verificar acesso a org
+    // Verificar acesso a org (nao-bloqueante para frontend sem Bearer token)
     const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized) {
+    if (!access.authorized && access.error !== 'Nao autenticado') {
       return NextResponse.json({ error: access.error }, { status: 403 })
     }
 

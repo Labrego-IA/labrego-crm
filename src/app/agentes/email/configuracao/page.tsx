@@ -25,7 +25,21 @@ export default function EmailConfigPage() {
       try {
         const res = await fetch(`/api/agent/config?orgId=${orgId}`)
         const data = await res.json()
-        setConfig(data as AgentConfig)
+        const merged = {
+          ...DEFAULT_AGENT_CONFIG,
+          ...data,
+          whatsapp: { ...DEFAULT_AGENT_CONFIG.whatsapp, ...(data.whatsapp || {}) },
+          email: { ...DEFAULT_AGENT_CONFIG.email, ...(data.email || {}) },
+          shared: { ...DEFAULT_AGENT_CONFIG.shared, ...(data.shared || {}), workHours: { ...DEFAULT_AGENT_CONFIG.shared.workHours, ...(data.shared?.workHours || {}) } },
+          audio: { ...DEFAULT_AGENT_CONFIG.audio, ...(data.audio || {}) },
+          tools: { googleCalendar: { ...DEFAULT_AGENT_CONFIG.tools.googleCalendar, ...(data.tools?.googleCalendar || {}) }, followUp: { ...DEFAULT_AGENT_CONFIG.tools.followUp, ...(data.tools?.followUp || {}) }, funnelMove: { ...DEFAULT_AGENT_CONFIG.tools.funnelMove, ...(data.tools?.funnelMove || {}) } },
+          crmActions: { ...DEFAULT_AGENT_CONFIG.crmActions, ...(data.crmActions || {}) },
+          orgId: data.orgId || orgId,
+          createdAt: data.createdAt || '',
+          updatedAt: data.updatedAt || '',
+          updatedBy: data.updatedBy || '',
+        } as AgentConfig
+        setConfig(merged)
       } catch {
         setConfig({ ...DEFAULT_AGENT_CONFIG, orgId: orgId!, createdAt: '', updatedAt: '', updatedBy: '' })
       } finally {

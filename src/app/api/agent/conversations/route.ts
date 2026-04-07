@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     }
 
     const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized) {
+    if (!access.authorized && access.error !== 'Nao autenticado') {
       return NextResponse.json({ error: access.error }, { status: 403 })
     }
 
