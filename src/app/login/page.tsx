@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   signInWithEmailAndPassword,
@@ -216,10 +217,7 @@ function LoginPage() {
         <div className="max-w-md space-y-8">
           {/* Logo */}
           <div>
-            <h1 className="text-6xl font-black bg-gradient-to-r from-[#13DEFC] to-[#09B00F] bg-clip-text text-transparent tracking-tight">
-              Voxium
-            </h1>
-            <div className="h-1 w-20 bg-gradient-to-r from-[#13DEFC] to-[#09B00F] rounded-full mt-4" />
+            <Image src="/logo-voxium.png" alt="Voxium" width={240} height={160} className="object-contain" />
           </div>
 
           {/* Tagline */}
@@ -254,9 +252,7 @@ function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-10">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-[#13DEFC] to-[#09B00F] bg-clip-text text-transparent tracking-tight">
-              Voxium
-            </h1>
+            <Image src="/logo-voxium.png" alt="Voxium" width={180} height={120} className="object-contain mx-auto" />
             <p className="text-sm text-slate-400 mt-2">Acelere suas vendas com IA</p>
           </div>
 

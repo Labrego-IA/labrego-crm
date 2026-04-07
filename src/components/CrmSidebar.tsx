@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   MixerHorizontalIcon,
@@ -33,6 +34,7 @@ import {
   ChatBubbleLeftRightIcon,
   SparklesIcon,
   InboxIcon,
+  SwatchIcon,
 } from '@heroicons/react/24/outline'
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline'
 import { signOut } from 'firebase/auth'
@@ -193,6 +195,11 @@ const adminItems: NavItem[] = [
     href: '/admin/estrategia',
     icon: <BookOpenIcon className="w-5 h-5" />,
   },
+  {
+    label: 'Identidade Visual',
+    href: '/admin/marca',
+    icon: <SwatchIcon className="w-5 h-5" />,
+  },
 ]
 
 // Mapping of admin pages to the action(s) that gate access on each page.
@@ -265,9 +272,9 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           className="flex items-center justify-center w-full rounded-2xl transition-all duration-200 hover:bg-white/5 group py-2"
         >
           {collapsed ? (
-            <span className="text-lg font-bold bg-gradient-to-r from-[#13DEFC] to-[#09B00F] bg-clip-text text-transparent">V</span>
+            <Image src="/logo-voxium.png" alt="Voxium" width={28} height={28} className="object-contain" />
           ) : (
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#13DEFC] to-[#09B00F] bg-clip-text text-transparent tracking-tight">Voxium</span>
+            <Image src="/logo-voxium.png" alt="Voxium" width={120} height={40} className="object-contain" />
           )}
         </button>
       </div>
