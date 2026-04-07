@@ -175,25 +175,25 @@ function GridBg() {
   )
 }
 
+/* ─── VOX WAVE — BRAND ELEMENT ─── */
+function VoxWave({ className = '', variant = 'brand' }: { className?: string; variant?: 'brand' | 'light' | 'mono' }) {
+  const colors = {
+    brand: ['#8B5CF6', '#06B6D4', '#C084FC'],
+    light: ['#C4B5FD', '#67E8F9', '#EDE9FE'],
+    mono: ['#1E1B4B', '#312E81', '#64748B'],
+  }
+  const [c1, c2, c3] = colors[variant]
+  return (
+    <svg viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-label="Vox Wave — elemento visual Voxium">
+      <path d="M0 30 Q10 10 20 30 Q30 50 40 30 Q50 10 60 30 Q70 50 80 30 Q90 10 100 30 Q110 50 120 30 Q130 10 140 30 Q150 50 160 30 Q170 10 180 30 Q190 50 200 30" stroke={c1} strokeWidth="2.5" strokeLinecap="round" opacity="0.9" />
+      <path d="M0 30 Q10 16 20 30 Q30 44 40 30 Q50 16 60 30 Q70 44 80 30 Q90 16 100 30 Q110 44 120 30 Q130 16 140 30 Q150 44 160 30 Q170 16 180 30 Q190 44 200 30" stroke={c2} strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+      <path d="M0 30 Q10 22 20 30 Q30 38 40 30 Q50 22 60 30 Q70 38 80 30 Q90 22 100 30 Q110 38 120 30 Q130 22 140 30 Q150 38 160 30 Q170 22 180 30 Q190 38 200 30" stroke={c3} strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+    </svg>
+  )
+}
+
 /* ─── MAIN PAGE ─── */
 export default function BrandBookPage() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const heroRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      if (!heroRef.current) return
-      const rect = heroRef.current.getBoundingClientRect()
-      setMousePos({
-        x: ((e.clientX - rect.left) / rect.width) * 100,
-        y: ((e.clientY - rect.top) / rect.height) * 100,
-      })
-    }
-    const el = heroRef.current
-    el?.addEventListener('mousemove', handleMove)
-    return () => el?.removeEventListener('mousemove', handleMove)
-  }, [])
-
   return (
     <div className="min-h-screen bg-[#F5F3FF] relative">
       {/* Global CSS for animations */}
@@ -269,20 +269,9 @@ export default function BrandBookPage() {
       `}</style>
 
       {/* ═══ HERO ═══ */}
-      <div ref={heroRef} className="relative overflow-hidden min-h-[480px] flex items-center" style={{ background: 'linear-gradient(135deg, #0F0A2E 0%, #1E1B4B 40%, #312E81 100%)' }}>
+      <div className="relative overflow-hidden min-h-[480px] flex items-center" style={{ background: 'linear-gradient(135deg, #0F0A2E 0%, #1E1B4B 40%, #312E81 100%)' }}>
         <FloatingOrbs />
         <GridBg />
-
-        {/* Mouse-follow spotlight */}
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full pointer-events-none transition-all duration-[600ms] ease-out"
-          style={{
-            background: `radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 60%)`,
-            left: `${mousePos.x}%`,
-            top: `${mousePos.y}%`,
-            transform: 'translate(-50%, -50%)',
-          }}
-        />
 
         {/* Animated top border */}
         <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, #8B5CF6, #06B6D4, #C084FC, transparent)', backgroundSize: '200% 100%', animation: 'shimmer 3s ease-in-out infinite' }} />
@@ -290,38 +279,64 @@ export default function BrandBookPage() {
         <div className="relative max-w-6xl mx-auto px-6 py-20 w-full">
           <div className="flex flex-col items-center text-center">
             {/* Logo with glow */}
-            <div className="relative mb-10">
+            <div className="relative mb-8">
               <div className="absolute inset-0 blur-[60px] opacity-40 animate-[glow-pulse_4s_ease-in-out_infinite]" style={{ background: 'radial-gradient(circle, #8B5CF6 0%, #06B6D4 50%, transparent 70%)' }} />
               <Image src="/logo-voxium.png" alt="Voxium" width={220} height={147} className="object-contain relative z-10 drop-shadow-2xl" />
             </div>
 
+            {/* Vox Wave in hero */}
+            <VoxWave variant="brand" className="w-48 mb-6 opacity-60" />
+
             <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-5">
               <span className="gradient-text">Brand Book</span>
             </h1>
-            <p className="text-lg text-white/40 max-w-lg leading-relaxed">
+            <p className="text-lg text-white/70 max-w-lg leading-relaxed">
               Guia de identidade visual da marca Voxium. Cores, tipografia, espacamentos e estilo para criar experiencias consistentes e memoraveis.
             </p>
 
             {/* Version badge */}
             <div className="flex items-center gap-3 mt-8">
-              <span className="px-3 py-1.5 rounded-full text-xs font-medium text-white/60 border border-white/10 bg-white/5 backdrop-blur-sm">v1.0</span>
-              <span className="text-xs text-white/30">Abril 2026</span>
+              <span className="px-3 py-1.5 rounded-full text-xs font-medium text-white/70 border border-white/15 bg-white/5 backdrop-blur-sm">v2.0</span>
+              <span className="text-xs text-white/50">Abril 2026</span>
               <span className="w-1 h-1 rounded-full bg-[#8B5CF6]" />
-              <span className="text-xs text-white/30">Voxium CRM</span>
+              <span className="text-xs text-white/50">Voxium CRM</span>
             </div>
 
             {/* Scroll indicator */}
             <div className="mt-12 animate-bounce">
-              <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
-                <div className="w-1 h-2 rounded-full bg-white/40" />
+              <div className="w-6 h-10 rounded-full border-2 border-white/25 flex justify-center pt-2">
+                <div className="w-1 h-2 rounded-full bg-white/50" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* ═══ QUICK NAV ═══ */}
+      <div className="max-w-6xl mx-auto px-6 -mt-6 relative z-10 mb-8">
+        <div className="glass-card rounded-2xl px-6 py-4 flex flex-wrap items-center gap-x-6 gap-y-2 shadow-lg">
+          <span className="text-[10px] font-bold text-[#8B5CF6] uppercase tracking-[0.15em] shrink-0">Indice</span>
+          {[
+            { n: '1', label: 'Logo' },
+            { n: '2', label: 'Brand Element' },
+            { n: '3', label: 'Cores' },
+            { n: '4', label: 'Gradientes' },
+            { n: '5', label: 'Tipografia' },
+            { n: '6', label: 'Sombras' },
+            { n: '7', label: 'Icones' },
+            { n: '8', label: 'Componentes' },
+            { n: '9', label: 'Espacamento' },
+            { n: '10', label: 'Tom de Voz' },
+            { n: '11', label: 'Principios' },
+          ].map((item) => (
+            <span key={item.n} className="text-xs text-[#64748B] hover:text-[#8B5CF6] transition-colors cursor-default">
+              <span className="font-mono text-[#C4B5FD]">{item.n}</span> {item.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto px-6 py-16 space-y-24 relative">
-        <FloatingOrbs />
 
         {/* ═══ 1. LOGO ═══ */}
         <RevealSection>
@@ -370,9 +385,80 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 2. PALETA DE CORES ═══ */}
+        {/* ═══ 2. BRAND ELEMENT — VOX WAVE ═══ */}
         <RevealSection>
-          <SectionHeader number="2" title="Paleta de Cores" subtitle="Sistema de cores extraido do gradiente roxo-ciano do logo. Clique para copiar." />
+          <SectionHeader number="2" title="Brand Element" subtitle="Elemento visual proprietario derivado do nome Voxium (vox = voz)" />
+
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-2 uppercase tracking-[0.2em]">Vox Wave</h3>
+            <p className="text-sm text-[#64748B] mb-8">Onda sonora estilizada que representa a essencia da marca: voz, comunicacao e conexao. Usada como elemento decorativo em headers, divisores de secao e backgrounds.</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {/* Brand variant */}
+              <div className="group rounded-2xl p-8 flex flex-col items-center justify-center gap-4 transition-all duration-300 hover:scale-[1.02]" style={{ background: 'linear-gradient(135deg, #0F0A2E 0%, #1E1B4B 100%)' }}>
+                <VoxWave variant="brand" className="w-full max-w-[180px]" />
+                <span className="text-[10px] font-medium uppercase tracking-widest text-white/50">Brand (fundo escuro)</span>
+              </div>
+              {/* Light variant */}
+              <div className="group rounded-2xl p-8 flex flex-col items-center justify-center gap-4 border border-[#EDE9FE] bg-white transition-all duration-300 hover:scale-[1.02]">
+                <VoxWave variant="light" className="w-full max-w-[180px]" />
+                <span className="text-[10px] font-medium uppercase tracking-widest text-[#94A3B8]">Light (fundo claro)</span>
+              </div>
+              {/* Mono variant */}
+              <div className="group rounded-2xl p-8 flex flex-col items-center justify-center gap-4 bg-[#F5F3FF] transition-all duration-300 hover:scale-[1.02]">
+                <VoxWave variant="mono" className="w-full max-w-[180px]" />
+                <span className="text-[10px] font-medium uppercase tracking-widest text-[#94A3B8]">Mono (neutro)</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="glass-card rounded-2xl p-6">
+                <h4 className="text-sm font-bold text-[#10B981] mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#10B981]/10 flex items-center justify-center text-xs">✓</span>
+                  Quando Usar
+                </h4>
+                <ul className="space-y-2.5 text-sm text-[#64748B]">
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Como divisor de secao entre blocos de conteudo</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Em headers e hero sections junto ao logo</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Como background decorativo com baixa opacidade</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Em materiais de marketing e apresentacoes</li>
+                </ul>
+              </div>
+              <div className="glass-card rounded-2xl p-6">
+                <h4 className="text-sm font-bold text-[#EF4444] mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#EF4444]/10 flex items-center justify-center text-xs">✕</span>
+                  Evitar
+                </h4>
+                <ul className="space-y-2.5 text-sm text-[#64748B]">
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao alterar as cores ou proporcoes da onda</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao usar como substituto do logo</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao sobrepor a elementos de texto ou acao</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao usar em tamanhos menores que 80px de largura</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Vox Wave as section divider showcase */}
+          <div className="glass-card rounded-2xl p-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-4 uppercase tracking-[0.2em]">Aplicacao como Divisor</h3>
+            <div className="space-y-6 text-center">
+              <div>
+                <p className="text-sm text-[#1E1B4B] font-medium mb-3">Conteudo acima</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#EDE9FE]" />
+                  <VoxWave variant="light" className="w-24 shrink-0" />
+                  <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#EDE9FE]" />
+                </div>
+                <p className="text-sm text-[#1E1B4B] font-medium mt-3">Conteudo abaixo</p>
+              </div>
+            </div>
+          </div>
+        </RevealSection>
+
+        {/* ═══ 3. PALETA DE CORES ═══ */}
+        <RevealSection>
+          <SectionHeader number="3" title="Paleta de Cores" subtitle="Sistema de cores extraido do gradiente roxo-ciano do logo. Clique para copiar." />
 
           <div className="mb-10">
             <h3 className="text-xs font-bold text-[#8B5CF6] mb-5 uppercase tracking-[0.2em]">Cores Principais</h3>
@@ -408,9 +494,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 3. GRADIENTES ═══ */}
+        {/* ═══ 4. GRADIENTES ═══ */}
         <RevealSection>
-          <SectionHeader number="3" title="Gradientes" subtitle="Gradientes derivados do logo para interfaces premium" />
+          <SectionHeader number="4" title="Gradientes" subtitle="Gradientes derivados do logo para interfaces premium" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {gradients.map((g) => (
@@ -431,9 +517,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 4. TIPOGRAFIA ═══ */}
+        {/* ═══ 5. TIPOGRAFIA ═══ */}
         <RevealSection>
-          <SectionHeader number="4" title="Tipografia" subtitle="Sistema tipografico Inter com escala modular de 10 niveis" />
+          <SectionHeader number="5" title="Tipografia" subtitle="Sistema tipografico Inter com escala modular de 10 niveis" />
 
           {/* Font showcase */}
           <div className="glass-card rounded-2xl p-8 mb-8 relative overflow-hidden glow-border">
@@ -476,9 +562,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 5. SOMBRAS & ELEVACAO ═══ */}
+        {/* ═══ 6. SOMBRAS & ELEVACAO ═══ */}
         <RevealSection>
-          <SectionHeader number="5" title="Sombras & Elevacao" subtitle="Sistema de sombras para hierarquia visual e profundidade" />
+          <SectionHeader number="6" title="Sombras & Elevacao" subtitle="Sistema de sombras para hierarquia visual e profundidade" />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
             {shadows.map((s) => (
@@ -493,9 +579,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 6. ICONOGRAFIA ═══ */}
+        {/* ═══ 7. ICONOGRAFIA ═══ */}
         <RevealSection>
-          <SectionHeader number="6" title="Iconografia" subtitle="Sistema de icones padronizado para toda a interface" />
+          <SectionHeader number="7" title="Iconografia" subtitle="Sistema de icones padronizado para toda a interface" />
 
           {/* Icon Library */}
           <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
@@ -637,9 +723,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 7. COMPONENTES ═══ */}
+        {/* ═══ 8. COMPONENTES ═══ */}
         <RevealSection>
-          <SectionHeader number="7" title="Componentes" subtitle="Exemplos de aplicacao da identidade visual em elementos UI" />
+          <SectionHeader number="8" title="Componentes" subtitle="Exemplos de aplicacao da identidade visual em elementos UI" />
 
           {/* Buttons */}
           <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
@@ -903,9 +989,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 8. ESPACAMENTO ═══ */}
+        {/* ═══ 9. ESPACAMENTO ═══ */}
         <RevealSection>
-          <SectionHeader number="8" title="Espacamento & Formas" subtitle="Tokens de espacamento e border radius para layout consistente" />
+          <SectionHeader number="9" title="Espacamento & Formas" subtitle="Tokens de espacamento e border radius para layout consistente" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="glass-card rounded-2xl p-6 glow-border">
@@ -947,9 +1033,98 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 9. PRINCIPIOS ═══ */}
+        {/* ═══ 10. TOM DE VOZ ═══ */}
         <RevealSection>
-          <SectionHeader number="9" title="Principios de Design" subtitle="Valores que guiam todas as decisoes visuais e de UX" />
+          <SectionHeader number="10" title="Tom de Voz" subtitle="Como a marca Voxium se comunica em todas as interfaces e canais" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Personality */}
+            <div className="glass-card rounded-2xl p-6 glow-border">
+              <h3 className="text-xs font-bold text-[#8B5CF6] mb-5 uppercase tracking-[0.2em]">Personalidade</h3>
+              <div className="space-y-4">
+                {[
+                  { trait: 'Profissional', desc: 'Transmite confianca e competencia sem ser formal demais', bar: '90%' },
+                  { trait: 'Acessivel', desc: 'Linguagem clara que qualquer usuario entende', bar: '85%' },
+                  { trait: 'Direto', desc: 'Vai ao ponto sem rodeios ou texto desnecessario', bar: '80%' },
+                  { trait: 'Acolhedor', desc: 'Faz o usuario se sentir apoiado, nao julgado', bar: '75%' },
+                ].map((t) => (
+                  <div key={t.trait} className="group">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-semibold text-[#1E1B4B]">{t.trait}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-[#EDE9FE] mb-1.5">
+                      <div className="h-full rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] transition-all duration-500 group-hover:shadow-[0_0_8px_rgba(139,92,246,0.4)]" style={{ width: t.bar }} />
+                    </div>
+                    <p className="text-[11px] text-[#94A3B8]">{t.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Writing Rules */}
+            <div className="glass-card rounded-2xl p-6 glow-border">
+              <h3 className="text-xs font-bold text-[#8B5CF6] mb-5 uppercase tracking-[0.2em]">Regras de Escrita</h3>
+              <div className="space-y-4">
+                {[
+                  { rule: 'Tratamento', value: 'Usar "voce" — nunca "tu" ou "senhor(a)"' },
+                  { rule: 'Frases', value: 'Curtas e diretas. Max 2 linhas para mensagens de interface' },
+                  { rule: 'Titulos', value: 'Sem ponto final. Capitalizar apenas primeira palavra' },
+                  { rule: 'Botoes', value: 'Verbos no infinitivo: "Salvar", "Enviar", "Criar contato"' },
+                  { rule: 'Erros', value: 'Explicar o problema + sugerir solucao. Nunca culpar o usuario' },
+                  { rule: 'Sucesso', value: 'Confirmar a acao realizada: "Contato salvo com sucesso"' },
+                  { rule: 'Placeholders', value: 'Exemplos reais: "maria@email.com" em vez de "Digite seu email"' },
+                ].map((r) => (
+                  <div key={r.rule} className="flex items-start gap-3">
+                    <span className="text-xs font-bold text-[#8B5CF6] bg-[#F5F3FF] px-2 py-0.5 rounded shrink-0 mt-0.5">{r.rule}</span>
+                    <span className="text-sm text-[#64748B]">{r.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Do vs Don't examples */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="glass-card rounded-2xl p-6 glow-border">
+              <h4 className="text-sm font-bold text-[#10B981] mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#10B981]/10 flex items-center justify-center text-xs">✓</span>
+                Assim
+              </h4>
+              <div className="space-y-3">
+                {[
+                  '"Contato adicionado com sucesso"',
+                  '"Nao foi possivel enviar o email. Verifique o endereco e tente novamente."',
+                  '"Salvar alteracoes"',
+                  '"Voce tem 3 propostas pendentes"',
+                  '"Nenhum contato encontrado. Tente outro filtro."',
+                ].map((ex) => (
+                  <div key={ex} className="px-3 py-2 rounded-lg bg-[#10B981]/5 border border-[#10B981]/10 text-sm text-[#1E1B4B]">{ex}</div>
+                ))}
+              </div>
+            </div>
+            <div className="glass-card rounded-2xl p-6 glow-border">
+              <h4 className="text-sm font-bold text-[#EF4444] mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#EF4444]/10 flex items-center justify-center text-xs">✕</span>
+                Nao assim
+              </h4>
+              <div className="space-y-3">
+                {[
+                  '"Operacao realizada com exito no sistema"',
+                  '"Erro 500: Falha na requisicao ao servidor SMTP"',
+                  '"Clique aqui para salvar"',
+                  '"Existem itens pendentes de revisao no seu pipeline"',
+                  '"Nao ha dados para exibir"',
+                ].map((ex) => (
+                  <div key={ex} className="px-3 py-2 rounded-lg bg-[#EF4444]/5 border border-[#EF4444]/10 text-sm text-[#64748B] line-through decoration-[#EF4444]/30">{ex}</div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </RevealSection>
+
+        {/* ═══ 11. PRINCIPIOS ═══ */}
+        <RevealSection>
+          <SectionHeader number="11" title="Principios de Design" subtitle="Valores que guiam todas as decisoes visuais e de UX" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
@@ -976,7 +1151,8 @@ export default function BrandBookPage() {
               <div className="absolute inset-0 blur-[40px] opacity-20" style={{ background: 'radial-gradient(circle, #8B5CF6, transparent)' }} />
               <Image src="/logo-voxium.png" alt="Voxium" width={80} height={53} className="object-contain mx-auto mb-4 relative z-10 opacity-60 hover:opacity-100 transition-opacity" />
             </div>
-            <p className="text-xs text-[#94A3B8]">Voxium Brand Book v1.0 — Abril 2026</p>
+            <VoxWave variant="light" className="w-20 mx-auto mb-4 opacity-40" />
+            <p className="text-xs text-[#94A3B8]">Voxium Brand Book v2.0 — Abril 2026</p>
             <p className="text-[11px] text-[#CBD5E1] mt-1">Identidade visual derivada do gradiente roxo-ciano da marca.</p>
           </footer>
         </RevealSection>
