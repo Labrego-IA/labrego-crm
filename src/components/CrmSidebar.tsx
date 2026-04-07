@@ -52,47 +52,49 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  // CRM
   {
-    label: 'Gestão de Contatos',
+    label: 'Contatos',
     href: '/contatos',
     icon: <UserGroupIcon className="w-5 h-5" />,
+    section: 'crm',
   },
   {
-    label: 'Funis de Vendas',
+    label: 'Funis',
     href: '/funil',
     icon: <MixerHorizontalIcon className="w-5 h-5" />,
+    section: 'crm',
   },
   {
     label: 'Produtividade',
     href: '/funil/produtividade',
     icon: <ActivityLogIcon className="w-5 h-5" />,
+    section: 'crm',
   },
   {
-    label: 'Conversão do Funil',
+    label: 'Conversao',
     href: '/conversao',
     icon: <FunnelIcon className="w-5 h-5" />,
+    section: 'crm',
   },
+  // Comercial
   {
-    label: 'Análises & Insights',
+    label: 'Analises',
     href: '/analytics',
     icon: <BarChartIcon className="w-5 h-5" />,
+    section: 'comercial',
   },
   {
-    label: 'Projeção de Vendas',
+    label: 'Projecao de Vendas',
     href: '/projecao-vendas',
     icon: <PresentationChartLineIcon className="w-5 h-5" />,
-  },
-  {
-    label: 'Automações IA',
-    href: '/automacoes',
-    icon: <LightningBoltIcon className="w-5 h-5" />,
-    badge: 'Em breve',
-    badgeColor: 'bg-white/20 text-white/70',
+    section: 'comercial',
   },
   {
     label: 'Campanhas',
     href: '/campanhas',
     icon: <TargetIcon className="w-5 h-5" />,
+    section: 'comercial',
   },
 ]
 
@@ -272,21 +274,30 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
 
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto scrollbar-sidebar px-3 py-4">
-        <div className={`${collapsed ? '' : 'mb-2'}`}>
-          {!collapsed && (
-            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-3">
-              Módulos
+        {!collapsed && (
+          <div className="mb-2">
+            <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider px-3">
+              CRM
             </span>
-          )}
-        </div>
+          </div>
+        )}
         <ul className="space-y-1">
-          {filteredNavItems.map((item) => {
+          {filteredNavItems.map((item, idx) => {
             const isActive = isItemActive(item.href)
             const isDisabled = item.badge === 'Em breve'
             const isLocked = !isAdmin && !isDisabled && !canAccessPage(item.href)
+            const prevSection = idx > 0 ? filteredNavItems[idx - 1].section : 'crm'
+            const showSectionLabel = item.section && item.section !== prevSection
 
             return (
               <li key={item.href}>
+                {showSectionLabel && !collapsed && (
+                  <div className="mt-4 mb-2">
+                    <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider px-3">
+                      {item.section === 'comercial' ? 'Comercial' : item.section}
+                    </span>
+                  </div>
+                )}
                 <Link
                   href={isDisabled || isLocked ? '#' : item.href}
                   onClick={(e) => {
