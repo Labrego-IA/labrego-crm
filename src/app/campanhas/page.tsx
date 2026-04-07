@@ -490,10 +490,21 @@ function CampanhasContent() {
                         {['draft', 'scheduled'].includes(c.status) && (
                           <button
                             onClick={() => router.push(`/campanhas/${c.id}/editar`)}
-                            className="rounded-lg p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-primary-600 hover:bg-primary-50 transition-colors"
                             title="Editar campanha"
                           >
-                            <PencilSquareIcon className="h-4 w-4" />
+                            <PencilSquareIcon className="h-3.5 w-3.5" />
+                            Editar
+                          </button>
+                        )}
+                        {!['draft', 'scheduled', 'sending'].includes(c.status) && (
+                          <button
+                            onClick={() => router.push(`/campanhas/${c.id}/editar`)}
+                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 transition-colors"
+                            title="Duplicar campanha"
+                          >
+                            <PencilSquareIcon className="h-3.5 w-3.5" />
+                            Duplicar
                           </button>
                         )}
                         {c.status !== 'sending' && (

@@ -697,7 +697,7 @@ export default function ProjecaoVendasPage() {
                       <Link href={`/contatos/${client.id}`} className="text-primary-600 hover:underline font-semibold text-sm leading-tight flex-1 mr-2">
                         {client.name}
                       </Link>
-                      <span className="text-sm font-bold text-emerald-700 whitespace-nowrap">
+                      <span className="text-sm font-medium text-emerald-700 whitespace-nowrap">
                         {formatCurrencyShort(expected)}
                       </span>
                     </div>
@@ -758,7 +758,7 @@ export default function ProjecaoVendasPage() {
                 <span className="text-sm font-semibold text-neutral-700">Total</span>
                 <div className="text-right">
                   <p className="text-xs text-neutral-500">Negócios: <span className="font-semibold text-neutral-700">{formatCurrencyShort(totalDeal)}</span></p>
-                  <p className="text-xs text-neutral-500">Esperado: <span className="font-bold text-emerald-700">{formatCurrencyShort(totalExpected)}</span></p>
+                  <p className="text-xs text-neutral-500">Esperado: <span className="font-medium text-emerald-700">{formatCurrencyShort(totalExpected)}</span></p>
                 </div>
               </div>
 
@@ -821,41 +821,16 @@ export default function ProjecaoVendasPage() {
                               {client.name}
                             </Link>
                           </td>
-                          <td className="px-4 py-3">
-                            <select
-                              defaultValue={client.funnelStage || ''}
-                              key={`stage-${client.id}-${client.funnelStage ?? ''}`}
-                              onChange={(e) => handleInlineStageChange(client.id, e.target.value, funnel.id)}
-                              className="px-2 py-1 text-xs bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                            >
-                              {funnelStages.map(s => (
-                                <option key={s.id} value={s.id}>{s.name}</option>
-                              ))}
-                            </select>
+                          <td className="px-4 py-3 text-xs text-neutral-600">
+                            {stage?.name || '-'}
                           </td>
-                          <td className="px-4 py-3 text-center">
-                            <input
-                              type="number"
-                              min="0"
-                              max="100"
-                              defaultValue={client.closingProbability ?? stage?.probability ?? 0}
-                              key={`prob-${client.id}-${client.closingProbability ?? ''}`}
-                              onBlur={(e) => handleInlineProbability(client.id, e.target.value)}
-                              className="w-16 px-2 py-1 text-xs text-center bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                            />
+                          <td className="px-4 py-3 text-center text-xs text-neutral-600">
+                            {client.closingProbability ?? stage?.probability ?? 0}%
                           </td>
-                          <td className="px-4 py-3 text-right">
-                            <input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              defaultValue={client.dealValue ?? ''}
-                              key={`deal-${client.id}-${client.dealValue ?? ''}`}
-                              onBlur={(e) => handleInlineDealValue(client.id, e.target.value)}
-                              className="w-28 px-2 py-1 text-xs text-right bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-500"
-                            />
+                          <td className="px-4 py-3 text-right text-xs text-neutral-600">
+                            {formatCurrency(client.dealValue ?? 0)}
                           </td>
-                          <td className="px-4 py-3 text-right font-medium text-emerald-700">
+                          <td className="px-4 py-3 text-right text-xs text-emerald-700">
                             {formatCurrency(expected)}
                           </td>
                           <td className="px-4 py-3 text-center text-neutral-500">
@@ -870,7 +845,7 @@ export default function ProjecaoVendasPage() {
                   </tbody>
                   {/* Footer totals */}
                   <tfoot className="sticky bottom-0">
-                    <tr className="bg-neutral-50 font-semibold">
+                    <tr className="bg-neutral-50 font-medium">
                       <td className="px-4 py-3 text-neutral-700" colSpan={3}>Total</td>
                       <td className="px-4 py-3 text-right text-neutral-700">{formatCurrency(totalDeal)}</td>
                       <td className="px-4 py-3 text-right text-emerald-700">{formatCurrency(totalExpected)}</td>
