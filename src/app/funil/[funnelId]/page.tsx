@@ -4201,7 +4201,7 @@ export default function FunilDetailPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-x-auto p-6">
+      <div className="flex-1 overflow-x-auto p-4">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="w-8 h-8 border-3 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
@@ -4874,7 +4874,7 @@ export default function FunilDetailPage() {
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="board" type="COLUMN" direction="horizontal">
               {(boardProvided) => (
-            <div ref={boardProvided.innerRef} {...boardProvided.droppableProps} className="flex gap-4 min-w-max pb-4">
+            <div ref={boardProvided.innerRef} {...boardProvided.droppableProps} className="flex gap-3 min-w-max pb-4">
               {flatStages.map((stage, colIndex) => {
                 const allStageClients = clientsByStage[stage.id] || []
                 const paginatedData = paginatedClientsByStage[stage.id] || { clients: [], totalPages: 1, currentPage: 1 }
@@ -4896,7 +4896,7 @@ export default function FunilDetailPage() {
                             <div
                               ref={provided.innerRef}
                               {...provided.droppableProps}
-                              className={`w-80 flex-shrink-0 bg-white rounded-2xl border flex flex-col ${
+                              className={`w-72 flex-shrink-0 bg-white rounded-2xl border flex flex-col ${
                                 snapshot.isDraggingOver
                                   ? `${color.border} border-2 shadow-lg`
                                   : 'border-slate-200/60 shadow-sm'
@@ -4941,42 +4941,20 @@ export default function FunilDetailPage() {
                                           {allStageClients.length}
                                         </span>
                                       </div>
-                                      <div className="flex flex-col items-end gap-0.5">
-                                        <div className="flex items-center gap-1 text-white/80 text-xs">
-                                          <ChartBarIcon className="w-3.5 h-3.5" />
-                                          {stage.probability || 0}%
-                                        </div>
-                                        {(() => {
-                                          const stageTotal = allStageClients.reduce((sum, c) => sum + (c.dealValue || 0), 0)
-                                          const stageExpected = allStageClients.reduce((sum, c) => sum + ((c.dealValue || 0) * getClientProbability(c, stage) / 100), 0)
-                                          return stageTotal > 0 ? (
-                                            <div className="flex items-center gap-1.5 text-white/70 text-[10px]">
-                                              <span title="Valor total">{formatCurrencyShort(stageTotal)}</span>
-                                              <span className="text-white/40">&middot;</span>
-                                              <span title="Valor esperado" className="text-emerald-200">{formatCurrencyShort(stageExpected)}</span>
-                                            </div>
-                                          ) : null
-                                        })()}
+                                      <div className="flex items-center gap-1.5 text-white/70 text-xs">
+                                        <span>{stage.probability || 0}%</span>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-4 mt-2 text-xs text-white/70">
+                                    <div className="flex items-center gap-2 mt-1.5 text-[10px] text-white/60">
                                       {bulkSelectMode && allStageClients.length > 0 && (
                                         <button
                                           onClick={() => selectAllInStage(stage.id)}
-                                          className="px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded-full text-white text-xs transition-colors"
+                                          className="px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded-full text-white text-[10px] transition-colors"
                                         >
-                                          {allStageClients.every(c => bulkSelectedIds.has(c.id)) ? 'Desmarcar todos' : 'Selecionar todos'}
+                                          {allStageClients.every(c => bulkSelectedIds.has(c.id)) ? 'Desmarcar' : 'Selecionar'}
                                         </button>
                                       )}
-                                      <span className="flex items-center gap-1">
-                                        <ClockIcon className="w-3 h-3" />
-                                        Média: {stats?.avgDays || 0}d
-                                      </span>
-                                      {stage.maxDays && (
-                                        <span className="flex items-center gap-1">
-                                          Prazo: {stage.maxDays}d
-                                        </span>
-                                      )}
+                                      <span>{stats?.avgDays || 0}d avg</span>
                                       {/* Cadência + Sort */}
                                       <div className="flex items-center gap-1 ml-auto">
                                         <Link
