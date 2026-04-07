@@ -1799,7 +1799,7 @@ export default function ContactDetailsPage() {
                         description="O histórico de interações aparecerá aqui"
                       />
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
                         {followUps.map((fu) => (
                           <div key={fu.id} className="flex gap-4 group">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
