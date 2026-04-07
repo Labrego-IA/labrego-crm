@@ -8,7 +8,6 @@
 import { NextResponse } from 'next/server'
 import { getAgentConfig, saveAgentConfig } from '@/lib/agentConversation'
 import { assembleTextAgentPrompt, calculateTextAgentStrength } from '@/lib/agentEngine'
-import { verifyOrgAccess } from '@/lib/verifyOrgAccess'
 import { DEFAULT_AGENT_CONFIG } from '@/types/agentConfig'
 
 export async function GET(request: Request) {
@@ -19,12 +18,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
     }
 
-    // Verificar acesso a org (nao-bloqueante para GET — frontend usa cookie auth)
-    const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized && access.error !== 'Nao autenticado') {
-      return NextResponse.json({ error: access.error }, { status: 403 })
-    }
-
+    // Auth handled by middleware + frontend cookie session
     const config = await getAgentConfig(orgId)
     if (!config) {
       // Retorna config padrao
@@ -48,12 +42,6 @@ export async function POST(request: Request) {
 
     if (!orgId) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
-    }
-
-    // Verificar acesso a org (nao-bloqueante para frontend sem Bearer token)
-    const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized && access.error !== 'Nao autenticado') {
-      return NextResponse.json({ error: access.error }, { status: 403 })
     }
 
     // Recalcular strength score e system prompt para WhatsApp

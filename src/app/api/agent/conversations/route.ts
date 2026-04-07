@@ -6,7 +6,6 @@
 
 import { NextResponse } from 'next/server'
 import { listConversations } from '@/lib/agentConversation'
-import { verifyOrgAccess } from '@/lib/verifyOrgAccess'
 import type { ConversationStatus, MessageChannel } from '@/types/agentConfig'
 
 export async function GET(request: Request) {
@@ -17,11 +16,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
     }
 
-    const access = await verifyOrgAccess(request, orgId)
-    if (!access.authorized && access.error !== 'Nao autenticado') {
-      return NextResponse.json({ error: access.error }, { status: 403 })
-    }
-
+    // Auth handled by middleware + frontend cookie session
     const channel = searchParams.get('channel') as MessageChannel | null
     const statusParam = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '30')
