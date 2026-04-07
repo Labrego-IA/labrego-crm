@@ -2,6 +2,26 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import {
+  UserGroupIcon,
+  FunnelIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  DocumentTextIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  ChevronDownIcon,
+  Cog6ToothIcon,
+  HomeIcon,
+  BellIcon,
+  ChatBubbleLeftRightIcon,
+  CalendarIcon,
+} from '@heroicons/react/24/outline'
 
 /* ─── BRAND TOKENS ─── */
 const brand = {
@@ -473,9 +493,153 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 6. COMPONENTES ═══ */}
+        {/* ═══ 6. ICONOGRAFIA ═══ */}
         <RevealSection>
-          <SectionHeader number="6" title="Componentes" subtitle="Exemplos de aplicacao da identidade visual em elementos UI" />
+          <SectionHeader number="6" title="Iconografia" subtitle="Sistema de icones padronizado para toda a interface" />
+
+          {/* Icon Library */}
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-2 uppercase tracking-[0.2em]">Biblioteca Padrao</h3>
+            <p className="text-sm text-[#64748B] mb-6">Heroicons (outline, 24px) como biblioteca primaria. Estilo outline para consistencia visual em toda a interface.</p>
+
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+              {[
+                { Icon: HomeIcon, label: 'Home' },
+                { Icon: UserGroupIcon, label: 'Contatos' },
+                { Icon: FunnelIcon, label: 'Funil' },
+                { Icon: EnvelopeIcon, label: 'Email' },
+                { Icon: PhoneIcon, label: 'Telefone' },
+                { Icon: ChatBubbleLeftRightIcon, label: 'Chat' },
+                { Icon: DocumentTextIcon, label: 'Documento' },
+                { Icon: MagnifyingGlassIcon, label: 'Busca' },
+                { Icon: PlusIcon, label: 'Adicionar' },
+                { Icon: PencilSquareIcon, label: 'Editar' },
+                { Icon: TrashIcon, label: 'Excluir' },
+                { Icon: CheckCircleIcon, label: 'Sucesso' },
+                { Icon: ExclamationTriangleIcon, label: 'Alerta' },
+                { Icon: ArrowPathIcon, label: 'Atualizar' },
+                { Icon: BellIcon, label: 'Notificacao' },
+                { Icon: Cog6ToothIcon, label: 'Config' },
+                { Icon: CalendarIcon, label: 'Agenda' },
+                { Icon: ChevronDownIcon, label: 'Expandir' },
+              ].map(({ Icon, label }) => (
+                <div key={label} className="group flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-[#8B5CF6]/[0.04] transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#8B5CF6]/5 to-[#06B6D4]/5 flex items-center justify-center group-hover:from-[#8B5CF6]/15 group-hover:to-[#06B6D4]/15 transition-all group-hover:scale-110">
+                    <Icon className="w-5 h-5 text-[#64748B] group-hover:text-[#8B5CF6] transition-colors" />
+                  </div>
+                  <span className="text-[10px] font-medium text-[#94A3B8] group-hover:text-[#8B5CF6] transition-colors">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Icon Sizes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="glass-card rounded-2xl p-6 glow-border">
+              <h3 className="text-xs font-bold text-[#8B5CF6] mb-5 uppercase tracking-[0.2em]">Tamanhos</h3>
+              <div className="space-y-4">
+                {[
+                  { size: 'w-4 h-4', px: '16px', label: 'XS', usage: 'Badges, inline text, botoes compactos' },
+                  { size: 'w-5 h-5', px: '20px', label: 'SM (Padrao)', usage: 'Navegacao, botoes, formularios' },
+                  { size: 'w-6 h-6', px: '24px', label: 'MD', usage: 'Titulos de secao, cards, destaque' },
+                  { size: 'w-8 h-8', px: '32px', label: 'LG', usage: 'Empty states, onboarding, hero' },
+                ].map((s) => (
+                  <div key={s.label} className="flex items-center gap-4 group">
+                    <div className="w-12 h-12 rounded-xl bg-[#F5F3FF] flex items-center justify-center shrink-0">
+                      <Cog6ToothIcon className={`${s.size} text-[#8B5CF6] transition-transform group-hover:rotate-45`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-[#1E1B4B]">{s.label}</span>
+                        <span className="px-2 py-0.5 rounded-md bg-[#F5F3FF] text-[10px] font-mono text-[#8B5CF6]">{s.px}</span>
+                        <span className="px-2 py-0.5 rounded-md bg-[#F5F3FF] text-[10px] font-mono text-[#64748B]">{s.size}</span>
+                      </div>
+                      <p className="text-[11px] text-[#94A3B8] mt-0.5">{s.usage}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Icon Usage Rules */}
+            <div className="space-y-6">
+              <div className="glass-card rounded-2xl p-6 glow-border">
+                <h4 className="text-sm font-bold text-[#10B981] mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#10B981]/10 flex items-center justify-center text-xs">✓</span>
+                  Padrao Correto
+                </h4>
+                <ul className="space-y-2.5 text-sm text-[#64748B]">
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Heroicons <code className="text-xs bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">24/outline</code> como padrao</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Tamanho padrao: <code className="text-xs bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">w-5 h-5</code> (20px)</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Cor herda do texto pai ou usa brand colors</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#10B981] mt-2 shrink-0" />Sempre com label ou aria-label para acessibilidade</li>
+                </ul>
+              </div>
+              <div className="glass-card rounded-2xl p-6 glow-border">
+                <h4 className="text-sm font-bold text-[#EF4444] mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#EF4444]/10 flex items-center justify-center text-xs">✕</span>
+                  Evitar
+                </h4>
+                <ul className="space-y-2.5 text-sm text-[#64748B]">
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao misturar bibliotecas na mesma tela</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao usar solid quando outline e padrao</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao usar tamanhos fora da escala definida</li>
+                  <li className="flex items-start gap-2"><span className="w-1 h-1 rounded-full bg-[#EF4444] mt-2 shrink-0" />Nao usar icones sem contraste suficiente (min 3:1)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* App Icons */}
+          <div className="glass-card rounded-2xl p-8 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">App Icon (PWA / Favicon)</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 blur-[30px] opacity-30" style={{ background: 'radial-gradient(circle, #8B5CF6, transparent)' }} />
+                  <Image src="/icon-512.png" alt="App Icon 512" width={120} height={120} className="rounded-3xl relative z-10 shadow-xl" />
+                </div>
+                <div className="text-center">
+                  <span className="px-2 py-0.5 rounded-md bg-[#F5F3FF] text-[10px] font-mono text-[#8B5CF6]">512×512</span>
+                  <p className="text-[10px] text-[#94A3B8] mt-1">Splash screen, store</p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 blur-[20px] opacity-30" style={{ background: 'radial-gradient(circle, #06B6D4, transparent)' }} />
+                  <Image src="/icon-192.png" alt="App Icon 192" width={80} height={80} className="rounded-2xl relative z-10 shadow-lg" />
+                </div>
+                <div className="text-center">
+                  <span className="px-2 py-0.5 rounded-md bg-[#F5F3FF] text-[10px] font-mono text-[#8B5CF6]">192×192</span>
+                  <p className="text-[10px] text-[#94A3B8] mt-1">Home screen, atalhos</p>
+                </div>
+              </div>
+              <div className="space-y-3 text-sm text-[#64748B]">
+                <p className="text-xs font-bold text-[#1E1B4B]">Especificacoes</p>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+                  <span>Formato: PNG com transparencia</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+                  <span>Proposito: <code className="bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">any maskable</code></span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+                  <span>Safe zone: 80% central para maskable</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+                  <span>Theme color: <code className="bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">#13DEFC</code></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </RevealSection>
+
+        {/* ═══ 7. COMPONENTES ═══ */}
+        <RevealSection>
+          <SectionHeader number="7" title="Componentes" subtitle="Exemplos de aplicacao da identidade visual em elementos UI" />
 
           {/* Buttons */}
           <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
@@ -546,9 +710,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 7. ESPACAMENTO ═══ */}
+        {/* ═══ 8. ESPACAMENTO ═══ */}
         <RevealSection>
-          <SectionHeader number="7" title="Espacamento & Formas" subtitle="Tokens de espacamento e border radius para layout consistente" />
+          <SectionHeader number="8" title="Espacamento & Formas" subtitle="Tokens de espacamento e border radius para layout consistente" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="glass-card rounded-2xl p-6 glow-border">
@@ -590,9 +754,9 @@ export default function BrandBookPage() {
           </div>
         </RevealSection>
 
-        {/* ═══ 8. PRINCIPIOS ═══ */}
+        {/* ═══ 9. PRINCIPIOS ═══ */}
         <RevealSection>
-          <SectionHeader number="8" title="Principios de Design" subtitle="Valores que guiam todas as decisoes visuais e de UX" />
+          <SectionHeader number="9" title="Principios de Design" subtitle="Valores que guiam todas as decisoes visuais e de UX" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
