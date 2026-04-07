@@ -35,7 +35,7 @@ import {
   CheckBadgeIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
-import { formatWhatsAppNumber, maskPhone, maskDocument } from '@/lib/format'
+import { formatWhatsAppNumber, maskPhone, maskDocument, maskCPF, maskCNPJ, validatePhone, validateEmail, validateCPF, validateCNPJ } from '@/lib/format'
 import MemberSelector from '@/components/MemberSelector'
 import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 import { useVisibleFunnels } from '@/hooks/useVisibleFunnels'
@@ -54,6 +54,7 @@ type Cliente = {
   address?: string
   description?: string
   industry?: string
+  personType?: 'pf' | 'pj'
   document?: string
   email?: string
   birthday?: string
@@ -164,6 +165,7 @@ const emptyForm = {
   company: '',
   email: '',
   industry: '',
+  personType: 'pf' as 'pf' | 'pj',
   document: '',
   description: '',
   birthday: '',
@@ -1484,6 +1486,7 @@ export default function ContatosPage() {
       company: client.company || '',
       email: client.email || '',
       industry: client.industry || '',
+      personType: (client.personType || (client.document && client.document.replace(/\D/g, '').length === 14 ? 'pj' : 'pf')) as 'pf' | 'pj',
       document: client.document || '',
       description: client.description || '',
       birthday: client.birthday || '',
@@ -1537,6 +1540,39 @@ export default function ContatosPage() {
       if (duplicateDoc) {
         alert('Já existe um contato com este CPF/CNPJ. Por favor, verifique o documento informado.')
         return
+      }
+    }
+
+    // Validar telefone
+    if (!validatePhone(form.phone)) {
+      alert('Telefone invalido. Use o formato: +55 (11) 99999-9999')
+      return
+    }
+
+    // Validar email se preenchido
+    if (form.email && !validateEmail(form.email)) {
+      alert('Email invalido. Verifique o formato do email.')
+      return
+    }
+
+    // Validar documento se preenchido
+    if (trimmedDoc) {
+      const docDigits = trimmedDoc.replace(/\D/g, '')
+      if (form.personType === 'pj') {
+        if (!validateCNPJ(trimmedDoc)) {
+          alert('CNPJ invalido. Verifique os digitos informados.')
+          return
+        }
+      } else if (docDigits.length === 11) {
+        if (!validateCPF(trimmedDoc)) {
+          alert('CPF invalido. Verifique os digitos informados.')
+          return
+        }
+      } else if (docDigits.length === 14) {
+        if (!validateCNPJ(trimmedDoc)) {
+          alert('CNPJ invalido. Verifique os digitos informados.')
+          return
+        }
       }
     }
 
@@ -2112,8 +2148,8 @@ export default function ContatosPage() {
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200/60">
+                <thead className="sticky top-0 z-10">
+                  <tr className="bg-slate-50 border-b border-slate-200/60">
                     {/* Checkbox column */}
                     <th className="w-12 px-4 py-3">
                       <button
@@ -2705,12 +2741,32 @@ export default function ContatosPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">CNPJ / CPF</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Pessoa</label>
+                  <div className="flex gap-2 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, personType: 'pf', document: '' })}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                        (form.personType || 'pf') === 'pf' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white text-slate-500 border-slate-200'
+                      }`}
+                    >
+                      Pessoa Fisica
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, personType: 'pj', document: '' })}
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                        form.personType === 'pj' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white text-slate-500 border-slate-200'
+                      }`}
+                    >
+                      Pessoa Juridica
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={form.document}
-                    onChange={(e) => setForm({ ...form, document: maskDocument(e.target.value) })}
-                    placeholder="00.000.000/0000-00"
+                    onChange={(e) => setForm({ ...form, document: form.personType === 'pj' ? maskCNPJ(e.target.value) : maskCPF(e.target.value) })}
+                    placeholder={form.personType === 'pj' ? '00.000.000/0000-00' : '000.000.000-00'}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>

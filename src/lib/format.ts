@@ -152,6 +152,101 @@ export function formatContractContent(text: string): string {
   return result
 }
 
+// ========== VALIDACOES ==========
+
+/**
+ * Valida telefone brasileiro: aceita formatos com/sem +55, DDD obrigatorio, 10-11 digitos
+ */
+export function validatePhone(value: string): boolean {
+  const digits = value.replace(/\D/g, '')
+  // Com codigo pais: 55 + DDD(2) + numero(8-9) = 12-13
+  // Sem codigo pais: DDD(2) + numero(8-9) = 10-11
+  if (digits.length >= 10 && digits.length <= 13) return true
+  return false
+}
+
+/**
+ * Valida email com regex padrao
+ */
+export function validateEmail(value: string): boolean {
+  if (!value) return false
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
+}
+
+/**
+ * Valida CPF usando algoritmo dos digitos verificadores (mod 11)
+ */
+export function validateCPF(value: string): boolean {
+  const digits = value.replace(/\D/g, '')
+  if (digits.length !== 11) return false
+  // Rejeitar sequencias iguais (111.111.111-11, etc)
+  if (/^(\d)\1{10}$/.test(digits)) return false
+
+  // Calcular primeiro digito verificador
+  let sum = 0
+  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i)
+  let remainder = (sum * 10) % 11
+  if (remainder === 10) remainder = 0
+  if (remainder !== parseInt(digits[9])) return false
+
+  // Calcular segundo digito verificador
+  sum = 0
+  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i)
+  remainder = (sum * 10) % 11
+  if (remainder === 10) remainder = 0
+  if (remainder !== parseInt(digits[10])) return false
+
+  return true
+}
+
+/**
+ * Valida CNPJ usando algoritmo dos digitos verificadores
+ */
+export function validateCNPJ(value: string): boolean {
+  const digits = value.replace(/\D/g, '')
+  if (digits.length !== 14) return false
+  if (/^(\d)\1{13}$/.test(digits)) return false
+
+  const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+  const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+
+  let sum = 0
+  for (let i = 0; i < 12; i++) sum += parseInt(digits[i]) * weights1[i]
+  let remainder = sum % 11
+  const d1 = remainder < 2 ? 0 : 11 - remainder
+  if (parseInt(digits[12]) !== d1) return false
+
+  sum = 0
+  for (let i = 0; i < 13; i++) sum += parseInt(digits[i]) * weights2[i]
+  remainder = sum % 11
+  const d2 = remainder < 2 ? 0 : 11 - remainder
+  if (parseInt(digits[13]) !== d2) return false
+
+  return true
+}
+
+/**
+ * Mascara telefone com codigo do pais: +55 (11) 99999-9999
+ */
+export function maskPhoneInternational(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 13)
+  // Se comeca com 55, formatar com +55
+  if (digits.startsWith('55') && digits.length > 2) {
+    const rest = digits.slice(2)
+    if (rest.length <= 2) return `+55 (${rest}`
+    if (rest.length <= 7) return `+55 (${rest.slice(0, 2)}) ${rest.slice(2)}`
+    if (rest.length <= 10) return `+55 (${rest.slice(0, 2)}) ${rest.slice(2, 6)}-${rest.slice(6)}`
+    return `+55 (${rest.slice(0, 2)}) ${rest.slice(2, 7)}-${rest.slice(7)}`
+  }
+  // Sem 55, adicionar
+  if (digits.length <= 2) return digits.length ? `+55 (${digits}` : ''
+  if (digits.length <= 7) return `+55 (${digits.slice(0, 2)}) ${digits.slice(2)}`
+  if (digits.length <= 10) return `+55 (${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
+  return `+55 (${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+}
+
+// ========== MASCARAS ==========
+
 /**
  * Aplica máscara de telefone brasileiro: (00) 00000-0000 ou (00) 0000-0000
  */

@@ -14,7 +14,6 @@ import {
   type PlanId,
   type PlanCategory,
 } from '@/types/plan'
-import EmailProviderSection from '@/components/EmailProviderSection'
 import CheckoutDrawer from '@/components/CheckoutDrawer'
 
 /* -------------------------------- Helpers -------------------------------- */
@@ -272,9 +271,6 @@ export default function PlanoPage() {
           )
         })}
       </div>
-
-      {/* Email Provider Config */}
-      <EmailProviderSection />
 
       {/* Checkout Drawer */}
       {checkoutPlan && orgId && userEmail && (
