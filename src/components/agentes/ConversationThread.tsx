@@ -5,6 +5,7 @@ import MessageBubble from './MessageBubble'
 import HumanHandoffBanner from './HumanHandoffBanner'
 import type { Conversation, ConversationMessage } from '@/types/agentConfig'
 import { PaperAirplaneIcon, CheckCircleIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
+import { PlusIcon, TagIcon } from '@heroicons/react/24/outline'
 
 interface ConversationThreadProps {
   conversation: Conversation
@@ -14,6 +15,8 @@ interface ConversationThreadProps {
   onHandoff: () => Promise<void>
   onResolve: () => Promise<void>
   onResumeAI: () => Promise<void>
+  onToggleAI: () => Promise<void>
+  onAddTag: (tag: string) => Promise<void>
 }
 
 export default function ConversationThread({
@@ -24,11 +27,15 @@ export default function ConversationThread({
   onHandoff,
   onResolve,
   onResumeAI,
+  onToggleAI,
+  onAddTag,
 }: ConversationThreadProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [newMessage, setNewMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
+  const [showTagInput, setShowTagInput] = useState(false)
+  const [tagValue, setTagValue] = useState('')
 
   // Auto-scroll
   useEffect(() => {
@@ -74,6 +81,53 @@ export default function ConversationThread({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* AI Toggle */}
+          <button
+            onClick={() => handleAction(onToggleAI)}
+            disabled={actionLoading}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
+              conversation.aiEnabled
+                ? 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100'
+                : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+            }`}
+          >
+            IA {conversation.aiEnabled ? 'On' : 'Off'}
+          </button>
+
+          {/* Add Tag */}
+          {showTagInput ? (
+            <div className="flex items-center gap-1">
+              <TagIcon className="w-3.5 h-3.5 text-slate-400" />
+              <input
+                type="text"
+                value={tagValue}
+                onChange={e => setTagValue(e.target.value)}
+                onKeyDown={async e => {
+                  if (e.key === 'Enter' && tagValue.trim()) {
+                    await onAddTag(tagValue.trim())
+                    setTagValue('')
+                    setShowTagInput(false)
+                  }
+                  if (e.key === 'Escape') {
+                    setTagValue('')
+                    setShowTagInput(false)
+                  }
+                }}
+                placeholder="Nome da tag..."
+                autoFocus
+                className="w-28 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+              />
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowTagInput(true)}
+              className="flex items-center gap-1 px-2 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 text-xs font-medium rounded-lg transition-colors"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              Tag
+            </button>
+          )}
+
           {conversation.status === 'active' && (
             <button
               onClick={() => handleAction(onHandoff)}

@@ -49,7 +49,8 @@ export async function POST(request: Request) {
       configData.whatsapp.strengthScore = strength
       configData.whatsapp.systemPrompt = assembleTextAgentPrompt(
         configData.whatsapp.wizardAnswers,
-        configData.faq || []
+        configData.faq || [],
+        configData.tools
       )
     }
 
@@ -59,7 +60,8 @@ export async function POST(request: Request) {
       configData.email.strengthScore = strength
       configData.email.systemPrompt = assembleTextAgentPrompt(
         configData.email.wizardAnswers,
-        configData.faq || []
+        configData.faq || [],
+        configData.tools
       )
     }
 

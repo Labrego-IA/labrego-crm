@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { Conversation, ConversationStatus } from '@/types/agentConfig'
-import { ChatBubbleLeftRightIcon, FunnelIcon } from '@heroicons/react/24/outline'
+import { ChatBubbleLeftRightIcon, FunnelIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 interface ConversationInboxProps {
   conversations: Conversation[]
@@ -24,11 +24,22 @@ export default function ConversationInbox({
   onSelect,
   loading,
 }: ConversationInboxProps) {
-  const [filter, setFilter] = useState<'all' | 'active' | 'human_handoff' | 'resolved'>('all')
+  const [filter, setFilter] = useState<'all' | 'active' | 'human_handoff' | 'resolved' | 'ia_on' | 'ia_off'>('all')
+  const [search, setSearch] = useState('')
 
-  const filtered = filter === 'all'
-    ? conversations
-    : conversations.filter(c => c.status === filter)
+  const statusFiltered = (() => {
+    if (filter === 'all') return conversations
+    if (filter === 'ia_on') return conversations.filter(c => c.aiEnabled && c.status === 'active')
+    if (filter === 'ia_off') return conversations.filter(c => !c.aiEnabled || c.status === 'human_handoff')
+    return conversations.filter(c => c.status === filter)
+  })()
+
+  const filtered = search.trim()
+    ? statusFiltered.filter(c =>
+        c.contactName?.toLowerCase().includes(search.toLowerCase()) ||
+        c.contactPhone?.includes(search)
+      )
+    : statusFiltered
 
   const formatTime = (dateStr: string) => {
     if (!dateStr) return ''
@@ -54,6 +65,20 @@ export default function ConversationInbox({
         </h2>
       </div>
 
+      {/* Search */}
+      <div className="px-3 py-2 border-b border-slate-200">
+        <div className="relative">
+          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar por nome ou telefone..."
+            className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+          />
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="px-3 py-2 border-b border-slate-200 flex gap-1 overflow-x-auto">
         {([
@@ -61,6 +86,8 @@ export default function ConversationInbox({
           { key: 'active', label: 'IA' },
           { key: 'human_handoff', label: 'Humano' },
           { key: 'resolved', label: 'Resolvidas' },
+          { key: 'ia_on', label: 'IA Ativa' },
+          { key: 'ia_off', label: 'IA Desativada' },
         ] as const).map(f => (
           <button
             key={f.key}
@@ -74,7 +101,11 @@ export default function ConversationInbox({
             {f.label}
             {f.key !== 'all' && (
               <span className="ml-1 text-slate-200">
-                {conversations.filter(c => c.status === f.key).length}
+                {f.key === 'ia_on'
+                  ? conversations.filter(c => c.aiEnabled && c.status === 'active').length
+                  : f.key === 'ia_off'
+                    ? conversations.filter(c => !c.aiEnabled || c.status === 'human_handoff').length
+                    : conversations.filter(c => c.status === f.key).length}
               </span>
             )}
           </button>

@@ -18,6 +18,10 @@ const ACTION_CONFIG: Record<AgentActivityAction, { label: string; color: string;
   pipeline_updated: { label: 'Funil atualizado', color: 'bg-lime-50 text-lime-700', icon: 'FNL' },
   credit_deducted: { label: 'Credito debitado', color: 'bg-orange-50 text-orange-700', icon: 'CR' },
   credit_insufficient: { label: 'Sem creditos', color: 'bg-red-50 text-red-700', icon: 'ERR' },
+  calendar_checked: { label: 'Agenda verificada', color: 'bg-blue-50 text-blue-700', icon: 'CAL' },
+  meeting_scheduled: { label: 'Reuniao agendada', color: 'bg-blue-50 text-blue-700', icon: 'MTG' },
+  followup_created: { label: 'Follow-up criado', color: 'bg-green-50 text-green-700', icon: 'FUP' },
+  funnel_moved: { label: 'Funil atualizado', color: 'bg-purple-50 text-purple-700', icon: 'FNL' },
   off_hours_reply: { label: 'Fora do horario', color: 'bg-slate-100 text-slate-600', icon: 'OFF' },
   error: { label: 'Erro', color: 'bg-red-50 text-red-700', icon: 'ERR' },
 }

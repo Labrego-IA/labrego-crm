@@ -103,6 +103,31 @@ export default function EmailConversasPage() {
     await loadConversations()
   }
 
+  // Toggle IA on/off por conversa
+  const handleToggleAI = async () => {
+    if (!orgId || !selectedId || !selectedConv) return
+    const newEnabled = !selectedConv.aiEnabled
+    await fetch(`/api/agent/conversations/${selectedId}/toggle-ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orgId, aiEnabled: newEnabled }),
+    })
+    await loadThread(selectedId)
+    await loadConversations()
+  }
+
+  // Adicionar tag ao contato
+  const handleAddTag = async (tag: string) => {
+    if (!orgId || !selectedId) return
+    await fetch(`/api/agent/conversations/${selectedId}/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orgId, tag }),
+    })
+    await loadThread(selectedId)
+    await loadConversations()
+  }
+
   return (
     <div className="h-[calc(100vh-64px)] flex">
       <div className="w-80 flex-shrink-0">
@@ -135,6 +160,8 @@ export default function EmailConversasPage() {
             onHandoff={handleHandoff}
             onResolve={handleResolve}
             onResumeAI={handleResumeAI}
+            onToggleAI={handleToggleAI}
+            onAddTag={handleAddTag}
           />
         ) : null}
       </div>

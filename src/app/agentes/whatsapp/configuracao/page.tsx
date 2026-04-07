@@ -210,47 +210,135 @@ export default function WhatsAppConfigPage() {
               </div>
             </div>
 
-            {/* Integracoes */}
+            {/* Google Calendar */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Integracoes</h3>
-              <p className="text-slate-500 text-sm mb-4">Conecte ferramentas externas para o agente usar durante o atendimento.</p>
-              <div className="space-y-3">
-                {/* Google Calendar */}
-                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-sm font-bold text-blue-600">CAL</div>
-                    <div>
-                      <span className="text-slate-700 text-sm font-medium">Google Agenda</span>
-                      <p className="text-slate-400 text-xs">O agente pode verificar horarios disponiveis e agendar reunioes.</p>
-                    </div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-sm font-bold text-blue-600">CAL</div>
+                  <div>
+                    <h3 className="text-slate-800 text-sm font-semibold">Google Agenda</h3>
+                    <p className="text-slate-400 text-xs">O agente verifica horarios e agenda reunioes automaticamente.</p>
                   </div>
-                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
                 </div>
-
-                {/* Follow-up */}
-                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-sm font-bold text-green-600">FUP</div>
-                    <div>
-                      <span className="text-slate-700 text-sm font-medium">Follow-up automatico</span>
-                      <p className="text-slate-400 text-xs">Criar lembretes de retorno com o contato apos a conversa.</p>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
-                </div>
-
-                {/* Mover no funil */}
-                <div className="flex items-center justify-between p-4 rounded-xl border border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-sm font-bold text-purple-600">FNL</div>
-                    <div>
-                      <span className="text-slate-700 text-sm font-medium">Mover no funil</span>
-                      <p className="text-slate-400 text-xs">Mover contatos entre estagios do funil automaticamente.</p>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-medium rounded-full">Em breve</span>
-                </div>
+                <button
+                  onClick={() => updateConfig({ tools: { ...config.tools, googleCalendar: { ...config.tools.googleCalendar, enabled: !config.tools.googleCalendar.enabled } } })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${config.tools.googleCalendar.enabled ? 'bg-green-500' : 'bg-slate-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${config.tools.googleCalendar.enabled ? 'translate-x-6' : ''}`} />
+                </button>
               </div>
+              {config.tools.googleCalendar.enabled && (
+                <div className="mt-4 space-y-3 pl-[52px]">
+                  <div>
+                    <label className="block text-slate-600 text-xs font-medium mb-1">ID do Calendario Google</label>
+                    <input type="text" value={config.tools.googleCalendar.calendarId}
+                      onChange={e => updateConfig({ tools: { ...config.tools, googleCalendar: { ...config.tools.googleCalendar, calendarId: e.target.value } } })}
+                      placeholder="seu-email@gmail.com ou ID do calendario"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+                  </div>
+                  <div>
+                    <label className="block text-slate-600 text-xs font-medium mb-1">Nome do especialista</label>
+                    <input type="text" value={config.tools.googleCalendar.specialistName}
+                      onChange={e => updateConfig({ tools: { ...config.tools, googleCalendar: { ...config.tools.googleCalendar, specialistName: e.target.value } } })}
+                      placeholder="Nome de quem fara a reuniao"
+                      className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+                  </div>
+                  <div className="flex gap-4">
+                    <div>
+                      <label className="block text-slate-600 text-xs font-medium mb-1">Duracao (min)</label>
+                      <select value={config.tools.googleCalendar.slotDuration}
+                        onChange={e => updateConfig({ tools: { ...config.tools, googleCalendar: { ...config.tools.googleCalendar, slotDuration: parseInt(e.target.value) } } })}
+                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm">
+                        <option value={15}>15 min</option>
+                        <option value={30}>30 min</option>
+                        <option value={45}>45 min</option>
+                        <option value={60}>60 min</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-slate-600 text-xs font-medium mb-1">Buscar ate</label>
+                      <select value={config.tools.googleCalendar.bufferDays}
+                        onChange={e => updateConfig({ tools: { ...config.tools, googleCalendar: { ...config.tools.googleCalendar, bufferDays: parseInt(e.target.value) } } })}
+                        className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm">
+                        <option value={3}>3 dias</option>
+                        <option value={7}>7 dias</option>
+                        <option value={14}>14 dias</option>
+                        <option value={30}>30 dias</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Follow-up */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-sm font-bold text-green-600">FUP</div>
+                  <div>
+                    <h3 className="text-slate-800 text-sm font-semibold">Follow-up automatico</h3>
+                    <p className="text-slate-400 text-xs">Cria lembretes de retorno com o contato apos a conversa.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => updateConfig({ tools: { ...config.tools, followUp: { ...config.tools.followUp, enabled: !config.tools.followUp.enabled } } })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${config.tools.followUp.enabled ? 'bg-green-500' : 'bg-slate-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${config.tools.followUp.enabled ? 'translate-x-6' : ''}`} />
+                </button>
+              </div>
+              {config.tools.followUp.enabled && (
+                <div className="mt-4 space-y-3 pl-[52px]">
+                  <div>
+                    <label className="block text-slate-600 text-xs font-medium mb-1">Dias para retorno</label>
+                    <select value={config.tools.followUp.defaultDays}
+                      onChange={e => updateConfig({ tools: { ...config.tools, followUp: { ...config.tools.followUp, defaultDays: parseInt(e.target.value) } } })}
+                      className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm">
+                      <option value={1}>1 dia</option>
+                      <option value={2}>2 dias</option>
+                      <option value={3}>3 dias</option>
+                      <option value={5}>5 dias</option>
+                      <option value={7}>7 dias</option>
+                    </select>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={config.tools.followUp.autoCreate}
+                      onChange={e => updateConfig({ tools: { ...config.tools, followUp: { ...config.tools.followUp, autoCreate: e.target.checked } } })}
+                      className="w-4 h-4 rounded border-slate-300 text-cyan-600" />
+                    <span className="text-slate-600 text-sm">Criar automaticamente ao encerrar conversa</span>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* Mover no funil */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-sm font-bold text-purple-600">FNL</div>
+                  <div>
+                    <h3 className="text-slate-800 text-sm font-semibold">Mover no funil</h3>
+                    <p className="text-slate-400 text-xs">Move contatos entre estagios do funil com base na conversa.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => updateConfig({ tools: { ...config.tools, funnelMove: { ...config.tools.funnelMove, enabled: !config.tools.funnelMove.enabled } } })}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${config.tools.funnelMove.enabled ? 'bg-green-500' : 'bg-slate-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${config.tools.funnelMove.enabled ? 'translate-x-6' : ''}`} />
+                </button>
+              </div>
+              {config.tools.funnelMove.enabled && (
+                <div className="mt-4 space-y-3 pl-[52px]">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={config.tools.funnelMove.autoMove}
+                      onChange={e => updateConfig({ tools: { ...config.tools, funnelMove: { ...config.tools.funnelMove, autoMove: e.target.checked } } })}
+                      className="w-4 h-4 rounded border-slate-300 text-cyan-600" />
+                    <span className="text-slate-600 text-sm">Mover automaticamente quando a IA identificar intencao de compra</span>
+                  </label>
+                </div>
+              )}
             </div>
           </div>
         )}

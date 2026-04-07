@@ -14,6 +14,7 @@
 import type {
   AgentConfig,
   AgentResponse,
+  AgentTools,
   ChannelMessage,
   ConversationMessage,
   CRMAction,
@@ -204,6 +205,47 @@ function buildPersonalizationSection(a: TextAgentWizardAnswers): string {
   return lines.join('\n')
 }
 
+function buildToolsSection(tools: AgentTools): string {
+  const lines: string[] = []
+  const hasTools = tools.googleCalendar.enabled || tools.followUp.enabled || tools.funnelMove.enabled
+  if (!hasTools) return ''
+
+  lines.push('## FERRAMENTAS DISPONIVEIS')
+  lines.push('')
+  lines.push('Voce tem acesso as seguintes ferramentas. Use-as quando apropriado durante a conversa:')
+  lines.push('')
+
+  if (tools.googleCalendar.enabled) {
+    lines.push('### Agendar reuniao (Google Agenda)')
+    lines.push(`- Voce pode verificar horarios disponiveis e agendar reunioes com ${tools.googleCalendar.specialistName || 'nosso especialista'}.`)
+    lines.push(`- Duracao padrao: ${tools.googleCalendar.slotDuration} minutos.`)
+    lines.push('- Quando o cliente demonstrar interesse em agendar, ofereca 2-3 opcoes de horario.')
+    lines.push('- Confirme data, horario e email do cliente antes de agendar.')
+    lines.push('- Para indicar que quer agendar, inclua na sua resposta: [AGENDAR_REUNIAO: {data}, {horario}, {email_cliente}]')
+    lines.push('')
+  }
+
+  if (tools.followUp.enabled) {
+    lines.push('### Criar follow-up')
+    lines.push(`- Voce pode criar lembretes de retorno para daqui a ${tools.followUp.defaultDays} dias.`)
+    lines.push('- Crie follow-up quando o cliente disser que vai pensar, que nao e o momento, ou pedir para retornar depois.')
+    lines.push('- Para criar follow-up, inclua na sua resposta: [CRIAR_FOLLOWUP: {motivo}]')
+    lines.push('')
+  }
+
+  if (tools.funnelMove.enabled) {
+    lines.push('### Mover no funil de vendas')
+    lines.push('- Voce pode mover o contato para o proximo estagio do funil quando detectar avanço na negociacao.')
+    if (tools.funnelMove.autoMove) {
+      lines.push('- Mova automaticamente quando: cliente demonstrar intencao de compra, solicitar proposta, ou confirmar interesse.')
+      lines.push('- Para mover, inclua na sua resposta: [MOVER_FUNIL: {motivo}]')
+    }
+    lines.push('')
+  }
+
+  return lines.join('\n')
+}
+
 function buildMediaInstructions(): string {
   const lines: string[] = []
   lines.push('## INSTRUCOES PARA MIDIA')
@@ -230,7 +272,8 @@ function buildDynamicVariablesSection(): string {
 
 export function assembleTextAgentPrompt(
   answers: TextAgentWizardAnswers,
-  faq: FAQItem[]
+  faq: FAQItem[],
+  tools?: AgentTools
 ): string {
   const sections: string[] = []
 
@@ -240,6 +283,7 @@ export function assembleTextAgentPrompt(
   sections.push(buildBehaviorSection(answers))
   sections.push(buildRulesSection(answers))
   sections.push(buildPersonalizationSection(answers))
+  if (tools) sections.push(buildToolsSection(tools))
   sections.push(buildMediaInstructions())
   sections.push(buildDynamicVariablesSection())
 
@@ -489,10 +533,11 @@ export async function processIncomingMessage(
     }
   }
 
-  // 5. Montar system prompt
+  // 5. Montar system prompt (com tools se habilitadas)
   const systemPrompt = channelConfig.systemPrompt || assembleTextAgentPrompt(
     channelConfig.wizardAnswers,
-    config.faq
+    config.faq,
+    config.tools
   )
 
   // 6. Montar historico de conversa para o LLM
@@ -553,8 +598,34 @@ export async function processIncomingMessage(
   }
 
   const llmResult = await llmResponse.json()
-  const responseText = llmResult.choices?.[0]?.message?.content || 'Desculpe, nao consegui processar sua mensagem.'
+  let responseText = llmResult.choices?.[0]?.message?.content || 'Desculpe, nao consegui processar sua mensagem.'
   const tokensUsed = llmResult.usage?.total_tokens || 0
+
+  // 7.5 Extrair acoes de tools da resposta e remover marcadores do texto
+  const toolActions: string[] = []
+  const agendarMatch = responseText.match(/\[AGENDAR_REUNIAO:([^\]]+)\]/i)
+  if (agendarMatch) {
+    crmActions.push({ type: 'create_note', data: { note: `Agendamento solicitado: ${agendarMatch[1].trim()}`, source: 'ai_calendar' } })
+    toolActions.push('calendar_checked')
+    responseText = responseText.replace(agendarMatch[0], '').trim()
+  }
+
+  const followupMatch = responseText.match(/\[CRIAR_FOLLOWUP:([^\]]+)\]/i)
+  if (followupMatch) {
+    const days = config.tools?.followUp?.defaultDays || 3
+    const returnDate = new Date()
+    returnDate.setDate(returnDate.getDate() + days)
+    crmActions.push({ type: 'create_note', data: { note: `Follow-up: ${followupMatch[1].trim()}`, returnDate: returnDate.toISOString(), source: 'ai_followup' } })
+    toolActions.push('followup_created')
+    responseText = responseText.replace(followupMatch[0], '').trim()
+  }
+
+  const funnelMatch = responseText.match(/\[MOVER_FUNIL:([^\]]+)\]/i)
+  if (funnelMatch) {
+    crmActions.push({ type: 'move_pipeline', data: { reason: funnelMatch[1].trim(), source: 'ai_funnel' } })
+    toolActions.push('funnel_moved')
+    responseText = responseText.replace(funnelMatch[0], '').trim()
+  }
 
   // 8. Gerar audio se configurado
   let audioUrl: string | undefined

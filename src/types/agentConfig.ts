@@ -79,6 +79,26 @@ export interface AgentCRMActions {
   tags: string[]                 // Tags aplicadas automaticamente
 }
 
+export interface AgentTools {
+  googleCalendar: {
+    enabled: boolean
+    calendarId: string           // Google Calendar ID
+    bufferDays: number           // Dias a frente para buscar slots
+    slotDuration: number         // Duracao do slot em minutos
+    specialistName: string       // Nome do especialista para agendar
+  }
+  followUp: {
+    enabled: boolean
+    defaultDays: number          // Dias padrao para follow-up
+    autoCreate: boolean          // Criar follow-up automaticamente apos conversa
+  }
+  funnelMove: {
+    enabled: boolean
+    autoMove: boolean            // Mover automaticamente baseado na conversa
+    targetStageId: string        // Estagio destino padrao
+  }
+}
+
 export interface AgentConfig {
   orgId: string
   whatsapp: AgentChannelConfig
@@ -92,6 +112,7 @@ export interface AgentConfig {
     offHoursMessage: string
   }
   audio: AgentAudioConfig
+  tools: AgentTools
   faq: FAQItem[]
   crmActions: AgentCRMActions
   createdAt: string
@@ -219,6 +240,10 @@ export type AgentActivityAction =
   | 'ai_resumed'
   | 'contact_created'
   | 'pipeline_updated'
+  | 'calendar_checked'
+  | 'meeting_scheduled'
+  | 'followup_created'
+  | 'funnel_moved'
   | 'credit_deducted'
   | 'credit_insufficient'
   | 'off_hours_reply'
@@ -295,6 +320,25 @@ export const DEFAULT_AGENT_CONFIG: Omit<AgentConfig, 'orgId' | 'createdAt' | 'up
     voiceId: '',
     sttProvider: 'openai',
     respondWithAudio: false,
+  },
+  tools: {
+    googleCalendar: {
+      enabled: false,
+      calendarId: '',
+      bufferDays: 7,
+      slotDuration: 30,
+      specialistName: '',
+    },
+    followUp: {
+      enabled: false,
+      defaultDays: 3,
+      autoCreate: true,
+    },
+    funnelMove: {
+      enabled: false,
+      autoMove: false,
+      targetStageId: '',
+    },
   },
   faq: [],
   crmActions: {

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type { ConversationMessage } from '@/types/agentConfig'
 
 interface MessageBubbleProps {
@@ -10,6 +11,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   const isContact = message.role === 'contact'
   const isSystem = message.role === 'system'
   const isAgent = message.role === 'agent'
+  const [imageFullscreen, setImageFullscreen] = useState(false)
 
   // Mensagem de sistema (centralizada)
   if (isSystem) {
@@ -27,66 +29,110 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     : ''
 
   return (
-    <div className={`flex ${isContact ? 'justify-start' : 'justify-end'} mb-2`}>
-      <div
-        className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-          isContact
-            ? 'bg-slate-200/60 text-slate-800 rounded-bl-md'
-            : isAgent
-              ? 'bg-cyan-50 text-slate-800 border border-cyan-200 rounded-br-md'
-              : 'bg-green-50 text-slate-800 border border-green-200 rounded-br-md'
-        }`}
-      >
-        {/* Role label */}
-        {!isContact && (
-          <div className={`text-[10px] font-medium mb-1 ${
-            isAgent ? 'text-cyan-500' : 'text-green-400/60'
-          }`}>
-            {isAgent ? 'Agente IA' : 'Atendente'}
-          </div>
-        )}
-
-        {/* Media indicator */}
-        {message.contentType === 'audio' && (
-          <div className="flex items-center gap-2 mb-1">
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-            </svg>
-            <span className="text-slate-500 text-xs">Audio</span>
-          </div>
-        )}
-
-        {message.contentType === 'image' && message.mediaUrl && (
-          <div className="mb-2">
-            <div className="flex items-center gap-2 text-slate-500 text-xs">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>Imagem</span>
+    <>
+      <div className={`flex ${isContact ? 'justify-start' : 'justify-end'} mb-2`}>
+        <div
+          className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+            isContact
+              ? 'bg-slate-200/60 text-slate-800 rounded-bl-md'
+              : isAgent
+                ? 'bg-cyan-50 text-slate-800 border border-cyan-200 rounded-br-md'
+                : 'bg-green-50 text-slate-800 border border-green-200 rounded-br-md'
+          }`}
+        >
+          {/* Role label */}
+          {!isContact && (
+            <div className={`text-[10px] font-medium mb-1 ${
+              isAgent ? 'text-cyan-500' : 'text-green-400/60'
+            }`}>
+              {isAgent ? 'Agente IA' : 'Atendente'}
             </div>
-          </div>
-        )}
-
-        {message.contentType === 'document' && (
-          <div className="flex items-center gap-2 mb-1">
-            <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="text-slate-500 text-xs">Documento</span>
-          </div>
-        )}
-
-        {/* Text content */}
-        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 mt-1">
-          {time && <span className="text-[10px] text-slate-300">{time}</span>}
-          {message.tokensUsed > 0 && (
-            <span className="text-[10px] text-slate-200">{message.tokensUsed} tokens</span>
           )}
+
+          {/* Image */}
+          {message.contentType === 'image' && message.mediaUrl && (
+            <div className="mb-2">
+              <img
+                src={message.mediaUrl}
+                alt="Imagem enviada"
+                className="max-w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                style={{ maxHeight: '280px', objectFit: 'cover' }}
+                onClick={() => setImageFullscreen(true)}
+              />
+            </div>
+          )}
+
+          {/* Audio */}
+          {message.contentType === 'audio' && message.mediaUrl && (
+            <div className="mb-2">
+              <audio controls className="w-full max-w-[260px]" preload="metadata">
+                <source src={message.mediaUrl} />
+                Seu navegador nao suporta o player de audio.
+              </audio>
+            </div>
+          )}
+
+          {/* Audio without URL (fallback label) */}
+          {message.contentType === 'audio' && !message.mediaUrl && (
+            <div className="flex items-center gap-2 mb-1">
+              <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              <span className="text-slate-500 text-xs">Audio</span>
+            </div>
+          )}
+
+          {/* Document */}
+          {message.contentType === 'document' && (
+            <div className="mb-1">
+              {message.mediaUrl ? (
+                <a
+                  href={message.mediaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-cyan-600 hover:text-cyan-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="text-xs underline">Abrir documento</span>
+                </a>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="text-slate-500 text-xs">Documento</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Text content */}
+          {message.content && (
+            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          )}
+
+          {/* Footer */}
+          <div className="flex items-center justify-end gap-2 mt-1">
+            {time && <span className="text-[10px] text-slate-300">{time}</span>}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Fullscreen image overlay */}
+      {imageFullscreen && message.mediaUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setImageFullscreen(false)}
+        >
+          <img
+            src={message.mediaUrl}
+            alt="Imagem em tela cheia"
+            className="max-w-full max-h-full rounded-lg object-contain"
+          />
+        </div>
+      )}
+    </>
   )
 }
