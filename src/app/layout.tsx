@@ -25,6 +25,7 @@ import { ImpersonationProvider, useImpersonation } from '@/contexts/Impersonatio
 import { PartnerViewProvider, usePartnerView, type MembershipInfo } from '@/contexts/PartnerViewContext'
 import { useCredits } from '@/hooks/useCredits'
 import FreePlanExpiredGate from '@/components/FreePlanExpiredGate'
+import CookieConsent from '@/components/CookieConsent'
 import PageAccessGuard from '@/components/PageAccessGuard'
 import NotificationBell from '@/components/NotificationBell'
 // useSuperAdmin removido — usado apenas no CrmSidebar
@@ -804,6 +805,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         </PartnerViewProvider>
         </ImpersonationProvider>
         <Toaster />
+        <CookieConsent />
       </body>
     </html>
   )
