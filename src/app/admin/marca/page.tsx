@@ -679,9 +679,9 @@ export default function BrandBookPage() {
           {/* App Icons */}
           <div className="glass-card rounded-2xl p-8 glow-border">
             <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">App Icon (PWA / Favicon)</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-start">
               <div className="flex flex-col items-center gap-3">
-                <div className="relative">
+                <div className="relative w-[120px] h-[120px] flex items-center justify-center">
                   <div className="absolute inset-0 blur-[30px] opacity-30" style={{ background: 'radial-gradient(circle, #8B5CF6, transparent)' }} />
                   <Image src="/icon-512.png" alt="App Icon 512" width={120} height={120} className="rounded-3xl relative z-10 shadow-xl" />
                 </div>
@@ -691,7 +691,7 @@ export default function BrandBookPage() {
                 </div>
               </div>
               <div className="flex flex-col items-center gap-3">
-                <div className="relative">
+                <div className="relative w-[120px] h-[120px] flex items-center justify-center">
                   <div className="absolute inset-0 blur-[20px] opacity-30" style={{ background: 'radial-gradient(circle, #06B6D4, transparent)' }} />
                   <Image src="/icon-192.png" alt="App Icon 192" width={80} height={80} className="rounded-2xl relative z-10 shadow-lg" />
                 </div>
