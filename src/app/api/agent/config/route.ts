@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server'
 import { getAgentConfig, saveAgentConfig } from '@/lib/agentConversation'
 import { assembleTextAgentPrompt, calculateTextAgentStrength } from '@/lib/agentEngine'
+import { verifyOrgAccess } from '@/lib/verifyOrgAccess'
 import { DEFAULT_AGENT_CONFIG } from '@/types/agentConfig'
 
 export async function GET(request: Request) {
@@ -16,6 +17,12 @@ export async function GET(request: Request) {
     const orgId = searchParams.get('orgId')
     if (!orgId) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
+    }
+
+    // Verificar acesso a org
+    const access = await verifyOrgAccess(request, orgId)
+    if (!access.authorized) {
+      return NextResponse.json({ error: access.error }, { status: 403 })
     }
 
     const config = await getAgentConfig(orgId)
@@ -41,6 +48,12 @@ export async function POST(request: Request) {
 
     if (!orgId) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
+    }
+
+    // Verificar acesso a org
+    const access = await verifyOrgAccess(request, orgId)
+    if (!access.authorized) {
+      return NextResponse.json({ error: access.error }, { status: 403 })
     }
 
     // Recalcular strength score e system prompt para WhatsApp
