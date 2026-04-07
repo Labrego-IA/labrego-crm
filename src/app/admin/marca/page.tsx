@@ -708,6 +708,199 @@ export default function BrandBookPage() {
               <p className="text-sm text-white/50 leading-relaxed relative z-10">Estilo dark premium para sidebar, dashboards e areas de destaque.</p>
             </div>
           </div>
+
+          {/* Inputs */}
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border mt-6">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Inputs & Formularios</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Text Input (padrao)</label>
+                  <input
+                    type="text"
+                    placeholder="Nome do contato"
+                    className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
+                    readOnly
+                  />
+                  <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">rounded-xl · border-[#EDE9FE] · focus:ring-[#8B5CF6]/20</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Input com icone</label>
+                  <div className="relative">
+                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+                    <input
+                      type="text"
+                      placeholder="Buscar contatos..."
+                      className="w-full rounded-xl border border-[#EDE9FE] bg-white pl-9 pr-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
+                      readOnly
+                    />
+                  </div>
+                  <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">pl-9 para icone · heroicon w-4 h-4 absolute</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Select</label>
+                  <select className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all appearance-none">
+                    <option>Selecione uma opcao</option>
+                    <option>Opcao A</option>
+                    <option>Opcao B</option>
+                  </select>
+                  <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">appearance-none · mesma base do input</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Textarea</label>
+                  <textarea
+                    placeholder="Observacoes sobre o contato..."
+                    rows={3}
+                    className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all resize-none"
+                    readOnly
+                  />
+                  <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">resize-none · mesma base do input</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Input desabilitado</label>
+                  <input
+                    type="text"
+                    value="Campo desabilitado"
+                    disabled
+                    className="w-full rounded-xl border border-[#EDE9FE] bg-[#F5F3FF] px-3 py-2.5 text-sm text-[#94A3B8] cursor-not-allowed"
+                  />
+                  <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">bg-[#F5F3FF] · cursor-not-allowed · text-[#94A3B8]</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Input com erro</label>
+                  <input
+                    type="text"
+                    value="Email invalido"
+                    className="w-full rounded-xl border border-[#EF4444] bg-[#FEF2F2] px-3 py-2.5 text-sm text-[#EF4444] focus:ring-2 focus:ring-[#EF4444]/20 outline-none transition-all"
+                    readOnly
+                  />
+                  <p className="text-[10px] text-[#EF4444] mt-1">Campo obrigatorio</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tables */}
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Tabelas</h3>
+            <div className="rounded-2xl overflow-hidden border border-[#EDE9FE]">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%)' }}>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Nome</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-white uppercase tracking-wider">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { nome: 'Maria Silva', email: 'maria@email.com', status: 'Ativo', statusColor: '#10B981', valor: 'R$ 12.500' },
+                    { nome: 'Joao Santos', email: 'joao@email.com', status: 'Pendente', statusColor: '#F59E0B', valor: 'R$ 8.200' },
+                    { nome: 'Ana Costa', email: 'ana@email.com', status: 'Concluido', statusColor: '#8B5CF6', valor: 'R$ 25.000' },
+                  ].map((row, i) => (
+                    <tr key={row.nome} className={`border-b border-[#EDE9FE] last:border-0 transition-colors hover:bg-[#8B5CF6]/[0.04] ${i % 2 === 1 ? 'bg-[#F5F3FF]/50' : 'bg-white'}`}>
+                      <td className="px-4 py-3 font-medium text-[#1E1B4B]">{row.nome}</td>
+                      <td className="px-4 py-3 text-[#64748B]">{row.email}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full" style={{ backgroundColor: `${row.statusColor}15`, color: row.statusColor }}>{row.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right font-semibold text-[#1E1B4B]">{row.valor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-[#94A3B8]">
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Header: gradient brand</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Rows: alternadas bg-[#F5F3FF]/50</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Hover: bg-[#8B5CF6]/[0.04]</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Border: border-[#EDE9FE]</span>
+            </div>
+          </div>
+
+          {/* Modal */}
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Modal / Dialog</h3>
+            <div className="relative rounded-2xl overflow-hidden" style={{ background: 'rgba(30,27,75,0.6)' }}>
+              <div className="p-8 flex items-center justify-center min-h-[280px]">
+                <div className="w-full max-w-sm rounded-2xl bg-white border border-[#EDE9FE] p-6 shadow-[0_8px_30px_rgba(30,27,75,0.15)]">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-base font-bold text-[#1E1B4B]">Confirmar acao</h4>
+                    <button className="w-8 h-8 rounded-lg bg-[#F5F3FF] flex items-center justify-center text-[#64748B] hover:bg-[#EDE9FE] transition-colors">
+                      <span className="text-sm">✕</span>
+                    </button>
+                  </div>
+                  <p className="text-sm text-[#64748B] mb-6">Tem certeza que deseja excluir este contato? Esta acao nao pode ser desfeita.</p>
+                  <div className="flex gap-3 justify-end">
+                    <button className="px-4 py-2 text-sm font-semibold text-[#64748B] rounded-xl hover:bg-[#F5F3FF] transition-colors">Cancelar</button>
+                    <button className="px-4 py-2 text-sm font-semibold text-white bg-[#EF4444] rounded-xl hover:bg-[#DC2626] transition-colors">Excluir</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-[#94A3B8]">
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Overlay: bg-slate-900/60</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Content: rounded-2xl shadow-elevated</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Sizes: sm · md · lg · xl · 2xl</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">z-index: 80</span>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Tabs / Navegacao</h3>
+            <div className="space-y-6">
+              <div>
+                <p className="text-xs text-[#64748B] mb-3">Tab bar padrao</p>
+                <div className="inline-flex items-center gap-1 rounded-2xl border border-[#EDE9FE] bg-white/70 p-1 backdrop-blur">
+                  <span className="px-4 py-2 text-sm font-semibold rounded-xl text-white shadow-lg" style={{ background: 'linear-gradient(135deg, #8B5CF6, #06B6D4)' }}>Geral</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Detalhes</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Historico</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Config</span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3 text-[10px] font-mono text-[#94A3B8]">
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Container: rounded-2xl bg-white/70 backdrop-blur</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Ativo: gradient brand + shadow-lg</span>
+              <span className="px-2 py-1 bg-[#F5F3FF] rounded">Inativo: text-[#64748B] hover:bg-white</span>
+            </div>
+          </div>
+
+          {/* Loading / Skeleton */}
+          <div className="glass-card rounded-2xl p-8 glow-border">
+            <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Loading & Skeleton</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-xs text-[#64748B] mb-3">Skeleton de card</p>
+                <div className="rounded-2xl border border-[#EDE9FE] bg-white p-5 space-y-3">
+                  <div className="h-10 w-10 rounded-xl bg-[#EDE9FE] animate-pulse" />
+                  <div className="h-4 w-3/4 rounded-lg bg-[#EDE9FE] animate-pulse" />
+                  <div className="h-3 w-full rounded-lg bg-[#F5F3FF] animate-pulse" />
+                  <div className="h-3 w-5/6 rounded-lg bg-[#F5F3FF] animate-pulse" />
+                </div>
+                <p className="text-[10px] text-[#94A3B8] mt-2 font-mono">bg-[#EDE9FE] animate-pulse · rounded-lg</p>
+              </div>
+              <div>
+                <p className="text-xs text-[#64748B] mb-3">Skeleton de tabela</p>
+                <div className="rounded-2xl border border-[#EDE9FE] bg-white overflow-hidden">
+                  <div className="h-10 bg-[#EDE9FE] animate-pulse" />
+                  {[1, 2, 3].map((r) => (
+                    <div key={r} className="flex gap-4 px-4 py-3 border-b border-[#F5F3FF] last:border-0">
+                      <div className="h-3 w-1/4 rounded bg-[#F5F3FF] animate-pulse" />
+                      <div className="h-3 w-1/3 rounded bg-[#F5F3FF] animate-pulse" />
+                      <div className="h-3 w-1/6 rounded bg-[#EDE9FE] animate-pulse" />
+                      <div className="h-3 w-1/6 rounded bg-[#F5F3FF] animate-pulse ml-auto" />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] text-[#94A3B8] mt-2 font-mono">Header + rows · mesmo layout da tabela real</p>
+              </div>
+            </div>
+          </div>
         </RevealSection>
 
         {/* ═══ 8. ESPACAMENTO ═══ */}
