@@ -1,54 +1,90 @@
 /**
  * POST /api/agent/whatsapp/connect
  *
- * Cria instancia Z-API para a org e retorna QR code para conexao.
+ * Dois modos:
+ * 1. Automatico (SaaS): Se ZAPI_CLIENT_TOKEN e de integrador, cria instancia via API
+ * 2. Manual: Usuario insere instanceId + token
  */
 
 import { NextResponse } from 'next/server'
-import { createInstance, getQRCodeImage, setWebhookUrl } from '@/lib/channels/zapiConnector'
+import { getQRCodeImage, setWebhookUrl, getConnectionStatus } from '@/lib/channels/zapiConnector'
 import { saveWhatsAppConnection, getWhatsAppConnection } from '@/lib/agentConversation'
+
+const ZAPI_BASE_URL = process.env.ZAPI_BASE_URL || 'https://api.z-api.io'
+const ZAPI_CLIENT_TOKEN = process.env.ZAPI_CLIENT_TOKEN || ''
+
+/** Tenta criar instancia via API de integrador Z-API */
+async function createInstanceViaAPI(orgId: string): Promise<{ instanceId: string; token: string } | null> {
+  if (!ZAPI_CLIENT_TOKEN) return null
+
+  try {
+    const response = await fetch(`${ZAPI_BASE_URL}/instances`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Token': ZAPI_CLIENT_TOKEN,
+      },
+      body: JSON.stringify({ name: `voxium-${orgId.slice(0, 8)}` }),
+    })
+
+    if (!response.ok) {
+      console.warn('[agent-connect] Criacao automatica falhou (pode nao ser conta de integrador):', response.status)
+      return null
+    }
+
+    const data = await response.json()
+    return {
+      instanceId: data.id || data.instanceId,
+      token: data.token || data.instanceToken,
+    }
+  } catch (e) {
+    console.warn('[agent-connect] Criacao automatica nao disponivel:', e)
+    return null
+  }
+}
 
 export async function POST(request: Request) {
   try {
-    const { orgId } = await request.json()
+    const body = await request.json()
+    const { orgId, instanceId, instanceToken } = body
+
     if (!orgId) {
       return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
     }
 
-    // Verificar se ja tem conexao
-    const existing = await getWhatsAppConnection(orgId)
-    if (existing?.instanceId && existing?.instanceToken) {
-      // Ja tem instancia, buscar QR code
-      try {
-        const qrCode = await getQRCodeImage(existing.instanceId, existing.instanceToken)
-        await saveWhatsAppConnection(orgId, {
-          status: qrCode ? 'qr_ready' : 'connecting',
-          qrCode: qrCode || '',
-        })
-        return NextResponse.json({
-          status: 'qr_ready',
-          qrCode,
-          instanceId: existing.instanceId,
-        })
-      } catch {
-        // Instancia pode estar invalida, criar nova
+    let finalInstanceId = instanceId
+    let finalToken = instanceToken
+
+    // Se veio credenciais manuais, usar direto
+    if (finalInstanceId && finalToken) {
+      // Salvar e continuar
+    } else {
+      // Verificar se ja tem credenciais salvas
+      const existing = await getWhatsAppConnection(orgId)
+      if (existing?.instanceId && existing?.instanceToken) {
+        finalInstanceId = existing.instanceId
+        finalToken = existing.instanceToken
+      } else {
+        // Tentar criar automaticamente (modo integrador)
+        const autoInstance = await createInstanceViaAPI(orgId)
+        if (autoInstance) {
+          finalInstanceId = autoInstance.instanceId
+          finalToken = autoInstance.token
+        } else {
+          // Sem credenciais e sem integrador — pedir manualmente
+          return NextResponse.json({
+            status: 'needs_credentials',
+            message: 'Insira o ID da instancia e o Token da Z-API',
+          })
+        }
       }
     }
 
-    // Criar nova instancia
-    const instance = await createInstance(orgId)
-
-    // Configurar webhook para apontar para nossa API
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || ''
-    if (appUrl) {
-      await setWebhookUrl(instance.instanceId, instance.token, `${appUrl}/api/agent/whatsapp/webhook`)
-    }
-
-    // Salvar conexao
+    // Salvar credenciais
     await saveWhatsAppConnection(orgId, {
       provider: 'zapi',
-      instanceId: instance.instanceId,
-      instanceToken: instance.token,
+      instanceId: finalInstanceId,
+      instanceToken: finalToken,
       phoneNumber: '',
       status: 'connecting',
       qrCode: '',
@@ -56,25 +92,36 @@ export async function POST(request: Request) {
       lastMessageAt: '',
     })
 
-    // Buscar QR code (pode levar um momento)
+    // Configurar webhook
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || ''
+    if (appUrl) {
+      try {
+        await setWebhookUrl(finalInstanceId, finalToken, `${appUrl}/api/agent/whatsapp/webhook`)
+      } catch (e) {
+        console.warn('[agent-connect] Webhook config falhou (nao critico):', e)
+      }
+    }
+
+    // Verificar se ja esta conectado
+    const statusCheck = await getConnectionStatus(finalInstanceId, finalToken)
+    if (statusCheck.connected) {
+      await saveWhatsAppConnection(orgId, { status: 'connected', connectedAt: new Date().toISOString(), qrCode: '' })
+      return NextResponse.json({ status: 'connected', instanceId: finalInstanceId })
+    }
+
+    // Buscar QR code
     let qrCode = ''
     try {
-      // Aguardar breve momento para Z-API preparar o QR
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      qrCode = await getQRCodeImage(instance.instanceId, instance.token)
-
-      await saveWhatsAppConnection(orgId, {
-        status: qrCode ? 'qr_ready' : 'connecting',
-        qrCode: qrCode || '',
-      })
-    } catch {
-      // QR pode nao estar pronto ainda, o frontend vai fazer polling
+      qrCode = await getQRCodeImage(finalInstanceId, finalToken)
+      await saveWhatsAppConnection(orgId, { status: qrCode ? 'qr_ready' : 'connecting', qrCode: qrCode || '' })
+    } catch (e) {
+      console.warn('[agent-connect] QR nao disponivel ainda:', e)
     }
 
     return NextResponse.json({
       status: qrCode ? 'qr_ready' : 'connecting',
       qrCode,
-      instanceId: instance.instanceId,
+      instanceId: finalInstanceId,
     })
   } catch (error) {
     console.error('[agent-connect] Erro:', error)

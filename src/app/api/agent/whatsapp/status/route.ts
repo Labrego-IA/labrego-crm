@@ -1,8 +1,7 @@
 /**
  * GET /api/agent/whatsapp/status?orgId=xxx
  *
- * Retorna status da conexao WhatsApp da org.
- * Faz polling no Z-API e atualiza Firestore.
+ * Retorna status da conexao WhatsApp da org via Z-API.
  */
 
 import { NextResponse } from 'next/server'
@@ -22,6 +21,7 @@ export async function GET(request: Request) {
     if (!conn?.instanceId || !conn?.instanceToken) {
       return NextResponse.json({
         status: 'disconnected' as WhatsAppConnectionStatus,
+        needsCredentials: true,
         phoneNumber: '',
         qrCode: '',
       })
@@ -34,13 +34,10 @@ export async function GET(request: Request) {
 
     let status: WhatsAppConnectionStatus = 'disconnected'
     let qrCode = conn.qrCode || ''
-    const phoneNumber = conn.phoneNumber || ''
 
     if (zapiStatus.connected) {
       status = 'connected'
-      qrCode = '' // Nao precisa mais do QR
-
-      // Atualizar Firestore se mudou
+      qrCode = ''
       if (conn.status !== 'connected') {
         await saveWhatsAppConnection(orgId, {
           status: 'connected',
@@ -48,14 +45,11 @@ export async function GET(request: Request) {
           qrCode: '',
         })
       }
-    } else if (zapiStatus.error) {
+    } else if (zapiStatus.error && !zapiStatus.error.includes('Z-API error')) {
       status = 'error'
-      await saveWhatsAppConnection(orgId, {
-        status: 'error',
-        errorMessage: zapiStatus.error,
-      })
+      await saveWhatsAppConnection(orgId, { status: 'error', errorMessage: zapiStatus.error })
     } else {
-      // Nao conectado — buscar QR code atualizado
+      // Nao conectado — buscar QR code
       status = 'qr_ready'
       try {
         qrCode = await getQRCodeImage(instanceId, instanceToken)
@@ -69,16 +63,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       status,
-      phoneNumber,
+      phoneNumber: conn.phoneNumber || '',
       qrCode,
       connected: zapiStatus.connected,
-      smartphoneConnected: zapiStatus.smartphoneConnected,
     })
   } catch (error) {
     console.error('[agent-status] Erro:', error)
-    return NextResponse.json(
-      { error: 'Erro ao verificar status' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Erro ao verificar status' }, { status: 500 })
   }
 }

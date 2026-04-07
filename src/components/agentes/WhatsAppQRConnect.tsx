@@ -14,21 +14,23 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [needsCredentials, setNeedsCredentials] = useState(false)
+  const [instanceId, setInstanceId] = useState('')
+  const [instanceToken, setInstanceToken] = useState('')
+  const [autoMode, setAutoMode] = useState(true)
 
   const updateStatus = useCallback((newStatus: WhatsAppConnectionStatus) => {
     setStatus(newStatus)
     onStatusChange?.(newStatus)
   }, [onStatusChange])
 
-  // Polling de status quando conectando/qr_ready
+  // Polling de status
   useEffect(() => {
     if (status !== 'connecting' && status !== 'qr_ready') return
-
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/agent/whatsapp/status?orgId=${orgId}`)
         const data = await res.json()
-
         if (data.status === 'connected') {
           updateStatus('connected')
           setPhoneNumber(data.phoneNumber || '')
@@ -37,15 +39,12 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
           setQrCode(data.qrCode)
           updateStatus('qr_ready')
         }
-      } catch {
-        // Silencioso — polling continua
-      }
+      } catch { /* polling silencioso */ }
     }, 5000)
-
     return () => clearInterval(interval)
   }, [status, orgId, updateStatus])
 
-  // Carregar status inicial
+  // Status inicial
   useEffect(() => {
     async function loadStatus() {
       try {
@@ -54,6 +53,7 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
         updateStatus(data.status || 'disconnected')
         setPhoneNumber(data.phoneNumber || '')
         if (data.qrCode) setQrCode(data.qrCode)
+        if (data.needsCredentials) setNeedsCredentials(true)
       } catch {
         updateStatus('disconnected')
       }
@@ -65,10 +65,18 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
     setLoading(true)
     setError('')
     try {
+      const body: Record<string, string> = { orgId }
+      // Modo manual: usuario insere credenciais
+      if (!autoMode && instanceId && instanceToken) {
+        body.instanceId = instanceId
+        body.instanceToken = instanceToken
+      }
+      // Modo automatico: API cria instancia (precisa de Client-Token de integrador)
+
       const res = await fetch('/api/agent/whatsapp/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orgId }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
 
@@ -77,13 +85,26 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
         return
       }
 
+      if (data.status === 'needs_credentials') {
+        setNeedsCredentials(true)
+        setAutoMode(false)
+        return
+      }
+
+      if (data.status === 'connected') {
+        updateStatus('connected')
+        setNeedsCredentials(false)
+        return
+      }
+
+      setNeedsCredentials(false)
       if (data.qrCode) {
         setQrCode(data.qrCode)
         updateStatus('qr_ready')
       } else {
         updateStatus('connecting')
       }
-    } catch (err) {
+    } catch {
       setError('Erro ao conectar WhatsApp')
     } finally {
       setLoading(false)
@@ -111,93 +132,113 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-          <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.462-1.496A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.24 0-4.326-.724-6.022-1.95l-.42-.315-2.647.887.888-2.649-.315-.42A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-          </svg>
-          Conexao WhatsApp
-        </h3>
+        <h3 className="text-lg font-semibold text-slate-800">Conexao WhatsApp</h3>
         <StatusBadge status={status} />
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-xl text-red-400 text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
           {error}
         </div>
       )}
 
-      {/* Desconectado */}
-      {status === 'disconnected' && (
-        <div className="text-center py-8">
-          <p className="text-slate-600 mb-4">Conecte seu WhatsApp para ativar o agente de atendimento.</p>
-          <button
-            onClick={handleConnect}
-            disabled={loading}
-            className="px-6 py-3 bg-green-600 hover:bg-green-500 text-slate-800 font-medium rounded-xl transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Conectando...' : 'Conectar WhatsApp'}
-          </button>
+      {/* Estado: desconectado */}
+      {(status === 'disconnected' || needsCredentials) && status !== 'connected' && (
+        <div className="space-y-4">
+          {/* Botao rapido (modo automatico) */}
+          {!needsCredentials && (
+            <div className="text-center py-6">
+              <p className="text-slate-500 mb-4">Conecte seu WhatsApp para ativar o agente de atendimento.</p>
+              <button
+                onClick={handleConnect}
+                disabled={loading}
+                className="px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Conectando...' : 'Conectar WhatsApp'}
+              </button>
+            </div>
+          )}
+
+          {/* Formulario manual (quando auto falha ou nao tem integrador) */}
+          {needsCredentials && (
+            <>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-blue-800 text-sm font-medium mb-1">Como conectar</p>
+                <ol className="text-blue-700 text-xs space-y-1 list-decimal pl-4">
+                  <li>Acesse <a href="https://developer.z-api.io/" target="_blank" rel="noopener" className="underline font-medium">developer.z-api.io</a> e crie uma conta</li>
+                  <li>Crie uma nova instancia no painel</li>
+                  <li>Copie o <strong>Instance ID</strong> e o <strong>Token</strong></li>
+                  <li>Cole nos campos abaixo</li>
+                </ol>
+              </div>
+              <div>
+                <label className="block text-slate-600 text-sm font-medium mb-1">Instance ID</label>
+                <input type="text" value={instanceId} onChange={e => setInstanceId(e.target.value)}
+                  placeholder="Cole o ID da instancia"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+              </div>
+              <div>
+                <label className="block text-slate-600 text-sm font-medium mb-1">Token</label>
+                <input type="password" value={instanceToken} onChange={e => setInstanceToken(e.target.value)}
+                  placeholder="Cole o token da instancia"
+                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+              </div>
+              <button
+                onClick={handleConnect}
+                disabled={loading || !instanceId || !instanceToken}
+                className="w-full px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-medium rounded-xl transition-colors disabled:opacity-50"
+              >
+                {loading ? 'Conectando...' : 'Conectar'}
+              </button>
+            </>
+          )}
         </div>
       )}
 
       {/* QR Code */}
-      {(status === 'qr_ready' || status === 'connecting') && (
+      {(status === 'qr_ready' || status === 'connecting') && !needsCredentials && (
         <div className="text-center py-4">
-          <p className="text-slate-600 mb-4">Escaneie o QR Code com seu WhatsApp para conectar:</p>
+          <p className="text-slate-600 mb-4">Escaneie o QR Code com seu WhatsApp:</p>
           {qrCode ? (
-            <div className="inline-block p-4 bg-white rounded-2xl mb-4">
+            <div className="inline-block p-4 bg-white border border-slate-200 rounded-2xl mb-4 shadow-sm">
               <img
                 src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
-                alt="QR Code WhatsApp"
-                className="w-64 h-64"
-              />
+                alt="QR Code WhatsApp" className="w-64 h-64" />
             </div>
           ) : (
-            <div className="inline-flex items-center justify-center w-64 h-64 bg-slate-100 rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-64 h-64 bg-slate-50 rounded-2xl mb-4">
               <div className="animate-spin w-8 h-8 border-2 border-cyan-600 border-t-transparent rounded-full" />
             </div>
           )}
           <p className="text-slate-400 text-sm">Aguardando escaneamento...</p>
-          <button
-            onClick={handleDisconnect}
-            className="mt-4 px-4 py-2 text-slate-500 hover:text-slate-600 text-sm transition-colors"
-          >
-            Cancelar
-          </button>
+          <button onClick={handleDisconnect} className="mt-4 px-4 py-2 text-slate-500 hover:text-slate-700 text-sm">Cancelar</button>
         </div>
       )}
 
       {/* Conectado */}
       {status === 'connected' && (
         <div className="py-4">
-          <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-300 rounded-xl mb-4">
-            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+          <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl mb-4">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
             <div>
-              <p className="text-green-400 font-medium">WhatsApp conectado</p>
-              {phoneNumber && <p className="text-slate-500 text-sm">{phoneNumber}</p>}
+              <p className="text-green-700 font-medium">WhatsApp conectado</p>
+              {phoneNumber && <p className="text-green-600 text-sm">{phoneNumber}</p>}
             </div>
           </div>
-          <button
-            onClick={handleDisconnect}
-            disabled={loading}
-            className="px-4 py-2 bg-red-50 hover:bg-red-500/30 text-red-400 font-medium rounded-xl transition-colors text-sm disabled:opacity-50"
-          >
+          <button onClick={handleDisconnect} disabled={loading}
+            className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium rounded-xl transition-colors text-sm disabled:opacity-50">
             {loading ? 'Desconectando...' : 'Desconectar'}
           </button>
         </div>
       )}
 
       {/* Erro */}
-      {status === 'error' && (
+      {status === 'error' && !needsCredentials && (
         <div className="text-center py-8">
-          <p className="text-red-400 mb-4">Erro na conexao. Tente reconectar.</p>
-          <button
-            onClick={handleConnect}
-            disabled={loading}
-            className="px-6 py-3 bg-green-600 hover:bg-green-500 text-slate-800 font-medium rounded-xl transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Reconectando...' : 'Reconectar'}
+          <p className="text-red-600 mb-4">Erro na conexao. Verifique as credenciais.</p>
+          <button onClick={() => { setNeedsCredentials(true); updateStatus('disconnected') }}
+            className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors">
+            Reconfigurar
           </button>
         </div>
       )}
@@ -207,17 +248,12 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
 
 function StatusBadge({ status }: { status: WhatsAppConnectionStatus }) {
   const config = {
-    disconnected: { label: 'Desconectado', bg: 'bg-slate-500/20', text: 'text-slate-400' },
-    connecting: { label: 'Conectando...', bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-    qr_ready: { label: 'Aguardando QR', bg: 'bg-yellow-500/20', text: 'text-yellow-400' },
-    connected: { label: 'Conectado', bg: 'bg-green-500/20', text: 'text-green-400' },
-    error: { label: 'Erro', bg: 'bg-red-50', text: 'text-red-400' },
+    disconnected: { label: 'Desconectado', bg: 'bg-slate-100', text: 'text-slate-500' },
+    connecting: { label: 'Conectando...', bg: 'bg-amber-50', text: 'text-amber-600' },
+    qr_ready: { label: 'Aguardando QR', bg: 'bg-amber-50', text: 'text-amber-600' },
+    connected: { label: 'Conectado', bg: 'bg-green-50', text: 'text-green-600' },
+    error: { label: 'Erro', bg: 'bg-red-50', text: 'text-red-600' },
   }
-
   const c = config[status]
-  return (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}>
-      {c.label}
-    </span>
-  )
+  return <span className={`px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}>{c.label}</span>
 }

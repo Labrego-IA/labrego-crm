@@ -1,7 +1,12 @@
 /**
  * Z-API Connector — Cliente para a API da Z-API (WhatsApp)
  *
- * Gerencia instancias por org: criar, conectar (QR), enviar msgs, desconectar.
+ * Formato correto da Z-API:
+ * Base: https://api.z-api.io/instances/{instanceId}/token/{token}/{endpoint}
+ *
+ * Instancias sao criadas no painel da Z-API (https://developer.z-api.io/)
+ * Cada cliente insere instanceId + token no CRM.
+ *
  * Docs: https://developer.z-api.io/
  */
 
@@ -26,7 +31,7 @@ export interface ZAPIConnectionStatus {
 }
 
 export interface ZAPIQRCode {
-  value: string   // QR code base64 image or string
+  value: string
   connected: boolean
 }
 
@@ -38,78 +43,44 @@ interface ZAPIMessageResponse {
 
 // ========== HELPERS ==========
 
-function getInstanceUrl(instanceId: string): string {
-  return `${ZAPI_BASE_URL}/instances/${instanceId}`
-}
-
-function getHeaders(instanceToken: string): Record<string, string> {
-  return {
-    'Content-Type': 'application/json',
-    'Client-Token': ZAPI_CLIENT_TOKEN,
-  }
-}
-
-function getAuthHeaders(instanceToken: string): Record<string, string> {
-  return {
-    'Content-Type': 'application/json',
-    'Client-Token': ZAPI_CLIENT_TOKEN,
-    'Authorization': `Bearer ${instanceToken}`,
-  }
+/** Monta a URL base da instancia: /instances/{id}/token/{token} */
+function getInstanceBaseUrl(instanceId: string, instanceToken: string): string {
+  return `${ZAPI_BASE_URL}/instances/${instanceId}/token/${instanceToken}`
 }
 
 async function zapiRequest<T>(
   url: string,
-  options: RequestInit & { instanceToken?: string } = {}
+  options: RequestInit = {}
 ): Promise<T> {
-  const { instanceToken, ...fetchOptions } = options
-  const headers = instanceToken
-    ? getAuthHeaders(instanceToken)
-    : { 'Content-Type': 'application/json', 'Client-Token': ZAPI_CLIENT_TOKEN }
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(ZAPI_CLIENT_TOKEN ? { 'Client-Token': ZAPI_CLIENT_TOKEN } : {}),
+  }
 
-  const response = await fetch(url, { ...fetchOptions, headers })
+  const response = await fetch(url, {
+    ...options,
+    headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
+  })
 
   if (!response.ok) {
     const errorText = await response.text()
     throw new Error(`Z-API error (${response.status}): ${errorText}`)
   }
 
-  return response.json() as Promise<T>
-}
-
-// ========== INSTANCE MANAGEMENT ==========
-
-/** Cria uma nova instancia Z-API para a org */
-export async function createInstance(orgId: string): Promise<ZAPIInstanceInfo> {
-  const result = await zapiRequest<{ id: string; token: string }>(`${ZAPI_BASE_URL}/instances`, {
-    method: 'POST',
-    body: JSON.stringify({
-      name: `labrego-${orgId}`,
-    }),
-  })
-
-  return {
-    instanceId: result.id,
-    token: result.token,
-  }
-}
-
-/** Remove/deleta uma instancia Z-API */
-export async function deleteInstance(instanceId: string, instanceToken: string): Promise<void> {
-  await zapiRequest(`${getInstanceUrl(instanceId)}/delete`, {
-    method: 'DELETE',
-    instanceToken,
-  })
+  const text = await response.text()
+  if (!text) return {} as T
+  return JSON.parse(text) as T
 }
 
 // ========== CONNECTION ==========
 
 /** Obtem QR code para conectar o WhatsApp */
 export async function getQRCode(instanceId: string, instanceToken: string): Promise<ZAPIQRCode> {
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
   const result = await zapiRequest<{ value?: string; connected?: boolean }>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/qr-code`,
-    { method: 'GET', instanceToken }
+    `${baseUrl}/qr-code`,
+    { method: 'GET' }
   )
-
   return {
     value: result.value || '',
     connected: result.connected || false,
@@ -118,11 +89,11 @@ export async function getQRCode(instanceId: string, instanceToken: string): Prom
 
 /** Obtem QR code como imagem base64 */
 export async function getQRCodeImage(instanceId: string, instanceToken: string): Promise<string> {
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
   const result = await zapiRequest<{ value?: string }>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/qr-code/image`,
-    { method: 'GET', instanceToken }
+    `${baseUrl}/qr-code/image`,
+    { method: 'GET' }
   )
-
   return result.value || ''
 }
 
@@ -132,15 +103,13 @@ export async function getConnectionStatus(
   instanceToken: string
 ): Promise<ZAPIConnectionStatus> {
   try {
+    const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
     const result = await zapiRequest<{
       connected?: boolean
       smartphoneConnected?: boolean
       session?: string
       error?: string
-    }>(
-      `${getInstanceUrl(instanceId)}/token/${instanceToken}/status`,
-      { method: 'GET', instanceToken }
-    )
+    }>(`${baseUrl}/status`, { method: 'GET' })
 
     return {
       connected: result.connected || false,
@@ -158,20 +127,16 @@ export async function getConnectionStatus(
   }
 }
 
-/** Desconecta o WhatsApp (logout) sem deletar a instancia */
+/** Desconecta o WhatsApp (logout) */
 export async function disconnect(instanceId: string, instanceToken: string): Promise<void> {
-  await zapiRequest(`${getInstanceUrl(instanceId)}/token/${instanceToken}/disconnect`, {
-    method: 'POST',
-    instanceToken,
-  })
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  await zapiRequest(`${baseUrl}/disconnect`, { method: 'POST' })
 }
 
 /** Reinicia a instancia */
 export async function restartInstance(instanceId: string, instanceToken: string): Promise<void> {
-  await zapiRequest(`${getInstanceUrl(instanceId)}/token/${instanceToken}/restart`, {
-    method: 'POST',
-    instanceToken,
-  })
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  await zapiRequest(`${baseUrl}/restart`, { method: 'POST' })
 }
 
 // ========== SEND MESSAGES ==========
@@ -179,7 +144,6 @@ export async function restartInstance(instanceId: string, instanceToken: string)
 /** Formata telefone para formato Z-API (apenas digitos com codigo do pais) */
 function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '')
-  // Se ja comeca com 55, usa direto. Senao, adiciona 55.
   if (digits.startsWith('55') && digits.length >= 12) return digits
   return `55${digits}`
 }
@@ -191,38 +155,31 @@ export async function sendTextMessage(
   to: string,
   message: string
 ): Promise<ZAPIMessageResponse> {
-  return zapiRequest<ZAPIMessageResponse>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/send-text`,
-    {
-      method: 'POST',
-      instanceToken,
-      body: JSON.stringify({
-        phone: formatPhone(to),
-        message,
-      }),
-    }
-  )
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  return zapiRequest<ZAPIMessageResponse>(`${baseUrl}/send-text`, {
+    method: 'POST',
+    body: JSON.stringify({
+      phone: formatPhone(to),
+      message,
+    }),
+  })
 }
 
-/** Envia audio (para resposta TTS via ElevenLabs) */
+/** Envia audio */
 export async function sendAudioMessage(
   instanceId: string,
   instanceToken: string,
   to: string,
-  audioBase64: string
+  audioUrl: string
 ): Promise<ZAPIMessageResponse> {
-  return zapiRequest<ZAPIMessageResponse>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/send-audio`,
-    {
-      method: 'POST',
-      instanceToken,
-      body: JSON.stringify({
-        phone: formatPhone(to),
-        audio: audioBase64,
-        encoding: 'audio/mpeg',
-      }),
-    }
-  )
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  return zapiRequest<ZAPIMessageResponse>(`${baseUrl}/send-audio`, {
+    method: 'POST',
+    body: JSON.stringify({
+      phone: formatPhone(to),
+      audio: audioUrl,
+    }),
+  })
 }
 
 /** Envia imagem */
@@ -233,18 +190,15 @@ export async function sendImageMessage(
   imageUrl: string,
   caption?: string
 ): Promise<ZAPIMessageResponse> {
-  return zapiRequest<ZAPIMessageResponse>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/send-image`,
-    {
-      method: 'POST',
-      instanceToken,
-      body: JSON.stringify({
-        phone: formatPhone(to),
-        image: imageUrl,
-        caption: caption || '',
-      }),
-    }
-  )
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  return zapiRequest<ZAPIMessageResponse>(`${baseUrl}/send-image`, {
+    method: 'POST',
+    body: JSON.stringify({
+      phone: formatPhone(to),
+      image: imageUrl,
+      caption: caption || '',
+    }),
+  })
 }
 
 /** Envia documento */
@@ -255,18 +209,15 @@ export async function sendDocumentMessage(
   documentUrl: string,
   fileName: string
 ): Promise<ZAPIMessageResponse> {
-  return zapiRequest<ZAPIMessageResponse>(
-    `${getInstanceUrl(instanceId)}/token/${instanceToken}/send-document/{extension}`,
-    {
-      method: 'POST',
-      instanceToken,
-      body: JSON.stringify({
-        phone: formatPhone(to),
-        document: documentUrl,
-        fileName,
-      }),
-    }
-  )
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  return zapiRequest<ZAPIMessageResponse>(`${baseUrl}/send-document/pdf`, {
+    method: 'POST',
+    body: JSON.stringify({
+      phone: formatPhone(to),
+      document: documentUrl,
+      fileName,
+    }),
+  })
 }
 
 // ========== WEBHOOK CONFIGURATION ==========
@@ -277,32 +228,30 @@ export async function setWebhookUrl(
   instanceToken: string,
   webhookUrl: string
 ): Promise<void> {
-  await zapiRequest(`${getInstanceUrl(instanceId)}/token/${instanceToken}/update-webhook`, {
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  await zapiRequest(`${baseUrl}/update-webhook`, {
     method: 'PUT',
-    instanceToken,
-    body: JSON.stringify({
-      value: webhookUrl,
-    }),
+    body: JSON.stringify({ value: webhookUrl }),
   })
 }
 
 // ========== TYPING INDICATOR ==========
 
-/** Mostra indicador "digitando..." no WhatsApp do contato */
+/** Mostra indicador "digitando..." */
 export async function sendTypingIndicator(
   instanceId: string,
   instanceToken: string,
   to: string
 ): Promise<void> {
-  await zapiRequest(`${getInstanceUrl(instanceId)}/token/${instanceToken}/typing`, {
+  const baseUrl = getInstanceBaseUrl(instanceId, instanceToken)
+  await zapiRequest(`${baseUrl}/typing`, {
     method: 'POST',
-    instanceToken,
     body: JSON.stringify({
       phone: formatPhone(to),
       duration: 5000,
     }),
   }).catch(() => {
-    // Typing indicator e best-effort, nao deve bloquear
+    // Best-effort, nao deve bloquear
   })
 }
 
@@ -320,12 +269,9 @@ export async function uploadAudioToStorage(
   const file = bucket.file(filePath)
 
   await file.save(audioBuffer, {
-    metadata: {
-      contentType: 'audio/mpeg',
-    },
+    metadata: { contentType: 'audio/mpeg' },
   })
 
   await file.makePublic()
-
   return `https://storage.googleapis.com/${bucket.name}/${filePath}`
 }
