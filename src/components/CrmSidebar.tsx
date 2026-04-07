@@ -272,9 +272,9 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
           className="flex items-center justify-center w-full rounded-2xl transition-all duration-200 hover:bg-white/5 group py-2"
         >
           {collapsed ? (
-            <Image src="/logo-voxium.png" alt="Voxium" width={28} height={28} className="object-contain" />
+            <Image src="/logo-voxium.png" alt="Voxium" width={28} height={28} className="object-contain brightness-150 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" />
           ) : (
-            <Image src="/logo-voxium.png" alt="Voxium" width={120} height={40} className="object-contain" />
+            <Image src="/logo-voxium.png" alt="Voxium" width={120} height={40} className="object-contain brightness-150 drop-shadow-[0_0_12px_rgba(139,92,246,0.4)]" />
           )}
         </button>
       </div>

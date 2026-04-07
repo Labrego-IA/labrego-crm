@@ -3566,23 +3566,22 @@ export default function FunilDetailPage() {
       {/* Header with KPIs */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-20">
         <div className="px-6 py-3">
-          <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-            <div className="flex items-center gap-6 min-w-0">
+          <div className="flex flex-col gap-3">
+            {/* Row 1: Navigation + funnel info */}
+            <div className="flex items-center gap-4 min-w-0">
               <button
                 onClick={() => router.push('/funil')}
-                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors flex-shrink-0"
                 title="Voltar ao Hub de Funis"
               >
                 <ChevronLeftIcon className="w-5 h-5" />
                 <span className="hidden sm:inline">Funis</span>
               </button>
-              <div className="h-6 w-px bg-slate-200" />
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
+              <div className="min-w-0 flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: funnelColor }} />
-                  <h1 className="text-xl font-bold text-slate-800 truncate max-w-[200px] sm:max-w-[300px] lg:max-w-none">{funnelName || 'Funil de Vendas'}</h1>
-                  <span className="hidden sm:inline text-slate-300">·</span>
-                  <span className="hidden sm:inline text-sm text-slate-500 flex-shrink-0">{globalMetrics.totalContacts} contato{globalMetrics.totalContacts !== 1 ? 's' : ''}</span>
+                  <h1 className="text-lg font-bold text-slate-800 truncate">{funnelName || 'Funil de Vendas'}</h1>
+                  <span className="hidden sm:inline text-slate-300 flex-shrink-0">·</span>
+                  <span className="hidden sm:inline text-sm text-slate-500 flex-shrink-0 whitespace-nowrap">{globalMetrics.totalContacts} contato{globalMetrics.totalContacts !== 1 ? 's' : ''}</span>
                   {/* Automation Status Pill (clicável) */}
                   {autoConfig && (
                     <div className="relative hidden sm:block">
@@ -3711,10 +3710,9 @@ export default function FunilDetailPage() {
                     </div>
                   )}
                 </div>
-              </div>
 
               {/* KPI Pills */}
-              <div className="hidden xl:flex items-center gap-1.5 ml-3 flex-shrink-0 overflow-x-auto scrollbar-hide max-w-[50vw]">
+              <div className="hidden 2xl:flex items-center gap-1.5 ml-auto flex-shrink-0">
                 <div className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                   globalMetrics.overduePercent > 30
                     ? 'bg-red-50 text-red-700'
@@ -3765,21 +3763,22 @@ export default function FunilDetailPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-              {/* Search - full width on mobile, first row */}
-              <div className="relative order-1 sm:order-2 w-full sm:w-auto">
+            {/* Row 2: Controls */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Search */}
+              <div className="relative order-last sm:order-none flex-1 sm:flex-none">
                 <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Buscar por nome, telefone, CNPJ, sócios..."
-                  className="w-full sm:w-64 lg:w-80 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
+                  placeholder="Buscar por nome, telefone, CNPJ, sócio..."
+                  className="w-full sm:w-56 lg:w-72 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
                 />
               </div>
 
-              {/* Controls row - second row on mobile */}
-              <div className="flex items-center gap-2 order-2 sm:order-1 sm:contents">
+              {/* Controls */}
+              <div className="flex items-center gap-2 flex-wrap">
               {/* View Mode Dropdown */}
               <div className="relative">
                 <select
