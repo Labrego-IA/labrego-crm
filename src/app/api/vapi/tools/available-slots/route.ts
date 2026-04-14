@@ -27,11 +27,8 @@ async function resolveOrgIdFromContext(body: Record<string, unknown>): Promise<s
     }
   }
 
-  const fallback = process.env.DEFAULT_ORG_ID
-  if (fallback) {
-    console.warn('[AVAILABLE-SLOTS] Using DEFAULT_ORG_ID fallback')
-  }
-  return fallback || undefined
+  console.warn('[AVAILABLE-SLOTS] No orgId resolved from call data')
+  return undefined
 }
 
 // POST - Endpoint do Vapi para buscar horários disponíveis
@@ -87,7 +84,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<VapiToolRespo
 // GET - Endpoint para testar horários disponíveis
 export async function GET(req: NextRequest) {
   try {
-    const orgId = req.nextUrl.searchParams.get('orgId') || process.env.DEFAULT_ORG_ID || undefined
+    const orgId = req.nextUrl.searchParams.get('orgId') || undefined
     const slots = await getAvailableSlots(7, orgId)
     return NextResponse.json({
       total: slots.length,

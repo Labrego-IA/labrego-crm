@@ -28,3 +28,23 @@ export async function resolveOrgByEmail(email: string): Promise<OrgContext | nul
 export function getOrgIdFromHeaders(headers: Headers): string | null {
   return headers.get('x-org-id')
 }
+
+/**
+ * requireOrgId — Resolve orgId de forma segura, SEM fallback para DEFAULT_ORG_ID.
+ *
+ * Ordem de resolução:
+ *   1. x-user-email header → resolveOrgByEmail
+ *   2. x-org-id header → getOrgIdFromHeaders
+ *
+ * Retorna null se não conseguir resolver — a rota deve retornar 401/400.
+ */
+export async function requireOrgId(headers: Headers): Promise<{ orgId: string; email?: string } | null> {
+  const email = headers.get('x-user-email')?.toLowerCase()
+  if (email) {
+    const ctx = await resolveOrgByEmail(email)
+    if (ctx) return { orgId: ctx.orgId, email }
+  }
+  const fromHeader = getOrgIdFromHeaders(headers)
+  if (fromHeader) return { orgId: fromHeader, email: email || undefined }
+  return null
+}

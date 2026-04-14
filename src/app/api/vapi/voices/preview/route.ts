@@ -1,20 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCallRoutingConfig } from '@/lib/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-async function resolveOrgId(req: NextRequest): Promise<string> {
-  const email = req.headers.get('x-user-email')
-  if (email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) return ctx.orgId
-  }
-  const fromHeader = getOrgIdFromHeaders(req.headers)
-  if (fromHeader) return fromHeader
-  return process.env.DEFAULT_ORG_ID || ''
-}
 
 function getElevenLabsApiKey(config: { integrations?: { elevenLabs?: { apiKey?: string } } } | null): string {
   return config?.integrations?.elevenLabs?.apiKey || process.env.ELEVENLABS_API_KEY || ''
@@ -30,7 +19,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'voiceId é obrigatório' }, { status: 400 })
     }
 
-    const orgId = await resolveOrgId(req)
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
+    }
+    const orgId = orgCtx.orgId
     const config = orgId ? await getCallRoutingConfig(orgId) : null
     const elevenLabsKey = getElevenLabsApiKey(config)
 

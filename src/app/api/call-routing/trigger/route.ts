@@ -7,7 +7,7 @@ import {
   parseMultiplePhones,
 } from '@/lib/callRouting'
 import { CallBatchTracker } from '@/types/callRouting'
-import { resolveOrgByEmail } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -24,21 +24,11 @@ let cancelledBatchId: string | null = null
 // Quando atinge maxConcurrent simultâneas, espera uma acabar antes de continuar.
 export async function POST(req: NextRequest) {
   // Verificar autenticação — somente usuários autenticados podem disparar ligações
-  const userEmail = req.headers.get('x-user-email')
-  if (!userEmail) {
-    return NextResponse.json({ error: 'Authentication required. Send x-user-email header.' }, { status: 401 })
+  const orgCtx = await requireOrgId(req.headers)
+  if (!orgCtx) {
+    return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
   }
-
-  // Multi-tenant: resolver orgId via email
-  const orgContext = await resolveOrgByEmail(userEmail)
-  const orgId = orgContext?.orgId || process.env.DEFAULT_ORG_ID || ''
-  if (!orgId) {
-    console.warn('[TRIGGER-CALLS] No orgId resolved for email:', userEmail)
-    return NextResponse.json({ error: 'Could not resolve organization for user' }, { status: 400 })
-  }
-  if (!orgContext) {
-    console.warn('[TRIGGER-CALLS] Using DEFAULT_ORG_ID fallback for email:', userEmail)
-  }
+  const orgId = orgCtx.orgId
 
   try {
     const body = await req.json().catch(() => ({}))

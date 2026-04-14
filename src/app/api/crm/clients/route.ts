@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { sendServerNotification } from '@/lib/serverNotifications'
-import { getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -58,11 +58,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Phone is required' }, { status: 400 })
     }
 
-    // Multi-tenant: resolve orgId from header or env fallback
-    const orgId = getOrgIdFromHeaders(req.headers) || process.env.DEFAULT_ORG_ID || ''
-    if (!orgId) {
-      console.warn('[CRM] No orgId resolved for client creation')
+    // Multi-tenant: resolve orgId securely (no fallback)
+    const resolved = await requireOrgId(req.headers)
+    if (!resolved) {
+      return NextResponse.json({ error: 'Unable to resolve organization' }, { status: 401 })
     }
+    const orgId = resolved.orgId
 
     const db = getAdminDb()
     const docRef = db.collection('clients').doc()

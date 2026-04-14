@@ -4,12 +4,9 @@ export async function POST(req: Request) {
   try {
     const data = await req.json()
 
-    // Multi-tenant: ensure orgId is present, fallback to env default
+    // Multi-tenant: require orgId from request body (no env fallback)
     if (!data.orgId) {
-      data.orgId = process.env.DEFAULT_ORG_ID || ''
-      if (!data.orgId) {
-        console.warn('[N8N] No orgId in body and no DEFAULT_ORG_ID configured')
-      }
+      return NextResponse.json({ error: 'orgId is required in request body' }, { status: 400 })
     }
 
     const url = process.env.N8N_WEBHOOK_LEAD_CREATED

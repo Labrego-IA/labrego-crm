@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // Signature verification always enforced — no bypass allowed
-const META_ORG_ID = process.env.DEFAULT_ORG_ID || '';
+const META_ORG_ID = process.env.META_ORG_ID || '';
 const GRAPH_VERSION = "v23.0";
 const N8N_TEST_WEBHOOK_URL =
   "https://n8neditor.labregosolucoes.online/webhook-test/0ea3e24c-cdbf-426f-b4d7-8fdbbba96b88";
@@ -141,7 +141,8 @@ async function processMetaPayloadDebug(payload: any) {
     console.error("[META] Missing META_PAGE_ACCESS_TOKEN");
   }
   if (!META_ORG_ID) {
-    console.warn("[META] No DEFAULT_ORG_ID configured for multi-tenant");
+    console.warn("[META] No META_ORG_ID configured — skipping lead processing");
+    return;
   }
 
   for (const entry of payload.entry ?? []) {

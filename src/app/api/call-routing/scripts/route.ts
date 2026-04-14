@@ -1,36 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { CallScript } from '@/types/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-/** Resolve orgId from request: x-user-email > x-org-id header > DEFAULT_ORG_ID */
-async function resolveOrgId(req: NextRequest): Promise<string> {
-  const email = req.headers.get('x-user-email')
-  if (email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) return ctx.orgId
-  }
-  const fromHeader = getOrgIdFromHeaders(req.headers)
-  if (fromHeader) return fromHeader
-  const fallback = process.env.DEFAULT_ORG_ID || ''
-  if (fallback) {
-    console.warn('[CALL-ROUTING SCRIPTS] Using DEFAULT_ORG_ID fallback')
-  } else {
-    console.warn('[CALL-ROUTING SCRIPTS] No orgId resolved')
-  }
-  return fallback
-}
-
 // GET - Listar roteiros
 export async function GET(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const db = getAdminDb()
     const searchParams = req.nextUrl.searchParams
@@ -62,10 +45,11 @@ export async function GET(req: NextRequest) {
 // POST - Criar novo roteiro
 export async function POST(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const body = await req.json()
 
@@ -116,10 +100,11 @@ export async function POST(req: NextRequest) {
 // PUT - Atualizar roteiro
 export async function PUT(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const body = await req.json()
 
@@ -177,10 +162,11 @@ export async function PUT(req: NextRequest) {
 // DELETE - Excluir roteiro
 export async function DELETE(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const searchParams = req.nextUrl.searchParams
     const id = searchParams.get('id')

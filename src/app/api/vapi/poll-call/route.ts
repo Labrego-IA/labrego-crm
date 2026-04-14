@@ -11,11 +11,10 @@ import {
   getEndedReasonText,
   retryCallWithNextPhone,
 } from '@/lib/callRouting'
-import { getAdminDb } from '@/lib/firebaseAdmin'
 import { onCallCompleted, onCallFailed } from '@/lib/callQueue'
 import { deductCredits } from '@/lib/credits'
 import { NOT_CONNECTED_REASONS, CallOutcomeCode } from '@/types/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,32 +34,12 @@ export async function GET(req: NextRequest) {
   const phonesParam = req.nextUrl.searchParams.get('phones') || ''
   const phoneIndex = parseInt(req.nextUrl.searchParams.get('phoneIndex') || '0', 10)
 
-  // Multi-tenant: resolve orgId from header, query param, or client doc
-  let orgId = getOrgIdFromHeaders(req.headers)
-    || req.nextUrl.searchParams.get('orgId')
-    || null
-  const email = req.headers.get('x-user-email')
-  if (!orgId && email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) orgId = ctx.orgId
+  // Multi-tenant: resolve orgId from auth headers (frontend call)
+  const orgCtx = await requireOrgId(req.headers)
+  if (!orgCtx) {
+    return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
   }
-  if (!orgId && clientId) {
-    try {
-      const db = getAdminDb()
-      const clientDoc = await db.collection('clients').doc(clientId).get()
-      if (clientDoc.exists) {
-        orgId = clientDoc.data()?.orgId || null
-      }
-    } catch (err) {
-      console.error('[VAPI-POLL] Error resolving orgId from client:', err)
-    }
-  }
-  if (!orgId) {
-    orgId = process.env.DEFAULT_ORG_ID || ''
-    if (orgId) {
-      console.warn('[VAPI-POLL] Using DEFAULT_ORG_ID fallback')
-    }
-  }
+  const orgId = orgCtx.orgId
 
   console.log(`[VAPI-POLL] Requisição recebida: callId=${callId}, clientId=${clientId}, prospectName=${prospectName}, orgId=${orgId}`)
 

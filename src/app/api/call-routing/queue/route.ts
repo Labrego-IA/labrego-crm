@@ -7,28 +7,10 @@ import {
   cancelQueue,
 } from '@/lib/callQueue'
 import { getCallRoutingConfig } from '@/lib/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-/** Resolve orgId from request: x-user-email > x-org-id header > DEFAULT_ORG_ID */
-async function resolveOrgId(req: NextRequest): Promise<string> {
-  const email = req.headers.get('x-user-email')
-  if (email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) return ctx.orgId
-  }
-  const fromHeader = getOrgIdFromHeaders(req.headers)
-  if (fromHeader) return fromHeader
-  const fallback = process.env.DEFAULT_ORG_ID || ''
-  if (fallback) {
-    console.warn('[QUEUE-API] Using DEFAULT_ORG_ID fallback')
-  } else {
-    console.warn('[QUEUE-API] No orgId resolved')
-  }
-  return fallback
-}
 
 /**
  * POST /api/call-routing/queue
@@ -38,10 +20,11 @@ async function resolveOrgId(req: NextRequest): Promise<string> {
  */
 export async function POST(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const body = await req.json().catch(() => ({}))
     const requestedLimit = body.limit || 50
@@ -122,10 +105,11 @@ export async function POST(req: NextRequest) {
  */
 export async function GET(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const queueId = req.nextUrl.searchParams.get('id') || undefined
 
@@ -158,10 +142,11 @@ export async function GET(req: NextRequest) {
  */
 export async function DELETE(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const queueId = req.nextUrl.searchParams.get('id')
 

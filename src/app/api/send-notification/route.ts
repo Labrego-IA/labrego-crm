@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server'
 import { sendServerNotification } from '@/lib/serverNotifications'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export async function POST(req: Request) {
   try {
-    const { title, body, url, action, email, role, data, orgId } = await req.json()
+    const json = await req.json()
+    const { title, body, url, action, email, role, data, orgId } = json
     if (!title || !body) {
       return NextResponse.json({ error: 'title and body required' }, { status: 400 })
     }
@@ -25,9 +27,12 @@ export async function POST(req: Request) {
 
     }
 
-    // Multi-tenant: pass orgId through to notification system
-    // TODO: sendServerNotification should filter fcmTokens by orgId when available
-    const resolvedOrgId = orgId || process.env.DEFAULT_ORG_ID || ''
+    // Multi-tenant: resolve orgId from body first, then headers (no env fallback)
+    let resolvedOrgId = orgId || ''
+    if (!resolvedOrgId) {
+      const headerCtx = await requireOrgId(req.headers)
+      if (headerCtx) resolvedOrgId = headerCtx.orgId
+    }
     if (resolvedOrgId) {
       if (!options.data) options.data = {}
       options.data.orgId = resolvedOrgId

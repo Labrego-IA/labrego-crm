@@ -44,11 +44,8 @@ async function resolveOrgIdFromClient(clientId: string): Promise<string> {
   } catch (error) {
     console.error('[VAPI WEBHOOK] Error resolving orgId from client:', error)
   }
-  const fallback = process.env.DEFAULT_ORG_ID || ''
-  if (fallback) {
-    console.warn('[VAPI WEBHOOK] Using DEFAULT_ORG_ID fallback for client:', clientId)
-  }
-  return fallback
+  console.warn('[VAPI WEBHOOK] No orgId resolved from call data for client:', clientId)
+  return ''
 }
 
 // GET - Health check para verificar se o webhook está acessível
@@ -99,8 +96,7 @@ async function handleToolCalls(body: VapiToolCallRequest): Promise<NextResponse<
     orgId = await resolveOrgIdFromClient((callMetadata as Record<string, unknown>).clientId as string) || undefined
   }
   if (!orgId) {
-    orgId = process.env.DEFAULT_ORG_ID || undefined
-    if (orgId) console.warn('[VAPI WEBHOOK] handleToolCalls: Using DEFAULT_ORG_ID fallback')
+    console.warn('[VAPI WEBHOOK] handleToolCalls: No orgId resolved from call data')
   }
 
   // Buscar horários disponíveis
@@ -272,8 +268,7 @@ async function handleEndOfCall(body: VapiEndOfCallReport): Promise<NextResponse>
       orgId = await resolveOrgIdFromClient(clientId) || undefined
     }
     if (!orgId) {
-      orgId = process.env.DEFAULT_ORG_ID || undefined
-      if (orgId) console.warn('[VAPI WEBHOOK] handleEndOfCall: Using DEFAULT_ORG_ID fallback')
+      console.warn('[VAPI WEBHOOK] handleEndOfCall: No orgId resolved from call data')
     }
 
     // Multi-phone info

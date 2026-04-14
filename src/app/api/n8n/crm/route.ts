@@ -45,10 +45,10 @@ export async function GET(req: NextRequest) {
     const includeFollowups = searchParams.get('includeFollowups') === 'true'
     const includeLogs = searchParams.get('includeLogs') === 'true'
 
-    // Multi-tenant: resolve orgId from query param, header, or env fallback
-    const orgId = searchParams.get('orgId') || getOrgIdFromHeaders(req.headers) || process.env.DEFAULT_ORG_ID || ''
+    // Multi-tenant: resolve orgId from query param or header (no env fallback)
+    const orgId = searchParams.get('orgId') || getOrgIdFromHeaders(req.headers) || ''
     if (!orgId) {
-      console.warn('[N8N CRM] No orgId resolved for GET request')
+      return NextResponse.json({ error: 'orgId is required (query param or x-org-id header)' }, { status: 400 })
     }
 
     const db = getAdminDb()

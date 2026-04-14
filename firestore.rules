@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helpers ────────────────────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function userEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/superAdmins/$(userEmail()));
+    }
+
+    // Verifica se o usuario autenticado e membro ativo da org
+    function isOrgMember(orgId) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data.status == 'active';
+    }
+
+    // Verifica se o usuario e admin da org
+    function isOrgAdmin(orgId) {
+      return isOrgMember(orgId)
+        && get(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ─── Organizations ─────────────────────────────────────────────────
+    match /organizations/{orgId} {
+      allow read: if isOrgMember(orgId) || isSuperAdmin();
+      allow write: if isOrgAdmin(orgId) || isSuperAdmin();
+
+      // Members subcollection
+      match /members/{memberId} {
+        allow read: if isOrgMember(orgId) || isSuperAdmin();
+        allow create, update, delete: if isOrgAdmin(orgId) || isSuperAdmin();
+      }
+
+      // Funnels subcollection
+      match /funnels/{funnelId} {
+        allow read, write: if isOrgMember(orgId) || isSuperAdmin();
+      }
+
+      // Notifications subcollection
+      match /notifications/{notifId} {
+        allow read: if isOrgMember(orgId);
+        allow write: if isOrgMember(orgId) || isSuperAdmin();
+      }
+
+      // FCM tokens subcollection
+      match /fcmTokens/{tokenId} {
+        allow read, write: if isOrgMember(orgId);
+      }
+
+      // Agent configs subcollection
+      match /agentConfigs/{configId} {
+        allow read, write: if isOrgMember(orgId) || isSuperAdmin();
+      }
+
+      // Agent conversations subcollection
+      match /conversations/{convId} {
+        allow read, write: if isOrgMember(orgId) || isSuperAdmin();
+
+        match /messages/{msgId} {
+          allow read, write: if isOrgMember(orgId) || isSuperAdmin();
+        }
+      }
+
+      // Any other org subcollections
+      match /{subcollection}/{docId} {
+        allow read: if isOrgMember(orgId) || isSuperAdmin();
+        allow write: if isOrgMember(orgId) || isSuperAdmin();
+      }
+    }
+
+    // ─── Clients (contacts/leads) ──────────────────────────────────────
+    // Clients are stored at root level with orgId field for multi-tenant isolation
+    match /clients/{clientId} {
+      allow read: if isAuthenticated()
+        && (resource.data.orgId != null)
+        && isOrgMember(resource.data.orgId);
+      allow read: if isSuperAdmin();
+
+      allow create: if isAuthenticated()
+        && request.resource.data.orgId != null
+        && isOrgMember(request.resource.data.orgId);
+
+      allow update, delete: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow write: if isSuperAdmin();
+
+      // Client subcollections (activities, proposals, etc.)
+      match /{subcollection}/{docId} {
+        allow read, write: if isAuthenticated()
+          && get(/databases/$(database)/documents/clients/$(clientId)).data.orgId != null
+          && isOrgMember(get(/databases/$(database)/documents/clients/$(clientId)).data.orgId);
+        allow read, write: if isSuperAdmin();
+      }
+    }
+
+    // ─── Campaigns ─────────────────────────────────────────────────────
+    match /campaigns/{campaignId} {
+      allow read: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow read: if isSuperAdmin();
+
+      allow create: if isAuthenticated()
+        && request.resource.data.orgId != null
+        && isOrgMember(request.resource.data.orgId);
+
+      allow update, delete: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow write: if isSuperAdmin();
+    }
+
+    // ─── Call Routing ──────────────────────────────────────────────────
+    match /callRoutingConfigs/{configId} {
+      allow read, write: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow read, write: if isSuperAdmin();
+    }
+
+    // ─── Automations ───────────────────────────────────────────────────
+    match /automations/{autoId} {
+      allow read, write: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow read, write: if isSuperAdmin();
+    }
+
+    // ─── Cadences ──────────────────────────────────────────────────────
+    match /cadences/{cadenceId} {
+      allow read, write: if isAuthenticated()
+        && resource.data.orgId != null
+        && isOrgMember(resource.data.orgId);
+      allow read, write: if isSuperAdmin();
+    }
+
+    // ─── Super Admin collection ────────────────────────────────────────
+    match /superAdmins/{email} {
+      allow read: if isSuperAdmin();
+      allow write: if false; // Only via Admin SDK
+    }
+
+    // ─── Plans ─────────────────────────────────────────────────────────
+    match /plans/{planId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // ─── Default deny ──────────────────────────────────────────────────
+    // Any collection not explicitly matched above is denied by default
+  }
+}

@@ -7,36 +7,19 @@ import {
   VOICEMAIL_PHRASES,
   CallOutcomeCode,
 } from '@/types/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-/** Resolve orgId from request: x-user-email > x-org-id header > DEFAULT_ORG_ID */
-async function resolveOrgId(req: NextRequest): Promise<string> {
-  const email = req.headers.get('x-user-email')
-  if (email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) return ctx.orgId
-  }
-  const fromHeader = getOrgIdFromHeaders(req.headers)
-  if (fromHeader) return fromHeader
-  const fallback = process.env.DEFAULT_ORG_ID || ''
-  if (fallback) {
-    console.warn('[CALL-ROUTING REPORTS] Using DEFAULT_ORG_ID fallback')
-  } else {
-    console.warn('[CALL-ROUTING REPORTS] No orgId resolved')
-  }
-  return fallback
-}
-
 // GET - Relatório de ligações
 export async function GET(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const searchParams = req.nextUrl.searchParams
     const dateStr = searchParams.get('date') // formato: YYYY-MM-DD

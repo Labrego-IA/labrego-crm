@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCallRoutingConfig, saveCallRoutingConfig } from '@/lib/callRouting'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 import type { OrgIntegrations } from '@/types/callRouting'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-async function resolveOrgId(req: NextRequest): Promise<string> {
-  const email = req.headers.get('x-user-email')
-  if (email) {
-    const ctx = await resolveOrgByEmail(email)
-    if (ctx) return ctx.orgId
-  }
-  const fromHeader = getOrgIdFromHeaders(req.headers)
-  if (fromHeader) return fromHeader
-  return process.env.DEFAULT_ORG_ID || ''
-}
 
 function maskKey(key: string | undefined): string {
   if (!key || key.length < 8) return key ? '••••••••' : ''
@@ -25,10 +14,11 @@ function maskKey(key: string | undefined): string {
 // GET - Retorna integrations com keys mascaradas
 export async function GET(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const config = await getCallRoutingConfig(orgId)
     const integrations = config?.integrations || {}
@@ -71,10 +61,11 @@ export async function GET(req: NextRequest) {
 // PUT - Salvar integrations (recebe keys completas)
 export async function PUT(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const body = await req.json() as Partial<OrgIntegrations>
     const config = await getCallRoutingConfig(orgId)
@@ -132,10 +123,11 @@ export async function PUT(req: NextRequest) {
 // POST - Testar conexão VAPI
 export async function POST(req: NextRequest) {
   try {
-    const orgId = await resolveOrgId(req)
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+    const orgCtx = await requireOrgId(req.headers)
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'orgId is required' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const { service } = await req.json() as { service: string }
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { getUserRole } from '@/lib/requireAdmin'
-import { resolveOrgByEmail, getOrgIdFromHeaders } from '@/lib/orgResolver'
+import { requireOrgId } from '@/lib/orgResolver'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -36,24 +36,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'account_frozen' }, { status: 403 })
     }
 
-    // Multi-tenant: resolve orgId from email or header
-    let orgId = getOrgIdFromHeaders(req.headers) || ''
-    if (!orgId && email) {
-      try {
-        const orgContext = await resolveOrgByEmail(email)
-        if (orgContext) {
-          orgId = orgContext.orgId
-        }
-      } catch (err) {
-        console.warn('[API:fcm-token] Failed to resolve orgId from email:', err)
-      }
+    // Multi-tenant: resolve orgId securely (no fallback)
+    const resolved = await requireOrgId(req.headers)
+    if (!resolved) {
+      return NextResponse.json({ error: 'Unable to resolve organization' }, { status: 401 })
     }
-    if (!orgId) {
-      orgId = process.env.DEFAULT_ORG_ID || ''
-      if (!orgId) {
-        console.warn('[API:fcm-token] No orgId resolved for FCM token registration')
-      }
-    }
+    const orgId = resolved.orgId
 
     await db
       .collection('fcmTokens')

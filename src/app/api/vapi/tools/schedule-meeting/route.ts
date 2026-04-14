@@ -27,11 +27,8 @@ async function resolveOrgIdFromContext(body: Record<string, unknown>): Promise<s
     }
   }
 
-  const fallback = process.env.DEFAULT_ORG_ID
-  if (fallback) {
-    console.warn('[SCHEDULE-MEETING] Using DEFAULT_ORG_ID fallback')
-  }
-  return fallback || undefined
+  console.warn('[SCHEDULE-MEETING] No orgId resolved from call data')
+  return undefined
 }
 
 // POST - Endpoint do Vapi para agendar reunião
