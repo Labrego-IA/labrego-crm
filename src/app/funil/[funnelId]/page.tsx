@@ -235,7 +235,7 @@ const stageColorOptions = [
   { name: 'Roxo', bg: 'bg-primary-100', text: 'text-primary-700', border: 'border-primary-200', gradient: 'from-primary-500 to-primary-600' },
   { name: 'Rosa', bg: 'bg-pink-100', text: 'text-pink-700', border: 'border-pink-200', gradient: 'from-pink-500 to-pink-600' },
   { name: 'Vermelho', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', gradient: 'from-red-500 to-red-600' },
-  { name: 'Cinza', bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-200', gradient: 'from-slate-500 to-slate-600' },
+  { name: 'Cinza', bg: 'bg-slate-100', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200', gradient: 'from-slate-500 to-slate-600' },
   { name: 'Teal', bg: 'bg-teal-100', text: 'text-teal-700', border: 'border-teal-200', gradient: 'from-teal-500 to-teal-600' },
 ]
 
@@ -3546,8 +3546,8 @@ export default function FunilDetailPage() {
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Funil nao encontrado</h3>
-          <p className="text-sm text-gray-600 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Funil nao encontrado</h3>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mb-6">
             Este funil nao existe ou voce nao tem permissao para visualiza-lo.
           </p>
           <button
@@ -4693,7 +4693,7 @@ export default function FunilDetailPage() {
                       return (
                         <div
                           key={idx}
-                          className={`flex flex-col items-center py-3 ${idx !== 6 ? 'border-r border-slate-200' : ''}`}
+                          className={`flex flex-col items-center py-3 ${idx !== 6 ? 'border-r border-slate-200 dark:border-white/10' : ''}`}
                         >
                           <span className="text-xs font-medium text-slate-500">{dayNames[idx]}</span>
                           <button
@@ -4704,7 +4704,7 @@ export default function FunilDetailPage() {
                             className={`mt-1 w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all hover:bg-primary-100 ${
                               isToday(date)
                                 ? 'bg-primary-600 text-white hover:bg-primary-700'
-                                : 'text-slate-700'
+                                : 'text-slate-700 dark:text-slate-300'
                             }`}
                           >
                             {date.getDate()}
@@ -4839,7 +4839,7 @@ export default function FunilDetailPage() {
                               : 'border-slate-100 bg-white dark:bg-surface-dark'
                           }`}
                         >
-                          <div className={`text-xs font-bold mb-1 ${isToday(date) ? 'text-primary-600' : 'text-slate-600'}`}>
+                          <div className={`text-xs font-bold mb-1 ${isToday(date) ? 'text-primary-600' : 'text-slate-600 dark:text-slate-400'}`}>
                             {date.getDate()}
                           </div>
                           {contacts.length > 0 && (
@@ -5013,7 +5013,7 @@ export default function FunilDetailPage() {
                                               <button
                                                 type="button"
                                                 className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 dark:bg-white/5 transition-colors ${
-                                                  sortType[stage.id] === 'lastContact' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
+                                                  sortType[stage.id] === 'lastContact' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700 dark:text-slate-300'
                                                 }`}
                                                 onClick={() => handleSortStage(stage.id, 'lastContact')}
                                               >
@@ -5022,7 +5022,7 @@ export default function FunilDetailPage() {
                                               <button
                                                 type="button"
                                                 className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 dark:bg-white/5 transition-colors ${
-                                                  sortType[stage.id] === 'stageTime' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
+                                                  sortType[stage.id] === 'stageTime' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700 dark:text-slate-300'
                                                 }`}
                                                 onClick={() => handleSortStage(stage.id, 'stageTime')}
                                               >
@@ -6386,7 +6386,7 @@ export default function FunilDetailPage() {
                                         className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors ${isCurrentFunnel ? 'bg-violet-50' : ''}`}
                                       >
                                         <FunnelIcon className="w-3.5 h-3.5 text-violet-500" />
-                                        <span className={`text-sm flex-1 ${isCurrentFunnel ? 'font-medium text-violet-700' : 'text-slate-700'}`}>
+                                        <span className={`text-sm flex-1 ${isCurrentFunnel ? 'font-medium text-violet-700' : 'text-slate-700 dark:text-slate-300'}`}>
                                           {f.name}
                                         </span>
                                         {isCurrentFunnel && (
@@ -6468,7 +6468,7 @@ export default function FunilDetailPage() {
                                     }`}
                                   >
                                     <div className={`w-3 h-3 rounded-full bg-gradient-to-r ${color.gradient}`} />
-                                    <span className={`text-sm flex-1 ${isCurrentStage ? 'font-medium text-primary-700' : 'text-slate-700'}`}>
+                                    <span className={`text-sm flex-1 ${isCurrentStage ? 'font-medium text-primary-700' : 'text-slate-700 dark:text-slate-300'}`}>
                                       {stage.name}
                                     </span>
                                     <span className="text-xs text-slate-400">{stage.probability}%</span>
@@ -6488,11 +6488,11 @@ export default function FunilDetailPage() {
                                     setStageDropdownOpen(false)
                                   }}
                                   className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors ${
-                                    !selectedClient.funnelStage ? 'bg-slate-100' : ''
+                                    !selectedClient.funnelStage ? 'bg-slate-100 dark:bg-white/10' : ''
                                   }`}
                                 >
                                   <div className="w-3 h-3 rounded-full bg-slate-400" />
-                                  <span className={`text-sm flex-1 ${!selectedClient.funnelStage ? 'font-medium text-slate-600' : 'text-slate-500'}`}>
+                                  <span className={`text-sm flex-1 ${!selectedClient.funnelStage ? 'font-medium text-slate-600 dark:text-slate-400' : 'text-slate-500'}`}>
                                     Sem etapa
                                   </span>
                                   {!selectedClient.funnelStage && (
@@ -7363,7 +7363,7 @@ export default function FunilDetailPage() {
                                 </span>
                                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                                   note.source === 'log'
-                                    ? 'bg-slate-200 text-slate-600'
+                                    ? 'bg-slate-200 text-slate-600 dark:text-slate-400'
                                     : note.type === 'whatsapp'
                                     ? 'bg-green-100 text-green-700'
                                     : note.type === 'email'
@@ -7509,7 +7509,7 @@ export default function FunilDetailPage() {
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full bg-gradient-to-r ${color.gradient}`} />
-                      <span className={`font-medium text-sm ${isCurrentStage ? color.text : 'text-slate-700'}`}>
+                      <span className={`font-medium text-sm ${isCurrentStage ? color.text : 'text-slate-700 dark:text-slate-300'}`}>
                         {stage.name}
                       </span>
                     </div>
@@ -7535,7 +7535,7 @@ export default function FunilDetailPage() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 rounded-full bg-slate-400" />
-                  <span className={`font-medium text-sm ${!changingStageClient.funnelStage ? 'text-slate-500' : 'text-slate-700'}`}>
+                  <span className={`font-medium text-sm ${!changingStageClient.funnelStage ? 'text-slate-500' : 'text-slate-700 dark:text-slate-300'}`}>
                     Sem etapa
                   </span>
                 </div>
@@ -9063,7 +9063,7 @@ export default function FunilDetailPage() {
                   ? 'text-emerald-800'
                   : activeCallStatus.status === 'error'
                   ? 'text-red-800'
-                  : 'text-slate-800'
+                  : 'text-slate-800 dark:text-white'
               }`}>
                 {activeCallStatus.clientName}
               </span>

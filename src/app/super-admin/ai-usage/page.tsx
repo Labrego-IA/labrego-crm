@@ -160,7 +160,7 @@ export default function SuperAdminAIUsagePage() {
               <button
                 key={s}
                 onClick={() => setSortBy(s)}
-                className={`px-2 py-1 rounded text-xs font-medium ${sortBy === s ? 'bg-cyan-50 text-cyan-700' : 'text-slate-400 hover:text-slate-600'}`}
+                className={`px-2 py-1 rounded text-xs font-medium ${sortBy === s ? 'bg-cyan-50 text-cyan-700' : 'text-slate-400 hover:text-slate-600 dark:text-slate-400'}`}
               >
                 {s === 'cost' ? 'Custo' : s === 'tokens' ? 'Tokens' : 'Msgs'}
               </button>
@@ -194,7 +194,7 @@ export default function SuperAdminAIUsagePage() {
                 <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{org.totalAudioMinutes.toFixed(1)}</td>
                 <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{org.totalImageDescriptions}</td>
                 <td className="px-4 py-3 text-sm font-medium text-right">
-                  <span className={org.estimatedCostUSD > 1 ? 'text-amber-600' : 'text-slate-600'}>
+                  <span className={org.estimatedCostUSD > 1 ? 'text-amber-600' : 'text-slate-600 dark:text-slate-400'}>
                     ${org.estimatedCostUSD.toFixed(2)}
                   </span>
                 </td>
@@ -224,7 +224,7 @@ export default function SuperAdminAIUsagePage() {
 function KPICard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl p-4">
-      <div className={`text-xl font-bold ${highlight ? 'text-amber-600' : 'text-slate-800'}`}>{value}</div>
+      <div className={`text-xl font-bold ${highlight ? 'text-amber-600' : 'text-slate-800 dark:text-white'}`}>{value}</div>
       <div className="text-slate-500 text-xs mt-1">{label}</div>
     </div>
   )

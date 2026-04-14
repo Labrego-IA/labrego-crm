@@ -291,7 +291,7 @@ export default function CreditsPage() {
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                         filter === f
                           ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm'
-                          : 'text-slate-500 hover:text-slate-700'
+                          : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {f === 'all' ? 'Todos' : f === 'actions' ? 'Acoes' : 'Minutos'}

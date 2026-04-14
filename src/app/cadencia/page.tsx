@@ -240,11 +240,11 @@ function CadenciaDashboard() {
         {/* Tabs */}
         <div className="flex gap-1 mt-4">
           <button onClick={() => setMainTab('config')}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${mainTab === 'config' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50'}`}>
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${mainTab === 'config' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 dark:bg-white/5'}`}>
             <Cog6ToothIcon className="w-4 h-4" /> Configuração
           </button>
           <button onClick={() => setMainTab('execution')}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${mainTab === 'execution' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50'}`}>
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${mainTab === 'execution' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 dark:bg-white/5'}`}>
             <BoltIcon className="w-4 h-4" /> Execução
           </button>
         </div>
@@ -494,7 +494,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                               </div>
                               <div className="flex items-center gap-1 shrink-0">
                                 <button onClick={(e) => { e.stopPropagation(); handleToggleStep(step.id, step.isActive) }}
-                                  className={`p-1.5 rounded-lg transition-colors ${step.isActive ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-400 hover:bg-slate-100'}`}
+                                  className={`p-1.5 rounded-lg transition-colors ${step.isActive ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-400 hover:bg-slate-100 dark:bg-white/10'}`}
                                   title={step.isActive ? 'Desativar' : 'Ativar'}>
                                   {step.isActive ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
                                 </button>

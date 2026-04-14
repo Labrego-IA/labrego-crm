@@ -127,7 +127,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
       {/* Premissas de Desconto */}
       <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Premissas de Desconto</h3>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 dark:text-slate-500">
           Esses valores sao usados como padrao ao criar uma nova proposta. O vendedor pode ajusta-los por proposta.
         </p>
 
@@ -149,7 +149,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
               />
               <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">Aplicado quando ha mais de N produtos</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Aplicado quando ha mais de N produtos</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
@@ -168,7 +168,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
               />
               <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">Para variante &quot;padrao&quot; na etapa de levantamento</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Para variante &quot;padrao&quot; na etapa de levantamento</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
@@ -187,7 +187,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
               />
               <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
-            <p className="text-xs text-gray-400 mt-1">Para variante &quot;padrao&quot; na etapa de testes</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Para variante &quot;padrao&quot; na etapa de testes</p>
           </div>
         </div>
 

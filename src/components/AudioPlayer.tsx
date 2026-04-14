@@ -65,7 +65,7 @@ export default function AudioPlayer({ url }: { url: string }) {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
-    <div className="flex items-center gap-2 mt-2 p-2 bg-slate-50 rounded-lg border border-slate-200">
+    <div className="flex items-center gap-2 mt-2 p-2 bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200">
       <audio ref={audioRef} preload="none" src={url} />
       <button
         onClick={togglePlay}
@@ -89,7 +89,7 @@ export default function AudioPlayer({ url }: { url: string }) {
       </span>
       <button
         onClick={cycleSpeed}
-        className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-200 hover:bg-slate-300 rounded text-slate-600 transition-colors flex-shrink-0"
+        className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-200 hover:bg-slate-300 rounded text-slate-600 dark:text-slate-400 transition-colors flex-shrink-0"
         title="Velocidade de reproducao"
       >
         {SPEEDS[speedIdx]}x

@@ -238,13 +238,13 @@ export default function SuperAdminUsuariosPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Usuarios</h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Usuarios</h2>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5 sm:mt-1">
             {loading ? 'Carregando...' : `${users.length} usuario${users.length !== 1 ? 's' : ''} registrado${users.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
           <input
             type="text"
             value={search}
@@ -261,8 +261,8 @@ export default function SuperAdminUsuariosPage() {
         </div>
       ) : filteredUsers.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10">
-          <UserX className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">
+          <UserX className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-slate-400">
             {search ? 'Nenhum usuario encontrado para essa busca.' : 'Nenhum usuario registrado.'}
           </p>
         </div>
@@ -272,23 +272,23 @@ export default function SuperAdminUsuariosPage() {
           <div className="hidden md:block bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 overflow-visible">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Cargo</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Empresa</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Plano</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Cadastro</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600">Tempo restante</th>
-                  <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
-                  <th className="text-right px-4 py-3 font-medium text-gray-600">Acoes</th>
+                <tr className="border-b border-gray-100 bg-gray-50 dark:bg-white/5">
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Nome</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Email</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Cargo</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Empresa</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Plano</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Cadastro</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Tempo restante</th>
+                  <th className="text-center px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Status</th>
+                  <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Acoes</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((user) => (
-                  <tr key={user.uid} className="border-b border-gray-50 hover:bg-gray-50 transition">
-                    <td className="px-4 py-3 font-medium text-gray-900">{user.displayName || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{user.email}</td>
+                  <tr key={user.uid} className="border-b border-gray-50 hover:bg-gray-50 dark:bg-white/5 transition">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{user.displayName || '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-slate-400 text-xs">{user.email}</td>
                     <td className="px-4 py-3">
                       {(() => {
                         const sr = user.systemRole || 'usuario'
@@ -299,13 +299,13 @@ export default function SuperAdminUsuariosPage() {
                         )
                       })()}
                     </td>
-                    <td className="px-4 py-3 text-gray-600 text-xs">{user.orgName || '—'}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">{user.orgName || '—'}</td>
                     <td className="px-4 py-3">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">
                         {getPlanLabel(user.plan)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
+                    <td className="px-4 py-3 text-gray-500 dark:text-slate-400 text-xs" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
                       {user.createdAt ? timeAgo(user.createdAt) : '—'}
                     </td>
                     <td className="px-4 py-3">
@@ -341,15 +341,15 @@ export default function SuperAdminUsuariosPage() {
                     <td className="px-4 py-3 text-right relative">
                       <button
                         onClick={() => setOpenMenuUid(openMenuUid === user.uid ? null : user.uid)}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 transition"
+                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-white/10 transition"
                       >
-                        <MoreVertical className="w-4 h-4 text-gray-500" />
+                        <MoreVertical className="w-4 h-4 text-gray-500 dark:text-slate-400" />
                       </button>
                       {openMenuUid === user.uid && (
                         <div data-actions-menu className="absolute right-4 bottom-full mb-1 z-50 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-gray-200 dark:border-white/10 py-1 min-w-[160px]">
                           <button
                             onClick={() => { openEdit(user); }}
-                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 transition"
                           >
                             <Pencil className="w-3.5 h-3.5" /> Editar
                           </button>
@@ -377,10 +377,10 @@ export default function SuperAdminUsuariosPage() {
               <div key={user.uid} className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-base font-semibold text-gray-900 truncate">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
                       {user.displayName || '—'}
                     </h3>
-                    <p className="text-sm text-gray-500 truncate mt-0.5">{user.email}</p>
+                    <p className="text-sm text-gray-500 dark:text-slate-400 truncate mt-0.5">{user.email}</p>
                     <div className="flex items-center gap-2 mt-1">
                       {(() => {
                         const sr = user.systemRole || 'usuario'
@@ -391,22 +391,22 @@ export default function SuperAdminUsuariosPage() {
                         )
                       })()}
                       {user.orgName && (
-                        <span className="text-xs text-gray-400">{user.orgName}</span>
+                        <span className="text-xs text-gray-400 dark:text-slate-500">{user.orgName}</span>
                       )}
                     </div>
                   </div>
                   <div className="relative shrink-0">
                     <button
                       onClick={() => setOpenMenuUid(openMenuUid === user.uid ? null : user.uid)}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 transition"
+                      className="p-1.5 rounded-lg hover:bg-gray-100 dark:bg-white/10 transition"
                     >
-                      <MoreVertical className="w-4 h-4 text-gray-500" />
+                      <MoreVertical className="w-4 h-4 text-gray-500 dark:text-slate-400" />
                     </button>
                     {openMenuUid === user.uid && (
                       <div data-actions-menu className="absolute right-0 bottom-full mb-1 z-50 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-gray-200 dark:border-white/10 py-1 min-w-[160px]">
                         <button
                           onClick={() => { openEdit(user); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 transition"
                         >
                           <Pencil className="w-3.5 h-3.5" /> Editar
                         </button>
@@ -453,7 +453,7 @@ export default function SuperAdminUsuariosPage() {
                       )
                     })()}
                   </div>
-                  <span className="text-xs text-gray-400" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
+                  <span className="text-xs text-gray-400 dark:text-slate-500" title={user.createdAt ? new Date(user.createdAt).toLocaleString('pt-BR') : ''}>
                     {user.createdAt ? timeAgo(user.createdAt) : '—'}
                   </span>
                 </div>
@@ -468,18 +468,18 @@ export default function SuperAdminUsuariosPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseEdit}>
           <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Editar Usuario</h3>
-              <button onClick={handleCloseEdit} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">
-                <X className="w-5 h-5 text-gray-400" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Editar Usuario</h3>
+              <button onClick={handleCloseEdit} className="p-1 rounded-lg hover:bg-gray-100 dark:bg-white/10 transition" aria-label="Fechar">
+                <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
               </button>
             </div>
             <div className="mb-4 space-y-1">
-              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Nome:</span> {editingUser.displayName || '—'}</p>
-              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700">Email:</span> {editingUser.email}</p>
+              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700 dark:text-slate-300">Nome:</span> {editingUser.displayName || '—'}</p>
+              <p className="text-sm text-gray-600"><span className="font-medium text-gray-700 dark:text-slate-300">Email:</span> {editingUser.email}</p>
             </div>
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Cargo</label>
                 <select
                   value={editForm.systemRole}
                   onChange={(e) => setEditForm({ ...editForm, systemRole: e.target.value })}
@@ -488,10 +488,10 @@ export default function SuperAdminUsuariosPage() {
                   <option value="admin">Administrador</option>
                   <option value="usuario">Usuário</option>
                 </select>
-                <p className="text-xs text-gray-400 mt-1">Administradores veem todos os dados. Usuários veem apenas seus proprios dados e companheiros.</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Administradores veem todos os dados. Usuários veem apenas seus proprios dados e companheiros.</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Empresa</label>
                 <input
                   type="text"
                   value={editForm.orgName}
@@ -501,7 +501,7 @@ export default function SuperAdminUsuariosPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plano</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Plano</label>
                 <select
                   value={editForm.plan}
                   onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
@@ -514,17 +514,17 @@ export default function SuperAdminUsuariosPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Cadastro</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Cadastro</label>
                 <input
                   type="date"
                   value={editingUser.createdAt ? new Date(editingUser.createdAt).toISOString().split('T')[0] : ''}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
                   disabled
                 />
-                <p className="text-xs text-gray-400 mt-1">Data de cadastro (somente leitura)</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">Data de cadastro (somente leitura)</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Status</label>
                 <select
                   value={editForm.disabled ? 'blocked' : 'active'}
                   onChange={(e) => setEditForm({ ...editForm, disabled: e.target.value === 'blocked' })}
@@ -536,7 +536,7 @@ export default function SuperAdminUsuariosPage() {
               </div>
               {editError && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{editError}</p>}
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={handleCloseEdit} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">
+                <button type="button" onClick={handleCloseEdit} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-white transition">
                   Cancelar
                 </button>
                 <button
@@ -556,13 +556,13 @@ export default function SuperAdminUsuariosPage() {
       {confirmAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && setConfirmAction(null)}>
           <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-md mx-4 p-6" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{getActionLabel()}</h3>
-            <p className="text-sm text-gray-600 mb-6">{getActionDescription(confirmAction.email)}</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{getActionLabel()}</h3>
+            <p className="text-sm text-gray-600 dark:text-slate-400 mb-6">{getActionDescription(confirmAction.email)}</p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmAction(null)}
                 disabled={actionLoading}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition disabled:opacity-50"
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-white transition disabled:opacity-50"
               >
                 Cancelar
               </button>

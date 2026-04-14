@@ -114,7 +114,7 @@ export default function PropostasLogosTab() {
           <p className="text-sm text-gray-500 dark:text-slate-400">
             {logos.length} logo{logos.length !== 1 ? 's' : ''} de clientes cadastrado{logos.length !== 1 ? 's' : ''}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
             Esses logos aparecem na pagina de clientes do PDF de propostas.
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function PropostasLogosTab() {
 
       {logos.length === 0 ? (
         <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
-          <p className="text-gray-400 text-sm">Nenhum logo de cliente cadastrado.</p>
+          <p className="text-gray-400 dark:text-slate-500 text-sm">Nenhum logo de cliente cadastrado.</p>
           <button
             onClick={() => inputRef.current?.click()}
             className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"

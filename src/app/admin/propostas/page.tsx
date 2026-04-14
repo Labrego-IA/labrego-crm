@@ -76,8 +76,8 @@ export default function PropostasConfigPage() {
     <PermissionGate action="canManageSettings">
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Configuracao de Propostas</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Configuracao de Propostas</h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
             Configure o branding, produtos e logos que aparecem nos PDFs de propostas da sua organizacao.
           </p>
         </div>

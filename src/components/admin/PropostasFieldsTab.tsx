@@ -351,7 +351,7 @@ export default function PropostasFieldsTab() {
                   type="button"
                   onClick={() => openEdit(field)}
                   disabled={saving}
-                  className="text-gray-400 hover:text-primary-600 disabled:opacity-50"
+                  className="text-gray-400 dark:text-slate-500 hover:text-primary-600 disabled:opacity-50"
                 >
                   <PencilIcon className="h-4 w-4" />
                 </button>
@@ -359,7 +359,7 @@ export default function PropostasFieldsTab() {
                   type="button"
                   onClick={() => setDeletingFieldId(field.id)}
                   disabled={saving}
-                  className="text-gray-400 hover:text-red-600 disabled:opacity-50"
+                  className="text-gray-400 dark:text-slate-500 hover:text-red-600 disabled:opacity-50"
                 >
                   <TrashIcon className="h-4 w-4" />
                 </button>

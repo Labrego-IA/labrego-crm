@@ -516,13 +516,13 @@ export default function AdminFunisPage() {
       </div>
 
       {/* View mode toggle */}
-      <div className="flex gap-1 mb-4 bg-slate-100 rounded-lg p-1 w-full sm:w-fit">
+      <div className="flex gap-1 mb-4 bg-slate-100 dark:bg-white/10 rounded-lg p-1 w-full sm:w-fit">
         <button
           onClick={() => setViewMode('member')}
           className={`flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 text-sm font-medium rounded-md transition-colors ${
             viewMode === 'member'
               ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
-              : 'text-slate-500 hover:text-slate-700'
+              : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'
           }`}
         >
           Por Membro
@@ -532,7 +532,7 @@ export default function AdminFunisPage() {
           className={`flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-1.5 ${
             viewMode === 'funnel'
               ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
-              : 'text-slate-500 hover:text-slate-700'
+              : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'
           }`}
         >
           Por Funil
@@ -544,7 +544,7 @@ export default function AdminFunisPage() {
       {/* Search bar */}
       <div className="relative mb-4">
         <svg
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-slate-500"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -563,7 +563,7 @@ export default function AdminFunisPage() {
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400 transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -574,15 +574,15 @@ export default function AdminFunisPage() {
 
       {filteredMembers.length === 0 && !loading ? (
         <div className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 p-12 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10">
             <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 017.533-2.493M9 19.128a5.972 5.972 0 01.786-3.07m4.428 0a9.36 9.36 0 00-4.428 0M12 10.5a3 3 0 100-6 3 3 0 000 6z" />
             </svg>
           </div>
-          <h3 className="text-base font-semibold text-gray-900">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white">
             {members.length === 0 ? 'Nenhum membro encontrado' : 'Nenhum resultado encontrado'}
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
             {members.length === 0 ? 'Nenhum membro ativo na organização.' : 'Tente ajustar os termos da pesquisa.'}
           </p>
         </div>
@@ -603,11 +603,11 @@ export default function AdminFunisPage() {
                     <span className="text-sm font-bold text-primary-600">{member.displayName.charAt(0).toUpperCase()}</span>
                   </div>
                   <div className="min-w-0">
-                    <div className="text-sm font-medium text-slate-700 truncate">{member.displayName}</div>
+                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{member.displayName}</div>
                     <div className="text-xs text-slate-400">{ROLE_LABELS[member.role] || member.role}</div>
                   </div>
                 </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isAdmin ? 'text-green-700 bg-green-50' : 'text-slate-500 bg-slate-100'}`}>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${isAdmin ? 'text-green-700 bg-green-50' : 'text-slate-500 bg-slate-100 dark:bg-white/10'}`}>
                   {getAccessSummary(member.id)}
                 </span>
               </div>
@@ -624,7 +624,7 @@ export default function AdminFunisPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: funnel.color }} />
-                          <span className="text-sm text-slate-700">{funnel.name}</span>
+                          <span className="text-sm text-slate-700 dark:text-slate-300">{funnel.name}</span>
                         </div>
                         {isAdmin ? (
                           <CheckIcon className="w-5 h-5 text-green-500" />
@@ -638,7 +638,7 @@ export default function AdminFunisPage() {
                                     [member.id]: isExpanded ? null : funnel.id,
                                   }))
                                 }}
-                                className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50"
+                                className="p-2 text-slate-400 hover:text-slate-600 dark:text-slate-400 rounded-lg hover:bg-slate-50"
                               >
                                 {isExpanded ? (
                                   <ChevronDownIcon className="w-5 h-5" />
@@ -660,11 +660,11 @@ export default function AdminFunisPage() {
                         )}
                       </div>
                       {isExpanded && access?.enabled && (
-                        <div className="mt-3 space-y-1 bg-slate-50 rounded-lg p-3">
+                        <div className="mt-3 space-y-1 bg-slate-50 dark:bg-white/5 rounded-lg p-3">
                           {fStages.map((stage) => {
                             const checked = access.allStages || access.stageIds.includes(stage.id)
                             return (
-                              <label key={stage.id} className="flex items-center gap-3 py-1.5 text-sm text-slate-600 cursor-pointer">
+                              <label key={stage.id} className="flex items-center gap-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
                                 <input
                                   type="checkbox"
                                   checked={checked}
@@ -704,7 +704,7 @@ export default function AdminFunisPage() {
                       {col.label}
                       <svg
                         className={`h-3.5 w-3.5 transition-colors ${
-                          sortColumn === col.key ? 'text-primary-600' : 'text-gray-300'
+                          sortColumn === col.key ? 'text-primary-600' : 'text-gray-300 dark:text-slate-600'
                         }`}
                         fill="none"
                         viewBox="0 0 24 24"
@@ -742,7 +742,7 @@ export default function AdminFunisPage() {
                     Resumo
                     <svg
                       className={`h-3.5 w-3.5 transition-colors ${
-                        sortColumn === 'summary' ? 'text-primary-600' : 'text-gray-300'
+                        sortColumn === 'summary' ? 'text-primary-600' : 'text-gray-300 dark:text-slate-600'
                       }`}
                       fill="none"
                       viewBox="0 0 24 24"
@@ -777,7 +777,7 @@ export default function AdminFunisPage() {
                           <span className="text-xs font-bold text-primary-600">{member.displayName.charAt(0).toUpperCase()}</span>
                         </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-medium text-slate-700 truncate">{member.displayName}</div>
+                          <div className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{member.displayName}</div>
                           <div className="text-xs text-slate-400">{member.role}</div>
                         </div>
                       </div>
@@ -811,7 +811,7 @@ export default function AdminFunisPage() {
                                         [member.id]: isExpanded ? null : funnel.id,
                                       }))
                                     }}
-                                    className="p-0.5 text-slate-400 hover:text-slate-600"
+                                    className="p-0.5 text-slate-400 hover:text-slate-600 dark:text-slate-400"
                                   >
                                     {isExpanded ? (
                                       <ChevronDownIcon className="w-3.5 h-3.5" />
@@ -822,11 +822,11 @@ export default function AdminFunisPage() {
                                 )}
                               </label>
                               {isExpanded && access?.enabled && (
-                                <div className="mt-2 text-left space-y-1 bg-slate-50 rounded-lg p-2">
+                                <div className="mt-2 text-left space-y-1 bg-slate-50 dark:bg-white/5 rounded-lg p-2">
                                   {fStages.map((stage) => {
                                     const checked = access.allStages || access.stageIds.includes(stage.id)
                                     return (
-                                      <label key={stage.id} className="flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
+                                      <label key={stage.id} className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
                                         <input
                                           type="checkbox"
                                           checked={checked}
@@ -927,13 +927,13 @@ export default function AdminFunisPage() {
                                     addMemberToFunnel(m.id, funnel.id)
                                     setFunnelSearch('')
                                   }}
-                                  className="w-full flex items-center gap-2.5 px-3 py-3 sm:py-2 rounded-lg text-left hover:bg-slate-50 active:bg-slate-100 transition-colors"
+                                  className="w-full flex items-center gap-2.5 px-3 py-3 sm:py-2 rounded-lg text-left hover:bg-slate-50 dark:bg-white/5 active:bg-slate-100 transition-colors"
                                 >
                                   <div className="w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                                     <span className="text-xs sm:text-[10px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
                                   </div>
                                   <div className="min-w-0">
-                                    <div className="text-sm font-medium text-slate-700 truncate">{m.displayName}</div>
+                                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{m.displayName}</div>
                                     <div className="text-xs text-slate-400">{m.email}</div>
                                   </div>
                                 </button>
@@ -980,7 +980,7 @@ export default function AdminFunisPage() {
                             return (
                               <span
                                 key={m.id}
-                                className="group inline-flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 text-sm sm:text-xs font-medium bg-slate-100 text-slate-700 rounded-full"
+                                className="group inline-flex items-center gap-1.5 px-3 py-2 sm:px-2.5 sm:py-1 text-sm sm:text-xs font-medium bg-slate-100 text-slate-700 dark:text-slate-300 rounded-full"
                               >
                                 <div className="w-6 h-6 sm:w-5 sm:h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                                   <span className="text-[10px] sm:text-[9px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>

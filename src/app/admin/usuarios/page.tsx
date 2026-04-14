@@ -31,7 +31,7 @@ const ROLE_BADGE: Record<AdminRole, string> = {
   admin: 'bg-purple-100 text-purple-800',
   manager: 'bg-blue-100 text-blue-800',
   seller: 'bg-green-100 text-green-800',
-  viewer: 'bg-gray-100 text-gray-800',
+  viewer: 'bg-gray-100 text-gray-800 dark:text-white',
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -108,11 +108,11 @@ const ui = {
   btnDanger: `inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold
         text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition active:scale-[0.99]`,
   input: `w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm text-gray-800
-        placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
+        placeholder:text-gray-400 dark:text-slate-500 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
   select: `w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm text-gray-800
         focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
   card: 'bg-white dark:bg-surface-dark rounded-2xl shadow-sm ring-1 ring-gray-200',
-  label: 'block text-sm font-medium text-gray-700 mb-1',
+  label: 'block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1',
 }
 
 /* ============================== Component =============================== */
@@ -688,7 +688,7 @@ export default function UsuariosPage() {
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-1">Acesso restrito</h3>
-          <p className="text-sm text-gray-500">Sem permissao para gerenciar parceiros</p>
+          <p className="text-sm text-gray-500 dark:text-slate-400">Sem permissao para gerenciar parceiros</p>
         </div>
       </div>
     )
@@ -702,7 +702,7 @@ export default function UsuariosPage() {
             <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-slate-100">
               {isPartner ? 'Usuarios' : 'Parceiros'}
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
               {isPartner
                 ? 'Visualize os usuarios da organização e veja quem e o lider.'
                 : 'Gerencie os parceiros da sua conta. Cada parceiro podera visualizar os mesmos dados que voce.'}
@@ -740,7 +740,7 @@ export default function UsuariosPage() {
         {/* =================== Plan limit bar =================== */}
         {!isPartner && <div className={`${ui.card} px-5 py-4`}>
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
               Parceiros: {memberCount} / {maxUsers}
             </span>
             {atLimit && (
@@ -758,7 +758,7 @@ export default function UsuariosPage() {
             />
           </div>
           {atLimit && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">
               Faca upgrade do plano para adicionar mais parceiros.
             </p>
           )}
@@ -767,7 +767,7 @@ export default function UsuariosPage() {
         {/* =================== Search bar =================== */}
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-slate-500 pointer-events-none"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -786,7 +786,7 @@ export default function UsuariosPage() {
             <button
               type="button"
               onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400 transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -810,7 +810,7 @@ export default function UsuariosPage() {
             <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">
               {members.length === 0 ? 'Nenhum parceiro encontrado' : 'Nenhum resultado encontrado'}
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
               {members.length === 0
                 ? 'Adicione o primeiro parceiro da sua conta.'
                 : 'Tente ajustar os termos da pesquisa.'}
@@ -833,7 +833,7 @@ export default function UsuariosPage() {
                       ]).map((col) => (
                         <th
                           key={col.key}
-                          className={`px-5 py-3 text-${col.align} font-medium text-gray-600`}
+                          className={`px-5 py-3 text-${col.align} font-medium text-gray-600 dark:text-slate-400`}
                         >
                           <button
                             type="button"
@@ -845,7 +845,7 @@ export default function UsuariosPage() {
                             {col.label}
                             <svg
                               className={`h-3.5 w-3.5 transition-colors ${
-                                sortColumn === col.key ? 'text-primary-600' : 'text-gray-300'
+                                sortColumn === col.key ? 'text-primary-600' : 'text-gray-300 dark:text-slate-600'
                               }`}
                               fill="none"
                               viewBox="0 0 24 24"
@@ -866,7 +866,7 @@ export default function UsuariosPage() {
                           </button>
                         </th>
                       ))}
-                      {!isPartner && <th className="px-5 py-3 text-center font-medium text-gray-600">Acoes</th>}
+                      {!isPartner && <th className="px-5 py-3 text-center font-medium text-gray-600 dark:text-slate-400">Acoes</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -907,32 +907,32 @@ export default function UsuariosPage() {
                                     </svg>
                                   )}
                                   {isSelf && (
-                                    <span className="ml-0.5 text-xs text-gray-400">(voce)</span>
+                                    <span className="ml-0.5 text-xs text-gray-400 dark:text-slate-500">(voce)</span>
                                   )}
                                 </p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-5 py-3 text-gray-600">{m.email}</td>
+                          <td className="px-5 py-3 text-gray-600 dark:text-slate-400">{m.email}</td>
                           <td className="px-5 py-3 text-center">
                             {m.role ? (
                               <span
-                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800'}`}
+                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800 dark:text-white'}`}
                               >
                                 {ROLE_LABELS[m.role as AdminRole] || m.role}
                               </span>
                             ) : (
-                              <span className="text-xs text-gray-400">&mdash;</span>
+                              <span className="text-xs text-gray-400 dark:text-slate-500">&mdash;</span>
                             )}
                           </td>
                           <td className="px-5 py-3 text-center">
                             <span
-                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[m.status] || 'bg-gray-100 text-gray-800'}`}
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[m.status] || 'bg-gray-100 text-gray-800 dark:text-white'}`}
                             >
                               {STATUS_LABELS[m.status] || m.status}
                             </span>
                           </td>
-                          <td className="px-5 py-3 text-center text-gray-500">
+                          <td className="px-5 py-3 text-center text-gray-500 dark:text-slate-400">
                             {formatJoinedDate(m.joinedAt)}
                           </td>
                           {!isPartner && <td className="px-5 py-3 text-center">
@@ -949,7 +949,7 @@ export default function UsuariosPage() {
                                     setOpenMenuId(m.id)
                                   }
                                 }}
-                                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
+                                className="rounded-lg p-1.5 text-gray-500 dark:text-slate-400 hover:bg-gray-100 transition"
                                 title="Acoes"
                               >
                                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -965,7 +965,7 @@ export default function UsuariosPage() {
                                   <button
                                     type="button"
                                     onClick={() => guard(() => { openEditModal(m); setOpenMenuId(null); setMenuPos(null) })}
-                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 transition"
                                   >
                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -1001,7 +1001,7 @@ export default function UsuariosPage() {
                                   )}
                                   {!isSelf && (
                                     <>
-                                      <div className="border-t border-gray-100 my-1" />
+                                      <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                       <button
                                         type="button"
                                         onClick={() => { setDeleteMember(m); setOpenMenuId(null); setMenuPos(null) }}
@@ -1065,28 +1065,28 @@ export default function UsuariosPage() {
                               </svg>
                             )}
                             {isSelf && (
-                              <span className="ml-0.5 text-xs text-gray-400">(voce)</span>
+                              <span className="ml-0.5 text-xs text-gray-400 dark:text-slate-500">(voce)</span>
                             )}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">{m.email}</p>
+                          <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{m.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {m.role ? (
-                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800'}`}>
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ROLE_BADGE[m.role as AdminRole] || 'bg-gray-100 text-gray-800 dark:text-white'}`}>
                             {ROLE_LABELS[m.role as AdminRole] || m.role}
                           </span>
                         ) : (
-                          <span className="text-xs text-gray-400">&mdash;</span>
+                          <span className="text-xs text-gray-400 dark:text-slate-500">&mdash;</span>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-medium ${STATUS_BADGE[m.status] || 'bg-gray-100 text-gray-800'}`}>
+                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-medium ${STATUS_BADGE[m.status] || 'bg-gray-100 text-gray-800 dark:text-white'}`}>
                           {STATUS_LABELS[m.status] || m.status}
                         </span>
-                        <span className="text-gray-400">{formatJoinedDate(m.joinedAt)}</span>
+                        <span className="text-gray-400 dark:text-slate-500">{formatJoinedDate(m.joinedAt)}</span>
                       </div>
                       {!isPartner && <div className="relative" ref={openMenuId === `mobile-${m.id}` ? menuRef : undefined}>
                         <button
@@ -1101,7 +1101,7 @@ export default function UsuariosPage() {
                               setOpenMenuId(`mobile-${m.id}`)
                             }
                           }}
-                          className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 transition"
+                          className="rounded-lg p-1.5 text-gray-500 dark:text-slate-400 hover:bg-gray-100 transition"
                         >
                           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
@@ -1116,7 +1116,7 @@ export default function UsuariosPage() {
                             <button
                               type="button"
                               onClick={() => guard(() => { openEditModal(m); setOpenMenuId(null) })}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 transition"
                             >
                               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -1152,7 +1152,7 @@ export default function UsuariosPage() {
                             )}
                             {!isSelf && (
                               <>
-                                <div className="border-t border-gray-100 my-1" />
+                                <div className="border-t border-gray-100 dark:border-white/5 my-1" />
                                 <button
                                   type="button"
                                   onClick={() => { setDeleteMember(m); setOpenMenuId(null) }}
@@ -1182,7 +1182,7 @@ export default function UsuariosPage() {
             <div className="space-y-5">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Adicionar parceiro</h3>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
                   Busque um usuario pelo email para convida-lo como parceiro. Ele recebera uma notificacao para aceitar o convite.
                 </p>
               </div>
@@ -1260,7 +1260,7 @@ export default function UsuariosPage() {
                       )}
                       <div className="min-w-0">
                         <p className="font-medium text-gray-900 dark:text-slate-100 truncate">{searchResult.user.displayName}</p>
-                        <p className="text-xs text-gray-500">{searchResult.user.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{searchResult.user.email}</p>
                       </div>
                       <svg className="h-5 w-5 text-emerald-500 shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1315,7 +1315,7 @@ export default function UsuariosPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
                     As permissoes serao preenchidas com base no cargo selecionado e limitadas pelo seu plano atual.
                   </p>
                 </div>
@@ -1355,7 +1355,7 @@ export default function UsuariosPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   Editar usuario - {editMember.displayName}
                 </h3>
-                <p className="text-sm text-gray-500 mt-0.5">{editMember.email}</p>
+                <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{editMember.email}</p>
               </div>
 
               {/* Display name */}
@@ -1390,7 +1390,7 @@ export default function UsuariosPage() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
                   Alterar o cargo redefine as permissoes para o padrao. Voce pode personalizar abaixo.
                 </p>
               </div>
@@ -1413,7 +1413,7 @@ export default function UsuariosPage() {
                           }
                           className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                         />
-                        <span className="text-sm text-gray-700">{scopeLabels[scope]}</span>
+                        <span className="text-sm text-gray-700 dark:text-slate-300">{scopeLabels[scope]}</span>
                       </label>
                     )
                   })}
@@ -1423,7 +1423,7 @@ export default function UsuariosPage() {
               {/* Pages checklist — only plan-allowed pages */}
               <div>
                 <span className={ui.label}>Paginas permitidas</span>
-                <p className="text-xs text-gray-400 mb-1">
+                <p className="text-xs text-gray-400 dark:text-slate-500 mb-1">
                   Apenas paginas disponiveis no seu plano sao exibidas.
                 </p>
                 <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80">
@@ -1438,7 +1438,7 @@ export default function UsuariosPage() {
                         onChange={() => togglePage(page.path)}
                         className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
-                      <span className="text-sm text-gray-700">{page.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-slate-300">{page.label}</span>
                     </label>
                   ))}
                 </div>
@@ -1459,7 +1459,7 @@ export default function UsuariosPage() {
                         onChange={() => toggleAction(action.key)}
                         className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
-                      <span className="text-sm text-gray-700">{action.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-slate-300">{action.label}</span>
                     </label>
                   ))}
                 </div>
@@ -1512,17 +1512,17 @@ export default function UsuariosPage() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                     {blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'} parceiro
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                     {blockMember.status === 'suspended' ? (
                       <>
                         Deseja desbloquear{' '}
-                        <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
+                        <span className="font-medium text-gray-700 dark:text-slate-300">{blockMember.displayName}</span>{' '}
                         ({blockMember.email})? O parceiro tera acesso restaurado ao seu perfil e plano.
                       </>
                     ) : (
                       <>
                         Deseja bloquear{' '}
-                        <span className="font-medium text-gray-700">{blockMember.displayName}</span>{' '}
+                        <span className="font-medium text-gray-700 dark:text-slate-300">{blockMember.displayName}</span>{' '}
                         ({blockMember.email})? O parceiro perdera o acesso ao seu perfil de companheiro e ao seu plano.
                       </>
                     )}
@@ -1566,9 +1566,9 @@ export default function UsuariosPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Remover parceiro</h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
                     Tem certeza que deseja remover{' '}
-                    <span className="font-medium text-gray-700">{deleteMember.displayName}</span>{' '}
+                    <span className="font-medium text-gray-700 dark:text-slate-300">{deleteMember.displayName}</span>{' '}
                     ({deleteMember.email}) da sua lista de parceiros? O usuario perdera o acesso ao seu perfil de companheiro e ao seu plano. Esta acao nao pode ser desfeita.
                   </p>
                 </div>

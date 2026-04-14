@@ -357,7 +357,7 @@ export default function PropostasProdutosTab() {
               </button>
             </div>
             {form.schedule.length === 0 && (
-              <p className="text-sm text-gray-400 italic">Nenhuma etapa cadastrada.</p>
+              <p className="text-sm text-gray-400 dark:text-slate-500 italic">Nenhuma etapa cadastrada.</p>
             )}
             <div className="space-y-2">
               {form.schedule.map((entry, i) => (
@@ -377,7 +377,7 @@ export default function PropostasProdutosTab() {
                     className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
                     placeholder="Dias"
                   />
-                  <span className="text-xs text-gray-400 w-8">dias</span>
+                  <span className="text-xs text-gray-400 dark:text-slate-500 w-8">dias</span>
                   <button
                     type="button"
                     onClick={() => removeScheduleEntry(i)}
@@ -429,7 +429,7 @@ export default function PropostasProdutosTab() {
   const renderSortIcon = (column: SortColumn) => (
     <svg
       className={`h-3.5 w-3.5 transition-colors ${
-        sortColumn === column ? 'text-primary-600' : 'text-gray-300'
+        sortColumn === column ? 'text-primary-600' : 'text-gray-300 dark:text-slate-600'
       }`}
       fill="none"
       viewBox="0 0 24 24"
@@ -481,7 +481,7 @@ export default function PropostasProdutosTab() {
       {/* Search bar */}
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-slate-500 pointer-events-none"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -511,7 +511,7 @@ export default function PropostasProdutosTab() {
 
       {products.length === 0 ? (
         <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
-          <p className="text-gray-400 text-sm">Nenhum produto cadastrado ainda.</p>
+          <p className="text-gray-400 dark:text-slate-500 text-sm">Nenhum produto cadastrado ainda.</p>
           <button
             onClick={openNew}
             className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
@@ -521,7 +521,7 @@ export default function PropostasProdutosTab() {
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
-          <p className="text-gray-400 text-sm">Nenhum resultado encontrado.</p>
+          <p className="text-gray-400 dark:text-slate-500 text-sm">Nenhum resultado encontrado.</p>
           <button
             onClick={() => setSearch('')}
             className="mt-3 text-sm text-primary-600 hover:text-primary-700 font-medium"
@@ -567,7 +567,7 @@ export default function PropostasProdutosTab() {
                   <td className="px-4 py-3">
                     <div className="font-medium text-gray-900 dark:text-white">{p.name}</div>
                     {p.description && (
-                      <div className="text-xs text-gray-400 mt-0.5 line-clamp-1">{p.description}</div>
+                      <div className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 line-clamp-1">{p.description}</div>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right text-gray-700 dark:text-slate-300">{formatCurrency(p.price)}</td>

@@ -1066,7 +1066,7 @@ function PartnerViewSwitcher() {
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
           !isPartnerView
             ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm'
-            : 'text-slate-500 hover:text-slate-700'
+            : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'
         }`}
         title={`Conta pessoal${personalMembership ? ` — ${personalMembership.orgName}` : ''}`}
       >
@@ -1080,7 +1080,7 @@ function PartnerViewSwitcher() {
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
           isPartnerView
             ? 'bg-white dark:bg-surface-dark text-indigo-700 shadow-sm'
-            : 'text-slate-500 hover:text-slate-700'
+            : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'
         }`}
         title={`Conta parceiro${partnerMembership ? ` — ${partnerMembership.orgName}` : ''}`}
       >

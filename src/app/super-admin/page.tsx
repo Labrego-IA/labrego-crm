@@ -163,8 +163,8 @@ export default function SuperAdminPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Empresas</h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">Gerencie as organizacoes cadastradas.</p>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Empresas</h2>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-0.5 sm:mt-1">Gerencie as organizacoes cadastradas.</p>
         </div>
         <button
           onClick={openCreate}
@@ -182,8 +182,8 @@ export default function SuperAdminPage() {
         </div>
       ) : orgs.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10">
-          <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Nenhuma empresa cadastrada.</p>
+          <Building2 className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="text-gray-500 dark:text-slate-400">Nenhuma empresa cadastrada.</p>
         </div>
       ) : (
         <>
@@ -191,20 +191,20 @@ export default function SuperAdminPage() {
         <div className="hidden md:block bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Admin</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Plano</th>
-                <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-600">Acoes</th>
+              <tr className="border-b border-gray-100 bg-gray-50 dark:bg-white/5">
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Nome</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Admin</th>
+                <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Plano</th>
+                <th className="text-center px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Status</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-slate-400">Acoes</th>
               </tr>
             </thead>
             <tbody>
               {orgs.map((org) => (
-                <tr key={org.id} className="border-b border-gray-50 hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium text-gray-900">{org.name}</td>
-                  <td className="px-4 py-3 text-gray-500 text-xs">{org.adminEmail || '—'}</td>
-                  <td className="px-4 py-3 text-gray-600">{(PLAN_DISPLAY as Record<string, { displayName: string }>)[org.plan]?.displayName || org.plan}</td>
+                <tr key={org.id} className="border-b border-gray-50 hover:bg-gray-50 dark:bg-white/5 transition">
+                  <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{org.name}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-slate-400 text-xs">{org.adminEmail || '—'}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-slate-400">{(PLAN_DISPLAY as Record<string, { displayName: string }>)[org.plan]?.displayName || org.plan}</td>
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleToggleStatus(org)}
@@ -237,8 +237,8 @@ export default function SuperAdminPage() {
             <div key={org.id} className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h3 className="text-base font-semibold text-gray-900 truncate">{org.name}</h3>
-                  <div className="flex items-center gap-1.5 mt-1 text-gray-500">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{org.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-1 text-gray-500 dark:text-slate-400">
                     <Mail className="w-3.5 h-3.5 shrink-0" />
                     <span className="text-sm truncate">{org.adminEmail || '—'}</span>
                   </div>
@@ -260,10 +260,10 @@ export default function SuperAdminPage() {
 
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                 <div className="flex items-center gap-2">
-                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[org.status] || 'bg-gray-100 text-gray-600'}`}>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[org.status] || 'bg-gray-100 text-gray-600 dark:text-slate-400'}`}>
                     {STATUS_LABELS[org.status] || org.status}
                   </span>
-                  <span className="text-sm text-gray-600 font-medium">
+                  <span className="text-sm text-gray-600 dark:text-slate-400 font-medium">
                     {(PLAN_DISPLAY as Record<string, { displayName: string }>)[org.plan]?.displayName || org.plan}
                   </span>
                 </div>
@@ -285,18 +285,18 @@ export default function SuperAdminPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseModal}>
           <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-900">{editingOrg ? 'Editar Empresa' : 'Nova Empresa'}</h3>
-              <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">
-                <X className="w-5 h-5 text-gray-400" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{editingOrg ? 'Editar Empresa' : 'Nova Empresa'}</h3>
+              <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 dark:bg-white/10 transition" aria-label="Fechar">
+                <X className="w-5 h-5 text-gray-400 dark:text-slate-500" />
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome da empresa</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nome da empresa</label>
                 <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Plano</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Plano</label>
                 <select value={form.plan} onChange={(e) => setForm({ ...form, plan: e.target.value as Organization['plan'] })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40">
                   {Object.entries(PLAN_DISPLAY).map(([key, val]) => (
                     <option key={key} value={key}>{val.displayName}</option>
@@ -305,13 +305,13 @@ export default function SuperAdminPage() {
               </div>
               {!editingOrg && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email do admin</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email do admin</label>
                   <input type="email" value={form.adminEmail} onChange={(e) => setForm({ ...form, adminEmail: e.target.value })} required className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40" />
                 </div>
               )}
               {editingOrg && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Status</label>
                   <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Organization['status'] })} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40">
                     <option value="active">Ativo</option>
                     <option value="suspended">Suspenso</option>
@@ -321,7 +321,7 @@ export default function SuperAdminPage() {
               )}
               {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition">Cancelar</button>
+                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-white transition">Cancelar</button>
                 <button type="submit" disabled={submitting} className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition">
                   {submitting ? 'Salvando...' : editingOrg ? 'Salvar' : 'Criar'}
                 </button>

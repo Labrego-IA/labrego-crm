@@ -99,7 +99,7 @@ export default function PropostasEstruturaTab() {
       <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
         <div>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Secoes do PDF</h3>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
             Arraste para reordenar e ative/desative as secoes que aparecem no PDF de propostas.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function PropostasEstruturaTab() {
               </div>
 
               {/* Position number */}
-              <span className="w-6 text-center text-xs font-mono text-gray-400">
+              <span className="w-6 text-center text-xs font-mono text-gray-400 dark:text-slate-500">
                 {index + 1}
               </span>
 
@@ -152,12 +152,12 @@ export default function PropostasEstruturaTab() {
               </label>
 
               {/* Label */}
-              <span className={`text-sm font-medium ${section.enabled ? 'text-gray-900' : 'text-gray-400'}`}>
+              <span className={`text-sm font-medium ${section.enabled ? 'text-gray-900 dark:text-white' : 'text-gray-400'}`}>
                 {section.label}
               </span>
 
               {section.key === 'cover' && (
-                <span className="text-xs text-gray-400 ml-auto">(obrigatoria)</span>
+                <span className="text-xs text-gray-400 dark:text-slate-500 ml-auto">(obrigatoria)</span>
               )}
             </div>
           ))}

@@ -117,7 +117,7 @@ const stageColors: Record<string, { bg: string; text: string }> = {
   'Cliente': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
   'Fechado Perdido': { bg: 'bg-red-100', text: 'text-red-700' },
   'Perdido': { bg: 'bg-red-100', text: 'text-red-700' },
-  'Sem interesse': { bg: 'bg-slate-100', text: 'text-slate-600' },
+  'Sem interesse': { bg: 'bg-slate-100', text: 'text-slate-600 dark:text-slate-400' },
   'Prospecção ativa': { bg: 'bg-primary-100', text: 'text-primary-700' },
   'Primeiro Contato realizado': { bg: 'bg-teal-100', text: 'text-teal-700' },
 }
@@ -390,8 +390,8 @@ export default function ContatosPage() {
 
   // Get funnel stage color
   const getStageColor = useCallback((stageId?: string) => {
-    if (!stageId) return { bg: 'bg-slate-100', text: 'text-slate-600' }
-    return stageColorMap[stageId] || { bg: 'bg-slate-100', text: 'text-slate-600' }
+    if (!stageId) return { bg: 'bg-slate-100', text: 'text-slate-600 dark:text-slate-400' }
+    return stageColorMap[stageId] || { bg: 'bg-slate-100', text: 'text-slate-600 dark:text-slate-400' }
   }, [stageColorMap])
 
   // Handle stage change
@@ -3108,7 +3108,7 @@ export default function ContatosPage() {
             <div className="flex-1 overflow-y-auto p-4">
               <div className="space-y-1.5">
                 {funnelStages.map((stage) => {
-                  const color = stageColorMap[stage.id] || { bg: 'bg-slate-100', text: 'text-slate-600' }
+                  const color = stageColorMap[stage.id] || { bg: 'bg-slate-100', text: 'text-slate-600 dark:text-slate-400' }
                   const isSelected = newStageId === stage.id
                   return (
                     <button

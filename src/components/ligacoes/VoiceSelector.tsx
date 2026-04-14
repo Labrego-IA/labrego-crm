@@ -139,12 +139,12 @@ export default function VoiceSelector({ orgId, selectedVoiceId, onSelect }: Voic
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <SpeakerWaveIcon className="w-5 h-5 text-primary-600" />
-          <h3 className="text-sm font-semibold text-slate-800">Voz do Agente</h3>
+          <h3 className="text-sm font-semibold text-slate-800 dark:text-white">Voz do Agente</h3>
         </div>
         <select
           value={genderFilter}
           onChange={(e) => setGenderFilter(e.target.value)}
-          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
         >
           <option value="">Todos</option>
           <option value="female">Feminino</option>
@@ -182,7 +182,7 @@ export default function VoiceSelector({ orgId, selectedVoiceId, onSelect }: Voic
                 className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${
                   isSelected
                     ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500/30'
-                    : 'border-slate-200 hover:border-primary-300 hover:bg-slate-50'
+                    : 'border-slate-200 hover:border-primary-300 hover:bg-slate-50 dark:bg-white/5'
                 }`}
               >
                 {/* Play/Pause indicator */}
@@ -198,7 +198,7 @@ export default function VoiceSelector({ orgId, selectedVoiceId, onSelect }: Voic
                         ? 'bg-primary-100 text-primary-400'
                         : isSelected
                           ? 'bg-primary-100 text-primary-600'
-                          : 'bg-slate-100 text-slate-500 hover:bg-primary-100 hover:text-primary-600'
+                          : 'bg-slate-100 dark:bg-white/10 text-slate-500 hover:bg-primary-100 hover:text-primary-600'
                   }`}
                 >
                   {isLoadingPreview ? (
@@ -216,9 +216,9 @@ export default function VoiceSelector({ orgId, selectedVoiceId, onSelect }: Voic
                 {/* Voice info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-slate-800 truncate">{voice.name}</span>
+                    <span className="text-sm font-medium text-slate-800 dark:text-white truncate">{voice.name}</span>
                     {voice.gender && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 capitalize">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 capitalize">
                         {voice.gender === 'female' ? 'Feminina' : voice.gender === 'male' ? 'Masculina' : voice.gender}
                       </span>
                     )}

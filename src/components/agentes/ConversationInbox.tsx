@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<ConversationStatus, { label: string; color: string }
   active: { label: 'IA', color: 'bg-secondary/20 text-secondary-700' },
   human_handoff: { label: 'Humano', color: 'bg-yellow-500/20 text-yellow-400' },
   resolved: { label: 'Resolvido', color: 'bg-green-500/20 text-green-400' },
-  expired: { label: 'Expirado', color: 'bg-slate-500/20 text-slate-400' },
+  expired: { label: 'Expirado', color: 'bg-slate-50 dark:bg-white/50/20 text-slate-400' },
 }
 
 export default function ConversationInbox({
@@ -95,7 +95,7 @@ export default function ConversationInbox({
             className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
               filter === f.key
                 ? 'bg-cyan-50 text-cyan-600'
-                : 'text-slate-400 hover:text-slate-500 hover:bg-slate-100'
+                : 'text-slate-400 hover:text-slate-500 hover:bg-slate-100 dark:bg-white/10'
             }`}
           >
             {f.label}
@@ -136,7 +136,7 @@ export default function ConversationInbox({
               key={conv.id}
               onClick={() => onSelect(conv.id)}
               className={`w-full px-4 py-3 text-left border-b border-slate-100 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-white/5 ${
-                isSelected ? 'bg-slate-100' : ''
+                isSelected ? 'bg-slate-100 dark:bg-white/10' : ''
               }`}
             >
               <div className="flex items-start gap-3">

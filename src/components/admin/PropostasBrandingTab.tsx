@@ -194,7 +194,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               {form.logoUrl ? (
                 <img src={form.logoUrl} alt="Logo" className="h-12 w-auto rounded border border-gray-200 dark:border-white/10 object-contain" />
               ) : (
-                <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 dark:text-slate-500 text-xs">
                   Logo
                 </div>
               )}
@@ -225,7 +225,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               {form.watermarkUrl ? (
                 <img src={form.watermarkUrl} alt="Watermark" className="h-12 w-auto rounded border border-gray-200 dark:border-white/10 object-contain opacity-50" />
               ) : (
-                <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
+                <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 dark:text-slate-500 text-xs">
                   WM
                 </div>
               )}

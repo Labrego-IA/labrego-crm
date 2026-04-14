@@ -1658,7 +1658,7 @@ export default function ContactDetailsPage() {
                                     proposal.status === 'Aprovada' ? 'text-emerald-600' :
                                     proposal.status === 'Recusada' ? 'text-red-600' :
                                     proposal.status === 'Cancelada' ? 'text-rose-600' :
-                                    proposal.status === 'Expirada' ? 'text-slate-600' :
+                                    proposal.status === 'Expirada' ? 'text-slate-600 dark:text-slate-400' :
                                     'text-primary-600'
                                   }`} />
                                 </div>
@@ -2642,7 +2642,7 @@ function InfoRow({
       <span className="text-slate-400 flex-shrink-0 mt-0.5">{icon}</span>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-0.5">{label}</p>
-        <p className={`text-sm ${highlight ? 'text-amber-600 font-semibold' : 'text-slate-700'}`}>
+        <p className={`text-sm ${highlight ? 'text-amber-600 font-semibold' : 'text-slate-700 dark:text-slate-300'}`}>
           {value}
         </p>
       </div>
