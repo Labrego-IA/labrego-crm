@@ -688,9 +688,9 @@ export default function AdminFunisPage() {
 
       {/* Desktop table layout */}
       <div className="hidden sm:block bg-white rounded-xl border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
               <tr className="border-b border-slate-200 bg-slate-50">
                 {([
                   { key: 'name' as SortColumn, label: 'Membro', align: 'left' },

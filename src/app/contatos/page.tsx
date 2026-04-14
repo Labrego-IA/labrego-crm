@@ -1784,7 +1784,7 @@ export default function ContatosPage() {
               className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all border ${
                 quickFunnelFilter === 'no-funnel'
                   ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                  : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300'
+                  : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300'
               }`}
             >
               <FunnelIcon className="w-4 h-4" />
@@ -1807,7 +1807,7 @@ export default function ContatosPage() {
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   disabled={exporting}
-                  className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   title="Exportar contatos"
                 >
                   {exporting ? (
@@ -1821,7 +1821,7 @@ export default function ContatosPage() {
                 {showExportMenu && (
                   <>
                     <div className="fixed inset-0 z-[100]" onClick={() => setShowExportMenu(false)} />
-                    <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl shadow-xl z-[101] overflow-hidden">
+                    <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl shadow-xl z-[101] overflow-hidden">
                       <button
                         onClick={() => { setShowExportMenu(false); handleExport() }}
                         disabled={filteredClients.length === 0}
@@ -1833,7 +1833,7 @@ export default function ContatosPage() {
                           <p className="text-xs text-slate-400">{filteredClients.length} contato{filteredClients.length !== 1 ? 's' : ''}</p>
                         </div>
                       </button>
-                      <div className="border-t border-slate-100 dark:border-navy-mid" />
+                      <div className="border-t border-slate-100 dark:border-white/10" />
                       <button
                         onClick={() => { setShowExportMenu(false); handleDownloadTemplate() }}
                         className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
@@ -1856,7 +1856,7 @@ export default function ContatosPage() {
             {can('canCreateContacts') && (
               <button
                 onClick={() => guard(() => setShowImportModal(true))}
-                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all shadow-sm"
                 title="Importar contatos"
               >
                 <ArrowUpTrayIcon className="w-4 h-4" />
@@ -1892,7 +1892,7 @@ export default function ContatosPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {/* Total Contacts Card */}
-        <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-5">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center">
               <UserGroupIcon className="w-6 h-6 text-primary-600" />
@@ -1905,7 +1905,7 @@ export default function ContatosPage() {
         </div>
 
         {/* Active Clients Card */}
-        <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-5">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
               <CheckBadgeIcon className="w-6 h-6 text-emerald-600" />
@@ -1992,7 +1992,7 @@ export default function ContatosPage() {
         {loading ? (
           <Skeleton variant="table-row" count={4} className="py-4" />
         ) : paginatedClients.length === 0 ? (
-          <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-8">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-8">
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center">
                 <PersonIcon className="w-6 h-6 text-slate-400" />
@@ -2021,7 +2021,7 @@ export default function ContatosPage() {
                 <div
                   key={client.id}
                   onClick={() => router.push(`/contatos/${client.id}`)}
-                  className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-4 active:bg-slate-50 dark:active:bg-white/5 transition-colors cursor-pointer"
+                  className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-4 active:bg-slate-50 dark:active:bg-white/5 transition-colors cursor-pointer"
                 >
                   {/* Top: Avatar + Name + Stage */}
                   <div className="flex items-center gap-3 mb-3">
@@ -2093,7 +2093,7 @@ export default function ContatosPage() {
 
                   {/* Bottom: Days badges */}
                   {(daysInStage !== null || daysFollowUp !== null) && (
-                    <div className="flex gap-2 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-navy-mid">
+                    <div className="flex gap-2 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-white/10">
                       {daysInStage !== null && (
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getDaysBadgeColor(daysInStage)}`}>
                           Na etapa: {formatDays(daysInStage)}
@@ -2120,7 +2120,7 @@ export default function ContatosPage() {
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeftIcon className="w-4 h-4" />
                   </button>
@@ -2128,7 +2128,7 @@ export default function ContatosPage() {
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-lg bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronRightIcon className="w-4 h-4" />
                   </button>
@@ -2140,7 +2140,7 @@ export default function ContatosPage() {
       </div>
 
       {/* Table Card (Desktop) */}
-      <div className="hidden md:block bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 overflow-hidden">
+      <div className="hidden md:block bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] overflow-hidden">
         {loading ? (
           <Skeleton variant="table-row" count={8} className="py-4" />
         ) : (
@@ -2149,7 +2149,7 @@ export default function ContatosPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-slate-50 dark:bg-navy/80 border-b border-slate-200/60 dark:border-navy-mid/60">
+                  <tr className="bg-slate-50 dark:bg-surface-dark/80 border-b border-slate-200/60 dark:border-white/[0.07]">
                     {/* Checkbox column */}
                     <th className="w-12 px-4 py-3">
                       <button
@@ -2212,13 +2212,13 @@ export default function ContatosPage() {
                               </button>
 
                               {activeFilterColumn === col.key && (
-                                <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-navy rounded-xl shadow-xl border border-slate-200 dark:border-navy-mid p-2 min-w-[200px]">
+                                <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-white/10 p-2 min-w-[200px]">
                                   <input
                                     type="text"
                                     value={columnFilters[col.key] || ''}
                                     onChange={(e) => handleFilter(col.key, e.target.value)}
                                     placeholder={`Filtrar ${col.label.toLowerCase()}...`}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg dark:text-slate-100 dark:bg-surface-dark focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                     autoFocus
                                   />
                                   {columnFilters[col.key] && (
@@ -2239,7 +2239,7 @@ export default function ContatosPage() {
                     <th className="w-12 px-4 py-3"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                   {paginatedClients.length === 0 ? (
                     <tr>
                       <td colSpan={columns.length + 2} className="px-4 py-12 text-center">
@@ -2443,7 +2443,7 @@ export default function ContatosPage() {
                                   }}
                                 />
                                 <div
-                                  className="fixed z-[10000] bg-white dark:bg-navy rounded-xl shadow-2xl border border-slate-200 dark:border-navy-mid py-1.5 min-w-[180px]"
+                                  className="fixed z-[10000] bg-white dark:bg-surface-dark rounded-xl shadow-2xl border border-slate-200 dark:border-white/10 py-1.5 min-w-[180px]"
                                   style={{
                                     top: actionsPosition.top,
                                     left: actionsPosition.left,
@@ -2478,7 +2478,7 @@ export default function ContatosPage() {
                                     Enviar Email
                                   </button>
 
-                                  <div className="border-t border-slate-100 dark:border-navy-mid my-1" />
+                                  <div className="border-t border-slate-100 dark:border-white/10 my-1" />
 
                                   {/* Registrar Follow-up */}
                                   <button
@@ -2511,7 +2511,7 @@ export default function ContatosPage() {
                                     Mudar Etapa
                                   </button>
 
-                                  <div className="border-t border-slate-100 dark:border-navy-mid my-1" />
+                                  <div className="border-t border-slate-100 dark:border-white/10 my-1" />
 
                                   {/* Editar */}
                                   {can('canEditContacts') && (
@@ -2555,7 +2555,7 @@ export default function ContatosPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-slate-100 dark:border-navy-mid flex items-center justify-between">
+              <div className="px-4 py-3 border-t border-slate-100 dark:border-white/10 flex items-center justify-between">
                 <span className="text-sm text-slate-500 dark:text-slate-400">
                   Mostrando {((page - 1) * perPage) + 1} a {Math.min(page * perPage, filteredClients.length)} de {filteredClients.length}
                 </span>
@@ -2621,9 +2621,9 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
-            <div className="sticky top-0 bg-white dark:bg-navy border-b border-slate-100 dark:border-navy-mid px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white dark:bg-surface-dark border-b border-slate-100 dark:border-white/10 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <PersonIcon className="w-5 h-5 text-white" />
@@ -2691,7 +2691,7 @@ export default function ContatosPage() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Nome do contato"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
@@ -2707,7 +2707,7 @@ export default function ContatosPage() {
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
                       placeholder="(00) 00000-0000"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
@@ -2721,7 +2721,7 @@ export default function ContatosPage() {
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder="email@exemplo.com"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
@@ -2735,7 +2735,7 @@ export default function ContatosPage() {
                       value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
                       placeholder="Nome da empresa"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
@@ -2747,7 +2747,7 @@ export default function ContatosPage() {
                       type="button"
                       onClick={() => setForm({ ...form, personType: 'pf', document: '' })}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                        (form.personType || 'pf') === 'pf' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-navy text-slate-500 dark:text-slate-400 border-slate-200 dark:border-navy-mid'
+                        (form.personType || 'pf') === 'pf' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-surface-dark text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10'
                       }`}
                     >
                       Pessoa Fisica
@@ -2756,7 +2756,7 @@ export default function ContatosPage() {
                       type="button"
                       onClick={() => setForm({ ...form, personType: 'pj', document: '' })}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                        form.personType === 'pj' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-navy text-slate-500 dark:text-slate-400 border-slate-200 dark:border-navy-mid'
+                        form.personType === 'pj' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-surface-dark text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10'
                       }`}
                     >
                       Pessoa Juridica
@@ -2767,7 +2767,7 @@ export default function ContatosPage() {
                     value={form.document}
                     onChange={(e) => setForm({ ...form, document: form.personType === 'pj' ? maskCNPJ(e.target.value) : maskCPF(e.target.value) })}
                     placeholder={form.personType === 'pj' ? '00.000.000/0000-00' : '000.000.000-00'}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
@@ -2778,7 +2778,7 @@ export default function ContatosPage() {
                     value={form.industry}
                     onChange={(e) => setForm({ ...form, industry: e.target.value })}
                     placeholder="Ex: Tecnologia, Varejo..."
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
@@ -2787,7 +2787,7 @@ export default function ContatosPage() {
                   <select
                     value={form.leadSource}
                     onChange={(e) => setForm({ ...form, leadSource: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadSourceOptions.map((opt) => (
@@ -2801,7 +2801,7 @@ export default function ContatosPage() {
                   <select
                     value={form.leadType}
                     onChange={(e) => setForm({ ...form, leadType: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadTypeOptions.map((opt) => (
@@ -2826,7 +2826,7 @@ export default function ContatosPage() {
                     <select
                       value={form.costCenterId}
                       onChange={(e) => setForm({ ...form, costCenterId: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                     >
                       <option value="">Selecione...</option>
                       {costCenters.map((cc) => (
@@ -2842,7 +2842,7 @@ export default function ContatosPage() {
                     type="date"
                     value={form.birthday}
                     onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
@@ -2852,7 +2852,7 @@ export default function ContatosPage() {
                     type="date"
                     value={form.returnAlert}
                     onChange={(e) => setForm({ ...form, returnAlert: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
@@ -2863,14 +2863,14 @@ export default function ContatosPage() {
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Descrição da empresa ou notas sobre o contato..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-slate-50 dark:bg-navy/80 border-t border-slate-100 dark:border-navy-mid px-6 py-4 flex items-center justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 dark:bg-surface-dark/80 border-t border-slate-100 dark:border-white/10 px-6 py-4 flex items-center justify-end gap-3">
               <button
                 onClick={handleCloseModal}
                 className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors"
@@ -2913,7 +2913,7 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setDeleteId(null)}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -2951,7 +2951,7 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => !deletingBulk && setShowBulkDeleteModal(false)}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -3001,7 +3001,7 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => !savingBulkMove && setShowBulkMoveModal(false)}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
                 <FunnelIcon className="w-6 h-6 text-primary-600" />
@@ -3018,7 +3018,7 @@ export default function ContatosPage() {
                 <select
                   value={bulkFunnelId}
                   onChange={(e) => { setBulkFunnelId(e.target.value); setBulkStageId('') }}
-                  className="w-full border border-slate-200 dark:border-navy-mid rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-navy focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
+                  className="w-full border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-surface-dark focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
                 >
                   <option value="">Selecione um funil</option>
                   {funnels.map(f => (
@@ -3033,7 +3033,7 @@ export default function ContatosPage() {
                   <select
                     value={bulkStageId}
                     onChange={(e) => setBulkStageId(e.target.value)}
-                    className="w-full border border-slate-200 dark:border-navy-mid rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-navy focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
+                    className="w-full border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-surface-dark focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
                   >
                     <option value="">Selecione uma etapa</option>
                     {bulkStagesForFunnel.map(s => (
@@ -3081,9 +3081,9 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setStageChangeClient(null)}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-sm m-4 max-h-[70vh] flex flex-col">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-sm m-4 max-h-[70vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-navy-mid">
+            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-white/10">
               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -3115,7 +3115,7 @@ export default function ContatosPage() {
                         w-full flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left
                         ${isSelected
                           ? 'border-primary-500 bg-primary-50'
-                          : 'border-slate-200 dark:border-navy-mid hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
+                          : 'border-slate-200 dark:border-white/10 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
                         }
                       `}
                     >
@@ -3132,7 +3132,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => setStageChangeClient(null)}
                 className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
@@ -3171,9 +3171,9 @@ export default function ContatosPage() {
               setFollowUpNote('')
             }}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-lg m-4 max-h-[85vh] flex flex-col">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-lg m-4 max-h-[85vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-navy-mid">
+            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-white/10">
               <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -3197,7 +3197,7 @@ export default function ContatosPage() {
             {/* Content - Scrollable */}
             <div className="flex-1 overflow-y-auto">
               {/* New follow-up form */}
-              <div className="p-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100 dark:border-navy-mid">
+              <div className="p-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100 dark:border-white/10">
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Novo follow-up
                 </label>
@@ -3206,7 +3206,7 @@ export default function ContatosPage() {
                   onChange={(e) => setFollowUpNote(e.target.value)}
                   placeholder="Descreva o que foi conversado..."
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none bg-white dark:bg-navy"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none bg-white dark:bg-surface-dark"
                 />
                 <div className="flex justify-end mt-3">
                   <button
@@ -3262,10 +3262,10 @@ export default function ContatosPage() {
                         {/* Timeline dot and line */}
                         <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-primary-500 ring-4 ring-primary-100" />
                         {index < clientFollowUps.length - 1 && (
-                          <div className="absolute left-[5px] top-5 w-0.5 h-full bg-slate-200 dark:bg-navy-mid" />
+                          <div className="absolute left-[5px] top-5 w-0.5 h-full bg-slate-200 dark:bg-surface-dark-mid" />
                         )}
 
-                        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl p-3 shadow-sm">
+                        <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl p-3 shadow-sm">
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-medium text-primary-600">
@@ -3302,7 +3302,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end p-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
+            <div className="flex items-center justify-end p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => {
                   setFollowUpClient(null)
@@ -3330,9 +3330,9 @@ export default function ContatosPage() {
               setImportStageId('')
             }}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-navy-mid">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-200">
                   <ArrowUpTrayIcon className="w-5 h-5 text-white" />
@@ -3369,7 +3369,7 @@ export default function ContatosPage() {
                   {importProgress.current} de {importProgress.total} contato{importProgress.total !== 1 ? 's' : ''}
                 </p>
                 <div className="w-full max-w-xs">
-                  <div className="w-full bg-slate-200 dark:bg-navy-mid rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-slate-200 dark:bg-surface-dark-mid rounded-full h-3 overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%` }}
@@ -3390,7 +3390,7 @@ export default function ContatosPage() {
                 <div className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                   importFile
                     ? 'border-emerald-300 bg-emerald-50'
-                    : 'border-slate-200 dark:border-navy-mid hover:border-primary-300 hover:bg-primary-50/50'
+                    : 'border-slate-200 dark:border-white/10 hover:border-primary-300 hover:bg-primary-50/50'
                 }`}>
                   <input
                     type="file"
@@ -3422,10 +3422,10 @@ export default function ContatosPage() {
               {importPreview.length > 0 && (
                 <div className="mt-6">
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Pré-visualização (primeiros 5)</h4>
-                  <div className="overflow-x-auto border border-slate-200 dark:border-navy-mid rounded-xl">
+                  <div className="overflow-x-auto border border-slate-200 dark:border-white/10 rounded-xl">
                     <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-slate-50 dark:bg-navy/80">
+                      <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
+                        <tr className="bg-slate-50 dark:bg-surface-dark/80">
                           {Object.keys(importPreview[0]).slice(0, 5).map((key) => (
                             <th key={key} className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
                               {key}
@@ -3433,7 +3433,7 @@ export default function ContatosPage() {
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
+                      <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                         {importPreview.map((row, idx) => (
                           <tr key={idx}>
                             {Object.values(row).slice(0, 5).map((val, vidx) => (
@@ -3451,7 +3451,7 @@ export default function ContatosPage() {
 
               {/* Funnel destination */}
               {funnels.length > 0 && (
-                <div className="mt-6 p-4 bg-slate-50 dark:bg-navy/80 rounded-xl border border-slate-200 dark:border-navy-mid">
+                <div className="mt-6 p-4 bg-slate-50 dark:bg-surface-dark/80 rounded-xl border border-slate-200 dark:border-white/10">
                   <div className="flex items-center gap-2 mb-3">
                     <FunnelIcon className="w-4 h-4 text-primary" />
                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Destino no funil</p>
@@ -3466,7 +3466,7 @@ export default function ContatosPage() {
                           setImportFunnelId(e.target.value)
                           setImportStageId('')
                         }}
-                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg dark:text-slate-100 bg-white dark:bg-surface-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                       >
                         <option value="">Nenhum</option>
                         {funnels.map((f) => (
@@ -3480,7 +3480,7 @@ export default function ContatosPage() {
                         value={importStageId}
                         onChange={(e) => setImportStageId(e.target.value)}
                         disabled={!importFunnelId}
-                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg dark:text-slate-100 bg-white dark:bg-surface-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="">Selecione a etapa</option>
                         {importStagesForFunnel.map((s) => (
@@ -3521,7 +3521,7 @@ export default function ContatosPage() {
 
             {/* Footer */}
             {!importing && (
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
                 <button
                   onClick={() => {
                     setShowImportModal(false)
@@ -3552,7 +3552,7 @@ export default function ContatosPage() {
       {importResult && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setImportResult(null)} />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 fade-in duration-200">
             <div className="p-8 text-center">
               {importResult.success ? (
                 <>
@@ -3624,9 +3624,9 @@ export default function ContatosPage() {
               setPartnersResult(null)
             }}
           />
-          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-navy-mid">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <UsersIcon className="w-5 h-5 text-white" />
@@ -3684,7 +3684,7 @@ export default function ContatosPage() {
                 <div className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                   partnersFile
                     ? 'border-primary-300 bg-primary-50'
-                    : 'border-slate-200 dark:border-navy-mid hover:border-primary-300 hover:bg-primary-50/50'
+                    : 'border-slate-200 dark:border-white/10 hover:border-primary-300 hover:bg-primary-50/50'
                 }`}>
                   <input
                     type="file"
@@ -3716,15 +3716,15 @@ export default function ContatosPage() {
               {partnersPreview.length > 0 && (
                 <div className="mt-6">
                   <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Pré-visualização (primeiros 5)</h4>
-                  <div className="overflow-x-auto border border-slate-200 dark:border-navy-mid rounded-xl">
+                  <div className="overflow-x-auto border border-slate-200 dark:border-white/10 rounded-xl">
                     <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-slate-50 dark:bg-navy/80">
+                      <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
+                        <tr className="bg-slate-50 dark:bg-surface-dark/80">
                           <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">CNPJ</th>
                           <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Sócios</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
+                      <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                         {partnersPreview.map((row, idx) => (
                           <tr key={idx}>
                             <td className="px-3 py-2 text-slate-600 dark:text-slate-400 font-mono text-xs">{row.cnpj}</td>
@@ -3758,7 +3758,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => {
                   setShowPartnersModal(false)

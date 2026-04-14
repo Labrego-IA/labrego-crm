@@ -122,7 +122,7 @@ export default function AgentesDashboardPage() {
 
       {/* Channel Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+        <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
           <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
             <ChatBubbleLeftRightIcon className="w-5 h-5 text-green-400" />
             WhatsApp
@@ -133,7 +133,7 @@ export default function AgentesDashboardPage() {
             Ver conversas →
           </a>
         </div>
-        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+        <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
           <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
             <EnvelopeIcon className="w-5 h-5 text-blue-400" />
             Email
@@ -147,7 +147,7 @@ export default function AgentesDashboardPage() {
       </div>
 
       {/* Recent Conversations */}
-      <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+      <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
         <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
           <ClockIcon className="w-5 h-5 text-slate-400" />
           Conversas Recentes
@@ -200,7 +200,7 @@ function StatCard({ icon, label, value, color, bgColor, subtitle }: {
   icon: React.ReactNode; label: string; value: number; color: string; bgColor: string; subtitle?: string
 }) {
   return (
-    <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-5">
+    <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-5">
       <div className={`w-10 h-10 ${bgColor} rounded-xl flex items-center justify-center ${color} mb-3`}>
         {icon}
       </div>

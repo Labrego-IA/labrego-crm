@@ -453,7 +453,7 @@ export default function NewProposalCRMPage() {
                   {/* Products table */}
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
-                      <thead>
+                      <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                         <tr className="border-b border-slate-200">
                           <th className="text-left py-2 px-2 font-medium text-slate-500">Nome</th>
                           <th className="text-center py-2 px-2 font-medium text-slate-500 w-20">Qtd</th>

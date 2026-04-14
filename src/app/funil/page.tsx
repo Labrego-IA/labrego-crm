@@ -405,14 +405,14 @@ export default function FunnelHubPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6">
+      <div className="min-h-screen bg-slate-50 dark:bg-surface-dark/80 p-4 md:p-6">
         <div className="mb-8">
           <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
           <div className="h-4 w-32 bg-slate-200 rounded mt-2 animate-pulse" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white dark:bg-navy rounded-xl border border-slate-200 dark:border-navy-mid p-6 h-44 animate-pulse">
+            <div key={i} className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 p-6 h-44 animate-pulse">
               <div className="h-5 w-32 bg-slate-200 rounded" />
               <div className="h-4 w-24 bg-slate-200 rounded mt-3" />
             </div>
@@ -424,7 +424,7 @@ export default function FunnelHubPage() {
 
   // Main render - Funnel Hub
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-dark/80 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
       <div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -472,7 +472,7 @@ export default function FunnelHubPage() {
             return (
               <div
                 key={funnel.id}
-                className="group bg-white dark:bg-navy rounded-xl border border-slate-200 dark:border-navy-mid hover:border-slate-300 hover:shadow-md transition-all cursor-pointer relative"
+                className="group bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 hover:border-slate-300 hover:shadow-md transition-all cursor-pointer relative"
                 onClick={() => router.push(`/funil/${funnel.id}`)}
               >
                 {/* Color bar */}
@@ -510,7 +510,7 @@ export default function FunnelHubPage() {
 
                         {openMenuId === funnel.id && (
                           <div
-                            className="absolute right-0 top-8 bg-white dark:bg-navy rounded-lg shadow-lg border border-slate-200 dark:border-navy-mid py-1 z-30 min-w-[140px]"
+                            className="absolute right-0 top-8 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-slate-200 dark:border-white/10 py-1 z-30 min-w-[140px]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <button
@@ -603,7 +603,7 @@ export default function FunnelHubPage() {
 
         return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => !saving && setDeletingFunnel(null)}>
-            <div className="bg-white dark:bg-navy rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-surface-dark rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
 
               {/* Progress screen */}
               {saving && deleteProgress && (
@@ -655,7 +655,7 @@ export default function FunnelHubPage() {
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-300">O que fazer com os contatos?</p>
 
                       {/* Option: Move */}
-                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'move' ? 'border-primary-300 bg-primary-50/50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'}`}>
+                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'move' ? 'border-primary-300 bg-primary-50/50' : 'border-slate-200 dark:border-white/10 hover:border-slate-300'}`}>
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'move'} onChange={() => setDeleteMode('move')} className="text-primary-600" />
                           <span className="text-sm font-medium text-slate-800">Mover para outro funil</span>
@@ -669,7 +669,7 @@ export default function FunnelHubPage() {
                               <select
                                 value={destFunnelId}
                                 onChange={e => { setDestFunnelId(e.target.value); setDestStageId('') }}
-                                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-white dark:bg-surface-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                               >
                                 <option value="">Selecionar funil...</option>
                                 {otherFunnels.map(f => (
@@ -699,7 +699,7 @@ export default function FunnelHubPage() {
                                       <select
                                         value={destStageId}
                                         onChange={e => setDestStageId(e.target.value)}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg bg-white dark:bg-surface-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                                       >
                                         <option value="">Selecionar etapa...</option>
                                         {destStages.map(s => (
@@ -716,7 +716,7 @@ export default function FunnelHubPage() {
                       </label>
 
                       {/* Option: Discard */}
-                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'discard' ? 'border-red-300 bg-red-50/50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'}`}>
+                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'discard' ? 'border-red-300 bg-red-50/50' : 'border-slate-200 dark:border-white/10 hover:border-slate-300'}`}>
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'discard'} onChange={() => setDeleteMode('discard')} className="text-red-600" />
                           <div>
@@ -773,7 +773,7 @@ export default function FunnelHubPage() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={close}>
-        <div className="bg-white dark:bg-navy rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+        <div className="bg-white dark:bg-surface-dark rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {isEdit ? 'Editar Funil' : 'Novo Funil'}

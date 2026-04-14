@@ -582,7 +582,7 @@ function DashboardSection({ enrollments, logs }: {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr className="bg-slate-50 text-slate-600">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-center p-3 font-medium">Motivo</th>
@@ -633,7 +633,7 @@ function DashboardSection({ enrollments, logs }: {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr className="bg-slate-50 text-slate-600">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-center p-3 font-medium">Motivo original</th>
@@ -676,7 +676,7 @@ function DashboardSection({ enrollments, logs }: {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr className="bg-slate-50 text-slate-600">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-left p-3 font-medium">Step</th>

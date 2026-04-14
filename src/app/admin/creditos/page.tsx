@@ -317,9 +317,9 @@ export default function CreditsPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto rounded-2xl border border-primary-100 shadow-sm">
+                  <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-2xl border border-primary-100 shadow-sm">
                     <table className="min-w-full divide-y divide-primary-100 text-left text-sm text-slate-600">
-                      <thead className="bg-primary-50/80 text-xs font-semibold uppercase tracking-wider text-primary-600">
+                      <thead className="sticky top-0 z-10 bg-primary-50/80 text-xs font-semibold uppercase tracking-wider text-primary-600">
                         <tr>
                           <th className="whitespace-nowrap px-4 py-3">Data</th>
                           <th className="whitespace-nowrap px-4 py-3">Tipo</th>

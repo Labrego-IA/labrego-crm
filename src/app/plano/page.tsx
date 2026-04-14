@@ -72,7 +72,7 @@ export default function PlanoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6 space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-surface-dark/80 p-4 md:p-6 space-y-8">
       {/* Header */}
       <div>
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Plano e Assinatura</h2>
@@ -80,7 +80,7 @@ export default function PlanoPage() {
       </div>
 
       {/* Current Plan Card */}
-      <div className="rounded-2xl border-2 border-primary-200 bg-white dark:bg-navy p-6 shadow-sm">
+      <div className="rounded-2xl border-2 border-primary-200 bg-white dark:bg-surface-dark p-6 shadow-sm">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-primary-600">Plano atual</p>
@@ -92,49 +92,49 @@ export default function PlanoPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Usuarios</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxUsers}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Contatos</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.maxContacts)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Funis</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxFunnels}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Acoes/mes</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.monthlyActions)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Minutos/mes</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.monthlyMinutes)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Agentes</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxConcurrentAgents}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Numeros</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxNumbers}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-surface-dark/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Cadencias</p>
               <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxCadences === -1 ? 'Ilimitadas' : currentLimits.maxCadences}
@@ -177,8 +177,8 @@ export default function PlanoPage() {
           return (
             <div
               key={planId}
-              className={`relative flex flex-col rounded-2xl border bg-white dark:bg-navy p-6 shadow-sm transition ${
-                isCurrent ? 'border-primary-400 ring-2 ring-primary-200' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'
+              className={`relative flex flex-col rounded-2xl border bg-white dark:bg-surface-dark p-6 shadow-sm transition ${
+                isCurrent ? 'border-primary-400 ring-2 ring-primary-200' : 'border-slate-200 dark:border-white/10 hover:border-slate-300'
               }`}
             >
               {isTopPlan && !isCurrent && (
@@ -202,35 +202,35 @@ export default function PlanoPage() {
 
               {/* Limits */}
               <div className="mb-4 space-y-2 text-sm">
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Usuarios</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxUsers}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Contatos</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.maxContacts)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Funis</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxFunnels}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Acoes/mes</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.monthlyActions)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Minutos falados</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.monthlyMinutes)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Agentes simultaneos</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxConcurrentAgents}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Numeros dedicados</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxNumbers}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-surface-dark/80 px-3 py-2">
                   <span className="text-slate-500">Cadencias</span>
                   <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxCadences === -1 ? 'Ilimitadas' : limits.maxCadences}</span>
                 </div>

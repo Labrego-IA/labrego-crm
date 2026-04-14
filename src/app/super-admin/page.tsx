@@ -190,7 +190,7 @@ export default function SuperAdminPage() {
         {/* Desktop: tabela */}
         <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-600">Admin</th>

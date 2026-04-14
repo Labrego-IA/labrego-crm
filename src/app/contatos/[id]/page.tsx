@@ -1699,7 +1699,7 @@ export default function ContactDetailsPage() {
                     ) : (
                       <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">
                         <table className="w-full min-w-[540px]">
-                          <thead>
+                          <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                             <tr className="text-left">
                               <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Competência</th>
                               <th className="pb-3 text-xs font-semibold text-slate-400 uppercase tracking-wide whitespace-nowrap">Vencimento</th>

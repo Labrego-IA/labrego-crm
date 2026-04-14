@@ -871,9 +871,9 @@ export default function BrandBookPage() {
           {/* Tables */}
           <div className="glass-card rounded-2xl p-8 mb-6 glow-border">
             <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Tabelas</h3>
-            <div className="rounded-2xl overflow-hidden border border-[#EDE9FE]">
+            <div className="rounded-2xl overflow-hidden border border-[#EDE9FE] max-h-[70vh] overflow-y-auto">
               <table className="w-full text-sm">
-                <thead>
+                <thead className="sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%)' }}>
                   <tr style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%)' }}>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Nome</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">Email</th>

@@ -287,9 +287,9 @@ export default function ConfiguracaoPage() {
   }
 
   return (
-    <div className="h-full bg-slate-50 dark:bg-navy/80 flex flex-col">
+    <div className="h-full bg-slate-50 dark:bg-surface-dark/80 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200 dark:border-navy-mid sticky top-0 z-10">
+      <div className="flex-shrink-0 bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/10 sticky top-0 z-10">
         {/* Top row: back + title + save */}
         <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -339,7 +339,7 @@ export default function ConfiguracaoPage() {
               onClick={() => setActiveTab('config')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'config'
-                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-slate-200 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
@@ -350,7 +350,7 @@ export default function ConfiguracaoPage() {
               onClick={() => setActiveTab('knowledge')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'knowledge'
-                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-slate-200 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
@@ -361,7 +361,7 @@ export default function ConfiguracaoPage() {
               onClick={() => setActiveTab('integrations')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'integrations'
-                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-slate-200 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
@@ -378,7 +378,7 @@ export default function ConfiguracaoPage() {
         {activeTab === 'config' && config && (
           <div className="space-y-6">
             {/* Horarios */}
-            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                   <ClockIcon className="w-5 h-5 text-white" />
@@ -405,7 +405,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-surface-dark rounded-full transition-transform ${
                         config.schedule.enabled ? 'left-7' : 'left-1'
                       }`}
                     />
@@ -422,7 +422,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('schedule.startHour', parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     >
                       {HOURS.map(h => (
                         <option key={h.value} value={h.value}>
@@ -440,7 +440,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('schedule.endHour', parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     >
                       {HOURS.map(h => (
                         <option key={h.value} value={h.value}>
@@ -463,7 +463,7 @@ export default function ConfiguracaoPage() {
                         className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                           config.schedule.workDays.includes(day.value)
                             ? 'bg-primary-100 border-primary-300 text-primary-700'
-                            : 'bg-white dark:bg-navy border-slate-200 dark:border-navy-mid text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
+                            : 'bg-white dark:bg-surface-dark border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
                         }`}
                       >
                         {day.label}
@@ -485,7 +485,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={15}
                       max={60}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     />
                   </div>
                   <div>
@@ -500,7 +500,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={10}
                       max={120}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     />
                   </div>
                 </div>
@@ -508,7 +508,7 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* Agente de Voz */}
-            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
                   <SparklesIcon className="w-5 h-5 text-white" />
@@ -532,7 +532,7 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('voiceAgent.vapiAssistantId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-mono"
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                 </div>
@@ -547,7 +547,7 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('voiceAgent.vapiPhoneNumberId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-mono"
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                 </div>
@@ -562,7 +562,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('voiceAgent.llmModel', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     >
                       <option value="gpt-4o">GPT-4o</option>
                       <option value="gpt-4o-mini">GPT-4o Mini</option>
@@ -578,7 +578,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('voiceAgent.sttProvider', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     >
                       <option value="deepgram">Deepgram Nova-2</option>
                       <option value="openai">OpenAI Whisper</option>
@@ -590,7 +590,7 @@ export default function ConfiguracaoPage() {
 
             {/* Voice Selector */}
             {orgId && (
-              <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+              <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
                 <VoiceSelector
                   orgId={orgId}
                   selectedVoiceId={config.voiceAgent.voiceId}
@@ -602,7 +602,7 @@ export default function ConfiguracaoPage() {
             )}
 
             {/* Google Calendar */}
-            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                   <CalendarDaysIcon className="w-5 h-5 text-white" />
@@ -626,7 +626,7 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('calendar.googleCalendarId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     placeholder="email@gmail.com ou ID do calendario"
                   />
                 </div>
@@ -644,7 +644,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={0}
                       max={7}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     />
                     <p className="text-xs text-slate-400 mt-1">
                       Ex: 1 = comeca a partir de amanha
@@ -662,7 +662,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={1}
                       max={5}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     />
                   </div>
                 </div>
@@ -670,7 +670,7 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* Notificacoes */}
-            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-primary-600 flex items-center justify-center">
                   <BellIcon className="w-5 h-5 text-white" />
@@ -702,7 +702,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-surface-dark rounded-full transition-transform ${
                         config.notifications.whatsappReportEnabled
                           ? 'left-7'
                           : 'left-1'
@@ -722,7 +722,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('notifications.whatsappNumber', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                       placeholder="+5511999999999"
                     />
                   </div>
@@ -731,7 +731,7 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* CRON */}
-            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center">
                   <GearIcon className="w-5 h-5 text-white" />
@@ -756,7 +756,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-surface-dark rounded-full transition-transform ${
                         config.cronEnabled ? 'left-7' : 'left-1'
                       }`}
                     />
@@ -772,7 +772,7 @@ export default function ConfiguracaoPage() {
                       type="text"
                       value={config.cronSchedule}
                       onChange={e => updateConfig('cronSchedule', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-mono"
                       placeholder="0 9 * * 1-5"
                     />
                     <p className="text-xs text-slate-400 mt-1">
@@ -791,7 +791,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={1}
                       max={500}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm"
                     />
                   </div>
                 </div>

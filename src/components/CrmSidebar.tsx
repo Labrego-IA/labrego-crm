@@ -389,7 +389,52 @@ export default function CrmSidebar({ collapsed, onToggleCollapse, onNavigate }: 
             </button>
             {agentesOpen && !collapsed && (
               <ul className="mt-1 ml-4 space-y-1">
-                {filteredAgentesItems.map((item) => {
+                <li>
+                  <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider px-3">
+                    Voz
+                  </span>
+                </li>
+                {filteredAgentesItems.filter(i => !i.section).map((item) => {
+                  const isActive = isItemActive(item.href)
+                  const isLocked = !isAdmin && !canAccessPage(item.href)
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={isLocked ? '#' : item.href}
+                        onClick={(e) => {
+                          if (isLocked) {
+                            e.preventDefault()
+                            return
+                          }
+                          onNavigate?.()
+                        }}
+                        className={`
+                          flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 group relative
+                          ${isActive
+                            ? 'bg-secondary/10 text-secondary'
+                            : isLocked
+                              ? 'text-white/30 cursor-not-allowed'
+                              : 'text-white/60 hover:bg-white/5 hover:text-secondary'
+                          }
+                        `}
+                      >
+                        <span className={isActive ? 'text-secondary' : isLocked ? 'text-white/20' : 'text-white/50 group-hover:text-secondary'}>
+                          {item.icon}
+                        </span>
+                        <span className="font-medium text-sm flex-1">{item.label}</span>
+                        {isLocked && (
+                          <LockClosedIcon className="w-4 h-4 text-white/30" />
+                        )}
+                      </Link>
+                    </li>
+                  )
+                })}
+                <li className="mt-2">
+                  <span className="text-[10px] font-semibold text-white/30 uppercase tracking-wider px-3">
+                    Agentes IA
+                  </span>
+                </li>
+                {filteredAgentesItems.filter(i => i.section === 'agentes-ia').map((item) => {
                   const isActive = isItemActive(item.href)
                   const isLocked = !isAdmin && !canAccessPage(item.href)
                   return (

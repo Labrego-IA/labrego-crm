@@ -101,17 +101,17 @@ function defaultPermissions(): MemberPermissions {
 /* -------------------------------- Styles -------------------------------- */
 
 const ui = {
-  btn: `inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-navy-mid px-3.5 py-2 text-sm
-        font-medium text-gray-700 bg-white dark:bg-navy hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99]`,
+  btn: `inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-white/10 px-3.5 py-2 text-sm
+        font-medium text-gray-700 bg-white dark:bg-surface-dark hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99]`,
   btnPrimary: `inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold
         text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition active:scale-[0.99]`,
   btnDanger: `inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold
         text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition active:scale-[0.99]`,
-  input: `w-full rounded-xl border border-gray-200 dark:border-navy-mid bg-white dark:bg-navy px-3 py-2 text-sm text-gray-800
+  input: `w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm text-gray-800
         placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
-  select: `w-full rounded-xl border border-gray-200 dark:border-navy-mid bg-white dark:bg-navy px-3 py-2 text-sm text-gray-800
+  select: `w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm text-gray-800
         focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
-  card: 'bg-white dark:bg-navy rounded-2xl shadow-sm ring-1 ring-gray-200',
+  card: 'bg-white dark:bg-surface-dark rounded-2xl shadow-sm ring-1 ring-gray-200',
   label: 'block text-sm font-medium text-gray-700 mb-1',
 }
 
@@ -820,10 +820,10 @@ export default function UsuariosPage() {
           <>
             {/* Desktop table */}
             <div className={`${ui.card} hidden sm:block`}>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
                 <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-slate-50/80 dark:bg-navy/80">
+                  <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
+                    <tr className="border-b border-gray-100 bg-slate-50/80 dark:bg-surface-dark/80">
                       {([
                         { key: 'name' as SortColumn, label: 'Parceiro', align: 'left' },
                         { key: 'email' as SortColumn, label: 'Email', align: 'left' },
@@ -959,7 +959,7 @@ export default function UsuariosPage() {
                               {openMenuId === m.id && menuPos && (
                                 <div
                                   ref={dropdownRef}
-                                  className="fixed w-44 bg-white dark:bg-navy rounded-xl shadow-lg border border-gray-200 dark:border-navy-mid py-1 z-[9999] animate-scale-in"
+                                  className="fixed w-44 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-white/10 py-1 z-[9999] animate-scale-in"
                                   style={{ top: menuPos.top, left: menuPos.left - 176 }}
                                 >
                                   <button
@@ -1110,7 +1110,7 @@ export default function UsuariosPage() {
                         {openMenuId === `mobile-${m.id}` && menuPos && (
                           <div
                             ref={dropdownRef}
-                            className="fixed w-44 bg-white dark:bg-navy rounded-xl shadow-lg border border-gray-200 dark:border-navy-mid py-1 z-[9999] animate-scale-in"
+                            className="fixed w-44 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-gray-200 dark:border-white/10 py-1 z-[9999] animate-scale-in"
                             style={{ top: menuPos.top, left: menuPos.left - 176 }}
                           >
                             <button
@@ -1426,7 +1426,7 @@ export default function UsuariosPage() {
                 <p className="text-xs text-gray-400 mb-1">
                   Apenas paginas disponiveis no seu plano sao exibidas.
                 </p>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-navy-mid p-3 bg-slate-50/50 dark:bg-navy/80">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50/50 dark:bg-surface-dark/80">
                   {planAllowedPages.map((page) => (
                     <label
                       key={page.path}
@@ -1447,7 +1447,7 @@ export default function UsuariosPage() {
               {/* Actions checklist */}
               <div>
                 <span className={ui.label}>Acoes permitidas</span>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-navy-mid p-3 bg-slate-50/50 dark:bg-navy/80">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50/50 dark:bg-surface-dark/80">
                   {ALL_ACTIONS.map((action) => (
                     <label
                       key={action.key}

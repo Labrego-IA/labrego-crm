@@ -168,7 +168,7 @@ export default function SuperAdminAIUsagePage() {
           </div>
         </div>
         <table className="w-full">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
             <tr className="bg-slate-50 border-b border-slate-100">
               <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Empresa</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Plano</th>

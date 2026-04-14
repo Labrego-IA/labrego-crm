@@ -122,7 +122,7 @@ export default function EmailConfigPage() {
                 config.email.enabled ? 'bg-green-500' : 'bg-slate-600'
               }`}
             >
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-navy rounded-full transition-transform ${
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full transition-transform ${
                 config.email.enabled ? 'translate-x-6' : ''
               }`} />
             </button>
@@ -145,7 +145,7 @@ export default function EmailConfigPage() {
         <p className="text-slate-500 text-sm leading-relaxed">
           Configure o encaminhamento de emails do seu provider (Gmail, Resend ou SendGrid) para o webhook:
         </p>
-        <code className="block mt-2 px-3 py-2 bg-slate-50 dark:bg-navy/80 rounded-lg text-cyan-600 text-xs">
+        <code className="block mt-2 px-3 py-2 bg-slate-50 dark:bg-surface-dark/80 rounded-lg text-cyan-600 text-xs">
           {typeof window !== 'undefined' ? `${window.location.origin}/api/agent/email/webhook` : '/api/agent/email/webhook'}
         </code>
         <p className="text-slate-300 text-xs mt-2">
@@ -154,14 +154,14 @@ export default function EmailConfigPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 dark:border-navy-mid pb-px">
+      <div className="flex gap-2 border-b border-slate-200 dark:border-white/10 pb-px">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all ${
               activeTab === tab.id
-                ? 'bg-white dark:bg-navy text-secondary-700 border-b-2 border-secondary'
+                ? 'bg-white dark:bg-surface-dark text-secondary-700 border-b-2 border-secondary'
                 : 'text-slate-500 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
             }`}
           >
@@ -186,7 +186,7 @@ export default function EmailConfigPage() {
 
         {activeTab === 'configuracoes' && (
           <div className="space-y-6">
-            <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+            <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Modelo de IA</h3>
               <div className="space-y-4">
                 <div>
@@ -194,7 +194,7 @@ export default function EmailConfigPage() {
                   <select
                     value={config.shared.llmModel}
                     onChange={e => updateConfig({ shared: { ...config.shared, llmModel: e.target.value } })}
-                    className="w-64 px-3 py-2 bg-white dark:bg-navy border border-slate-300 rounded-lg text-slate-800 dark:text-slate-200 text-sm focus:outline-none focus:border-cyan-500"
+                    className="w-64 px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-800 dark:text-slate-200 text-sm focus:outline-none focus:border-cyan-500"
                   >
                     <option value="gpt-4o-mini">GPT-4o Mini (Rapido e economico)</option>
                     <option value="gpt-4o">GPT-4o (Mais inteligente)</option>
@@ -214,7 +214,7 @@ export default function EmailConfigPage() {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+            <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Acoes no CRM</h3>
               <div className="space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -222,7 +222,7 @@ export default function EmailConfigPage() {
                     type="checkbox"
                     checked={config.crmActions.autoCreateContact}
                     onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoCreateContact: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 dark:bg-navy/80 text-cyan-600"
+                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 dark:bg-surface-dark/80 text-cyan-600"
                   />
                   <span className="text-slate-600 dark:text-slate-400 text-sm">Criar contato automaticamente no CRM</span>
                 </label>

@@ -309,7 +309,7 @@ function CampanhasContent() {
 
       {/* Dashboard KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-primary-50 p-2">
               <EnvelopeIcon className="h-5 w-5 text-primary-600" />
@@ -321,7 +321,7 @@ function CampanhasContent() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-emerald-50 p-2">
               <ChartBarIcon className="h-5 w-5 text-emerald-600" />
@@ -333,7 +333,7 @@ function CampanhasContent() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-red-50 p-2">
               <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
@@ -345,7 +345,7 @@ function CampanhasContent() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-blue-50 p-2">
               <ClockIcon className="h-5 w-5 text-blue-600" />
@@ -369,14 +369,14 @@ function CampanhasContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar campanha..."
-            className="w-full rounded-xl border border-slate-200 bg-white dark:bg-navy py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white dark:bg-surface-dark py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as CampaignStatus | '')}
-          className="rounded-xl border border-slate-200 bg-white dark:bg-navy px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -386,7 +386,7 @@ function CampanhasContent() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as CampaignType | '')}
-          className="rounded-xl border border-slate-200 bg-white dark:bg-navy px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {TYPE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -407,9 +407,9 @@ function CampanhasContent() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:bg-navy shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200 dark:divide-navy-mid">
-              <thead className="bg-slate-50 dark:bg-navy/80">
+          <div className="hidden md:block overflow-x-auto max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white dark:bg-surface-dark shadow-sm">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-white/10">
+              <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr>
                   {([
                     { key: 'name' as SortColumn, label: 'Nome', align: 'left' },
@@ -461,7 +461,7 @@ function CampanhasContent() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/10">
                 {paginated.map((c) => (
                   <tr
                     key={c.id}
@@ -550,7 +550,7 @@ function CampanhasContent() {
               <div
                 key={c.id}
                 onClick={() => router.push(`/campanhas/${c.id}`)}
-                className="rounded-2xl border border-slate-200 bg-white dark:bg-navy p-4 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="rounded-2xl border border-slate-200 bg-white dark:bg-surface-dark p-4 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">

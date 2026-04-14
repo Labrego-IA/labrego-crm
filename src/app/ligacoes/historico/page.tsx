@@ -353,9 +353,9 @@ export default function HistoricoLigacoesPage() {
   const hasActiveFilters = filters.search || filters.dateFrom || filters.dateTo || filters.funnelId
 
   return (
-    <div className="h-full bg-slate-50 dark:bg-navy/80 flex flex-col">
+    <div className="h-full bg-slate-50 dark:bg-surface-dark/80 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200 dark:border-navy-mid px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
+      <div className="flex-shrink-0 bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/10 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Link
@@ -397,7 +397,7 @@ export default function HistoricoLigacoesPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Filters */}
-        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4 mb-6">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-4 mb-6">
           <div className="flex flex-wrap items-end gap-4">
             {/* Search */}
             <div className="flex-1 w-full sm:min-w-[200px]">
@@ -413,7 +413,7 @@ export default function HistoricoLigacoesPage() {
                     setFilters((f) => ({ ...f, search: e.target.value }))
                   }
                   placeholder="Nome, empresa ou telefone..."
-                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
+                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
                 />
               </div>
             </div>
@@ -429,7 +429,7 @@ export default function HistoricoLigacoesPage() {
                 onChange={(e) =>
                   setFilters((f) => ({ ...f, dateFrom: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
               />
             </div>
 
@@ -444,7 +444,7 @@ export default function HistoricoLigacoesPage() {
                 onChange={(e) =>
                   setFilters((f) => ({ ...f, dateTo: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
               />
             </div>
 
@@ -460,7 +460,7 @@ export default function HistoricoLigacoesPage() {
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, funnelId: e.target.value }))
                   }
-                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary appearance-none bg-white dark:bg-navy"
+                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary appearance-none bg-white dark:bg-surface-dark"
                 >
                   <option value="">Todos os funis</option>
                   {funnels.map((f) => (
@@ -501,12 +501,12 @@ export default function HistoricoLigacoesPage() {
 
         {/* Table */}
         {loading ? (
-          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-12 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 border-3 border-slate-200 dark:border-navy-mid border-t-secondary rounded-full animate-spin mb-4" />
+          <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-12 flex flex-col items-center justify-center">
+            <div className="w-10 h-10 border-3 border-slate-200 dark:border-white/10 border-t-secondary rounded-full animate-spin mb-4" />
             <p className="text-sm text-slate-500">Carregando historico de ligacoes...</p>
           </div>
         ) : filteredCalls.length === 0 ? (
-          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-12 flex flex-col items-center justify-center">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-12 flex flex-col items-center justify-center">
             <PhoneIcon className="w-12 h-12 text-slate-300 mb-3" />
             <p className="text-sm text-slate-500">
               {hasActiveFilters
@@ -515,11 +515,11 @@ export default function HistoricoLigacoesPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden">
+            <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
               <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50 dark:bg-navy/80">
+                <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
+                  <tr className="border-b border-slate-100 bg-slate-50/50 dark:bg-surface-dark/80">
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">
                       Data/Hora
                     </th>

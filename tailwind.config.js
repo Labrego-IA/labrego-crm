@@ -41,6 +41,8 @@ module.exports = {
         surface: {
           DEFAULT: '#F5F3FF',
           mid: '#EDE9FE',
+          dark: '#1a1744',
+          'dark-hover': '#211d52',
         },
         navy: {
           DEFAULT: '#1E1B4B',

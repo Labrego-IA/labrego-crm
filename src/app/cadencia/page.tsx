@@ -1107,9 +1107,9 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
         ) : logs.length === 0 ? (
           <div className="p-8 text-center text-sm text-slate-400">Nenhuma ação registrada</div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr className="bg-slate-50 text-slate-600">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-left p-3 font-medium">Step</th>
