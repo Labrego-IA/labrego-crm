@@ -596,12 +596,12 @@ function NovasCampanhasContent() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.push('/campanhas')}
-          className="rounded-lg p-2 hover:bg-slate-100 transition-colors"
+          className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
         >
-          <ArrowLeftIcon className="h-5 w-5 text-slate-600" />
+          <ArrowLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Nova Campanha</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Nova Campanha</h1>
           <p className="text-sm text-slate-500">Segmente, compose e dispare</p>
         </div>
       </div>
@@ -616,7 +616,7 @@ function NovasCampanhasContent() {
                   ? 'bg-primary-600 text-white'
                   : i < currentStep
                     ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-slate-100 text-slate-400'
+                    : 'bg-slate-100 dark:bg-white/10 text-slate-400'
               }`}
             >
               {i < currentStep ? <CheckIcon className="h-4 w-4" /> : <span>{i + 1}</span>}
@@ -654,9 +654,9 @@ function NovasCampanhasContent() {
           )}
 
           {/* Filters grid */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-slate-700">Filtros de Segmentação</h3>
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Filtros de Segmentação</h3>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowSaveSegment(true)}
@@ -667,7 +667,7 @@ function NovasCampanhasContent() {
                 </button>
                 <button
                   onClick={clearFilters}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 >
                   Limpar
                 </button>
@@ -684,7 +684,7 @@ function NovasCampanhasContent() {
                     updateFilter('funnelId', e.target.value || undefined)
                     updateFilter('stageIds', undefined)
                   }}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 >
                   <option value="">Todos os funis</option>
                   {funnels.map((f) => (
@@ -707,7 +707,7 @@ function NovasCampanhasContent() {
                           className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                             filters.stageIds?.includes(s.id)
                               ? 'bg-primary-600 text-white'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                              : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                           }`}
                         >
                           {s.name}
@@ -728,7 +728,7 @@ function NovasCampanhasContent() {
                       className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                         filters.status?.includes(opt.value)
                           ? 'bg-primary-600 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
                       {opt.label}
@@ -748,7 +748,7 @@ function NovasCampanhasContent() {
                       className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                         filters.leadSource?.includes(opt.value)
                           ? 'bg-primary-600 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
                       {opt.label}
@@ -768,7 +768,7 @@ function NovasCampanhasContent() {
                       className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                         filters.leadType?.includes(opt.value)
                           ? 'bg-primary-600 text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
                       {opt.label}
@@ -785,7 +785,7 @@ function NovasCampanhasContent() {
                   value={filters.industry || ''}
                   onChange={(e) => updateFilter('industry', e.target.value || undefined)}
                   placeholder="Ex: Tecnologia, Saúde..."
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 />
               </div>
 
@@ -797,7 +797,7 @@ function NovasCampanhasContent() {
                   value={filters.company || ''}
                   onChange={(e) => updateFilter('company', e.target.value || undefined)}
                   placeholder="Nome da empresa..."
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 />
               </div>
 
@@ -807,7 +807,7 @@ function NovasCampanhasContent() {
                 <select
                   value={filters.assignedTo || ''}
                   onChange={(e) => updateFilter('assignedTo', e.target.value || undefined)}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 >
                   <option value="">Todos</option>
                   {members.map((m) => (
@@ -827,7 +827,7 @@ function NovasCampanhasContent() {
                     updateFilter('estado', vals.length > 0 ? vals : undefined)
                   }}
                   placeholder="SP, RJ, MG..."
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 />
               </div>
 
@@ -842,7 +842,7 @@ function NovasCampanhasContent() {
                     updateFilter('municipio', vals.length > 0 ? vals : undefined)
                   }}
                   placeholder="São Paulo, Rio..."
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 />
               </div>
 
@@ -855,14 +855,14 @@ function NovasCampanhasContent() {
                     value={filters.capitalSocialMin ?? ''}
                     onChange={(e) => updateFilter('capitalSocialMin', e.target.value ? Number(e.target.value) : undefined)}
                     placeholder="Mín"
-                    className="w-1/2 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-1/2 rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                   <input
                     type="number"
                     value={filters.capitalSocialMax ?? ''}
                     onChange={(e) => updateFilter('capitalSocialMax', e.target.value ? Number(e.target.value) : undefined)}
                     placeholder="Máx"
-                    className="w-1/2 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-1/2 rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
               </div>
@@ -875,7 +875,7 @@ function NovasCampanhasContent() {
                   value={filters.daysSinceLastContact ?? ''}
                   onChange={(e) => updateFilter('daysSinceLastContact', e.target.value ? Number(e.target.value) : undefined)}
                   placeholder="Ex: 30"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                 />
               </div>
 
@@ -887,13 +887,13 @@ function NovasCampanhasContent() {
                     type="date"
                     value={filters.createdAfter || ''}
                     onChange={(e) => updateFilter('createdAfter', e.target.value || undefined)}
-                    className="w-1/2 rounded-lg border border-slate-200 px-2 py-2 text-sm"
+                    className="w-1/2 rounded-lg border border-slate-200 dark:border-navy-mid px-2 py-2 text-sm"
                   />
                   <input
                     type="date"
                     value={filters.createdBefore || ''}
                     onChange={(e) => updateFilter('createdBefore', e.target.value || undefined)}
-                    className="w-1/2 rounded-lg border border-slate-200 px-2 py-2 text-sm"
+                    className="w-1/2 rounded-lg border border-slate-200 dark:border-navy-mid px-2 py-2 text-sm"
                   />
                 </div>
               </div>
@@ -907,7 +907,7 @@ function NovasCampanhasContent() {
                   onChange={(e) => updateFilter('hasEmail', e.target.checked)}
                   className="rounded border-slate-300 text-primary-600"
                 />
-                <label htmlFor="hasEmail" className="text-xs font-medium text-slate-600">
+                <label htmlFor="hasEmail" className="text-xs font-medium text-slate-600 dark:text-slate-400">
                   Apenas com email preenchido
                 </label>
               </div>
@@ -915,7 +915,7 @@ function NovasCampanhasContent() {
           </div>
 
           {/* Results */}
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="rounded-2xl border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy shadow-sm">
             {/* Search bar */}
             <div className="px-4 pt-3 pb-2">
               <div className="relative">
@@ -925,13 +925,13 @@ function NovasCampanhasContent() {
                   value={contactSearch}
                   onChange={(e) => setContactSearch(e.target.value)}
                   placeholder="Pesquisar por nome, email ou empresa..."
-                  className="w-full rounded-xl border border-slate-200 py-2 pl-9 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-navy-mid py-2 pl-9 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
             </div>
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   {displayedClients.length} contatos encontrados
                 </span>
                 <span className="text-xs text-primary-600 font-medium">
@@ -957,7 +957,7 @@ function NovasCampanhasContent() {
             ) : (
               <div className="max-h-[400px] overflow-y-auto">
                 <table className="min-w-full divide-y divide-slate-100">
-                  <thead className="bg-slate-50 sticky top-0">
+                  <thead className="bg-slate-50 dark:bg-navy/80 sticky top-0">
                     <tr>
                       <th className="px-4 py-2 w-10">
                         <input
@@ -977,7 +977,7 @@ function NovasCampanhasContent() {
                     {displayedClients.map((c) => {
                       const hasEmail = c.email && c.email.trim() !== ''
                       return (
-                        <tr key={c.id} className={`${!hasEmail ? 'opacity-50' : 'hover:bg-slate-50'}`}>
+                        <tr key={c.id} className={`${!hasEmail ? 'opacity-50' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
                           <td className="px-4 py-2">
                             {hasEmail ? (
                               <input
@@ -990,7 +990,7 @@ function NovasCampanhasContent() {
                               <ExclamationTriangleIcon className="h-4 w-4 text-amber-500" title="Sem email" />
                             )}
                           </td>
-                          <td className="px-4 py-2 text-sm text-slate-900">{c.name}</td>
+                          <td className="px-4 py-2 text-sm text-slate-900 dark:text-slate-100">{c.name}</td>
                           <td className="px-4 py-2 text-sm text-slate-500">
                             {hasEmail ? c.email : <span className="text-amber-500 italic">Sem email</span>}
                           </td>
@@ -1010,29 +1010,29 @@ function NovasCampanhasContent() {
       {/* ==================== Step 2: Composition ==================== */}
       {currentStep === 1 && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy p-6 shadow-sm space-y-4">
             {/* Campaign Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Nome da campanha</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome da campanha</label>
               <input
                 type="text"
                 value={campaignName}
                 onChange={(e) => setCampaignName(e.target.value)}
                 placeholder="Ex: Nutrição de leads Q1 2026"
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-navy-mid px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
               />
             </div>
 
             {/* Subject */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Assunto do email</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assunto do email</label>
               <input
                 type="text"
                 value={subject}
                 onChange={(e) => setSubject(e.target.value.slice(0, 150))}
                 placeholder="Assunto do email..."
                 maxLength={150}
-                className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-navy-mid px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
               />
               <p className="text-xs text-slate-400 mt-1">{subject.length}/150</p>
             </div>
@@ -1056,7 +1056,7 @@ function NovasCampanhasContent() {
               <button
                 onClick={() => setShowPreview(false)}
                 className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                  !showPreview ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600'
+                  !showPreview ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <PencilIcon className="h-3.5 w-3.5" />
@@ -1065,7 +1065,7 @@ function NovasCampanhasContent() {
               <button
                 onClick={() => setShowPreview(true)}
                 className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                  showPreview ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600'
+                  showPreview ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <EyeIcon className="h-3.5 w-3.5" />
@@ -1073,7 +1073,7 @@ function NovasCampanhasContent() {
               </button>
               <Link
                 href="/campanhas/editor"
-                className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors ml-auto"
+                className="flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors ml-auto"
               >
                 Editor Visual
               </Link>
@@ -1091,17 +1091,17 @@ function NovasCampanhasContent() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-xl border border-slate-200 p-6 bg-slate-50 min-h-[200px]">
+              <div className="rounded-xl border border-slate-200 dark:border-navy-mid p-6 bg-slate-50 dark:bg-navy/80 min-h-[200px]">
                 <p className="text-xs text-slate-400 mb-3">
                   Preview com dados de: <strong>{previewContact?.name || 'Contato'}</strong>
                 </p>
-                <div className="bg-white rounded-lg p-4 border border-slate-200">
-                  <p className="text-sm font-medium text-slate-700 mb-2">
+                <div className="bg-white dark:bg-navy rounded-lg p-4 border border-slate-200 dark:border-navy-mid">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Assunto: {previewContact ? replaceVariables(subject, previewContact as Record<string, unknown>) : subject}
                   </p>
                   <hr className="mb-3" />
                   <div
-                    className="text-sm text-slate-600 whitespace-pre-wrap"
+                    className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{
                       __html: previewContact
                         ? replaceVariables(body, previewContact as Record<string, unknown>)
@@ -1119,63 +1119,63 @@ function NovasCampanhasContent() {
       {currentStep === 2 && (
         <div className="space-y-4">
           {/* Summary */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Resumo da campanha</h3>
+          <div className="rounded-2xl border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Resumo da campanha</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-slate-500">Campanha</p>
-                <p className="font-medium text-slate-900">{campaignName}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{campaignName}</p>
               </div>
               <div>
                 <p className="text-slate-500">Assunto</p>
-                <p className="font-medium text-slate-900 truncate">{subject}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100 truncate">{subject}</p>
               </div>
               <div>
                 <p className="text-slate-500">Destinatários</p>
-                <p className="font-medium text-slate-900">{selectedIds.size}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{selectedIds.size}</p>
               </div>
               <div>
                 <p className="text-slate-500">Criado por</p>
-                <p className="font-medium text-slate-900">{member?.displayName || '—'}</p>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{member?.displayName || '—'}</p>
               </div>
             </div>
           </div>
 
           {/* Send type selection */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
-            <h3 className="text-sm font-semibold text-slate-700">Tipo de envio</h3>
+          <div className="rounded-2xl border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy p-6 shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tipo de envio</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <button
                 onClick={() => setSendType('immediate')}
                 className={`rounded-xl border-2 p-4 text-left transition-colors ${
-                  sendType === 'immediate' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                  sendType === 'immediate' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'
                 }`}
               >
                 <PaperAirplaneIcon className="h-5 w-5 text-primary-600 mb-2" />
-                <p className="text-sm font-medium text-slate-900">Enviar agora</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Enviar agora</p>
                 <p className="text-xs text-slate-500 mt-1">Disparo imediato para todos os destinatários</p>
               </button>
 
               <button
                 onClick={() => setSendType('scheduled')}
                 className={`rounded-xl border-2 p-4 text-left transition-colors ${
-                  sendType === 'scheduled' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                  sendType === 'scheduled' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'
                 }`}
               >
                 <ClockIcon className="h-5 w-5 text-blue-600 mb-2" />
-                <p className="text-sm font-medium text-slate-900">Agendar</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Agendar</p>
                 <p className="text-xs text-slate-500 mt-1">Escolha data e hora para o envio</p>
               </button>
 
               <button
                 onClick={() => setSendType('recurring')}
                 className={`rounded-xl border-2 p-4 text-left transition-colors ${
-                  sendType === 'recurring' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 hover:border-slate-300'
+                  sendType === 'recurring' ? 'border-primary-600 bg-primary-50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'
                 }`}
               >
                 <ArrowPathIcon className="h-5 w-5 text-emerald-600 mb-2" />
-                <p className="text-sm font-medium text-slate-900">Recorrente</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Recorrente</p>
                 <p className="text-xs text-slate-500 mt-1">Envio automático periódico</p>
               </button>
             </div>
@@ -1190,7 +1190,7 @@ function NovasCampanhasContent() {
                     value={scheduledDate}
                     onChange={(e) => setScheduledDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
@@ -1199,7 +1199,7 @@ function NovasCampanhasContent() {
                     type="time"
                     value={scheduledTime}
                     onChange={(e) => setScheduledTime(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
               </div>
@@ -1213,7 +1213,7 @@ function NovasCampanhasContent() {
                   <select
                     value={recurrenceFreq}
                     onChange={(e) => setRecurrenceFreq(e.target.value as RecurrenceFrequency)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   >
                     {(Object.entries(RECURRENCE_LABELS) as [RecurrenceFrequency, string][]).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
@@ -1227,7 +1227,7 @@ function NovasCampanhasContent() {
                     <select
                       value={recurrenceDayOfWeek}
                       onChange={(e) => setRecurrenceDayOfWeek(Number(e.target.value))}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                     >
                       <option value={1}>Segunda</option>
                       <option value={2}>Terça</option>
@@ -1244,7 +1244,7 @@ function NovasCampanhasContent() {
                     <select
                       value={recurrenceDayOfMonth}
                       onChange={(e) => setRecurrenceDayOfMonth(Number(e.target.value))}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                     >
                       {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
                         <option key={d} value={d}>{d}</option>
@@ -1259,7 +1259,7 @@ function NovasCampanhasContent() {
                     type="time"
                     value={recurrenceTime}
                     onChange={(e) => setRecurrenceTime(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
 
@@ -1270,7 +1270,7 @@ function NovasCampanhasContent() {
                     value={recurrenceStartDate}
                     onChange={(e) => setRecurrenceStartDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
 
@@ -1280,7 +1280,7 @@ function NovasCampanhasContent() {
                     type="date"
                     value={recurrenceEndDate}
                     onChange={(e) => setRecurrenceEndDate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    className="w-full rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm"
                   />
                 </div>
               </div>
@@ -1299,10 +1299,10 @@ function NovasCampanhasContent() {
       )}
 
       {/* ==================== Navigation ==================== */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-navy-mid">
         <button
           onClick={() => (currentStep === 0 ? router.push('/campanhas') : setCurrentStep((s) => s - 1))}
-          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
         >
           <ArrowLeftIcon className="h-4 w-4" />
           {currentStep === 0 ? 'Cancelar' : 'Voltar'}
@@ -1361,14 +1361,14 @@ function NovasCampanhasContent() {
             }
           }}
         >
-          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-slate-900 mb-3">Salvar Segmento</h3>
+          <div className="rounded-2xl bg-white dark:bg-navy p-6 shadow-xl w-full max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">Salvar Segmento</h3>
             <input
               type="text"
               value={segmentName}
               onChange={(e) => setSegmentName(e.target.value)}
               placeholder="Nome do segmento..."
-              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none mb-4"
+              className="w-full rounded-xl border border-slate-200 dark:border-navy-mid px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none mb-4"
               autoFocus
             />
             <div className="flex justify-end gap-2">
@@ -1381,7 +1381,7 @@ function NovasCampanhasContent() {
                     setSegmentName('')
                   }
                 }}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10"
               >
                 Cancelar
               </button>

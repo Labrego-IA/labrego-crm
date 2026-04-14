@@ -472,30 +472,30 @@ export default function ProdutividadePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-navy/80 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-          <p className="text-slate-600 font-medium">Carregando dados de produtividade...</p>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Carregando dados de produtividade...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Produtividade</h1>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Produtividade</h1>
               <p className="text-sm text-slate-500">Acompanhamento de atividades por usuário</p>
             </div>
           </div>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 transition-all disabled:opacity-50"
           >
             <ArrowPathIcon className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Atualizar</span>
@@ -518,33 +518,33 @@ export default function ProdutividadePage() {
 
       {/* Summary Cards - Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-2xl border border-slate-200 p-4">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <UserIcon className="w-4 h-4" />
             <span className="text-xs font-medium">Usuários Ativos</span>
           </div>
-          <p className="text-2xl font-bold text-slate-800">{authors.length}</p>
+          <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">{authors.length}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-4">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <CalendarDaysIcon className="w-4 h-4" />
             <span className="text-xs font-medium">Período</span>
           </div>
-          <p className="text-2xl font-bold text-slate-800">7 dias</p>
+          <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">7 dias</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-4">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <ChartBarIcon className="w-4 h-4" />
             <span className="text-xs font-medium">Total Geral</span>
           </div>
           <p className="text-2xl font-bold text-primary-600">{grandTotal}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-4">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4">
           <div className="flex items-center gap-2 text-slate-500 mb-2">
             <ChartBarIcon className="w-4 h-4" />
             <span className="text-xs font-medium">Média/Dia</span>
           </div>
-          <p className="text-2xl font-bold text-slate-800">
+          <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">
             {authors.length > 0 ? (grandTotal / 7).toFixed(1) : '0'}
           </p>
         </div>
@@ -569,18 +569,18 @@ export default function ProdutividadePage() {
       </div>
 
       {/* Breakdown by Type Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm mb-6">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid shadow-sm mb-6">
         <div className="p-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-800">Breakdown por Tipo de Ação</h2>
+          <h2 className="font-semibold text-slate-800 dark:text-slate-200">Breakdown por Tipo de Ação</h2>
           <p className="text-sm text-slate-500 mt-1">Totais por usuário nos últimos 7 dias</p>
         </div>
 
         {breakdownAuthors.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserIcon className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-600 font-medium">Nenhuma atividade encontrada</p>
+            <p className="text-slate-600 dark:text-slate-400 font-medium">Nenhuma atividade encontrada</p>
           </div>
         ) : (
           <>
@@ -595,7 +595,7 @@ export default function ProdutividadePage() {
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                           {author.charAt(0).toUpperCase()}
                         </div>
-                        <span className="font-medium text-slate-700 truncate max-w-[150px]" title={author}>
+                        <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]" title={author}>
                           {author}
                         </span>
                       </div>
@@ -603,13 +603,13 @@ export default function ProdutividadePage() {
                         {data.total}
                       </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
                         const count = data[type]
                         const config = ACTION_TYPE_CONFIG[type]
                         const Icon = config.icon
                         return (
-                          <div key={type} className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${count === 0 ? 'bg-slate-50 text-slate-400' : `${config.bgColor} ${config.color}`}`}>
+                          <div key={type} className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg ${count === 0 ? 'bg-slate-50 dark:bg-navy/80 text-slate-400' : `${config.bgColor} ${config.color}`}`}>
                             <Icon className="w-3.5 h-3.5 flex-shrink-0" />
                             <span className="text-xs font-medium truncate">{config.label}</span>
                             <span className="font-bold text-sm ml-auto">{count}</span>
@@ -626,15 +626,15 @@ export default function ProdutividadePage() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="bg-slate-50">
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 min-w-[180px]">
+                  <tr className="bg-slate-50 dark:bg-navy/80">
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 min-w-[180px]">
                       Usuário
                     </th>
                     {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => {
                       const config = ACTION_TYPE_CONFIG[type]
                       const Icon = config.icon
                       return (
-                        <th key={type} className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[90px]">
+                        <th key={type} className="text-center px-3 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-[90px]">
                           <div className="flex items-center justify-center gap-1.5">
                             <Icon className="w-3.5 h-3.5" />
                             <span>{config.label}</span>
@@ -653,14 +653,14 @@ export default function ProdutividadePage() {
                     return (
                       <tr
                         key={author}
-                        className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                        className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-navy' : 'bg-slate-50/50 dark:bg-navy/80'}`}
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                               {author.charAt(0).toUpperCase()}
                             </div>
-                            <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
+                            <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]" title={author}>
                               {author}
                             </span>
                           </div>
@@ -672,7 +672,7 @@ export default function ProdutividadePage() {
                             <td key={type} className="text-center px-3 py-3">
                               <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm ${
                                 count === 0
-                                  ? 'bg-slate-100 text-slate-400'
+                                  ? 'bg-slate-100 dark:bg-white/10 text-slate-400'
                                   : `${config.bgColor} ${config.color}`
                               }`}>
                                 {count}
@@ -689,13 +689,13 @@ export default function ProdutividadePage() {
                     )
                   })}
                   {/* Totals row */}
-                  <tr className="border-t-2 border-slate-200 bg-slate-100">
+                  <tr className="border-t-2 border-slate-200 dark:border-navy-mid bg-slate-100 dark:bg-white/10">
                     <td className="px-4 py-3">
-                      <span className="font-bold text-slate-700">Total</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300">Total</span>
                     </td>
                     {(Object.keys(ACTION_TYPE_CONFIG) as ActionType[]).map((type) => (
                       <td key={type} className="text-center px-3 py-3">
-                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-sm">
                           {breakdownTotals[type]}
                         </span>
                       </td>
@@ -714,18 +714,18 @@ export default function ProdutividadePage() {
       </div>
 
       {/* Productivity Matrix (existing heatmap) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid shadow-sm">
         <div className="p-4 border-b border-slate-100">
-          <h2 className="font-semibold text-slate-800">Matriz de Produtividade</h2>
+          <h2 className="font-semibold text-slate-800 dark:text-slate-200">Matriz de Produtividade</h2>
           <p className="text-sm text-slate-500 mt-1">Últimos 7 dias por usuário</p>
         </div>
 
         {authors.length === 0 ? (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <UserIcon className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-600 font-medium">Nenhuma atividade encontrada</p>
+            <p className="text-slate-600 dark:text-slate-400 font-medium">Nenhuma atividade encontrada</p>
             <p className="text-sm text-slate-400 mt-1">
               Registre follow-ups ou logs nos cards do funil para ver a produtividade.
             </p>
@@ -741,7 +741,7 @@ export default function ProdutividadePage() {
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                         {author.charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-medium text-slate-700 truncate max-w-[150px]" title={author}>
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]" title={author}>
                         {author}
                       </span>
                     </div>
@@ -766,7 +766,7 @@ export default function ProdutividadePage() {
                           <span className="text-[10px] text-slate-500 font-medium">{formatDateDisplay(day).split(' ')[0]}</span>
                           <span className={`inline-flex items-center justify-center w-8 h-8 rounded-lg font-semibold text-sm ${
                             count === 0
-                              ? 'bg-slate-100 text-slate-400'
+                              ? 'bg-slate-100 dark:bg-white/10 text-slate-400'
                               : count <= 2
                                 ? 'bg-amber-100 text-amber-700'
                                 : count <= 5
@@ -787,14 +787,14 @@ export default function ProdutividadePage() {
             <div className="hidden md:block overflow-x-auto pb-4">
               <table className="w-full" style={{ overflow: 'visible' }}>
                 <thead>
-                  <tr className="bg-slate-50">
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 sticky left-0 bg-slate-50 z-10 min-w-[180px]">
+                  <tr className="bg-slate-50 dark:bg-navy/80">
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 sticky left-0 bg-slate-50 dark:bg-navy/80 z-10 min-w-[180px]">
                       Usuário
                     </th>
                     {last7Days.map((day) => (
                       <th
                         key={day}
-                        className="text-center px-3 py-3 text-sm font-semibold text-slate-600 min-w-[80px]"
+                        className="text-center px-3 py-3 text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-[80px]"
                       >
                         {formatDateDisplay(day)}
                       </th>
@@ -808,14 +808,14 @@ export default function ProdutividadePage() {
                   {authors.map((author, idx) => (
                     <tr
                       key={author}
-                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}`}
+                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-navy' : 'bg-slate-50/50 dark:bg-navy/80'}`}
                     >
-                      <td className={`px-4 py-3 sticky left-0 z-10 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}`}>
+                      <td className={`px-4 py-3 sticky left-0 z-10 ${idx % 2 === 0 ? 'bg-white dark:bg-navy' : 'bg-slate-50 dark:bg-navy/80'}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
                             {author.charAt(0).toUpperCase()}
                           </div>
-                          <span className="font-medium text-slate-700 truncate max-w-[120px]" title={author}>
+                          <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]" title={author}>
                             {author}
                           </span>
                         </div>
@@ -835,7 +835,7 @@ export default function ProdutividadePage() {
                                 inline-flex items-center justify-center w-10 h-10 rounded-xl font-semibold text-sm transition-transform
                                 ${clientDetails.length > 0 ? 'cursor-pointer hover:scale-110' : 'cursor-default'}
                                 ${count === 0
-                                  ? 'bg-slate-100 text-slate-400'
+                                  ? 'bg-slate-100 dark:bg-white/10 text-slate-400'
                                   : count <= 2
                                     ? 'bg-amber-100 text-amber-700'
                                     : count <= 5
@@ -857,13 +857,13 @@ export default function ProdutividadePage() {
                     </tr>
                   ))}
                   {/* Totals row */}
-                  <tr className="border-t-2 border-slate-200 bg-slate-100">
-                    <td className="px-4 py-3 sticky left-0 bg-slate-100 z-10">
-                      <span className="font-bold text-slate-700">Total/Dia</span>
+                  <tr className="border-t-2 border-slate-200 dark:border-navy-mid bg-slate-100 dark:bg-white/10">
+                    <td className="px-4 py-3 sticky left-0 bg-slate-100 dark:bg-white/10 z-10">
+                      <span className="font-bold text-slate-700 dark:text-slate-300">Total/Dia</span>
                     </td>
                     {last7Days.map((day) => (
                       <td key={day} className="text-center px-3 py-3">
-                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 font-bold text-sm">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-sm">
                           {totalsByDay[day]}
                         </span>
                       </td>
@@ -885,7 +885,7 @@ export default function ProdutividadePage() {
       <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
         <span className="font-medium">Legenda:</span>
         <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-lg bg-slate-100" />
+          <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-white/10" />
           <span>0</span>
         </div>
         <div className="flex items-center gap-2">
@@ -909,13 +909,13 @@ export default function ProdutividadePage() {
           onClick={() => setPopup(null)}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
+            className="bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col animate-in fade-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-slate-100">
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Contatos Realizados</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Contatos Realizados</h3>
                 <p className="text-sm text-slate-500 mt-0.5">
                   {popup.author} &middot; {formatDateDisplay(popup.date)}
                 </p>
@@ -926,7 +926,7 @@ export default function ProdutividadePage() {
                 </span>
                 <button
                   onClick={() => setPopup(null)}
-                  className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -938,12 +938,12 @@ export default function ProdutividadePage() {
             <div className="overflow-y-auto flex-1 p-2">
               <ul className="divide-y divide-slate-100">
                 {popup.clients.map((client, i) => (
-                  <li key={i} className="flex items-center gap-3 px-3 py-3 hover:bg-slate-50 rounded-xl">
+                  <li key={i} className="flex items-center gap-3 px-3 py-3 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                       {client.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-slate-800 truncate">{client.name}</p>
+                      <p className="font-medium text-slate-800 dark:text-slate-200 truncate">{client.name}</p>
                       <p className="text-xs text-slate-500 truncate">{client.stage}</p>
                     </div>
                   </li>
@@ -954,7 +954,7 @@ export default function ProdutividadePage() {
             <div className="p-4 border-t border-slate-100">
               <button
                 onClick={() => setPopup(null)}
-                className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors text-sm"
+                className="w-full py-2.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-colors text-sm"
               >
                 Fechar
               </button>

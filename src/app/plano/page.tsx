@@ -72,71 +72,71 @@ export default function PlanoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6 space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Plano e Assinatura</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">Plano e Assinatura</h2>
         <p className="mt-1 text-sm text-slate-500">Visualize seu plano atual e compare os recursos disponiveis.</p>
       </div>
 
       {/* Current Plan Card */}
-      <div className="rounded-2xl border-2 border-primary-200 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border-2 border-primary-200 bg-white dark:bg-navy p-6 shadow-sm">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium text-primary-600">Plano atual</p>
-            <h3 className="mt-1 text-3xl font-bold text-slate-900">{currentDisplay.displayName}</h3>
-            <p className="mt-1 text-lg text-slate-600">
+            <h3 className="mt-1 text-3xl font-bold text-slate-900 dark:text-slate-100">{currentDisplay.displayName}</h3>
+            <p className="mt-1 text-lg text-slate-600 dark:text-slate-400">
               R$ {formatCurrency(currentDisplay.price)}
               <span className="text-sm text-slate-400">/{currentCategory === 'agency' ? 'projeto' : 'mes'}</span>
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Usuarios</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxUsers}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Contatos</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.maxContacts)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Funis</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxFunnels}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Acoes/mes</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.monthlyActions)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Minutos/mes</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {formatLimit(currentLimits.monthlyMinutes)}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Agentes</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxConcurrentAgents}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Numeros</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxNumbers}
               </p>
             </div>
-            <div className="rounded-xl bg-slate-50 p-3 text-center">
+            <div className="rounded-xl bg-slate-50 dark:bg-navy/80 p-3 text-center">
               <p className="text-xs font-medium text-slate-500">Cadencias</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">
+              <p className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {currentLimits.maxCadences === -1 ? 'Ilimitadas' : currentLimits.maxCadences}
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function PlanoPage() {
         <button
           onClick={() => setViewCategory('direct')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-            viewCategory === 'direct' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            viewCategory === 'direct' ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
           }`}
         >
           Planos Diretos
@@ -157,7 +157,7 @@ export default function PlanoPage() {
         <button
           onClick={() => setViewCategory('agency')}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition ${
-            viewCategory === 'agency' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            viewCategory === 'agency' ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
           }`}
         >
           Planos Agency
@@ -177,8 +177,8 @@ export default function PlanoPage() {
           return (
             <div
               key={planId}
-              className={`relative flex flex-col rounded-2xl border bg-white p-6 shadow-sm transition ${
-                isCurrent ? 'border-primary-400 ring-2 ring-primary-200' : 'border-slate-200 hover:border-slate-300'
+              className={`relative flex flex-col rounded-2xl border bg-white dark:bg-navy p-6 shadow-sm transition ${
+                isCurrent ? 'border-primary-400 ring-2 ring-primary-200' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'
               }`}
             >
               {isTopPlan && !isCurrent && (
@@ -193,8 +193,8 @@ export default function PlanoPage() {
               )}
 
               <div className="mb-4 mt-2">
-                <h4 className="text-xl font-bold text-slate-900">{display.displayName}</h4>
-                <p className="mt-1 text-2xl font-semibold text-slate-800">
+                <h4 className="text-xl font-bold text-slate-900 dark:text-slate-100">{display.displayName}</h4>
+                <p className="mt-1 text-2xl font-semibold text-slate-800 dark:text-slate-200">
                   R$ {formatCurrency(display.price)}
                   <span className="text-sm font-normal text-slate-400">/{viewCategory === 'agency' ? 'projeto' : 'mes'}</span>
                 </p>
@@ -202,44 +202,44 @@ export default function PlanoPage() {
 
               {/* Limits */}
               <div className="mb-4 space-y-2 text-sm">
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Usuarios</span>
-                  <span className="font-semibold text-slate-800">{limits.maxUsers}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxUsers}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Contatos</span>
-                  <span className="font-semibold text-slate-800">{formatLimit(limits.maxContacts)}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.maxContacts)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Funis</span>
-                  <span className="font-semibold text-slate-800">{limits.maxFunnels}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxFunnels}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Acoes/mes</span>
-                  <span className="font-semibold text-slate-800">{formatLimit(limits.monthlyActions)}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.monthlyActions)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Minutos falados</span>
-                  <span className="font-semibold text-slate-800">{formatLimit(limits.monthlyMinutes)}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{formatLimit(limits.monthlyMinutes)}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Agentes simultaneos</span>
-                  <span className="font-semibold text-slate-800">{limits.maxConcurrentAgents}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxConcurrentAgents}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Numeros dedicados</span>
-                  <span className="font-semibold text-slate-800">{limits.maxNumbers}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxNumbers}</span>
                 </div>
-                <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2">
+                <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-navy/80 px-3 py-2">
                   <span className="text-slate-500">Cadencias</span>
-                  <span className="font-semibold text-slate-800">{limits.maxCadences === -1 ? 'Ilimitadas' : limits.maxCadences}</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{limits.maxCadences === -1 ? 'Ilimitadas' : limits.maxCadences}</span>
                 </div>
               </div>
 
               {/* Included features */}
               <ul className="mb-4 space-y-1.5 text-sm">
                 {Object.values(FEATURE_LABELS).map((label) => (
-                  <li key={label} className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700">{label}</span></li>
+                  <li key={label} className="flex items-center gap-2"><CheckIcon /><span className="text-slate-700 dark:text-slate-300">{label}</span></li>
                 ))}
               </ul>
 
@@ -251,7 +251,7 @@ export default function PlanoPage() {
               {/* Action Button */}
               <div className="mt-auto">
                 {isCurrent ? (
-                  <button disabled className="w-full cursor-not-allowed rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-400">
+                  <button disabled className="w-full cursor-not-allowed rounded-xl bg-slate-100 dark:bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-400">
                     Plano atual
                   </button>
                 ) : (
@@ -260,7 +260,7 @@ export default function PlanoPage() {
                     className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition active:scale-[0.98] ${
                       isUpgrade
                         ? 'bg-primary-600 text-white hover:bg-primary-700'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                     }`}
                   >
                     {isUpgrade ? 'Assinar plano' : 'Mudar para este plano'}

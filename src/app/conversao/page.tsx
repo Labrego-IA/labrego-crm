@@ -156,31 +156,31 @@ function ConversionTable({
   getTotalData: (stageId: string) => { rate: number; positive: number; total: number }
 }) {
   return (
-    <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 overflow-hidden">
+    <div className="rounded-2xl bg-white dark:bg-navy shadow-sm ring-1 ring-slate-200/80 overflow-hidden">
       {title && (
         <div className="border-b border-slate-100 px-5 py-3">
-          <h3 className="text-sm font-semibold text-slate-700">{title}</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">{title}</h3>
         </div>
       )}
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              <th className="sticky left-0 bg-slate-50 px-4 py-3 text-left z-10 min-w-[160px]">Etapa</th>
+            <tr className="bg-slate-50 dark:bg-navy/80 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <th className="sticky left-0 bg-slate-50 dark:bg-navy/80 px-4 py-3 text-left z-10 min-w-[160px]">Etapa</th>
               {periodKeys.map(pk => (
                 <th key={pk} className="px-3 py-3 text-center whitespace-nowrap min-w-[90px]">
                   {getPeriodLabel(pk, periodType)}
                 </th>
               ))}
-              <th className="px-4 py-3 text-center font-bold bg-slate-100 min-w-[90px]">Total</th>
+              <th className="px-4 py-3 text-center font-bold bg-slate-100 dark:bg-white/10 min-w-[90px]">Total</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {stages.map((stage) => {
               const total = getTotalData(stage.id)
               return (
-                <tr key={stage.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="sticky left-0 bg-white px-4 py-3 font-medium text-slate-800 z-10">
+                <tr key={stage.id} className="hover:bg-slate-50 dark:hover:bg-white/5/50 transition-colors">
+                  <td className="sticky left-0 bg-white dark:bg-navy px-4 py-3 font-medium text-slate-800 dark:text-slate-200 z-10">
                     {stage.name}
                   </td>
                   {periodKeys.map(pk => {
@@ -206,7 +206,7 @@ function ConversionTable({
                       </td>
                     )
                   })}
-                  <td className="px-4 py-3 text-center bg-slate-50/60">
+                  <td className="px-4 py-3 text-center bg-slate-50/60 dark:bg-navy/80">
                     <span className={`text-sm font-bold ${
                       total.total === 0
                         ? 'text-slate-300'
@@ -729,7 +729,7 @@ export default function ConversaoPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 dark:bg-navy/80">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
           <p className="text-sm text-slate-400">Carregando dados do funil...</p>
@@ -739,12 +739,12 @@ export default function ConversaoPage() {
   }
 
   return (
-    <div ref={pageRef} className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-6 overflow-x-hidden">
+    <div ref={pageRef} className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6 space-y-6 overflow-x-hidden">
 
       {/* ── HEADER ─────────────────────────────────────── */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-3">
             <div className="p-2.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl text-white shadow-lg shadow-primary-500/25">
               <FunnelIcon className="w-6 h-6" />
             </div>
@@ -755,13 +755,13 @@ export default function ConversaoPage() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Period presets */}
-          <div className="flex items-center gap-0.5 bg-white rounded-lg ring-1 ring-slate-200 p-0.5">
+          <div className="flex items-center gap-0.5 bg-white dark:bg-navy rounded-lg ring-1 ring-slate-200 p-0.5">
             {(['7d', '30d', '90d'] as const).map(p => (
               <button
                 key={p}
                 onClick={() => handlePeriodPreset(p)}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                  periodPreset === p ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+                  periodPreset === p ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
                 }`}
               >
                 {p}
@@ -770,7 +770,7 @@ export default function ConversaoPage() {
             <button
               onClick={() => handlePeriodPreset('custom')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                periodPreset === 'custom' ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'
+                periodPreset === 'custom' ? 'bg-primary-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
               }`}
             >
               Custom
@@ -784,19 +784,19 @@ export default function ConversaoPage() {
                 type="date"
                 value={dateRange.start.toISOString().split('T')[0]}
                 onChange={e => setDateRange(prev => ({ ...prev, start: new Date(e.target.value) }))}
-                className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-600"
+                className="rounded-lg border border-slate-200 dark:border-navy-mid px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400"
               />
               <span className="text-slate-400 text-xs">a</span>
               <input
                 type="date"
                 value={dateRange.end.toISOString().split('T')[0]}
                 onChange={e => setDateRange(prev => ({ ...prev, end: new Date(e.target.value) }))}
-                className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-600"
+                className="rounded-lg border border-slate-200 dark:border-navy-mid px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400"
               />
               <select
                 value={periodType}
                 onChange={e => setPeriodType(e.target.value as PeriodType)}
-                className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-600"
+                className="rounded-lg border border-slate-200 dark:border-navy-mid px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400"
               >
                 <option value="day">Dia</option>
                 <option value="week">Semana</option>
@@ -810,7 +810,7 @@ export default function ConversaoPage() {
             <select
               value={selectedFunnelId}
               onChange={e => setSelectedFunnelId(e.target.value)}
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 bg-white"
+              className="rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400 bg-white dark:bg-navy"
             >
               <option value="all">Todos os funis</option>
               {funnels.map(f => (
@@ -822,7 +822,7 @@ export default function ConversaoPage() {
           {/* Export */}
           <button
             onClick={handleExportExcel}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 transition"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-navy-mid bg-white dark:bg-navy px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition"
           >
             <ArrowDownTrayIcon className="w-3.5 h-3.5" />
             Excel
@@ -831,37 +831,37 @@ export default function ConversaoPage() {
       </div>
 
       {/* ── KPI CARDS ──────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="rounded-2xl bg-white dark:bg-navy p-5 shadow-sm ring-1 ring-slate-200/80">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
             <ArrowTrendingUpIcon className="w-4 h-4 text-primary-500" />
             Taxa de Conversao
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-800">{kpis.rate.toFixed(1)}%</p>
+          <p className="mt-2 text-3xl font-bold text-slate-800 dark:text-slate-200">{kpis.rate.toFixed(1)}%</p>
           <p className="mt-1 text-xs text-slate-400">{kpis.totalPositive} de {kpis.totalExited} saidas</p>
         </div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+        <div className="rounded-2xl bg-white dark:bg-navy p-5 shadow-sm ring-1 ring-slate-200/80">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
             <UsersIcon className="w-4 h-4 text-blue-500" />
             Leads Ativos
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-800">{kpis.uniqueLeads}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-800 dark:text-slate-200">{kpis.uniqueLeads}</p>
           <p className="mt-1 text-xs text-slate-400">no periodo selecionado</p>
         </div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+        <div className="rounded-2xl bg-white dark:bg-navy p-5 shadow-sm ring-1 ring-slate-200/80">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
             <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
             Conversoes Finais
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-800">{kpis.finalConversions}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-800 dark:text-slate-200">{kpis.finalConversions}</p>
           <p className="mt-1 text-xs text-slate-400">chegaram ao final do funil</p>
         </div>
-        <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+        <div className="rounded-2xl bg-white dark:bg-navy p-5 shadow-sm ring-1 ring-slate-200/80">
           <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
             <ChartBarIcon className="w-4 h-4 text-amber-500" />
             Periodos
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-800">{periodKeys.length}</p>
+          <p className="mt-2 text-3xl font-bold text-slate-800 dark:text-slate-200">{periodKeys.length}</p>
           <p className="mt-1 text-xs text-slate-400">{periodType === 'day' ? 'dias' : periodType === 'week' ? 'semanas' : 'meses'} com dados</p>
         </div>
       </div>
@@ -876,13 +876,13 @@ export default function ConversaoPage() {
       />
 
       {/* ── SEGMENTATION ──────────────────────────────── */}
-      <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/80 p-5 overflow-hidden">
+      <div className="rounded-2xl bg-white dark:bg-navy shadow-sm ring-1 ring-slate-200/80 p-5 overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-          <h2 className="text-base font-semibold text-slate-800 shrink-0">Segmentacao</h2>
+          <h2 className="text-base font-semibold text-slate-800 dark:text-slate-200 shrink-0">Segmentacao</h2>
           <select
             value={selectedSegment}
             onChange={e => setSelectedSegment(e.target.value as SegmentKey | '')}
-            className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 bg-white w-full sm:w-auto sm:min-w-[200px] sm:max-w-[280px] truncate"
+            className="rounded-lg border border-slate-200 dark:border-navy-mid px-3 py-2 text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-navy w-full sm:w-auto sm:min-w-[200px] sm:max-w-[280px] truncate"
           >
             <option value="">Selecione uma segmentacao...</option>
             {(Object.keys(SEGMENT_LABELS) as SegmentKey[]).map(key => (

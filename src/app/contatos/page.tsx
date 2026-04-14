@@ -1770,8 +1770,8 @@ export default function ContatosPage() {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Gestão de Contatos</h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Gestão de Contatos</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               {filteredClients.length} contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
               {hasActiveFilters && ' (filtrado)'}
             </p>
@@ -1784,7 +1784,7 @@ export default function ContatosPage() {
               className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl transition-all border ${
                 quickFunnelFilter === 'no-funnel'
                   ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
-                  : 'text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                  : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300'
               }`}
             >
               <FunnelIcon className="w-4 h-4" />
@@ -1794,7 +1794,7 @@ export default function ContatosPage() {
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl transition-colors"
               >
                 <Cross2Icon className="w-4 h-4" />
                 Limpar filtros
@@ -1807,7 +1807,7 @@ export default function ContatosPage() {
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   disabled={exporting}
-                  className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   title="Exportar contatos"
                 >
                   {exporting ? (
@@ -1821,11 +1821,11 @@ export default function ContatosPage() {
                 {showExportMenu && (
                   <>
                     <div className="fixed inset-0 z-[100]" onClick={() => setShowExportMenu(false)} />
-                    <div className="absolute right-0 mt-1 w-52 bg-white border border-slate-200 rounded-xl shadow-xl z-[101] overflow-hidden">
+                    <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl shadow-xl z-[101] overflow-hidden">
                       <button
                         onClick={() => { setShowExportMenu(false); handleExport() }}
                         disabled={filteredClients.length === 0}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <ArrowDownTrayIcon className="w-4 h-4 text-emerald-600" />
                         <div className="text-left">
@@ -1833,10 +1833,10 @@ export default function ContatosPage() {
                           <p className="text-xs text-slate-400">{filteredClients.length} contato{filteredClients.length !== 1 ? 's' : ''}</p>
                         </div>
                       </button>
-                      <div className="border-t border-slate-100" />
+                      <div className="border-t border-slate-100 dark:border-navy-mid" />
                       <button
                         onClick={() => { setShowExportMenu(false); handleDownloadTemplate() }}
-                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                       >
                         <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1856,7 +1856,7 @@ export default function ContatosPage() {
             {can('canCreateContacts') && (
               <button
                 onClick={() => guard(() => setShowImportModal(true))}
-                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-2 px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 hover:border-slate-300 rounded-xl transition-all shadow-sm"
                 title="Importar contatos"
               >
                 <ArrowUpTrayIcon className="w-4 h-4" />
@@ -1892,27 +1892,27 @@ export default function ContatosPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {/* Total Contacts Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5">
+        <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center">
               <UserGroupIcon className="w-6 h-6 text-primary-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Total de Contatos</p>
-              <p className="text-2xl font-bold text-slate-800">{filteredClients.length}</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total de Contatos</p>
+              <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">{filteredClients.length}</p>
             </div>
           </div>
         </div>
 
         {/* Active Clients Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-5">
+        <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
               <CheckBadgeIcon className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Clientes Ativos</p>
-              <p className="text-2xl font-bold text-slate-800">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Clientes Ativos</p>
+              <p className="text-2xl font-bold text-slate-800 dark:text-slate-200">
                 {filteredClients.filter(c => {
                   const stage = funnelStages.find(s => s.id === c.funnelStage)
                   return stage?.name === 'Ativo'
@@ -1941,7 +1941,7 @@ export default function ContatosPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => { setSelectedIds(new Set()); setAllFilteredSelected(false) }}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-white/60 rounded-xl transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -1992,13 +1992,13 @@ export default function ContatosPage() {
         {loading ? (
           <Skeleton variant="table-row" count={4} className="py-4" />
         ) : paginatedClients.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-8">
+          <div className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-8">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center">
                 <PersonIcon className="w-6 h-6 text-slate-400" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-slate-600">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   {!orgId ? 'Nenhuma organização encontrada' : 'Nenhum contato encontrado'}
                 </p>
                 <p className="text-xs text-slate-400 mt-1">
@@ -2021,7 +2021,7 @@ export default function ContatosPage() {
                 <div
                   key={client.id}
                   onClick={() => router.push(`/contatos/${client.id}`)}
-                  className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 active:bg-slate-50 transition-colors cursor-pointer"
+                  className="bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 p-4 active:bg-slate-50 dark:active:bg-white/5 transition-colors cursor-pointer"
                 >
                   {/* Top: Avatar + Name + Stage */}
                   <div className="flex items-center gap-3 mb-3">
@@ -2039,9 +2039,9 @@ export default function ContatosPage() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm text-slate-800 truncate">{client.name}</p>
+                      <p className="font-semibold text-sm text-slate-800 dark:text-slate-200 truncate">{client.name}</p>
                       {client.company && (
-                        <p className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 mt-0.5">
                           <BuildingOfficeIcon className="w-3 h-3 flex-shrink-0" />
                           {client.company}
                         </p>
@@ -2055,7 +2055,7 @@ export default function ContatosPage() {
                   </div>
 
                   {/* Info Row */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500 dark:text-slate-400">
                     {client.phone && (
                       <span className="flex items-center gap-1">
                         <MobileIcon className="w-3 h-3" />
@@ -2084,7 +2084,7 @@ export default function ContatosPage() {
                     )}
                     {client.leadType && (
                       <span className={`inline-flex items-center px-1.5 py-0 rounded-full text-[10px] font-medium border ${
-                        leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                        leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 dark:text-slate-300 border-slate-200'
                       }`}>
                         {client.leadType}
                       </span>
@@ -2093,7 +2093,7 @@ export default function ContatosPage() {
 
                   {/* Bottom: Days badges */}
                   {(daysInStage !== null || daysFollowUp !== null) && (
-                    <div className="flex gap-2 mt-2.5 pt-2.5 border-t border-slate-100">
+                    <div className="flex gap-2 mt-2.5 pt-2.5 border-t border-slate-100 dark:border-navy-mid">
                       {daysInStage !== null && (
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getDaysBadgeColor(daysInStage)}`}>
                           Na etapa: {formatDays(daysInStage)}
@@ -2113,22 +2113,22 @@ export default function ContatosPage() {
             {/* Mobile Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between py-3">
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   {((page - 1) * perPage) + 1}-{Math.min(page * perPage, filteredClients.length)} de {filteredClients.length}
                 </span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeftIcon className="w-4 h-4" />
                   </button>
-                  <span className="text-sm font-medium text-slate-600 px-2">{page}/{totalPages}</span>
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-400 px-2">{page}/{totalPages}</span>
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronRightIcon className="w-4 h-4" />
                   </button>
@@ -2140,7 +2140,7 @@ export default function ContatosPage() {
       </div>
 
       {/* Table Card (Desktop) */}
-      <div className="hidden md:block bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+      <div className="hidden md:block bg-white dark:bg-navy rounded-2xl shadow-sm border border-slate-200/60 dark:border-navy-mid/60 overflow-hidden">
         {loading ? (
           <Skeleton variant="table-row" count={8} className="py-4" />
         ) : (
@@ -2149,7 +2149,7 @@ export default function ContatosPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-slate-50 border-b border-slate-200/60">
+                  <tr className="bg-slate-50 dark:bg-navy/80 border-b border-slate-200/60 dark:border-navy-mid/60">
                     {/* Checkbox column */}
                     <th className="w-12 px-4 py-3">
                       <button
@@ -2175,13 +2175,13 @@ export default function ContatosPage() {
                     {columns.map((col) => (
                       <th
                         key={col.key}
-                        className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                        className="text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                       >
                         <div className="flex items-center gap-2">
                           {col.sortable ? (
                             <button
                               onClick={() => handleSort(col.key as keyof Cliente)}
-                              className="flex items-center gap-1.5 hover:text-slate-700 transition-colors group"
+                              className="flex items-center gap-1.5 hover:text-slate-700 dark:hover:text-slate-300 transition-colors group"
                             >
                               {col.label}
                               <span className={`transition-opacity ${sortConfig.key === col.key && sortConfig.direction ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'}`}>
@@ -2205,26 +2205,26 @@ export default function ContatosPage() {
                                 className={`p-1 rounded-md transition-colors ${
                                   columnFilters[col.key]
                                     ? 'text-primary-600 bg-primary-100'
-                                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
                                 }`}
                               >
                                 <FunnelIcon className="w-3.5 h-3.5" />
                               </button>
 
                               {activeFilterColumn === col.key && (
-                                <div className="absolute top-full left-0 mt-1 z-20 bg-white rounded-xl shadow-xl border border-slate-200 p-2 min-w-[200px]">
+                                <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-navy rounded-xl shadow-xl border border-slate-200 dark:border-navy-mid p-2 min-w-[200px]">
                                   <input
                                     type="text"
                                     value={columnFilters[col.key] || ''}
                                     onChange={(e) => handleFilter(col.key, e.target.value)}
                                     placeholder={`Filtrar ${col.label.toLowerCase()}...`}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                    className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                     autoFocus
                                   />
                                   {columnFilters[col.key] && (
                                     <button
                                       onClick={() => handleFilter(col.key, '')}
-                                      className="mt-2 w-full text-xs text-slate-500 hover:text-slate-700 py-1"
+                                      className="mt-2 w-full text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 py-1"
                                     >
                                       Limpar filtro
                                     </button>
@@ -2239,16 +2239,16 @@ export default function ContatosPage() {
                     <th className="w-12 px-4 py-3"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
                   {paginatedClients.length === 0 ? (
                     <tr>
                       <td colSpan={columns.length + 2} className="px-4 py-12 text-center">
                         <div className="flex flex-col items-center gap-3">
-                          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center">
                             <PersonIcon className="w-6 h-6 text-slate-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-slate-600">
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                               {!orgId ? 'Nenhuma organização encontrada' : 'Nenhum contato encontrado'}
                             </p>
                             <p className="text-xs text-slate-400 mt-1">
@@ -2267,7 +2267,7 @@ export default function ContatosPage() {
                       <tr
                         key={client.id}
                         onClick={() => router.push(`/contatos/${client.id}`)}
-                        className={`hover:bg-slate-50/50 transition-colors group cursor-pointer ${
+                        className={`hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group cursor-pointer ${
                           selectedIds.has(client.id) ? 'bg-primary-50' : ''
                         }`}
                       >
@@ -2305,7 +2305,7 @@ export default function ContatosPage() {
                                 {client.name?.charAt(0).toUpperCase()}
                               </div>
                             )}
-                            <span className="font-medium text-sm text-slate-800 truncate max-w-[180px]">
+                            <span className="font-medium text-sm text-slate-800 dark:text-slate-200 truncate max-w-[180px]">
                               {client.name}
                             </span>
                           </div>
@@ -2314,7 +2314,7 @@ export default function ContatosPage() {
                         {/* Empresa */}
                         <td className="px-4 py-2.5">
                           {client.company ? (
-                            <span className="text-sm text-slate-600 truncate max-w-[150px] block">
+                            <span className="text-sm text-slate-600 dark:text-slate-400 truncate max-w-[150px] block">
                               {client.company}
                             </span>
                           ) : (
@@ -2325,7 +2325,7 @@ export default function ContatosPage() {
                         {/* Telefone */}
                         <td className="px-4 py-2.5">
                           {client.phone ? (
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">
                               {client.phone}
                             </span>
                           ) : (
@@ -2346,7 +2346,7 @@ export default function ContatosPage() {
                                   className="w-4 h-4"
                                 />
                               )}
-                              <span className="text-xs text-slate-600">{client.leadSource}</span>
+                              <span className="text-xs text-slate-600 dark:text-slate-400">{client.leadSource}</span>
                             </div>
                           ) : (
                             <span className="text-sm text-slate-300"></span>
@@ -2357,7 +2357,7 @@ export default function ContatosPage() {
                         <td className="px-4 py-2.5">
                           {client.leadType ? (
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 dark:text-slate-300 border-slate-200'
                             }`}>
                               {client.leadType}
                             </span>
@@ -2428,9 +2428,9 @@ export default function ContatosPage() {
                                   setOpenActionsId(client.id)
                                 }
                               }}
-                              className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
+                              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
                             >
-                              <DotsHorizontalIcon className="w-4 h-4 text-slate-500" />
+                              <DotsHorizontalIcon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
                             </button>
 
                             {openActionsId === client.id && actionsPosition && (
@@ -2443,7 +2443,7 @@ export default function ContatosPage() {
                                   }}
                                 />
                                 <div
-                                  className="fixed z-[10000] bg-white rounded-xl shadow-2xl border border-slate-200 py-1.5 min-w-[180px]"
+                                  className="fixed z-[10000] bg-white dark:bg-navy rounded-xl shadow-2xl border border-slate-200 dark:border-navy-mid py-1.5 min-w-[180px]"
                                   style={{
                                     top: actionsPosition.top,
                                     left: actionsPosition.left,
@@ -2478,7 +2478,7 @@ export default function ContatosPage() {
                                     Enviar Email
                                   </button>
 
-                                  <div className="border-t border-slate-100 my-1" />
+                                  <div className="border-t border-slate-100 dark:border-navy-mid my-1" />
 
                                   {/* Registrar Follow-up */}
                                   <button
@@ -2511,7 +2511,7 @@ export default function ContatosPage() {
                                     Mudar Etapa
                                   </button>
 
-                                  <div className="border-t border-slate-100 my-1" />
+                                  <div className="border-t border-slate-100 dark:border-navy-mid my-1" />
 
                                   {/* Editar */}
                                   {can('canEditContacts') && (
@@ -2520,7 +2520,7 @@ export default function ContatosPage() {
                                         openEditModal(client)
                                         setActionsPosition(null)
                                       })}
-                                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                                     >
                                       <Pencil1Icon className="w-4 h-4" />
                                       Editar
@@ -2555,15 +2555,15 @@ export default function ContatosPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-sm text-slate-500">
+              <div className="px-4 py-3 border-t border-slate-100 dark:border-navy-mid flex items-center justify-between">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
                   Mostrando {((page - 1) * perPage) + 1} a {Math.min(page * perPage, filteredClients.length)} de {filteredClients.length}
                 </span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronLeftIcon className="w-4 h-4" />
                   </button>
@@ -2585,7 +2585,7 @@ export default function ContatosPage() {
                         className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                           page === pageNum
                             ? 'bg-primary-600 text-white'
-                            : 'hover:bg-slate-100 text-slate-600'
+                            : 'hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400'
                         }`}
                       >
                         {pageNum}
@@ -2595,7 +2595,7 @@ export default function ContatosPage() {
                   <button
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
-                    className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   >
                     <ChevronRightIcon className="w-4 h-4" />
                   </button>
@@ -2621,25 +2621,25 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={handleCloseModal}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white dark:bg-navy border-b border-slate-100 dark:border-navy-mid px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <PersonIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800">
+                  <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">
                     {editingId ? 'Editar Contato' : 'Novo Contato'}
                   </h2>
-                  <p className="text-xs text-slate-500">Preencha os dados do contato</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Preencha os dados do contato</p>
                 </div>
               </div>
               <button
                 onClick={handleCloseModal}
-                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
-                <Cross2Icon className="w-5 h-5 text-slate-500" />
+                <Cross2Icon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               </button>
             </div>
 
@@ -2661,7 +2661,7 @@ export default function ContatosPage() {
                   </div>
                 )}
                 <div>
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 cursor-pointer transition-colors">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -2674,14 +2674,14 @@ export default function ContatosPage() {
                     />
                     Alterar foto
                   </label>
-                  <p className="text-xs text-slate-500 mt-1">JPG, PNG ou GIF</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">JPG, PNG ou GIF</p>
                 </div>
               </div>
 
               {/* Form fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Nome <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -2691,13 +2691,13 @@ export default function ContatosPage() {
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Nome do contato"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Telefone <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -2707,13 +2707,13 @@ export default function ContatosPage() {
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
                       placeholder="(00) 00000-0000"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
                   <div className="relative">
                     <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -2721,13 +2721,13 @@ export default function ContatosPage() {
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder="email@exemplo.com"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Empresa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Empresa</label>
                   <div className="relative">
                     <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -2735,19 +2735,19 @@ export default function ContatosPage() {
                       value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })}
                       placeholder="Nome da empresa"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Pessoa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Pessoa</label>
                   <div className="flex gap-2 mb-2">
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, personType: 'pf', document: '' })}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                        (form.personType || 'pf') === 'pf' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white text-slate-500 border-slate-200'
+                        (form.personType || 'pf') === 'pf' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-navy text-slate-500 dark:text-slate-400 border-slate-200 dark:border-navy-mid'
                       }`}
                     >
                       Pessoa Fisica
@@ -2756,7 +2756,7 @@ export default function ContatosPage() {
                       type="button"
                       onClick={() => setForm({ ...form, personType: 'pj', document: '' })}
                       className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                        form.personType === 'pj' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white text-slate-500 border-slate-200'
+                        form.personType === 'pj' ? 'bg-cyan-50 text-cyan-700 border-cyan-300' : 'bg-white dark:bg-navy text-slate-500 dark:text-slate-400 border-slate-200 dark:border-navy-mid'
                       }`}
                     >
                       Pessoa Juridica
@@ -2767,27 +2767,27 @@ export default function ContatosPage() {
                     value={form.document}
                     onChange={(e) => setForm({ ...form, document: form.personType === 'pj' ? maskCNPJ(e.target.value) : maskCPF(e.target.value) })}
                     placeholder={form.personType === 'pj' ? '00.000.000/0000-00' : '000.000.000-00'}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ramo de atuação</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ramo de atuação</label>
                   <input
                     type="text"
                     value={form.industry}
                     onChange={(e) => setForm({ ...form, industry: e.target.value })}
                     placeholder="Ex: Tecnologia, Varejo..."
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Origem do Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Origem do Lead</label>
                   <select
                     value={form.leadSource}
                     onChange={(e) => setForm({ ...form, leadSource: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
                   >
                     <option value="">Selecione...</option>
                     {leadSourceOptions.map((opt) => (
@@ -2797,11 +2797,11 @@ export default function ContatosPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Lead</label>
                   <select
                     value={form.leadType}
                     onChange={(e) => setForm({ ...form, leadType: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
                   >
                     <option value="">Selecione...</option>
                     {leadTypeOptions.map((opt) => (
@@ -2811,7 +2811,7 @@ export default function ContatosPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Responsável</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Responsável</label>
                   <MemberSelector
                     value={form.assignedTo || null}
                     valueName={form.assignedToName || null}
@@ -2822,11 +2822,11 @@ export default function ContatosPage() {
 
                 {costCenters.length > 0 && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Centro de Custos</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Centro de Custos</label>
                     <select
                       value={form.costCenterId}
                       onChange={(e) => setForm({ ...form, costCenterId: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-navy"
                     >
                       <option value="">Selecione...</option>
                       {costCenters.map((cc) => (
@@ -2837,43 +2837,43 @@ export default function ContatosPage() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Aniversário</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Aniversário</label>
                   <input
                     type="date"
                     value={form.birthday}
                     onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Alerta de retorno</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alerta de retorno</label>
                   <input
                     type="date"
                     value={form.returnAlert}
                     onChange={(e) => setForm({ ...form, returnAlert: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Descrição</label>
                   <textarea
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Descrição da empresa ou notas sobre o contato..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 dark:bg-navy/80 border-t border-slate-100 dark:border-navy-mid px-6 py-4 flex items-center justify-end gap-3">
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2913,23 +2913,23 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setDeleteId(null)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Excluir contato</h3>
-                <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Excluir contato</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Esta ação não pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir este contato? Todos os dados associados serão removidos permanentemente.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2951,24 +2951,24 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => !deletingBulk && setShowBulkDeleteModal(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Excluir {selectedIds.size} contatos</h3>
-                <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Excluir {selectedIds.size} contatos</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Esta ação não pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir <span className="font-semibold text-red-600">{selectedIds.size}</span> {selectedIds.size === 1 ? 'contato' : 'contatos'}? Todos os dados associados serão removidos permanentemente.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowBulkDeleteModal(false)}
                 disabled={deletingBulk}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -3001,24 +3001,24 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => !savingBulkMove && setShowBulkMoveModal(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
                 <FunnelIcon className="w-6 h-6 text-primary-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Mover {selectedIds.size} contatos</h3>
-                <p className="text-sm text-slate-500">Selecione o funil e a etapa de destino</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Mover {selectedIds.size} contatos</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Selecione o funil e a etapa de destino</p>
               </div>
             </div>
 
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Funil</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Funil</label>
                 <select
                   value={bulkFunnelId}
                   onChange={(e) => { setBulkFunnelId(e.target.value); setBulkStageId('') }}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
+                  className="w-full border border-slate-200 dark:border-navy-mid rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-navy focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
                 >
                   <option value="">Selecione um funil</option>
                   {funnels.map(f => (
@@ -3029,11 +3029,11 @@ export default function ContatosPage() {
 
               {bulkFunnelId && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Etapa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Etapa</label>
                   <select
                     value={bulkStageId}
                     onChange={(e) => setBulkStageId(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
+                    className="w-full border border-slate-200 dark:border-navy-mid rounded-xl px-3 py-2.5 text-sm dark:text-slate-100 bg-white dark:bg-navy focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
                   >
                     <option value="">Selecione uma etapa</option>
                     {bulkStagesForFunnel.map(s => (
@@ -3048,7 +3048,7 @@ export default function ContatosPage() {
               <button
                 onClick={() => setShowBulkMoveModal(false)}
                 disabled={savingBulkMove}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -3081,21 +3081,21 @@ export default function ContatosPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setStageChangeClient(null)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm m-4 max-h-[70vh] flex flex-col">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-sm m-4 max-h-[70vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-slate-100">
+            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-navy-mid">
               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-slate-800">Mudar Etapa</h3>
-                <p className="text-xs text-slate-500 truncate">{stageChangeClient.name}</p>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Mudar Etapa</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{stageChangeClient.name}</p>
               </div>
               <button
                 onClick={() => setStageChangeClient(null)}
-                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
@@ -3115,7 +3115,7 @@ export default function ContatosPage() {
                         w-full flex items-center gap-2 px-3 py-2 rounded-lg border transition-all text-left
                         ${isSelected
                           ? 'border-primary-500 bg-primary-50'
-                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                          : 'border-slate-200 dark:border-navy-mid hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'
                         }
                       `}
                     >
@@ -3132,10 +3132,10 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
               <button
                 onClick={() => setStageChangeClient(null)}
-                className="px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -3171,24 +3171,24 @@ export default function ContatosPage() {
               setFollowUpNote('')
             }}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4 max-h-[85vh] flex flex-col">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-lg m-4 max-h-[85vh] flex flex-col">
             {/* Header */}
-            <div className="flex items-center gap-3 p-4 border-b border-slate-100">
+            <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-navy-mid">
               <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-slate-800">Follow-up</h3>
-                <p className="text-xs text-slate-500 truncate">{followUpClient.name}</p>
+                <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Follow-up</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{followUpClient.name}</p>
               </div>
               <button
                 onClick={() => {
                   setFollowUpClient(null)
                   setFollowUpNote('')
                 }}
-                className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
@@ -3197,8 +3197,8 @@ export default function ContatosPage() {
             {/* Content - Scrollable */}
             <div className="flex-1 overflow-y-auto">
               {/* New follow-up form */}
-              <div className="p-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+              <div className="p-4 bg-gradient-to-br from-primary-50/50 to-purple-50/50 border-b border-slate-100 dark:border-navy-mid">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Novo follow-up
                 </label>
                 <textarea
@@ -3206,7 +3206,7 @@ export default function ContatosPage() {
                   onChange={(e) => setFollowUpNote(e.target.value)}
                   placeholder="Descreva o que foi conversado..."
                   rows={3}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none bg-white"
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-navy-mid rounded-xl text-sm dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none bg-white dark:bg-navy"
                 />
                 <div className="flex justify-end mt-3">
                   <button
@@ -3231,7 +3231,7 @@ export default function ContatosPage() {
 
               {/* Follow-up history */}
               <div className="p-4">
-                <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                   <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -3244,12 +3244,12 @@ export default function ContatosPage() {
                   </div>
                 ) : clientFollowUps.length === 0 ? (
                   <div className="text-center py-8">
-                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center mx-auto mb-3">
                       <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
                     </div>
-                    <p className="text-sm text-slate-500">Nenhum follow-up registrado</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Nenhum follow-up registrado</p>
                     <p className="text-xs text-slate-400 mt-1">Registre o primeiro acima</p>
                   </div>
                 ) : (
@@ -3262,10 +3262,10 @@ export default function ContatosPage() {
                         {/* Timeline dot and line */}
                         <div className="absolute left-0 top-1.5 w-3 h-3 rounded-full bg-primary-500 ring-4 ring-primary-100" />
                         {index < clientFollowUps.length - 1 && (
-                          <div className="absolute left-[5px] top-5 w-0.5 h-full bg-slate-200" />
+                          <div className="absolute left-[5px] top-5 w-0.5 h-full bg-slate-200 dark:bg-navy-mid" />
                         )}
 
-                        <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+                        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl p-3 shadow-sm">
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-medium text-primary-600">
@@ -3276,7 +3276,7 @@ export default function ContatosPage() {
                                 })}
                               </span>
                               {followUp.author && (
-                                <span className="text-xs text-slate-500">
+                                <span className="text-xs text-slate-500 dark:text-slate-400">
                                   • {followUp.author}
                                 </span>
                               )}
@@ -3289,7 +3289,7 @@ export default function ContatosPage() {
                             </span>
                           </div>
                           {followUp.text ? (
-                            <p className="text-sm text-slate-600">{followUp.text}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{followUp.text}</p>
                           ) : (
                             <p className="text-sm text-slate-400 italic">Follow-up registrado sem nota</p>
                           )}
@@ -3302,13 +3302,13 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end p-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-end p-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
               <button
                 onClick={() => {
                   setFollowUpClient(null)
                   setFollowUpNote('')
                 }}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
               >
                 Fechar
               </button>
@@ -3330,16 +3330,16 @@ export default function ContatosPage() {
               setImportStageId('')
             }}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-navy-mid">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-200">
                   <ArrowUpTrayIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Importar Contatos</h3>
-                  <p className="text-xs text-slate-500">Carregue um arquivo CSV ou Excel (.xlsx) com seus contatos</p>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Importar Contatos</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Carregue um arquivo CSV ou Excel (.xlsx) com seus contatos</p>
                 </div>
               </div>
               {!importing && (
@@ -3351,7 +3351,7 @@ export default function ContatosPage() {
                     setImportFunnelId('')
                     setImportStageId('')
                   }}
-                  className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                 >
                   <Cross2Icon className="w-4 h-4 text-slate-400" />
                 </button>
@@ -3364,12 +3364,12 @@ export default function ContatosPage() {
                 <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-6">
                   <ArrowUpTrayIcon className="w-8 h-8 text-emerald-600 animate-pulse" />
                 </div>
-                <h4 className="text-lg font-bold text-slate-800 mb-1">Importando contatos...</h4>
-                <p className="text-sm text-slate-500 mb-6">
+                <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Importando contatos...</h4>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
                   {importProgress.current} de {importProgress.total} contato{importProgress.total !== 1 ? 's' : ''}
                 </p>
                 <div className="w-full max-w-xs">
-                  <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                  <div className="w-full bg-slate-200 dark:bg-navy-mid rounded-full h-3 overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-300 ease-out"
                       style={{ width: `${importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%` }}
@@ -3390,7 +3390,7 @@ export default function ContatosPage() {
                 <div className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                   importFile
                     ? 'border-emerald-300 bg-emerald-50'
-                    : 'border-slate-200 hover:border-primary-300 hover:bg-primary-50/50'
+                    : 'border-slate-200 dark:border-navy-mid hover:border-primary-300 hover:bg-primary-50/50'
                 }`}>
                   <input
                     type="file"
@@ -3403,16 +3403,16 @@ export default function ContatosPage() {
                       <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
                         <CheckIcon className="w-6 h-6 text-emerald-600" />
                       </div>
-                      <p className="text-sm font-medium text-slate-700">{importFile.name}</p>
-                      <p className="text-xs text-slate-500">Arquivo selecionado</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{importFile.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Arquivo selecionado</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center mx-auto">
                         <ArrowUpTrayIcon className="w-6 h-6 text-slate-400" />
                       </div>
-                      <p className="text-sm font-medium text-slate-700">Clique ou arraste um arquivo CSV ou Excel</p>
-                      <p className="text-xs text-slate-500">Colunas aceitas: Nome/Razao Social, Telefone, Email, Empresa, Ramo, CNPJ, Socios, Endereco e mais</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Clique ou arraste um arquivo CSV ou Excel</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Colunas aceitas: Nome/Razao Social, Telefone, Email, Empresa, Ramo, CNPJ, Socios, Endereco e mais</p>
                     </div>
                   )}
                 </div>
@@ -3421,23 +3421,23 @@ export default function ContatosPage() {
               {/* Preview */}
               {importPreview.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-3">Pré-visualização (primeiros 5)</h4>
-                  <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Pré-visualização (primeiros 5)</h4>
+                  <div className="overflow-x-auto border border-slate-200 dark:border-navy-mid rounded-xl">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-slate-50">
+                        <tr className="bg-slate-50 dark:bg-navy/80">
                           {Object.keys(importPreview[0]).slice(0, 5).map((key) => (
-                            <th key={key} className="px-3 py-2 text-left text-xs font-semibold text-slate-500 uppercase">
+                            <th key={key} className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
                               {key}
                             </th>
                           ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
                         {importPreview.map((row, idx) => (
                           <tr key={idx}>
                             {Object.values(row).slice(0, 5).map((val, vidx) => (
-                              <td key={vidx} className="px-3 py-2 text-slate-600 truncate max-w-[150px]">
+                              <td key={vidx} className="px-3 py-2 text-slate-600 dark:text-slate-400 truncate max-w-[150px]">
                                 {val || '-'}
                               </td>
                             ))}
@@ -3451,22 +3451,22 @@ export default function ContatosPage() {
 
               {/* Funnel destination */}
               {funnels.length > 0 && (
-                <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="mt-6 p-4 bg-slate-50 dark:bg-navy/80 rounded-xl border border-slate-200 dark:border-navy-mid">
                   <div className="flex items-center gap-2 mb-3">
                     <FunnelIcon className="w-4 h-4 text-primary" />
-                    <p className="text-sm font-semibold text-slate-700">Destino no funil</p>
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Destino no funil</p>
                     <span className="text-xs text-slate-400">(opcional)</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Funil</label>
+                      <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Funil</label>
                       <select
                         value={importFunnelId}
                         onChange={(e) => {
                           setImportFunnelId(e.target.value)
                           setImportStageId('')
                         }}
-                        className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                       >
                         <option value="">Nenhum</option>
                         {funnels.map((f) => (
@@ -3475,12 +3475,12 @@ export default function ContatosPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-500 mb-1">Etapa</label>
+                      <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Etapa</label>
                       <select
                         value={importStageId}
                         onChange={(e) => setImportStageId(e.target.value)}
                         disabled={!importFunnelId}
-                        className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg dark:text-slate-100 bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <option value="">Selecione a etapa</option>
                         {importStagesForFunnel.map((s) => (
@@ -3521,7 +3521,7 @@ export default function ContatosPage() {
 
             {/* Footer */}
             {!importing && (
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
                 <button
                   onClick={() => {
                     setShowImportModal(false)
@@ -3530,7 +3530,7 @@ export default function ContatosPage() {
                     setImportFunnelId('')
                     setImportStageId('')
                   }}
-                  className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
+                  className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>
@@ -3552,22 +3552,22 @@ export default function ContatosPage() {
       {importResult && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setImportResult(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 fade-in duration-200">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 fade-in duration-200">
             <div className="p-8 text-center">
               {importResult.success ? (
                 <>
                   <div className={`w-16 h-16 rounded-full ${importResult.count > 0 ? 'bg-emerald-100' : 'bg-amber-100'} flex items-center justify-center mx-auto mb-4`}>
                     <CheckIcon className={`w-8 h-8 ${importResult.count > 0 ? 'text-emerald-600' : 'text-amber-600'}`} />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">
                     {importResult.count > 0 ? 'Importação concluída!' : 'Nenhum contato importado'}
                   </h3>
                   {importResult.count > 0 ? (
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                       <span className="font-semibold text-emerald-600">{importResult.count}</span> contato{importResult.count !== 1 ? 's' : ''} importado{importResult.count !== 1 ? 's' : ''} com sucesso.
                     </p>
                   ) : (
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                       {importResult.totalParsed === 0
                         ? 'O arquivo não contém dados. Verifique se há linhas preenchidas após o cabeçalho.'
                         : (importResult.totalValid === 0
@@ -3588,8 +3588,8 @@ export default function ContatosPage() {
                   <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
                     <Cross2Icon className="w-8 h-8 text-red-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">Erro na importação</h3>
-                  <p className="text-sm text-slate-500">Ocorreu um erro ao importar os contatos. Verifique o arquivo e tente novamente.</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Erro na importação</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Ocorreu um erro ao importar os contatos. Verifique o arquivo e tente novamente.</p>
                   {importResult.debug && (
                     <p className="text-xs text-red-400 mt-2 break-all">{importResult.debug}</p>
                   )}
@@ -3624,16 +3624,16 @@ export default function ContatosPage() {
               setPartnersResult(null)
             }}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+          <div className="relative bg-white dark:bg-navy rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-navy-mid">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <UsersIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Importar Sócios</h3>
-                  <p className="text-xs text-slate-500">Adicione sócios aos contatos via CNPJ</p>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Importar Sócios</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Adicione sócios aos contatos via CNPJ</p>
                 </div>
               </div>
               <button
@@ -3643,7 +3643,7 @@ export default function ContatosPage() {
                   setPartnersPreview([])
                   setPartnersResult(null)
                 }}
-                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
@@ -3684,7 +3684,7 @@ export default function ContatosPage() {
                 <div className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
                   partnersFile
                     ? 'border-primary-300 bg-primary-50'
-                    : 'border-slate-200 hover:border-primary-300 hover:bg-primary-50/50'
+                    : 'border-slate-200 dark:border-navy-mid hover:border-primary-300 hover:bg-primary-50/50'
                 }`}>
                   <input
                     type="file"
@@ -3697,16 +3697,16 @@ export default function ContatosPage() {
                       <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mx-auto">
                         <CheckIcon className="w-6 h-6 text-primary-600" />
                       </div>
-                      <p className="text-sm font-medium text-slate-700">{partnersFile.name}</p>
-                      <p className="text-xs text-slate-500">Arquivo selecionado</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{partnersFile.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Arquivo selecionado</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto">
+                      <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center mx-auto">
                         <UsersIcon className="w-6 h-6 text-slate-400" />
                       </div>
-                      <p className="text-sm font-medium text-slate-700">Clique ou arraste um arquivo CSV/Excel</p>
-                      <p className="text-xs text-slate-500">Colunas: CNPJ, Sócios</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Clique ou arraste um arquivo CSV/Excel</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Colunas: CNPJ, Sócios</p>
                     </div>
                   )}
                 </div>
@@ -3715,20 +3715,20 @@ export default function ContatosPage() {
               {/* Preview */}
               {partnersPreview.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-3">Pré-visualização (primeiros 5)</h4>
-                  <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Pré-visualização (primeiros 5)</h4>
+                  <div className="overflow-x-auto border border-slate-200 dark:border-navy-mid rounded-xl">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-slate-50">
-                          <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 uppercase">CNPJ</th>
-                          <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 uppercase">Sócios</th>
+                        <tr className="bg-slate-50 dark:bg-navy/80">
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">CNPJ</th>
+                          <th className="px-3 py-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Sócios</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100">
+                      <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
                         {partnersPreview.map((row, idx) => (
                           <tr key={idx}>
-                            <td className="px-3 py-2 text-slate-600 font-mono text-xs">{row.cnpj}</td>
-                            <td className="px-3 py-2 text-slate-600 truncate max-w-[300px]">{row.partners}</td>
+                            <td className="px-3 py-2 text-slate-600 dark:text-slate-400 font-mono text-xs">{row.cnpj}</td>
+                            <td className="px-3 py-2 text-slate-600 dark:text-slate-400 truncate max-w-[300px]">{row.partners}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -3758,7 +3758,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-navy-mid bg-slate-50/50 dark:bg-navy/50">
               <button
                 onClick={() => {
                   setShowPartnersModal(false)
@@ -3766,7 +3766,7 @@ export default function ContatosPage() {
                   setPartnersPreview([])
                   setPartnersResult(null)
                 }}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-white/10 rounded-xl transition-colors"
               >
                 {partnersResult ? 'Fechar' : 'Cancelar'}
               </button>

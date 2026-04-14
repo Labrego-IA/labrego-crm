@@ -405,14 +405,14 @@ export default function FunnelHubPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+      <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6">
         <div className="mb-8">
           <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
           <div className="h-4 w-32 bg-slate-200 rounded mt-2 animate-pulse" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 h-44 animate-pulse">
+            <div key={i} className="bg-white dark:bg-navy rounded-xl border border-slate-200 dark:border-navy-mid p-6 h-44 animate-pulse">
               <div className="h-5 w-32 bg-slate-200 rounded" />
               <div className="h-4 w-24 bg-slate-200 rounded mt-3" />
             </div>
@@ -424,7 +424,7 @@ export default function FunnelHubPage() {
 
   // Main render - Funnel Hub
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
+    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6" onClick={() => setOpenMenuId(null)}>
       <div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -472,7 +472,7 @@ export default function FunnelHubPage() {
             return (
               <div
                 key={funnel.id}
-                className="group bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all cursor-pointer relative"
+                className="group bg-white dark:bg-navy rounded-xl border border-slate-200 dark:border-navy-mid hover:border-slate-300 hover:shadow-md transition-all cursor-pointer relative"
                 onClick={() => router.push(`/funil/${funnel.id}`)}
               >
                 {/* Color bar */}
@@ -503,19 +503,19 @@ export default function FunnelHubPage() {
                             e.stopPropagation()
                             setOpenMenuId(openMenuId === funnel.id ? null : funnel.id)
                           }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 opacity-0 group-hover:opacity-100 transition-all"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all"
                         >
                           <DotsVerticalIcon className="w-4 h-4" />
                         </button>
 
                         {openMenuId === funnel.id && (
                           <div
-                            className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-30 min-w-[140px]"
+                            className="absolute right-0 top-8 bg-white dark:bg-navy rounded-lg shadow-lg border border-slate-200 dark:border-navy-mid py-1 z-30 min-w-[140px]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <button
                               onClick={() => openEditModal(funnel)}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                             >
                               <Pencil1Icon className="w-3.5 h-3.5" />
                               Editar
@@ -558,7 +558,7 @@ export default function FunnelHubPage() {
                       {icpsByFunnel[funnel.id].map((icp, idx) => (
                         <span
                           key={idx}
-                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"
+                          className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400"
                         >
                           <span
                             className="w-2 h-2 rounded-full flex-shrink-0"
@@ -603,7 +603,7 @@ export default function FunnelHubPage() {
 
         return (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => !saving && setDeletingFunnel(null)}>
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-navy rounded-xl shadow-xl w-full max-w-md mx-4 overflow-hidden" onClick={e => e.stopPropagation()}>
 
               {/* Progress screen */}
               {saving && deleteProgress && (
@@ -638,7 +638,7 @@ export default function FunnelHubPage() {
                   <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-center text-slate-900 mb-1">Excluir funil</h3>
+                  <h3 className="text-lg font-semibold text-center text-slate-900 dark:text-slate-100 mb-1">Excluir funil</h3>
                   <p className="text-sm text-center text-slate-500 mb-5">
                     Tem certeza que deseja excluir <strong>{deletingFunnel.name}</strong>?
                   </p>
@@ -652,10 +652,10 @@ export default function FunnelHubPage() {
                   {/* Options only if there are contacts AND other funnels */}
                   {canMove && (
                     <div className="space-y-3 mb-5">
-                      <p className="text-sm font-medium text-slate-700">O que fazer com os contatos?</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">O que fazer com os contatos?</p>
 
                       {/* Option: Move */}
-                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'move' ? 'border-primary-300 bg-primary-50/50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'move' ? 'border-primary-300 bg-primary-50/50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'}`}>
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'move'} onChange={() => setDeleteMode('move')} className="text-primary-600" />
                           <span className="text-sm font-medium text-slate-800">Mover para outro funil</span>
@@ -669,7 +669,7 @@ export default function FunnelHubPage() {
                               <select
                                 value={destFunnelId}
                                 onChange={e => { setDestFunnelId(e.target.value); setDestStageId('') }}
-                                className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                                className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                               >
                                 <option value="">Selecionar funil...</option>
                                 {otherFunnels.map(f => (
@@ -681,25 +681,25 @@ export default function FunnelHubPage() {
                             {destFunnelId && (
                               <div className="space-y-2">
                                 {/* Mirror option */}
-                                <label className={`flex items-start gap-2 p-2 rounded-lg cursor-pointer transition-all ${destMode === 'mirror' ? 'bg-primary-50' : 'hover:bg-slate-50'}`}>
+                                <label className={`flex items-start gap-2 p-2 rounded-lg cursor-pointer transition-all ${destMode === 'mirror' ? 'bg-primary-50' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
                                   <input type="radio" checked={destMode === 'mirror'} onChange={() => setDestMode('mirror')} className="mt-0.5 text-primary-600" />
                                   <div>
-                                    <span className="text-sm font-medium text-slate-700">Espelhar etapas</span>
+                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Espelhar etapas</span>
                                     <p className="text-xs text-slate-400">Cada contato vai para a etapa equivalente por posicao</p>
                                   </div>
                                 </label>
 
                                 {/* Single stage option */}
-                                <label className={`flex items-start gap-2 p-2 rounded-lg cursor-pointer transition-all ${destMode === 'single' ? 'bg-primary-50' : 'hover:bg-slate-50'}`}>
+                                <label className={`flex items-start gap-2 p-2 rounded-lg cursor-pointer transition-all ${destMode === 'single' ? 'bg-primary-50' : 'hover:bg-slate-50 dark:hover:bg-white/5'}`}>
                                   <input type="radio" checked={destMode === 'single'} onChange={() => setDestMode('single')} className="mt-0.5 text-primary-600" />
                                   <div className="flex-1">
-                                    <span className="text-sm font-medium text-slate-700">Etapa unica</span>
+                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Etapa unica</span>
                                     <p className="text-xs text-slate-400 mb-2">Todos os contatos vao para uma mesma etapa</p>
                                     {destMode === 'single' && (
                                       <select
                                         value={destStageId}
                                         onChange={e => setDestStageId(e.target.value)}
-                                        className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
+                                        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-navy-mid rounded-lg bg-white dark:bg-navy focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30"
                                       >
                                         <option value="">Selecionar etapa...</option>
                                         {destStages.map(s => (
@@ -716,7 +716,7 @@ export default function FunnelHubPage() {
                       </label>
 
                       {/* Option: Discard */}
-                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'discard' ? 'border-red-300 bg-red-50/50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'discard' ? 'border-red-300 bg-red-50/50' : 'border-slate-200 dark:border-navy-mid hover:border-slate-300'}`}>
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'discard'} onChange={() => setDeleteMode('discard')} className="text-red-600" />
                           <div>
@@ -743,7 +743,7 @@ export default function FunnelHubPage() {
                   <div className="flex gap-3">
                     <button
                       onClick={() => setDeletingFunnel(null)}
-                      className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                      className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/10 rounded-lg hover:bg-slate-200 transition-colors"
                     >
                       Cancelar
                     </button>
@@ -773,12 +773,12 @@ export default function FunnelHubPage() {
 
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={close}>
-        <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
+        <div className="bg-white dark:bg-navy rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
               {isEdit ? 'Editar Funil' : 'Novo Funil'}
             </h3>
-            <button onClick={close} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+            <button onClick={close} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
               <Cross2Icon className="w-4 h-4" />
             </button>
           </div>
@@ -786,7 +786,7 @@ export default function FunnelHubPage() {
           <div className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Nome *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome *</label>
               <input
                 type="text"
                 value={formName}
@@ -799,7 +799,7 @@ export default function FunnelHubPage() {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Descricao</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descricao</label>
               <textarea
                 value={formDescription}
                 onChange={e => setFormDescription(e.target.value)}
@@ -811,7 +811,7 @@ export default function FunnelHubPage() {
 
             {/* Color */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Cor</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Cor</label>
               <div className="flex flex-wrap gap-2">
                 {FUNNEL_COLORS.map(color => (
                   <button
@@ -829,7 +829,7 @@ export default function FunnelHubPage() {
             {/* Stages/Colunas - apenas na criacao */}
             {!isEdit && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Colunas do Funil</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Colunas do Funil</label>
                 <div className="space-y-2">
                   {formStages.map((stage, idx) => (
                     <div key={idx} className="flex items-center gap-2">
@@ -859,7 +859,7 @@ export default function FunnelHubPage() {
                   ))}
                   <button
                     onClick={() => setFormStages([...formStages, ''])}
-                    className="w-full px-3 py-2 text-sm text-primary-600 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="w-full px-3 py-2 text-sm text-primary-600 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     + Adicionar coluna
                   </button>
@@ -871,7 +871,7 @@ export default function FunnelHubPage() {
           <div className="flex gap-3 mt-6">
             <button
               onClick={close}
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+              className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/10 rounded-lg hover:bg-slate-200 transition-colors"
             >
               Cancelar
             </button>

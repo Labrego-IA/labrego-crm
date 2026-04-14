@@ -260,7 +260,7 @@ export default function PerfilPage() {
   const infoTab = (
     <div className="space-y-6">
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm overflow-hidden">
         <div className={`h-28 relative ${isPartnerView ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500' : 'bg-gradient-to-r from-primary-600 via-primary-500 to-accent'}`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-50" />
         </div>
@@ -268,7 +268,7 @@ export default function PerfilPage() {
         <div className="px-6 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-14">
             <div className="relative group">
-              <div className="w-28 h-28 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-slate-100 flex-shrink-0">
+              <div className="w-28 h-28 rounded-2xl border-4 border-white shadow-lg overflow-hidden bg-slate-100 dark:bg-white/10 flex-shrink-0">
                 {displayPhoto ? (
                   <Image
                     src={displayPhoto}
@@ -312,7 +312,7 @@ export default function PerfilPage() {
             </div>
 
             <div className="flex-1 pb-1">
-              <h2 className="text-xl font-bold text-slate-900">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                 {member?.displayName || userDisplayName || userEmail?.split('@')[0] || 'Usuário'}
               </h2>
               <div className="flex items-center gap-2 mt-1">
@@ -345,8 +345,8 @@ export default function PerfilPage() {
       </div>
 
       {/* Account Info */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm p-6">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
@@ -392,8 +392,8 @@ export default function PerfilPage() {
 
       {/* Permissions */}
       {member?.permissions && (
-        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-          <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm p-6">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
@@ -403,7 +403,7 @@ export default function PerfilPage() {
           <div className="space-y-3">
             <div>
               <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">Escopo de visualização</span>
-              <p className="text-sm text-slate-700 mt-0.5">
+              <p className="text-sm text-slate-700 dark:text-slate-300 mt-0.5">
                 {member.permissions.viewScope === 'all' ? 'Todos os dados' :
                  member.permissions.viewScope === 'team' ? 'Dados da equipe' : 'Apenas meus dados'}
               </p>
@@ -430,7 +430,7 @@ export default function PerfilPage() {
                   return (
                     <span
                       key={key}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-600"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400"
                     >
                       <svg className="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -451,8 +451,8 @@ export default function PerfilPage() {
   const securityTab = (
     <div className="space-y-6">
       {/* Change Password */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm p-6">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
@@ -464,20 +464,20 @@ export default function PerfilPage() {
 
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Senha atual</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Senha atual</label>
             <div className="relative">
               <input
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+                className="w-full rounded-xl border border-slate-200 dark:border-navy-mid bg-slate-50 dark:bg-navy/80 px-4 py-2.5 pr-11 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
                 placeholder="Digite sua senha atual"
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                 tabIndex={-1}
               >
                 {showCurrentPassword ? (
@@ -494,7 +494,7 @@ export default function PerfilPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nova senha</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nova senha</label>
             <div className="relative">
               <input
                 type={showNewPassword ? 'text' : 'password'}
@@ -502,13 +502,13 @@ export default function PerfilPage() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+                className="w-full rounded-xl border border-slate-200 dark:border-navy-mid bg-slate-50 dark:bg-navy/80 px-4 py-2.5 pr-11 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
                 placeholder="Mínimo 6 caracteres"
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                 tabIndex={-1}
               >
                 {showNewPassword ? (
@@ -525,7 +525,7 @@ export default function PerfilPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Confirmar nova senha</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirmar nova senha</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -533,13 +533,13 @@ export default function PerfilPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pr-11 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
+                className="w-full rounded-xl border border-slate-200 dark:border-navy-mid bg-slate-50 dark:bg-navy/80 px-4 py-2.5 pr-11 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all"
                 placeholder="Repita a nova senha"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                 tabIndex={-1}
               >
                 {showConfirmPassword ? (
@@ -578,7 +578,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-2xl border border-red-200/60 shadow-sm p-6">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-red-200/60 shadow-sm p-6">
         <h3 className="text-base font-semibold text-red-600 flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -659,7 +659,7 @@ export default function PerfilPage() {
   const planTab = (
     <div className="space-y-6">
       {/* Current Plan Hero */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm overflow-hidden">
         <div className="relative p-6 bg-gradient-to-r from-primary-600 via-primary-500 to-accent overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-40" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -740,8 +740,8 @@ export default function PerfilPage() {
       </div>
 
       {/* Features Cards */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-1 flex items-center gap-2">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm p-6">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -754,7 +754,7 @@ export default function PerfilPage() {
             return (
               <div
                 key={key}
-                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all"
+                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-navy/50 border border-slate-100 dark:border-white/10 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all"
               >
                 <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
                   {detail?.icon ?? (
@@ -762,7 +762,7 @@ export default function PerfilPage() {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{label}</p>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{label}</p>
                   {detail?.description && (
                     <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{detail.description}</p>
                   )}
@@ -774,8 +774,8 @@ export default function PerfilPage() {
       </div>
 
       {/* Plan Comparison */}
-      <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-6">
-        <h3 className="text-base font-semibold text-slate-900 mb-1 flex items-center gap-2">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200/60 dark:border-navy-mid/60 shadow-sm p-6">
+        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
           </svg>
@@ -788,9 +788,9 @@ export default function PerfilPage() {
         {/* Agency Plans */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <div className="h-px flex-1 bg-slate-100" />
+            <div className="h-px flex-1 bg-slate-100 dark:bg-white/10" />
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2">Para Agências</span>
-            <div className="h-px flex-1 bg-slate-100" />
+            <div className="h-px flex-1 bg-slate-100 dark:bg-white/10" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {agencyPlans.map(([planId, planInfo]) => (
@@ -811,9 +811,9 @@ export default function PerfilPage() {
         {/* Direct Plans */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <div className="h-px flex-1 bg-slate-100" />
+            <div className="h-px flex-1 bg-slate-100 dark:bg-white/10" />
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2">Para Empresas</span>
-            <div className="h-px flex-1 bg-slate-100" />
+            <div className="h-px flex-1 bg-slate-100 dark:bg-white/10" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {directPlans.map(([planId, planInfo]) => (
@@ -834,7 +834,7 @@ export default function PerfilPage() {
         {/* CTA Footer */}
         <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-slate-700">Precisa de ajuda para escolher?</p>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Precisa de ajuda para escolher?</p>
             <p className="text-xs text-slate-500">Nossa equipe pode recomendar o plano ideal para o seu negócio.</p>
           </div>
           <button
@@ -865,11 +865,11 @@ export default function PerfilPage() {
   const effectiveTab = validTabKeys.includes(activeTab) ? activeTab : 'info'
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-navy/80 p-4 md:p-6">
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
             {isPartnerView ? 'Perfil Parceiro' : 'Meu Perfil'}
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -893,7 +893,7 @@ export default function PerfilPage() {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Excluir conta</h3>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Excluir conta</h3>
               <p className="text-sm text-slate-500">Esta ação não pode ser desfeita.</p>
             </div>
           </div>
@@ -905,27 +905,27 @@ export default function PerfilPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Digite <span className="font-bold text-red-600">{DELETE_CONFIRMATION_PHRASE}</span> para confirmar
             </label>
             <input
               type="text"
               value={deleteConfirmText}
               onChange={(e) => setDeleteConfirmText(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 transition-all"
+              className="w-full rounded-xl border border-slate-200 dark:border-navy-mid bg-slate-50 dark:bg-navy/80 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 transition-all"
               placeholder={DELETE_CONFIRMATION_PHRASE}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Confirme sua senha
             </label>
             <input
               type="password"
               value={deletePassword}
               onChange={(e) => setDeletePassword(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 transition-all"
+              className="w-full rounded-xl border border-slate-200 dark:border-navy-mid bg-slate-50 dark:bg-navy/80 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 transition-all"
               placeholder="Sua senha"
             />
           </div>
@@ -950,7 +950,7 @@ export default function PerfilPage() {
             </button>
             <button
               onClick={closeDeleteModal}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+              className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition-colors"
             >
               Cancelar
             </button>
@@ -963,22 +963,22 @@ export default function PerfilPage() {
 
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+    <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-navy/50 border border-slate-100 dark:border-white/10">
       <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</span>
-      <p className="text-sm font-medium text-slate-800 mt-0.5 truncate">{value}</p>
+      <p className="text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5 truncate">{value}</p>
     </div>
   )
 }
 
 function PlanLimitCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50/80 border border-slate-100">
+    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50/80 dark:bg-navy/50 border border-slate-100 dark:border-white/10">
       <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
         {icon}
       </div>
       <div className="min-w-0">
         <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wide">{label}</p>
-        <p className="text-sm font-semibold text-slate-800 truncate">{value}</p>
+        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{value}</p>
       </div>
     </div>
   )
@@ -1011,11 +1011,11 @@ function PlanCard({
       className={`rounded-xl border p-4 transition-all ${
         isCurrent
           ? 'border-2 border-primary-500 bg-primary-50 shadow-md ring-2 ring-primary-200 ring-offset-1'
-          : 'border-slate-200 hover:border-primary-300 hover:shadow-sm bg-white'
+          : 'border-slate-200 dark:border-navy-mid hover:border-primary-300 hover:shadow-sm bg-white dark:bg-navy'
       }`}
     >
       <div className="flex items-start justify-between mb-2 gap-1">
-        <h4 className="text-sm font-bold text-slate-900 leading-tight">{planInfo.displayName}</h4>
+        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight">{planInfo.displayName}</h4>
         {isCurrent ? (
           <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-white bg-primary-500 px-2 py-0.5 rounded-full shadow-sm flex-shrink-0">
             <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
@@ -1033,11 +1033,11 @@ function PlanCard({
           </span>
         ) : null}
       </div>
-      <p className="text-base font-bold text-slate-900">
+      <p className="text-base font-bold text-slate-900 dark:text-slate-100">
         {planInfo.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
         <span className="text-xs font-normal text-slate-500">/mês</span>
       </p>
-      <div className="mt-3 space-y-1.5 text-xs text-slate-600">
+      <div className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
         <div className="flex items-center gap-1.5">
           <svg className="w-3 h-3 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
           <span>{planLimits.maxUsers} usuários</span>
@@ -1142,14 +1142,14 @@ const PLAN_LIMIT_ICONS: Record<string, JSX.Element> = {
 
 function PlanLimitRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 border border-slate-100 gap-3">
+    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-navy/50 border border-slate-100 dark:border-white/10 gap-3">
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center text-primary-500">
           {PLAN_LIMIT_ICONS[icon] ?? PLAN_LIMIT_ICONS.list}
         </div>
         <span className="text-xs font-medium text-slate-500 truncate">{label}</span>
       </div>
-      <span className="text-sm font-bold text-slate-800 flex-shrink-0">{value}</span>
+      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 flex-shrink-0">{value}</span>
     </div>
   )
 }

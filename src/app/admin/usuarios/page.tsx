@@ -101,17 +101,17 @@ function defaultPermissions(): MemberPermissions {
 /* -------------------------------- Styles -------------------------------- */
 
 const ui = {
-  btn: `inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2 text-sm
-        font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99]`,
+  btn: `inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-navy-mid px-3.5 py-2 text-sm
+        font-medium text-gray-700 bg-white dark:bg-navy hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99]`,
   btnPrimary: `inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold
         text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition active:scale-[0.99]`,
   btnDanger: `inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold
         text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition active:scale-[0.99]`,
-  input: `w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800
+  input: `w-full rounded-xl border border-gray-200 dark:border-navy-mid bg-white dark:bg-navy px-3 py-2 text-sm text-gray-800
         placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
-  select: `w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800
+  select: `w-full rounded-xl border border-gray-200 dark:border-navy-mid bg-white dark:bg-navy px-3 py-2 text-sm text-gray-800
         focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300`,
-  card: 'bg-white rounded-2xl shadow-sm ring-1 ring-gray-200',
+  card: 'bg-white dark:bg-navy rounded-2xl shadow-sm ring-1 ring-gray-200',
   label: 'block text-sm font-medium text-gray-700 mb-1',
 }
 
@@ -687,7 +687,7 @@ export default function UsuariosPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Acesso restrito</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 mb-1">Acesso restrito</h3>
           <p className="text-sm text-gray-500">Sem permissao para gerenciar parceiros</p>
         </div>
       </div>
@@ -699,7 +699,7 @@ export default function UsuariosPage() {
         {/* =================== Header =================== */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+            <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-slate-100">
               {isPartner ? 'Usuarios' : 'Parceiros'}
             </h2>
             <p className="text-sm text-gray-500 mt-0.5">
@@ -802,12 +802,12 @@ export default function UsuariosPage() {
           </div>
         ) : filteredMembers.length === 0 ? (
           <div className={`${ui.card} p-12 text-center`}>
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10">
               <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 017.533-2.493M9 19.128a5.972 5.972 0 01.786-3.07m4.428 0a9.36 9.36 0 00-4.428 0M12 10.5a3 3 0 100-6 3 3 0 000 6z" />
               </svg>
             </div>
-            <h3 className="text-base font-semibold text-gray-900">
+            <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">
               {members.length === 0 ? 'Nenhum parceiro encontrado' : 'Nenhum resultado encontrado'}
             </h3>
             <p className="text-sm text-gray-500 mt-1">
@@ -823,7 +823,7 @@ export default function UsuariosPage() {
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100 bg-slate-50/80">
+                    <tr className="border-b border-gray-100 bg-slate-50/80 dark:bg-navy/80">
                       {([
                         { key: 'name' as SortColumn, label: 'Parceiro', align: 'left' },
                         { key: 'email' as SortColumn, label: 'Email', align: 'left' },
@@ -838,7 +838,7 @@ export default function UsuariosPage() {
                           <button
                             type="button"
                             onClick={() => handleSort(col.key)}
-                            className={`inline-flex items-center gap-1 hover:text-gray-900 transition ${
+                            className={`inline-flex items-center gap-1 hover:text-gray-900 dark:text-slate-100 transition ${
                               col.align === 'center' ? 'mx-auto' : ''
                             }`}
                           >
@@ -879,7 +879,7 @@ export default function UsuariosPage() {
                       const isSelf = m.userId === userUid
 
                       return (
-                        <tr key={m.id} className="hover:bg-slate-50/60 transition-colors">
+                        <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-white/5/60 transition-colors">
                           <td className="px-5 py-3">
                             <div className="flex items-center gap-3">
                               {m.photoUrl ? (
@@ -894,7 +894,7 @@ export default function UsuariosPage() {
                                 </div>
                               )}
                               <div className="min-w-0">
-                                <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
+                                <p className="font-medium text-gray-900 dark:text-slate-100 truncate flex items-center gap-1.5">
                                   {m.displayName}
                                   {isPartner && leaderEmail && m.email.toLowerCase() === leaderEmail && (
                                     <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
@@ -959,7 +959,7 @@ export default function UsuariosPage() {
                               {openMenuId === m.id && menuPos && (
                                 <div
                                   ref={dropdownRef}
-                                  className="fixed w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-[9999] animate-scale-in"
+                                  className="fixed w-44 bg-white dark:bg-navy rounded-xl shadow-lg border border-gray-200 dark:border-navy-mid py-1 z-[9999] animate-scale-in"
                                   style={{ top: menuPos.top, left: menuPos.left - 176 }}
                                 >
                                   <button
@@ -1052,7 +1052,7 @@ export default function UsuariosPage() {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-900 truncate flex items-center gap-1.5">
+                          <p className="font-medium text-gray-900 dark:text-slate-100 truncate flex items-center gap-1.5">
                             {m.displayName}
                             {isPartner && leaderEmail && m.email.toLowerCase() === leaderEmail && (
                               <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 shrink-0">
@@ -1110,7 +1110,7 @@ export default function UsuariosPage() {
                         {openMenuId === `mobile-${m.id}` && menuPos && (
                           <div
                             ref={dropdownRef}
-                            className="fixed w-44 bg-white rounded-xl shadow-lg border border-gray-200 py-1 z-[9999] animate-scale-in"
+                            className="fixed w-44 bg-white dark:bg-navy rounded-xl shadow-lg border border-gray-200 dark:border-navy-mid py-1 z-[9999] animate-scale-in"
                             style={{ top: menuPos.top, left: menuPos.left - 176 }}
                           >
                             <button
@@ -1181,7 +1181,7 @@ export default function UsuariosPage() {
           <Modal isOpen onClose={requestCloseAddModal} size="md" centered>
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Adicionar parceiro</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Adicionar parceiro</h3>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Busque um usuario pelo email para convida-lo como parceiro. Ele recebera uma notificacao para aceitar o convite.
                 </p>
@@ -1259,7 +1259,7 @@ export default function UsuariosPage() {
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-900 truncate">{searchResult.user.displayName}</p>
+                        <p className="font-medium text-gray-900 dark:text-slate-100 truncate">{searchResult.user.displayName}</p>
                         <p className="text-xs text-gray-500">{searchResult.user.email}</p>
                       </div>
                       <svg className="h-5 w-5 text-emerald-500 shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1352,7 +1352,7 @@ export default function UsuariosPage() {
           <Modal isOpen onClose={requestCloseEditModal} size="xl" centered>
             <div className="space-y-5">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                   Editar usuario - {editMember.displayName}
                 </h3>
                 <p className="text-sm text-gray-500 mt-0.5">{editMember.email}</p>
@@ -1426,7 +1426,7 @@ export default function UsuariosPage() {
                 <p className="text-xs text-gray-400 mb-1">
                   Apenas paginas disponiveis no seu plano sao exibidas.
                 </p>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 p-3 bg-slate-50/50">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-navy-mid p-3 bg-slate-50/50 dark:bg-navy/80">
                   {planAllowedPages.map((page) => (
                     <label
                       key={page.path}
@@ -1447,7 +1447,7 @@ export default function UsuariosPage() {
               {/* Actions checklist */}
               <div>
                 <span className={ui.label}>Acoes permitidas</span>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 p-3 bg-slate-50/50">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-navy-mid p-3 bg-slate-50/50 dark:bg-navy/80">
                   {ALL_ACTIONS.map((action) => (
                     <label
                       key={action.key}
@@ -1509,7 +1509,7 @@ export default function UsuariosPage() {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
                     {blockMember.status === 'suspended' ? 'Desbloquear' : 'Bloquear'} parceiro
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
@@ -1565,7 +1565,7 @@ export default function UsuariosPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Remover parceiro</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Remover parceiro</h3>
                   <p className="text-sm text-gray-500 mt-1">
                     Tem certeza que deseja remover{' '}
                     <span className="font-medium text-gray-700">{deleteMember.displayName}</span>{' '}

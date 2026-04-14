@@ -81,7 +81,7 @@ function ExpandableTextarea({
       <button
         type="button"
         onClick={() => onToggleExpand(fieldId)}
-        className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+        className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded transition-colors"
         title={isExpanded ? 'Reduzir campo' : 'Expandir campo'}
       >
         {isExpanded ? (
@@ -287,20 +287,20 @@ export default function ConfiguracaoPage() {
   }
 
   return (
-    <div className="h-full bg-slate-50 flex flex-col">
+    <div className="h-full bg-slate-50 dark:bg-navy/80 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200 dark:border-navy-mid sticky top-0 z-10">
         {/* Top row: back + title + save */}
         <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-3 min-w-0">
             <Link
               href="/funil"
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors flex-shrink-0"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 transition-colors flex-shrink-0"
             >
-              <ArrowLeftIcon className="w-4 h-4 text-slate-600" />
+              <ArrowLeftIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </Link>
             <div className="min-w-0">
-              <h1 className="text-base sm:text-xl font-bold text-slate-800 flex items-center gap-2 truncate">
+              <h1 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 truncate">
                 <PhoneIcon className="w-5 h-5 text-amber-600 flex-shrink-0" />
                 <span className="hidden sm:inline">Configuracao do Agente</span>
                 <span className="sm:hidden">Config. Agente</span>
@@ -334,13 +334,13 @@ export default function ConfiguracaoPage() {
 
         {/* Tabs row */}
         <div className="px-4 sm:px-6 lg:px-8 pb-3">
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg w-fit">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/10 p-1 rounded-lg w-fit">
             <button
               onClick={() => setActiveTab('config')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'config'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
+                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
               <Cog6ToothIcon className="w-4 h-4" />
@@ -350,8 +350,8 @@ export default function ConfiguracaoPage() {
               onClick={() => setActiveTab('knowledge')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'knowledge'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
+                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
               <BookOpenIcon className="w-4 h-4" />
@@ -361,8 +361,8 @@ export default function ConfiguracaoPage() {
               onClick={() => setActiveTab('integrations')}
               className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'integrations'
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
+                  ? 'bg-white dark:bg-navy text-slate-800 dark:text-slate-200 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200'
               }`}
             >
               <LinkIcon className="w-4 h-4" />
@@ -378,13 +378,13 @@ export default function ConfiguracaoPage() {
         {activeTab === 'config' && config && (
           <div className="space-y-6">
             {/* Horarios */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                   <ClockIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Horarios</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-slate-200">Horarios</h2>
                   <p className="text-sm text-slate-500">
                     Configure quando as ligacoes podem ser feitas
                   </p>
@@ -393,7 +393,7 @@ export default function ConfiguracaoPage() {
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Ligacoes automaticas habilitadas
                   </span>
                   <button
@@ -405,7 +405,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
                         config.schedule.enabled ? 'left-7' : 'left-1'
                       }`}
                     />
@@ -414,7 +414,7 @@ export default function ConfiguracaoPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Horario inicio
                     </label>
                     <select
@@ -422,7 +422,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('schedule.startHour', parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     >
                       {HOURS.map(h => (
                         <option key={h.value} value={h.value}>
@@ -432,7 +432,7 @@ export default function ConfiguracaoPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Horario fim
                     </label>
                     <select
@@ -440,7 +440,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('schedule.endHour', parseInt(e.target.value))
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     >
                       {HOURS.map(h => (
                         <option key={h.value} value={h.value}>
@@ -452,7 +452,7 @@ export default function ConfiguracaoPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-2">
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">
                     Dias da semana
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -463,7 +463,7 @@ export default function ConfiguracaoPage() {
                         className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
                           config.schedule.workDays.includes(day.value)
                             ? 'bg-primary-100 border-primary-300 text-primary-700'
-                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                            : 'bg-white dark:bg-navy border-slate-200 dark:border-navy-mid text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
                         }`}
                       >
                         {day.label}
@@ -474,7 +474,7 @@ export default function ConfiguracaoPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Duracao do slot (minutos)
                     </label>
                     <input
@@ -485,11 +485,11 @@ export default function ConfiguracaoPage() {
                       }
                       min={15}
                       max={60}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Intervalo entre ligacoes (segundos)
                     </label>
                     <input
@@ -500,7 +500,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={10}
                       max={120}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     />
                   </div>
                 </div>
@@ -508,13 +508,13 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* Agente de Voz */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
                   <SparklesIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Agente de Voz</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-slate-200">Agente de Voz</h2>
                   <p className="text-sm text-slate-500">
                     Configuracoes do agente e LLM
                   </p>
@@ -523,7 +523,7 @@ export default function ConfiguracaoPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                     Assistant ID
                   </label>
                   <input
@@ -532,13 +532,13 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('voiceAgent.vapiAssistantId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                     Phone Number ID
                   </label>
                   <input
@@ -547,14 +547,14 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('voiceAgent.vapiPhoneNumberId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Modelo LLM
                     </label>
                     <select
@@ -562,7 +562,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('voiceAgent.llmModel', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     >
                       <option value="gpt-4o">GPT-4o</option>
                       <option value="gpt-4o-mini">GPT-4o Mini</option>
@@ -570,7 +570,7 @@ export default function ConfiguracaoPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Provider STT
                     </label>
                     <select
@@ -578,7 +578,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('voiceAgent.sttProvider', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     >
                       <option value="deepgram">Deepgram Nova-2</option>
                       <option value="openai">OpenAI Whisper</option>
@@ -590,7 +590,7 @@ export default function ConfiguracaoPage() {
 
             {/* Voice Selector */}
             {orgId && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
                 <VoiceSelector
                   orgId={orgId}
                   selectedVoiceId={config.voiceAgent.voiceId}
@@ -602,13 +602,13 @@ export default function ConfiguracaoPage() {
             )}
 
             {/* Google Calendar */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                   <CalendarDaysIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Google Calendar</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-slate-200">Google Calendar</h2>
                   <p className="text-sm text-slate-500">
                     Configuracoes de agendamento
                   </p>
@@ -617,7 +617,7 @@ export default function ConfiguracaoPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                     Calendar ID
                   </label>
                   <input
@@ -626,14 +626,14 @@ export default function ConfiguracaoPage() {
                     onChange={e =>
                       updateConfig('calendar.googleCalendarId', e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     placeholder="email@gmail.com ou ID do calendario"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Dias de antecedencia minima
                     </label>
                     <input
@@ -644,14 +644,14 @@ export default function ConfiguracaoPage() {
                       }
                       min={0}
                       max={7}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     />
                     <p className="text-xs text-slate-400 mt-1">
                       Ex: 1 = comeca a partir de amanha
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Slots para mostrar
                     </label>
                     <input
@@ -662,7 +662,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={1}
                       max={5}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     />
                   </div>
                 </div>
@@ -670,13 +670,13 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* Notificacoes */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-primary-600 flex items-center justify-center">
                   <BellIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Notificacoes</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-slate-200">Notificacoes</h2>
                   <p className="text-sm text-slate-500">
                     Relatorios e alertas
                   </p>
@@ -685,7 +685,7 @@ export default function ConfiguracaoPage() {
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Enviar relatorio diario via WhatsApp
                   </span>
                   <button
@@ -702,7 +702,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
                         config.notifications.whatsappReportEnabled
                           ? 'left-7'
                           : 'left-1'
@@ -713,7 +713,7 @@ export default function ConfiguracaoPage() {
 
                 {config.notifications.whatsappReportEnabled && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Numero WhatsApp para relatorio
                     </label>
                     <input
@@ -722,7 +722,7 @@ export default function ConfiguracaoPage() {
                       onChange={e =>
                         updateConfig('notifications.whatsappNumber', e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                       placeholder="+5511999999999"
                     />
                   </div>
@@ -731,13 +731,13 @@ export default function ConfiguracaoPage() {
             </div>
 
             {/* CRON */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-500 to-slate-700 flex items-center justify-center">
                   <GearIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Automacao CRON</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-slate-200">Automacao CRON</h2>
                   <p className="text-sm text-slate-500">
                     Disparo automatico de ligacoes
                   </p>
@@ -746,7 +746,7 @@ export default function ConfiguracaoPage() {
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     CRON habilitado
                   </span>
                   <button
@@ -756,7 +756,7 @@ export default function ConfiguracaoPage() {
                     }`}
                   >
                     <div
-                      className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                      className={`absolute top-1 w-4 h-4 bg-white dark:bg-navy rounded-full transition-transform ${
                         config.cronEnabled ? 'left-7' : 'left-1'
                       }`}
                     />
@@ -765,14 +765,14 @@ export default function ConfiguracaoPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Expressao CRON
                     </label>
                     <input
                       type="text"
                       value={config.cronSchedule}
                       onChange={e => updateConfig('cronSchedule', e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm font-mono"
                       placeholder="0 9 * * 1-5"
                     />
                     <p className="text-xs text-slate-400 mt-1">
@@ -780,7 +780,7 @@ export default function ConfiguracaoPage() {
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Limite de ligacoes por batch
                     </label>
                     <input
@@ -791,7 +791,7 @@ export default function ConfiguracaoPage() {
                       }
                       min={1}
                       max={500}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm"
                     />
                   </div>
                 </div>

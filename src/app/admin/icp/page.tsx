@@ -360,7 +360,7 @@ export default function AdminIcpPage() {
           {profiles.map((profile) => (
             <div
               key={profile.id}
-              className="bg-white rounded-xl border border-neutral-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-navy rounded-xl border border-neutral-200 p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -490,7 +490,7 @@ export default function AdminIcpPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
+          <div className="bg-white dark:bg-navy rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
             <div className="flex items-center justify-between p-5 border-b border-neutral-200">
               <h2 className="text-lg font-semibold">
                 {editingId ? 'Editar Perfil ICP' : 'Novo Perfil ICP'}
@@ -814,7 +814,7 @@ export default function AdminIcpPage() {
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-navy rounded-full shadow transition-transform ${
                       form.isActive ? 'translate-x-5' : 'translate-x-0'
                     }`}
                   />

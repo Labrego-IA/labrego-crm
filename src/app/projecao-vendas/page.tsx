@@ -438,7 +438,7 @@ export default function ProjecaoVendasPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8">
-        <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-5">
+        <div className="bg-white dark:bg-navy rounded-xl border border-neutral-200 p-3 md:p-5">
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
             <div className="hidden md:block p-2 bg-blue-50 rounded-lg">
               <UsersIcon className="w-5 h-5 text-blue-600" />
@@ -449,7 +449,7 @@ export default function ProjecaoVendasPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-5">
+        <div className="bg-white dark:bg-navy rounded-xl border border-neutral-200 p-3 md:p-5">
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
             <div className="hidden md:block p-2 bg-emerald-50 rounded-lg">
               <CurrencyDollarIcon className="w-5 h-5 text-emerald-600" />
@@ -461,7 +461,7 @@ export default function ProjecaoVendasPage() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-5">
+        <div className="bg-white dark:bg-navy rounded-xl border border-neutral-200 p-3 md:p-5">
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
             <div className="hidden md:block p-2 bg-amber-50 rounded-lg">
               <ArrowTrendingUpIcon className="w-5 h-5 text-amber-600" />
@@ -486,7 +486,7 @@ export default function ProjecaoVendasPage() {
               placeholder="Buscar por nome..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full pl-9 pr-3 py-2 text-sm bg-white dark:bg-navy border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
@@ -494,7 +494,7 @@ export default function ProjecaoVendasPage() {
           <select
             value={filterStage}
             onChange={(e) => setFilterStage(e.target.value)}
-            className="px-3 py-2 text-sm bg-white border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="px-3 py-2 text-sm bg-white dark:bg-navy border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">Todas as etapas</option>
             {stages.map(s => (
@@ -508,7 +508,7 @@ export default function ProjecaoVendasPage() {
             className={`flex items-center gap-1.5 px-3 py-2 text-sm border rounded-lg transition-colors ${
               showFilters || hasActiveFilters
                 ? 'bg-primary-50 border-primary-200 text-primary-700'
-                : 'bg-white border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+                : 'bg-white dark:bg-navy border-neutral-200 text-neutral-600 hover:bg-neutral-50'
             }`}
           >
             <FunnelIcon className="w-4 h-4" />
@@ -532,7 +532,7 @@ export default function ProjecaoVendasPage() {
 
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="bg-white border border-neutral-200 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-white dark:bg-navy border border-neutral-200 rounded-xl p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
               <label className="text-xs text-neutral-500 mb-1 block">Valor mín. (R$)</label>
               <input
@@ -691,7 +691,7 @@ export default function ProjecaoVendasPage() {
                   : 'Sem contato'
 
                 return (
-                  <div key={client.id} className="bg-white rounded-xl border border-neutral-200 p-4">
+                  <div key={client.id} className="bg-white dark:bg-navy rounded-xl border border-neutral-200 p-4">
                     {/* Card header: name + expected value */}
                     <div className="flex items-start justify-between mb-3">
                       <Link href={`/contatos/${client.id}`} className="text-primary-600 hover:underline font-semibold text-sm leading-tight flex-1 mr-2">
@@ -774,7 +774,7 @@ export default function ProjecaoVendasPage() {
             </div>
 
             {/* Desktop Table */}
-            <div className="hidden md:block bg-white rounded-xl border border-neutral-200 overflow-hidden">
+            <div className="hidden md:block bg-white dark:bg-navy rounded-xl border border-neutral-200 overflow-hidden">
               <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 z-10">

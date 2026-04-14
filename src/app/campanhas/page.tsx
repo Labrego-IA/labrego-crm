@@ -286,7 +286,7 @@ function CampanhasContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Campanhas</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Campanhas</h1>
           <p className="text-sm text-slate-500 mt-1">Gerencie suas campanhas de email marketing</p>
         </div>
         <button
@@ -308,51 +308,51 @@ function CampanhasContent() {
       </button>
 
       {/* Dashboard KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-primary-50 p-2">
               <EnvelopeIcon className="h-5 w-5 text-primary-600" />
             </div>
             <div>
               <p className="text-xs text-slate-500">Campanhas este mês</p>
-              <p className="text-xl font-bold text-slate-900">{dashboardStats.totalCampaignsMonth}</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{dashboardStats.totalCampaignsMonth}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-emerald-50 p-2">
               <ChartBarIcon className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-xs text-slate-500">Emails enviados (mês)</p>
-              <p className="text-xl font-bold text-slate-900">{dashboardStats.totalSentMonth}</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{dashboardStats.totalSentMonth}</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-red-50 p-2">
               <ExclamationTriangleIcon className="h-5 w-5 text-red-600" />
             </div>
             <div>
               <p className="text-xs text-slate-500">Taxa de falha</p>
-              <p className="text-xl font-bold text-slate-900">{dashboardStats.failureRate.toFixed(1)}%</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-slate-100">{dashboardStats.failureRate.toFixed(1)}%</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-sm">
+        <div className="rounded-2xl bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid p-4 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-blue-50 p-2">
               <ClockIcon className="h-5 w-5 text-blue-600" />
             </div>
             <div>
               <p className="text-xs text-slate-500">Próximo envio</p>
-              <p className="text-sm font-semibold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {dashboardStats.nextScheduled ? formatDateTimeAt(dashboardStats.nextScheduled) : '—'}
               </p>
             </div>
@@ -369,14 +369,14 @@ function CampanhasContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar campanha..."
-            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white dark:bg-navy py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as CampaignStatus | '')}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 bg-white dark:bg-navy px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -386,7 +386,7 @@ function CampanhasContent() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as CampaignType | '')}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 bg-white dark:bg-navy px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {TYPE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -407,9 +407,9 @@ function CampanhasContent() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+          <div className="hidden md:block overflow-x-auto rounded-2xl border border-slate-200 bg-white dark:bg-navy shadow-sm">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-navy-mid">
+              <thead className="bg-slate-50 dark:bg-navy/80">
                 <tr>
                   {([
                     { key: 'name' as SortColumn, label: 'Nome', align: 'left' },
@@ -428,7 +428,7 @@ function CampanhasContent() {
                       <button
                         type="button"
                         onClick={() => handleSort(col.key)}
-                        className={`inline-flex items-center gap-1 hover:text-slate-900 transition ${
+                        className={`inline-flex items-center gap-1 hover:text-slate-900 dark:text-slate-100 transition ${
                           col.align === 'right' ? 'ml-auto' : col.align === 'center' ? 'mx-auto' : ''
                         }`}
                       >
@@ -461,15 +461,15 @@ function CampanhasContent() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-navy-mid">
                 {paginated.map((c) => (
                   <tr
                     key={c.id}
                     onClick={() => router.push(`/campanhas/${c.id}`)}
-                    className="cursor-pointer hover:bg-slate-50 transition-colors"
+                    className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <td className="px-4 py-3">
-                      <p className="text-sm font-medium text-slate-900 truncate max-w-[250px]">{c.name}</p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-[250px]">{c.name}</p>
                       <p className="text-xs text-slate-500 truncate max-w-[250px]">{c.subject}</p>
                     </td>
                     <td className="px-4 py-3">
@@ -477,8 +477,8 @@ function CampanhasContent() {
                         {CAMPAIGN_STATUS_LABELS[c.status]}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600">{CAMPAIGN_TYPE_LABELS[c.type]}</td>
-                    <td className="px-4 py-3 text-sm text-slate-600 text-right">{c.totalRecipients}</td>
+                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">{CAMPAIGN_TYPE_LABELS[c.type]}</td>
+                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{c.totalRecipients}</td>
                     <td className="px-4 py-3 text-sm text-emerald-600 text-right font-medium">{c.sentCount}</td>
                     <td className="px-4 py-3 text-sm text-red-600 text-right font-medium">{c.failedCount}</td>
                     <td className="px-4 py-3 text-sm text-slate-500">{formatDate(c.createdAt)}</td>
@@ -500,7 +500,7 @@ function CampanhasContent() {
                         {!['draft', 'scheduled', 'sending'].includes(c.status) && (
                           <button
                             onClick={() => router.push(`/campanhas/${c.id}/editar`)}
-                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 transition-colors"
+                            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                             title="Duplicar campanha"
                           >
                             <PencilSquareIcon className="h-3.5 w-3.5" />
@@ -520,7 +520,7 @@ function CampanhasContent() {
                                 </button>
                                 <button
                                   onClick={() => setDeleteConfirmId(null)}
-                                  className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                                  className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition-colors"
                                 >
                                   Cancelar
                                 </button>
@@ -550,11 +550,11 @@ function CampanhasContent() {
               <div
                 key={c.id}
                 onClick={() => router.push(`/campanhas/${c.id}`)}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors"
+                className="rounded-2xl border border-slate-200 bg-white dark:bg-navy p-4 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{c.name}</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{c.name}</p>
                     <p className="text-xs text-slate-500 truncate">{c.subject}</p>
                   </div>
                   <span className={`ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap ${CAMPAIGN_STATUS_COLORS[c.status]}`}>
@@ -592,7 +592,7 @@ function CampanhasContent() {
                             </button>
                             <button
                               onClick={() => setDeleteConfirmId(null)}
-                              className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors"
+                              className="rounded-lg px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 transition-colors"
                             >
                               Não
                             </button>
@@ -624,7 +624,7 @@ function CampanhasContent() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Anterior
                 </button>
@@ -640,7 +640,7 @@ function CampanhasContent() {
                         className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                           p === currentPage
                             ? 'bg-primary-600 text-white'
-                            : 'text-slate-600 hover:bg-slate-100'
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
                         }`}
                       >
                         {p}
@@ -650,7 +650,7 @@ function CampanhasContent() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
-                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Próxima
                 </button>
