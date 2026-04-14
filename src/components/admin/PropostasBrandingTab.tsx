@@ -124,12 +124,12 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
   return (
     <div className="space-y-6">
       {/* Identidade Visual */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Identidade Visual</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Identidade Visual</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nome da Empresa</label>
             <input
               type="text"
               value={form.companyName}
@@ -139,7 +139,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Tagline</label>
             <input
               type="text"
               value={form.tagline}
@@ -152,7 +152,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cor Primaria</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Cor Primaria</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -175,7 +175,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Validade da Proposta (dias)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Validade da Proposta (dias)</label>
             <input
               type="number"
               min={1}
@@ -189,10 +189,10 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
         {/* Logo Upload */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Logo</label>
             <div className="flex items-center gap-3">
               {form.logoUrl ? (
-                <img src={form.logoUrl} alt="Logo" className="h-12 w-auto rounded border border-gray-200 object-contain" />
+                <img src={form.logoUrl} alt="Logo" className="h-12 w-auto rounded border border-gray-200 dark:border-white/10 object-contain" />
               ) : (
                 <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
                   Logo
@@ -220,10 +220,10 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Marca d&apos;agua</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Marca d&apos;agua</label>
             <div className="flex items-center gap-3">
               {form.watermarkUrl ? (
-                <img src={form.watermarkUrl} alt="Watermark" className="h-12 w-auto rounded border border-gray-200 object-contain opacity-50" />
+                <img src={form.watermarkUrl} alt="Watermark" className="h-12 w-auto rounded border border-gray-200 dark:border-white/10 object-contain opacity-50" />
               ) : (
                 <div className="h-12 w-12 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 text-xs">
                   WM
@@ -261,7 +261,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               onChange={e => handleChange('showPresentationPage', e.target.checked)}
               className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
-            <span className="text-sm text-gray-700">Exibir pagina de apresentacao</span>
+            <span className="text-sm text-gray-700 dark:text-slate-300">Exibir pagina de apresentacao</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -270,18 +270,18 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
               onChange={e => handleChange('showLogosPage', e.target.checked)}
               className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
-            <span className="text-sm text-gray-700">Exibir pagina de logos de clientes</span>
+            <span className="text-sm text-gray-700 dark:text-slate-300">Exibir pagina de logos de clientes</span>
           </label>
         </div>
       </section>
 
       {/* Contato */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Informacoes de Contato</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Informacoes de Contato</h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Telefone</label>
             <input
               type="text"
               value={form.phone}
@@ -291,7 +291,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label>
             <input
               type="email"
               value={form.email}
@@ -301,7 +301,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Website</label>
             <input
               type="text"
               value={form.website}
@@ -311,7 +311,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Instagram</label>
             <input
               type="text"
               value={form.instagram}
@@ -324,11 +324,11 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
       </section>
 
       {/* Textos */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Textos do PDF</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Textos do PDF</h3>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Texto de Apresentacao</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Texto de Apresentacao</label>
           <textarea
             value={form.presentationText}
             onChange={e => handleChange('presentationText', e.target.value)}
@@ -338,7 +338,7 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Texto de Missao</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Texto de Missao</label>
           <textarea
             value={form.missionText}
             onChange={e => handleChange('missionText', e.target.value)}
@@ -350,14 +350,14 @@ export default function PropostasBrandingTab({ onDirtyChange, onResetRef }: Prop
       </section>
 
       {/* Preview de Cor */}
-      <section className="rounded-2xl border border-gray-200 overflow-hidden">
+      <section className="rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">
         <div className="p-6 text-white" style={{ backgroundColor: form.primaryColor }}>
           <p className="text-xs font-medium opacity-70 uppercase tracking-wider">Preview da Capa</p>
           <h3 className="text-2xl font-bold mt-2">Proposta Comercial</h3>
           <p className="text-sm opacity-80 mt-1">{form.tagline || 'Sua tagline aqui'}</p>
         </div>
-        <div className="bg-white p-4 flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+        <div className="bg-white dark:bg-surface-dark p-4 flex items-center justify-between">
+          <div className="text-sm text-gray-500 dark:text-slate-400">
             {form.companyName || 'Nome da empresa'} &middot; {form.phone || 'Telefone'} &middot; {form.email || 'Email'}
           </div>
           {form.logoUrl && (

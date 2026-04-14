@@ -90,7 +90,7 @@ export default function MemberSelector({
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); setOpen(!open) }}
-        className={`flex items-center gap-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white transition-colors ${sizeClasses} max-w-[180px]`}
+        className={`flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/10 hover:border-slate-300 bg-white dark:bg-surface-dark transition-colors ${sizeClasses} max-w-[180px]`}
       >
         {displayName ? (
           <>
@@ -99,10 +99,10 @@ export default function MemberSelector({
                 {displayName.charAt(0).toUpperCase()}
               </span>
             </div>
-            <span className="truncate text-slate-700">{displayName}</span>
+            <span className="truncate text-slate-700 dark:text-slate-300">{displayName}</span>
             {allowClear && (
               <Cross2Icon
-                className="w-3 h-3 text-slate-400 hover:text-slate-600 flex-shrink-0"
+                className="w-3 h-3 text-slate-400 hover:text-slate-600 dark:text-slate-400 flex-shrink-0"
                 onClick={(e) => { e.stopPropagation(); onChange(null, null); setOpen(false) }}
               />
             )}
@@ -117,7 +117,7 @@ export default function MemberSelector({
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-1"
+          className="absolute z-50 mt-1 w-56 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-slate-200 dark:border-white/10 py-1"
           onClick={(e) => e.stopPropagation()}
         >
           {members.length > 5 && (
@@ -127,7 +127,7 @@ export default function MemberSelector({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar membro..."
-                className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded focus:ring-1 focus:ring-primary-500 outline-none"
+                className="w-full text-xs px-2 py-1.5 border border-slate-200 dark:border-white/10 rounded focus:ring-1 focus:ring-primary-500 outline-none"
                 autoFocus
               />
             </div>
@@ -136,7 +136,7 @@ export default function MemberSelector({
             {allowClear && value && (
               <button
                 onClick={() => { onChange(null, null); setOpen(false); setSearch('') }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-500 hover:bg-slate-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-slate-500 hover:bg-slate-50 dark:bg-white/5"
               >
                 <Cross2Icon className="w-3 h-3" />
                 Sem responsável

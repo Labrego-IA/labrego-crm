@@ -400,7 +400,7 @@ export default function BrandBookPage() {
                 <span className="text-[10px] font-medium uppercase tracking-widest text-white/50">Brand (fundo escuro)</span>
               </div>
               {/* Light variant */}
-              <div className="group rounded-2xl p-8 flex flex-col items-center justify-center gap-4 border border-[#EDE9FE] bg-white transition-all duration-300 hover:scale-[1.02]">
+              <div className="group rounded-2xl p-8 flex flex-col items-center justify-center gap-4 border border-[#EDE9FE] bg-white dark:bg-surface-dark transition-all duration-300 hover:scale-[1.02]">
                 <VoxWave variant="light" className="w-full max-w-[180px]" />
                 <span className="text-[10px] font-medium uppercase tracking-widest text-[#94A3B8]">Light (fundo claro)</span>
               </div>
@@ -805,7 +805,7 @@ export default function BrandBookPage() {
                   <input
                     type="text"
                     placeholder="Nome do contato"
-                    className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
+                    className="w-full rounded-xl border border-[#EDE9FE] bg-white dark:bg-surface-dark px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                     readOnly
                   />
                   <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">rounded-xl · border-[#EDE9FE] · focus:ring-[#8B5CF6]/20</p>
@@ -817,7 +817,7 @@ export default function BrandBookPage() {
                     <input
                       type="text"
                       placeholder="Buscar contatos..."
-                      className="w-full rounded-xl border border-[#EDE9FE] bg-white pl-9 pr-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
+                      className="w-full rounded-xl border border-[#EDE9FE] bg-white dark:bg-surface-dark pl-9 pr-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all"
                       readOnly
                     />
                   </div>
@@ -825,7 +825,7 @@ export default function BrandBookPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#1E1B4B] mb-1.5">Select</label>
-                  <select className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all appearance-none">
+                  <select className="w-full rounded-xl border border-[#EDE9FE] bg-white dark:bg-surface-dark px-3 py-2.5 text-sm text-[#1E1B4B] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all appearance-none">
                     <option>Selecione uma opcao</option>
                     <option>Opcao A</option>
                     <option>Opcao B</option>
@@ -839,7 +839,7 @@ export default function BrandBookPage() {
                   <textarea
                     placeholder="Observacoes sobre o contato..."
                     rows={3}
-                    className="w-full rounded-xl border border-[#EDE9FE] bg-white px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all resize-none"
+                    className="w-full rounded-xl border border-[#EDE9FE] bg-white dark:bg-surface-dark px-3 py-2.5 text-sm text-[#1E1B4B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#8B5CF6]/20 focus:border-[#8B5CF6] outline-none transition-all resize-none"
                     readOnly
                   />
                   <p className="text-[10px] text-[#94A3B8] mt-1 font-mono">resize-none · mesma base do input</p>
@@ -912,7 +912,7 @@ export default function BrandBookPage() {
             <h3 className="text-xs font-bold text-[#8B5CF6] mb-6 uppercase tracking-[0.2em]">Modal / Dialog</h3>
             <div className="relative rounded-2xl overflow-hidden" style={{ background: 'rgba(30,27,75,0.6)' }}>
               <div className="p-8 flex items-center justify-center min-h-[280px]">
-                <div className="w-full max-w-sm rounded-2xl bg-white border border-[#EDE9FE] p-6 shadow-[0_8px_30px_rgba(30,27,75,0.15)]">
+                <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-surface-dark border border-[#EDE9FE] p-6 shadow-[0_8px_30px_rgba(30,27,75,0.15)]">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-base font-bold text-[#1E1B4B]">Confirmar acao</h4>
                     <button className="w-8 h-8 rounded-lg bg-[#F5F3FF] flex items-center justify-center text-[#64748B] hover:bg-[#EDE9FE] transition-colors">
@@ -943,9 +943,9 @@ export default function BrandBookPage() {
                 <p className="text-xs text-[#64748B] mb-3">Tab bar padrao</p>
                 <div className="inline-flex items-center gap-1 rounded-2xl border border-[#EDE9FE] bg-white/70 p-1 backdrop-blur">
                   <span className="px-4 py-2 text-sm font-semibold rounded-xl text-white shadow-lg" style={{ background: 'linear-gradient(135deg, #8B5CF6, #06B6D4)' }}>Geral</span>
-                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Detalhes</span>
-                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Historico</span>
-                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white hover:text-[#1E1B4B] transition-colors cursor-pointer">Config</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white dark:bg-surface-dark hover:text-[#1E1B4B] transition-colors cursor-pointer">Detalhes</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white dark:bg-surface-dark hover:text-[#1E1B4B] transition-colors cursor-pointer">Historico</span>
+                  <span className="px-4 py-2 text-sm font-medium rounded-xl text-[#64748B] hover:bg-white dark:bg-surface-dark hover:text-[#1E1B4B] transition-colors cursor-pointer">Config</span>
                 </div>
               </div>
             </div>
@@ -962,7 +962,7 @@ export default function BrandBookPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="text-xs text-[#64748B] mb-3">Skeleton de card</p>
-                <div className="rounded-2xl border border-[#EDE9FE] bg-white p-5 space-y-3">
+                <div className="rounded-2xl border border-[#EDE9FE] bg-white dark:bg-surface-dark p-5 space-y-3">
                   <div className="h-10 w-10 rounded-xl bg-[#EDE9FE] animate-pulse" />
                   <div className="h-4 w-3/4 rounded-lg bg-[#EDE9FE] animate-pulse" />
                   <div className="h-3 w-full rounded-lg bg-[#F5F3FF] animate-pulse" />
@@ -972,7 +972,7 @@ export default function BrandBookPage() {
               </div>
               <div>
                 <p className="text-xs text-[#64748B] mb-3">Skeleton de tabela</p>
-                <div className="rounded-2xl border border-[#EDE9FE] bg-white overflow-hidden">
+                <div className="rounded-2xl border border-[#EDE9FE] bg-white dark:bg-surface-dark overflow-hidden">
                   <div className="h-10 bg-[#EDE9FE] animate-pulse" />
                   {[1, 2, 3].map((r) => (
                     <div key={r} className="flex gap-4 px-4 py-3 border-b border-[#F5F3FF] last:border-0">

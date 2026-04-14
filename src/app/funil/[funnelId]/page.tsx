@@ -3542,7 +3542,7 @@ export default function FunilDetailPage() {
   if (funnelNotFound) {
     return (
       <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-md text-center">
+        <div className="bg-white dark:bg-surface-dark rounded-xl shadow-sm border border-gray-200 dark:border-white/10 p-8 max-w-md text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
           </div>
@@ -3564,14 +3564,14 @@ export default function FunilDetailPage() {
   return (
     <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50 flex flex-col">
       {/* Header with KPIs */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-20">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 dark:border-white/10/60 sticky top-0 z-20">
         <div className="px-6 py-3">
           <div className="flex flex-col gap-3">
             {/* Row 1: Navigation + funnel info */}
             <div className="flex items-center gap-4 min-w-0">
               <button
                 onClick={() => router.push('/funil')}
-                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors flex-shrink-0"
+                className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 dark:text-white transition-colors flex-shrink-0"
                 title="Voltar ao Hub de Funis"
               >
                 <ChevronLeftIcon className="w-5 h-5" />
@@ -3579,7 +3579,7 @@ export default function FunilDetailPage() {
               </button>
               <div className="min-w-0 flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: funnelColor }} />
-                  <h1 className="text-lg font-bold text-slate-800 truncate">{funnelName || 'Funil de Vendas'}</h1>
+                  <h1 className="text-lg font-bold text-slate-800 dark:text-white truncate">{funnelName || 'Funil de Vendas'}</h1>
                   <span className="hidden sm:inline text-slate-300 flex-shrink-0">·</span>
                   <span className="hidden sm:inline text-sm text-slate-500 flex-shrink-0 whitespace-nowrap">{globalMetrics.totalContacts} contato{globalMetrics.totalContacts !== 1 ? 's' : ''}</span>
                   {/* Automation Status Pill (clicável) */}
@@ -3594,7 +3594,7 @@ export default function FunilDetailPage() {
                             ? 'bg-green-100 text-green-700 hover:bg-green-200'
                             : autoConfig.enabled
                             ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                            : 'bg-slate-100 dark:bg-white/10 text-slate-500 hover:bg-slate-200'
                         }`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${
@@ -3613,8 +3613,8 @@ export default function FunilDetailPage() {
                       {showAutoPanel && (
                         <>
                           <div className="fixed inset-0 z-40" onClick={() => setShowAutoPanel(false)} />
-                          <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/10">
-                            <h4 className="text-sm font-semibold text-slate-900 mb-3">Status da Cadência</h4>
+                          <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl bg-white dark:bg-surface-dark p-4 shadow-xl ring-1 ring-black/10">
+                            <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Status da Cadência</h4>
 
                             {/* Status geral */}
                             <div className="space-y-2 text-xs">
@@ -3628,7 +3628,7 @@ export default function FunilDetailPage() {
                               {/* Último processamento */}
                               <div className="flex justify-between">
                                 <span className="text-slate-500">Último cron</span>
-                                <span className="text-slate-700 font-medium">
+                                <span className="text-slate-700 dark:text-slate-300 font-medium">
                                   {autoConfig.lastCronRunAt ? (() => {
                                     const mins = Math.round((Date.now() - new Date(autoConfig.lastCronRunAt).getTime()) / 60000)
                                     return mins < 1 ? 'agora' : mins < 60 ? `${mins} min atrás` : `${Math.round(mins / 60)}h atrás`
@@ -3641,11 +3641,11 @@ export default function FunilDetailPage() {
                                 <>
                                   <div className="flex justify-between">
                                     <span className="text-slate-500">Ações hoje</span>
-                                    <span className="text-slate-700 font-medium">
+                                    <span className="text-slate-700 dark:text-slate-300 font-medium">
                                       {autoConfig.lastCronStats.todayActions} / {autoConfig.lastCronStats.maxActionsPerDay}
                                     </span>
                                   </div>
-                                  <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                  <div className="w-full bg-slate-100 dark:bg-white/10 rounded-full h-1.5">
                                     <div
                                       className="bg-primary-500 h-1.5 rounded-full transition-all"
                                       style={{ width: `${Math.min(100, (autoConfig.lastCronStats.todayActions / autoConfig.lastCronStats.maxActionsPerDay) * 100)}%` }}
@@ -3683,7 +3683,7 @@ export default function FunilDetailPage() {
                                     <span className="text-slate-700 dark:text-slate-300">Progresso</span>
                                     <span className="text-green-600 font-medium">{activeQueue.completedItems}/{activeQueue.totalItems}</span>
                                   </div>
-                                  <div className="w-full bg-slate-100 rounded-full h-1.5 mt-1">
+                                  <div className="w-full bg-slate-100 dark:bg-white/10 rounded-full h-1.5 mt-1">
                                     <div
                                       className="bg-green-500 h-1.5 rounded-full transition-all"
                                       style={{ width: `${activeQueue.totalItems > 0 ? (activeQueue.completedItems / activeQueue.totalItems) * 100 : 0}%` }}
@@ -3773,7 +3773,7 @@ export default function FunilDetailPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar por nome, telefone, CNPJ, sócio..."
-                  className="w-full sm:w-56 lg:w-72 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
+                  className="w-full sm:w-56 lg:w-72 pl-10 pr-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white/80"
                 />
               </div>
 
@@ -3784,7 +3784,7 @@ export default function FunilDetailPage() {
                 <select
                   value={viewMode}
                   onChange={e => setViewMode(e.target.value as ViewMode)}
-                  className="appearance-none bg-white rounded-lg ring-1 ring-slate-200 pl-3 pr-8 py-1.5 text-sm font-medium text-slate-700 cursor-pointer hover:ring-primary-300 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="appearance-none bg-white dark:bg-surface-dark rounded-lg ring-1 ring-slate-200 pl-3 pr-8 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer hover:ring-primary-300 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="kanban">Kanban</option>
                   <option value="table">Hoje{contactsToday.length > 0 ? ` (${contactsToday.length})` : ''}</option>
@@ -3799,7 +3799,7 @@ export default function FunilDetailPage() {
                   <select
                     value={filterAssignedTo}
                     onChange={(e) => setFilterAssignedTo(e.target.value)}
-                    className="px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 max-w-[160px]"
+                    className="px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 max-w-[160px]"
                   >
                     <option value="">Todos responsáveis</option>
                     <option value="__none__">Sem responsável</option>
@@ -3817,7 +3817,7 @@ export default function FunilDetailPage() {
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
                       activeAdvancedFiltersCount > 0
                         ? 'bg-primary-100 text-primary-700 border-2 border-primary-400'
-                        : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                        : 'bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:bg-slate-50'
                     }`}
                   >
                     <FunnelIcon className="w-4 h-4" />
@@ -3849,13 +3849,13 @@ export default function FunilDetailPage() {
                       className="fixed inset-0 z-40"
                       onClick={() => setActionsMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-12 z-50 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 top-12 z-50 w-56 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-white/10 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
                       <button
                         onClick={() => guard(() => {
                           setShowNewContactModal(true)
                           setActionsMenuOpen(false)
                         })}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
                           <UserPlusIcon className="w-4 h-4 text-primary-600" />
@@ -3871,10 +3871,10 @@ export default function FunilDetailPage() {
                           setShowSettings(true)
                           setActionsMenuOpen(false)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                          <GearIcon className="w-4 h-4 text-slate-600" />
+                        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/10 flex items-center justify-center">
+                          <GearIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-800 dark:text-white">Configurar Etapas</p>
@@ -3887,7 +3887,7 @@ export default function FunilDetailPage() {
                           setShowBulkMoveModal(true)
                           setActionsMenuOpen(false)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
                           <ArrowsRightLeftIcon className="w-4 h-4 text-amber-600" />
@@ -3901,7 +3901,7 @@ export default function FunilDetailPage() {
                       <Link
                         href="/ligacoes"
                         onClick={() => setActionsMenuOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
                           <PhoneIcon className="w-4 h-4 text-green-600" />
@@ -3918,7 +3918,7 @@ export default function FunilDetailPage() {
                             setShowBulkCostCenterModal(true)
                             setActionsMenuOpen(false)
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                         >
                           <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
                             <CurrencyDollarIcon className="w-4 h-4 text-primary-600" />
@@ -3936,7 +3936,7 @@ export default function FunilDetailPage() {
                             setBulkSelectMode(true)
                             setActionsMenuOpen(false)
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                         >
                           <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
                             <ArrowsRightLeftIcon className="w-4 h-4 text-violet-600" />
@@ -3953,7 +3953,7 @@ export default function FunilDetailPage() {
                           setShowReportModal(true)
                           setActionsMenuOpen(false)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                           <ChartBarIcon className="w-4 h-4 text-blue-600" />
@@ -3969,7 +3969,7 @@ export default function FunilDetailPage() {
                       <Link
                         href={`/cadencia?funnelId=${funnelId}`}
                         onClick={() => setActionsMenuOpen(false)}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
                       >
                         <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
                           <SparklesIcon className="w-4 h-4 text-primary-600" />
@@ -4189,7 +4189,7 @@ export default function FunilDetailPage() {
               {/* Clear All Button */}
               <button
                 onClick={clearAdvancedFilters}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-xs font-medium transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:text-white hover:bg-slate-100 dark:bg-white/10 rounded-lg text-xs font-medium transition-colors"
               >
                 <Cross2Icon className="w-3 h-3" />
                 Limpar tudo
@@ -4207,7 +4207,7 @@ export default function FunilDetailPage() {
           </div>
         ) : viewMode === 'table' ? (
           /* Table View - Contacts to contact today */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-red-50 to-orange-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -4227,7 +4227,7 @@ export default function FunilDetailPage() {
                   {hasActiveTableFilters && (
                     <button
                       onClick={clearTableFilters}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark hover:bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10 transition-colors"
                     >
                       <Cross2Icon className="w-3.5 h-3.5" />
                       Limpar filtros
@@ -4249,7 +4249,7 @@ export default function FunilDetailPage() {
             ) : contactsToday.length === 0 && hasActiveTableFilters ? (
               <div className="flex flex-col items-center justify-center py-16 text-slate-400">
                 <FunnelIcon className="w-12 h-12 mb-3" />
-                <p className="text-lg font-medium text-slate-600">Nenhum resultado</p>
+                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">Nenhum resultado</p>
                 <p className="text-sm">Tente ajustar os filtros</p>
                 <button
                   onClick={clearTableFilters}
@@ -4264,7 +4264,7 @@ export default function FunilDetailPage() {
                 {paginatedContactsTodayByStage.map((stageData) => (
                   <div
                     key={stageData.stageName}
-                    className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden"
+                    className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden"
                   >
                     {/* Stage Header */}
                     <div className={`px-4 py-3 border-b border-slate-100 ${stageData.stageColor.bg}`}>
@@ -4285,11 +4285,11 @@ export default function FunilDetailPage() {
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                          <tr className="border-b border-slate-100 bg-slate-50/50">
+                          <tr className="border-b border-slate-100 bg-slate-50 dark:bg-white/5/50">
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('name')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Contato
                                 {tableSortConfig.key === 'name' && (
@@ -4302,7 +4302,7 @@ export default function FunilDetailPage() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('status')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Status
                                 {tableSortConfig.key === 'status' && (
@@ -4315,7 +4315,7 @@ export default function FunilDetailPage() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('stageName')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Etapa
                                 {tableSortConfig.key === 'stageName' && (
@@ -4328,7 +4328,7 @@ export default function FunilDetailPage() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('currentStep')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Step da Cadência
                                 {tableSortConfig.key === 'currentStep' && (
@@ -4341,7 +4341,7 @@ export default function FunilDetailPage() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('daysInStage')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Tempo na Etapa
                                 {tableSortConfig.key === 'daysInStage' && (
@@ -4354,7 +4354,7 @@ export default function FunilDetailPage() {
                             <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
                               <button
                                 onClick={() => handleTableSort('daysSinceLastFollowUp')}
-                                className="flex items-center gap-1 hover:text-slate-700 transition-colors"
+                                className="flex items-center gap-1 hover:text-slate-700 dark:text-slate-300 transition-colors"
                               >
                                 Último FUP
                                 {tableSortConfig.key === 'daysSinceLastFollowUp' && (
@@ -4393,7 +4393,7 @@ export default function FunilDetailPage() {
 
                     {/* Stage Pagination */}
                     {stageData.totalPages > 1 && (
-                      <div className="flex items-center justify-between px-4 py-2.5 border-t border-slate-100 bg-slate-50/30">
+                      <div className="flex items-center justify-between px-4 py-2.5 border-t border-slate-100 bg-slate-50 dark:bg-white/5/30">
                         <span className="text-xs text-slate-500">
                           {((stageData.currentPage - 1) * ITEMS_PER_STAGE_TABLE) + 1} - {Math.min(stageData.currentPage * ITEMS_PER_STAGE_TABLE, stageData.totalContacts)} de {stageData.totalContacts}
                         </span>
@@ -4401,17 +4401,17 @@ export default function FunilDetailPage() {
                           <button
                             onClick={() => handleStageTablePageChange(stageData.stageName, stageData.currentPage - 1)}
                             disabled={stageData.currentPage === 1}
-                            className="px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                           >
                             Anterior
                           </button>
-                          <span className="px-2 py-1 text-xs font-medium text-slate-600">
+                          <span className="px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
                             {stageData.currentPage} / {stageData.totalPages}
                           </span>
                           <button
                             onClick={() => handleStageTablePageChange(stageData.stageName, stageData.currentPage + 1)}
                             disabled={stageData.currentPage === stageData.totalPages}
-                            className="px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                            className="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-md disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                           >
                             Próximo
                           </button>
@@ -4425,7 +4425,7 @@ export default function FunilDetailPage() {
           </div>
         ) : viewMode === 'calendar' ? (
           /* Calendar View */
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
             {/* Calendar Header */}
             <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
               <div className="flex items-center justify-between">
@@ -4443,11 +4443,11 @@ export default function FunilDetailPage() {
 
                 <div className="flex items-center gap-4">
                   {/* Calendar View Selector */}
-                  <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
+                  <div className="flex items-center bg-slate-100 dark:bg-white/10 rounded-lg p-0.5">
                     <button
                       onClick={() => setCalendarView('day')}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        calendarView === 'day' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'
+                        calendarView === 'day' ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm' : 'text-slate-600'
                       }`}
                     >
                       Dia
@@ -4455,7 +4455,7 @@ export default function FunilDetailPage() {
                     <button
                       onClick={() => setCalendarView('week')}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        calendarView === 'week' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'
+                        calendarView === 'week' ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm' : 'text-slate-600'
                       }`}
                     >
                       Semana
@@ -4463,7 +4463,7 @@ export default function FunilDetailPage() {
                     <button
                       onClick={() => setCalendarView('month')}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                        calendarView === 'month' ? 'bg-white text-primary-700 shadow-sm' : 'text-slate-600'
+                        calendarView === 'month' ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm' : 'text-slate-600'
                       }`}
                     >
                       Mês
@@ -4474,9 +4474,9 @@ export default function FunilDetailPage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => navigateCalendar('prev')}
-                      className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="p-2 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                     >
-                      <ChevronLeftIcon className="w-4 h-4 text-slate-600" />
+                      <ChevronLeftIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     </button>
                     <button
                       onClick={goToToday}
@@ -4486,9 +4486,9 @@ export default function FunilDetailPage() {
                     </button>
                     <button
                       onClick={() => navigateCalendar('next')}
-                      className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="p-2 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                     >
-                      <ChevronRightIcon className="w-4 h-4 text-slate-600" />
+                      <ChevronRightIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     </button>
                   </div>
                 </div>
@@ -4513,7 +4513,7 @@ export default function FunilDetailPage() {
                   <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10">
                     <div className="flex items-center gap-4">
                       <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center ${
-                        isToday(calendarDate) ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-700'
+                        isToday(calendarDate) ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-700'
                       }`}>
                         <span className="text-[10px] uppercase font-medium opacity-80">
                           {calendarDate.toLocaleDateString('pt-BR', { weekday: 'short' })}
@@ -4583,7 +4583,7 @@ export default function FunilDetailPage() {
                                 ? 'border-red-400 bg-red-50 hover:bg-red-100'
                                 : contact.isDueToday
                                 ? 'border-amber-400 bg-amber-50 hover:bg-amber-100'
-                                : 'border-primary-400 bg-white hover:bg-slate-50 shadow-sm'
+                                : 'border-primary-400 bg-white dark:bg-surface-dark hover:bg-slate-50 dark:bg-white/5 shadow-sm'
                             }`}
                           >
                             <div className="flex items-start gap-4">
@@ -4620,7 +4620,7 @@ export default function FunilDetailPage() {
                                       )}
                                     </div>
                                     {contact.company && (
-                                      <p className="text-sm text-slate-600 mt-0.5">{contact.company}</p>
+                                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">{contact.company}</p>
                                     )}
                                   </div>
                                 </div>
@@ -4666,7 +4666,7 @@ export default function FunilDetailPage() {
                                   </button>
                                   <button
                                     onClick={(e) => { e.stopPropagation(); setSelectedClient(contact); }}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-200 transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium hover:bg-slate-200 transition-colors"
                                   >
                                     <PersonIcon className="w-3.5 h-3.5" />
                                     Ver detalhes
@@ -4686,7 +4686,7 @@ export default function FunilDetailPage() {
                 /* Week View - Google Calendar Style */
                 <div className="flex flex-col h-[calc(100vh-320px)] min-h-[500px]">
                   {/* Week Header */}
-                  <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 rounded-t-xl">
+                  <div className="grid grid-cols-7 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 rounded-t-xl">
                     {getWeekDays(calendarDate).map((date, idx) => {
                       const dayNames = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
                       const contacts = getContactsForDate(date)
@@ -4761,7 +4761,7 @@ export default function FunilDetailPage() {
                                         ? 'bg-red-50 border-red-400 hover:bg-red-100'
                                         : contact.isDueToday
                                         ? 'bg-amber-50 border-amber-400 hover:bg-amber-100'
-                                        : 'bg-white border-primary-400 hover:bg-slate-50'
+                                        : 'bg-white dark:bg-surface-dark border-primary-400 hover:bg-slate-50'
                                     }`}
                                   >
                                     <div className="flex items-start gap-2">
@@ -4773,7 +4773,7 @@ export default function FunilDetailPage() {
                                         </div>
                                       )}
                                       <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-xs text-slate-800 truncate">{contact.name}</p>
+                                        <p className="font-semibold text-xs text-slate-800 dark:text-white truncate">{contact.name}</p>
                                         <p className="text-[10px] text-slate-500 truncate">
                                           {contact.isScheduledReturn ? 'Agendamento' : contact.stageName}
                                         </p>
@@ -4845,7 +4845,7 @@ export default function FunilDetailPage() {
                           {contacts.length > 0 && (
                             <div className="space-y-0.5">
                               <div className={`text-xs px-1.5 py-0.5 rounded ${
-                                hasOverdue ? 'bg-red-100 text-red-700' : hasDueToday ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
+                                hasOverdue ? 'bg-red-100 text-red-700' : hasDueToday ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 dark:bg-white/10 text-slate-600'
                               }`}>
                                 {contacts.length} contato{contacts.length !== 1 ? 's' : ''}
                               </div>
@@ -4895,10 +4895,10 @@ export default function FunilDetailPage() {
                             <div
                               ref={provided.innerRef}
                               {...provided.droppableProps}
-                              className={`w-72 flex-shrink-0 bg-white rounded-2xl border flex flex-col ${
+                              className={`w-72 flex-shrink-0 bg-white dark:bg-surface-dark rounded-2xl border flex flex-col ${
                                 snapshot.isDraggingOver
                                   ? `${color.border} border-2 shadow-lg`
-                                  : 'border-slate-200/60 shadow-sm'
+                                  : 'border-slate-200 dark:border-white/10/60 shadow-sm'
                               } ${colSnapshot.isDragging ? 'shadow-2xl ring-2 ring-primary-400/50' : ''}`}
                             >
                               {/* Column Header - Drag Handle */}
@@ -5007,12 +5007,12 @@ export default function FunilDetailPage() {
                                           </button>
                                           {sortMenuOpen === stage.id && (
                                             <div
-                                              className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/10"
+                                              className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg bg-white dark:bg-surface-dark py-1 shadow-lg ring-1 ring-black/10"
                                               onClick={(e) => e.stopPropagation()}
                                             >
                                               <button
                                                 type="button"
-                                                className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 transition-colors ${
+                                                className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 dark:bg-white/5 transition-colors ${
                                                   sortType[stage.id] === 'lastContact' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
                                                 }`}
                                                 onClick={() => handleSortStage(stage.id, 'lastContact')}
@@ -5021,7 +5021,7 @@ export default function FunilDetailPage() {
                                               </button>
                                               <button
                                                 type="button"
-                                                className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 transition-colors ${
+                                                className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 dark:bg-white/5 transition-colors ${
                                                   sortType[stage.id] === 'stageTime' ? 'bg-primary-50 text-primary-700 font-medium' : 'text-slate-700'
                                                 }`}
                                                 onClick={() => handleSortStage(stage.id, 'stageTime')}
@@ -5111,17 +5111,17 @@ export default function FunilDetailPage() {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`w-80 flex-shrink-0 bg-slate-50 rounded-2xl border flex flex-col ${
+                        className={`w-80 flex-shrink-0 bg-slate-50 dark:bg-white/5 rounded-2xl border flex flex-col ${
                           snapshot.isDraggingOver
                             ? 'border-slate-400 border-2 shadow-lg'
-                            : 'border-slate-200/60 border-dashed shadow-sm'
+                            : 'border-slate-200 dark:border-white/10/60 border-dashed shadow-sm'
                         }`}
                       >
-                        <div className="px-4 py-3 border-b border-slate-200 bg-slate-100 rounded-t-2xl">
+                        <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/10 rounded-t-2xl">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-slate-600">Sem etapa</h3>
-                              <span className="px-2 py-0.5 bg-slate-200 rounded-full text-xs font-bold text-slate-600">
+                              <h3 className="font-bold text-slate-600 dark:text-slate-400">Sem etapa</h3>
+                              <span className="px-2 py-0.5 bg-slate-200 rounded-full text-xs font-bold text-slate-600 dark:text-slate-400">
                                 {allUnassigned.length}
                               </span>
                             </div>
@@ -5163,7 +5163,7 @@ export default function FunilDetailPage() {
                 {!showQuickAddStage ? (
                   <button
                     onClick={() => setShowQuickAddStage(true)}
-                    className="w-80 min-h-[200px] flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/50 hover:border-primary-400 hover:bg-primary-50/50 transition-all group cursor-pointer"
+                    className="w-80 min-h-[200px] flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 dark:bg-white/5/50 hover:border-primary-400 hover:bg-primary-50/50 transition-all group cursor-pointer"
                   >
                     <div className="w-12 h-12 rounded-xl bg-slate-200 group-hover:bg-primary-100 flex items-center justify-center transition-colors">
                       <PlusIcon className="w-6 h-6 text-slate-400 group-hover:text-primary-600 transition-colors" />
@@ -5173,7 +5173,7 @@ export default function FunilDetailPage() {
                     </span>
                   </button>
                 ) : (
-                  <div className="w-80 rounded-2xl border border-primary-200 bg-white shadow-xl shadow-primary-100/50 overflow-hidden">
+                  <div className="w-80 rounded-2xl border border-primary-200 bg-white dark:bg-surface-dark shadow-xl shadow-primary-100/50 overflow-hidden">
                     <div className="px-4 py-3 bg-gradient-to-r from-primary-500 to-purple-600 flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                         <PlusIcon className="w-4 h-4" />
@@ -5191,13 +5191,13 @@ export default function FunilDetailPage() {
                     </div>
                     <div className="p-4 space-y-3">
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Nome da Etapa</label>
+                        <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nome da Etapa</label>
                         <input
                           type="text"
                           value={newStageName}
                           onChange={(e) => setNewStageName(e.target.value)}
                           placeholder="Ex: Qualificação"
-                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
+                          className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                           autoFocus
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && newStageName.trim()) {
@@ -5212,7 +5212,7 @@ export default function FunilDetailPage() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">Cor</label>
+                        <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Cor</label>
                         <div className="flex gap-1.5">
                           {stageColorOptions.map((opt, colorIdx) => (
                             <button
@@ -5226,7 +5226,7 @@ export default function FunilDetailPage() {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                           Probabilidade: {newStageProbability}%
                         </label>
                         <input
@@ -5244,7 +5244,7 @@ export default function FunilDetailPage() {
                             !!newStageName.trim(),
                             () => { setShowQuickAddStage(false); setNewStageName(''); setNewStageColor(0); setNewStageProbability(50) }
                           )}
-                          className="flex-1 px-3 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
+                          className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 rounded-lg text-sm font-medium hover:bg-slate-50 dark:bg-white/5 transition-colors"
                         >
                           Cancelar
                         </button>
@@ -5287,7 +5287,7 @@ export default function FunilDetailPage() {
       {showSettings && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowSettings(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden m-4 flex flex-col">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden m-4 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
@@ -5301,7 +5301,7 @@ export default function FunilDetailPage() {
               </div>
               <button
                 onClick={() => setShowSettings(false)}
-                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
@@ -5330,23 +5330,23 @@ export default function FunilDetailPage() {
                       <div
                         key={macroStage.id}
                         className={`p-3 rounded-lg border transition-all ${
-                          isEditingMacro ? 'border-primary-300 bg-primary-50' : 'border-primary-200 bg-white hover:border-primary-300'
+                          isEditingMacro ? 'border-primary-300 bg-primary-50' : 'border-primary-200 bg-white dark:bg-surface-dark hover:border-primary-300'
                         }`}
                       >
                         {isEditingMacro ? (
                           <div className="space-y-3">
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">Nome</label>
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nome</label>
                                 <input
                                   type="text"
                                   value={editingMacroStage.name}
                                   onChange={(e) => setEditingMacroStage({ ...editingMacroStage, name: e.target.value })}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">Cor da Borda</label>
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Cor da Borda</label>
                                 <div className="flex gap-1">
                                   {stageColorOptions.map((opt, colorIdx) => (
                                     <button
@@ -5363,7 +5363,7 @@ export default function FunilDetailPage() {
                             <div className="flex justify-end gap-2">
                               <button
                                 onClick={() => setEditingMacroStage(null)}
-                                className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                               >
                                 Cancelar
                               </button>
@@ -5388,14 +5388,14 @@ export default function FunilDetailPage() {
                                 <button
                                   onClick={() => handleReorderMacroStage(macroStage.id, 'up')}
                                   disabled={index === 0}
-                                  className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
+                                  className="p-0.5 hover:bg-slate-100 dark:bg-white/10 rounded disabled:opacity-30"
                                 >
                                   <ChevronUpIcon className="w-3 h-3 text-slate-400" />
                                 </button>
                                 <button
                                   onClick={() => handleReorderMacroStage(macroStage.id, 'down')}
                                   disabled={index === macroStages.length - 1}
-                                  className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
+                                  className="p-0.5 hover:bg-slate-100 dark:bg-white/10 rounded disabled:opacity-30"
                                 >
                                   <ChevronDownIcon className="w-3 h-3 text-slate-400" />
                                 </button>
@@ -5409,7 +5409,7 @@ export default function FunilDetailPage() {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => setEditingMacroStage(macroStage)}
-                                className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                                className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                               >
                                 <Pencil1Icon className="w-3.5 h-3.5 text-slate-500" />
                               </button>
@@ -5432,7 +5432,7 @@ export default function FunilDetailPage() {
                             <div className="flex gap-2">
                               <button
                                 onClick={() => setDeletingMacroStageId(null)}
-                                className="px-3 py-1 text-xs text-slate-600 hover:bg-white rounded transition-colors"
+                                className="px-3 py-1 text-xs text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-surface-dark rounded transition-colors"
                               >
                                 Cancelar
                               </button>
@@ -5451,20 +5451,20 @@ export default function FunilDetailPage() {
                 </div>
 
                 {/* Add New Macro Stage */}
-                <div className="p-3 bg-white rounded-lg border border-primary-200">
+                <div className="p-3 bg-white dark:bg-surface-dark rounded-lg border border-primary-200">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Nova Macro Etapa</label>
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nova Macro Etapa</label>
                       <input
                         type="text"
                         value={newMacroStageName}
                         onChange={(e) => setNewMacroStageName(e.target.value)}
                         placeholder="Ex: Qualificacao"
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Cor da Borda</label>
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Cor da Borda</label>
                       <div className="flex gap-1 mt-1">
                         {stageColorOptions.map((opt, colorIdx) => (
                           <button
@@ -5495,7 +5495,7 @@ export default function FunilDetailPage() {
 
               {/* Existing Stages */}
               <div>
-                <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                   <ArrowTrendingUpIcon className="w-4 h-4" />
                   Etapas do Funil ({funnelStages.length})
                 </h4>
@@ -5508,23 +5508,23 @@ export default function FunilDetailPage() {
                       <div
                         key={stage.id}
                         className={`p-4 rounded-xl border transition-all ${
-                          isEditing ? 'border-primary-300 bg-primary-50' : 'border-slate-200 bg-white hover:border-slate-300'
+                          isEditing ? 'border-primary-300 bg-primary-50' : 'border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark hover:border-slate-300'
                         }`}
                       >
                         {isEditing ? (
                           <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">Nome</label>
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nome</label>
                                 <input
                                   type="text"
                                   value={editingStage.name}
                                   onChange={(e) => setEditingStage({ ...editingStage, name: e.target.value })}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">Cor</label>
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Cor</label>
                                 <div className="flex gap-1">
                                   {stageColorOptions.map((opt, colorIdx) => (
                                     <button
@@ -5540,7 +5540,7 @@ export default function FunilDetailPage() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                                   Probabilidade de Fechamento
                                 </label>
                                 <div className="flex items-center gap-2">
@@ -5558,7 +5558,7 @@ export default function FunilDetailPage() {
                                 </div>
                               </div>
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                                   Prazo Máximo (dias)
                                 </label>
                                 <input
@@ -5566,20 +5566,20 @@ export default function FunilDetailPage() {
                                   min="1"
                                   value={editingStage.maxDays || 7}
                                   onChange={(e) => setEditingStage({ ...editingStage, maxDays: parseInt(e.target.value) || 7 })}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                                 />
                               </div>
                             </div>
                             {/* Macro Stage Selector */}
                             {macroStages.length > 0 && (
                               <div>
-                                <label className="block text-xs font-medium text-slate-600 mb-1">
+                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                                   Macro Etapa (Grupo)
                                 </label>
                                 <select
                                   value={editingStage.macroStageId || ''}
                                   onChange={(e) => setEditingStage({ ...editingStage, macroStageId: e.target.value || undefined })}
-                                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
+                                  className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                                 >
                                   <option value="">Sem grupo</option>
                                   {macroStages.map((macro) => (
@@ -5591,7 +5591,7 @@ export default function FunilDetailPage() {
                               </div>
                             )}
                             {/* Metrics Toggle */}
-                            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-white/5 rounded-lg">
                               <div>
                                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Conta para métricas</p>
                                 <p className="text-xs text-slate-500">Incluir no cálculo de tempo e atraso</p>
@@ -5603,7 +5603,7 @@ export default function FunilDetailPage() {
                                   editingStage.countsForMetrics !== false ? 'bg-primary-600' : 'bg-slate-300'
                                 }`}
                               >
-                                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${
+                                <div className={`absolute top-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow-sm transition-transform ${
                                   editingStage.countsForMetrics !== false ? 'translate-x-5.5 left-0.5' : 'left-0.5'
                                 }`} style={{ transform: editingStage.countsForMetrics !== false ? 'translateX(22px)' : 'translateX(0)' }} />
                               </button>
@@ -5621,12 +5621,12 @@ export default function FunilDetailPage() {
                                   editingStage.isProspectionStage ? 'bg-emerald-600' : 'bg-slate-300'
                                 }`}
                               >
-                                <div className="absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform" style={{ transform: editingStage.isProspectionStage ? 'translateX(22px)' : 'translateX(0)', left: '2px' }} />
+                                <div className="absolute top-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow-sm transition-transform" style={{ transform: editingStage.isProspectionStage ? 'translateX(22px)' : 'translateX(0)', left: '2px' }} />
                               </button>
                             </div>
                             {/* Conversion Type Selector */}
                             <div>
-                              <label className="block text-xs font-medium text-slate-600 mb-2">
+                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">
                                 Tipo de Conversão
                               </label>
                               <div className="grid grid-cols-2 gap-2">
@@ -5635,8 +5635,8 @@ export default function FunilDetailPage() {
                                   onClick={() => setEditingStage({ ...editingStage, conversionType: 'neutral' })}
                                   className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                                     (editingStage.conversionType || 'neutral') === 'neutral'
-                                      ? 'border-slate-400 bg-slate-100 text-slate-700'
-                                      : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                                      ? 'border-slate-400 bg-slate-100 dark:bg-white/10 text-slate-700'
+                                      : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-slate-300'
                                   }`}
                                 >
                                   Neutro
@@ -5647,7 +5647,7 @@ export default function FunilDetailPage() {
                                   className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                                     editingStage.conversionType === 'positive'
                                       ? 'border-emerald-400 bg-emerald-100 text-emerald-700'
-                                      : 'border-slate-200 text-slate-500 hover:border-emerald-300'
+                                      : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-emerald-300'
                                   }`}
                                 >
                                   Positivo (Promotor)
@@ -5658,7 +5658,7 @@ export default function FunilDetailPage() {
                                   className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                                     editingStage.conversionType === 'negative'
                                       ? 'border-red-400 bg-red-100 text-red-700'
-                                      : 'border-slate-200 text-slate-500 hover:border-red-300'
+                                      : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-red-300'
                                   }`}
                                 >
                                   Negativo (Detrator)
@@ -5669,7 +5669,7 @@ export default function FunilDetailPage() {
                                   className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                                     editingStage.conversionType === 'final_conversion'
                                       ? 'border-primary-400 bg-primary-100 text-primary-700'
-                                      : 'border-slate-200 text-slate-500 hover:border-primary-300'
+                                      : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-primary-300'
                                   }`}
                                 >
                                   Conversão Final
@@ -5682,7 +5682,7 @@ export default function FunilDetailPage() {
                             <div className="flex justify-end gap-2">
                               <button
                                 onClick={() => setEditingStage(null)}
-                                className="px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                               >
                                 Cancelar
                               </button>
@@ -5707,14 +5707,14 @@ export default function FunilDetailPage() {
                                 <button
                                   onClick={() => handleReorderStage(stage.id, 'up')}
                                   disabled={index === 0}
-                                  className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
+                                  className="p-0.5 hover:bg-slate-100 dark:bg-white/10 rounded disabled:opacity-30"
                                 >
                                   <ChevronUpIcon className="w-3 h-3 text-slate-400" />
                                 </button>
                                 <button
                                   onClick={() => handleReorderStage(stage.id, 'down')}
                                   disabled={index === funnelStages.length - 1}
-                                  className="p-0.5 hover:bg-slate-100 rounded disabled:opacity-30"
+                                  className="p-0.5 hover:bg-slate-100 dark:bg-white/10 rounded disabled:opacity-30"
                                 >
                                   <ChevronDownIcon className="w-3 h-3 text-slate-400" />
                                 </button>
@@ -5729,7 +5729,7 @@ export default function FunilDetailPage() {
                                     </span>
                                   )}
                                   {stage.countsForMetrics === false && (
-                                    <span className="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">
+                                    <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/10 text-slate-500 text-xs rounded">
                                       Não conta métricas
                                     </span>
                                   )}
@@ -5757,7 +5757,7 @@ export default function FunilDetailPage() {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => setEditingStage(stage)}
-                                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                className="p-2 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                               >
                                 <Pencil1Icon className="w-4 h-4 text-slate-500" />
                               </button>
@@ -5785,17 +5785,17 @@ export default function FunilDetailPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Nome da Etapa</label>
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nome da Etapa</label>
                       <input
                         type="text"
                         value={newStageName}
                         onChange={(e) => setNewStageName(e.target.value)}
                         placeholder="Ex: Qualificação"
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Cor</label>
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Cor</label>
                       <div className="flex gap-1.5">
                         {stageColorOptions.map((opt, colorIdx) => (
                           <button
@@ -5811,7 +5811,7 @@ export default function FunilDetailPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                         Probabilidade de Fechamento
                       </label>
                       <div className="flex items-center gap-2">
@@ -5829,7 +5829,7 @@ export default function FunilDetailPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                         Prazo Máximo (dias)
                       </label>
                       <input
@@ -5837,20 +5837,20 @@ export default function FunilDetailPage() {
                         min="1"
                         value={newStageMaxDays}
                         onChange={(e) => setNewStageMaxDays(parseInt(e.target.value) || 7)}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                       />
                     </div>
                   </div>
                   {/* Macro Stage Selector */}
                   {macroStages.length > 0 && (
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                         Macro Etapa (Grupo)
                       </label>
                       <select
                         value={newStageMacroStageId}
                         onChange={(e) => setNewStageMacroStageId(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                       >
                         <option value="">Sem grupo</option>
                         {macroStages.map((macro) => (
@@ -5862,7 +5862,7 @@ export default function FunilDetailPage() {
                     </div>
                   )}
                   {/* Metrics Toggle */}
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200 dark:border-white/10">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-surface-dark rounded-lg border border-slate-200 dark:border-white/10">
                     <div>
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Conta para métricas</p>
                       <p className="text-xs text-slate-500">Incluir no cálculo de tempo e atraso</p>
@@ -5875,14 +5875,14 @@ export default function FunilDetailPage() {
                       }`}
                     >
                       <div
-                        className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform"
+                        className="absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow-sm transition-transform"
                         style={{ transform: newStageCountsForMetrics ? 'translateX(22px)' : 'translateX(0)' }}
                       />
                     </button>
                   </div>
                   {/* Conversion Type Selector */}
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-2">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Tipo de Conversão
                     </label>
                     <div className="grid grid-cols-2 gap-2">
@@ -5891,8 +5891,8 @@ export default function FunilDetailPage() {
                         onClick={() => setNewStageConversionType('neutral')}
                         className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                           newStageConversionType === 'neutral'
-                            ? 'border-slate-400 bg-slate-100 text-slate-700'
-                            : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                            ? 'border-slate-400 bg-slate-100 dark:bg-white/10 text-slate-700'
+                            : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-slate-300'
                         }`}
                       >
                         Neutro
@@ -5903,7 +5903,7 @@ export default function FunilDetailPage() {
                         className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                           newStageConversionType === 'positive'
                             ? 'border-emerald-400 bg-emerald-100 text-emerald-700'
-                            : 'border-slate-200 text-slate-500 hover:border-emerald-300'
+                            : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-emerald-300'
                         }`}
                       >
                         Positivo (Promotor)
@@ -5914,7 +5914,7 @@ export default function FunilDetailPage() {
                         className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                           newStageConversionType === 'negative'
                             ? 'border-red-400 bg-red-100 text-red-700'
-                            : 'border-slate-200 text-slate-500 hover:border-red-300'
+                            : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-red-300'
                         }`}
                       >
                         Negativo (Detrator)
@@ -5925,7 +5925,7 @@ export default function FunilDetailPage() {
                         className={`p-2 rounded-lg border text-xs font-medium transition-all ${
                           newStageConversionType === 'final_conversion'
                             ? 'border-primary-400 bg-primary-100 text-primary-700'
-                            : 'border-slate-200 text-slate-500 hover:border-primary-300'
+                            : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-primary-300'
                         }`}
                       >
                         Conversão Final
@@ -5959,37 +5959,37 @@ export default function FunilDetailPage() {
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-blue-500 rounded flex items-center justify-center text-white font-bold">10%</span>
-                    <span className="text-slate-600">Novo Lead / Prospecção</span>
+                    <span className="text-slate-600 dark:text-slate-400">Novo Lead / Prospecção</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-cyan-500 rounded flex items-center justify-center text-white font-bold">20%</span>
-                    <span className="text-slate-600">Primeiro Contato</span>
+                    <span className="text-slate-600 dark:text-slate-400">Primeiro Contato</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-amber-500 rounded flex items-center justify-center text-white font-bold">40%</span>
-                    <span className="text-slate-600">Qualificação</span>
+                    <span className="text-slate-600 dark:text-slate-400">Qualificação</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-primary-500 rounded flex items-center justify-center text-white font-bold">60%</span>
-                    <span className="text-slate-600">Proposta Enviada</span>
+                    <span className="text-slate-600 dark:text-slate-400">Proposta Enviada</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-orange-500 rounded flex items-center justify-center text-white font-bold">80%</span>
-                    <span className="text-slate-600">Negociação</span>
+                    <span className="text-slate-600 dark:text-slate-400">Negociação</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-5 bg-emerald-500 rounded flex items-center justify-center text-white font-bold">100%</span>
-                    <span className="text-slate-600">Fechado Ganho</span>
+                    <span className="text-slate-600 dark:text-slate-400">Fechado Ganho</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50 dark:bg-white/5/50">
               <button
                 onClick={() => setShowSettings(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-surface-dark rounded-xl transition-colors"
               >
                 Fechar
               </button>
@@ -6002,7 +6002,7 @@ export default function FunilDetailPage() {
       {deletingStageId && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeletingStageId(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -6012,13 +6012,13 @@ export default function FunilDetailPage() {
                 <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir esta etapa? Todos os contatos serão movidos para &quot;Sem etapa&quot;.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setDeletingStageId(null)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -6041,9 +6041,9 @@ export default function FunilDetailPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => !savingEditContact && setShowEditContactModal(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-white dark:bg-surface-dark border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <Pencil1Icon className="w-5 h-5 text-white" />
@@ -6055,7 +6055,7 @@ export default function FunilDetailPage() {
               </div>
               <button
                 onClick={() => setShowEditContactModal(false)}
-                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-5 h-5 text-slate-500" />
               </button>
@@ -6079,7 +6079,7 @@ export default function FunilDetailPage() {
                   </div>
                 )}
                 <div>
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 cursor-pointer transition-colors">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -6099,7 +6099,7 @@ export default function FunilDetailPage() {
               {/* Form fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Nome <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -6109,13 +6109,13 @@ export default function FunilDetailPage() {
                       value={editContactForm.name}
                       onChange={(e) => setEditContactForm({ ...editContactForm, name: e.target.value })}
                       placeholder="Nome do contato"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Telefone <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -6125,13 +6125,13 @@ export default function FunilDetailPage() {
                       value={editContactForm.phone}
                       onChange={(e) => setEditContactForm({ ...editContactForm, phone: e.target.value })}
                       placeholder="(00) 00000-0000"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
                   <div className="relative">
                     <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -6139,13 +6139,13 @@ export default function FunilDetailPage() {
                       value={editContactForm.email}
                       onChange={(e) => setEditContactForm({ ...editContactForm, email: e.target.value })}
                       placeholder="email@exemplo.com"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Empresa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Empresa</label>
                   <div className="relative">
                     <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -6153,39 +6153,39 @@ export default function FunilDetailPage() {
                       value={editContactForm.company}
                       onChange={(e) => setEditContactForm({ ...editContactForm, company: e.target.value })}
                       placeholder="Nome da empresa"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">CNPJ / CPF</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">CNPJ / CPF</label>
                   <input
                     type="text"
                     value={editContactForm.document}
                     onChange={(e) => setEditContactForm({ ...editContactForm, document: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ramo de atuação</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ramo de atuação</label>
                   <input
                     type="text"
                     value={editContactForm.industry}
                     onChange={(e) => setEditContactForm({ ...editContactForm, industry: e.target.value })}
                     placeholder="Ex: Tecnologia, Varejo..."
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Origem do Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Origem do Lead</label>
                   <select
                     value={editContactForm.leadSource}
                     onChange={(e) => setEditContactForm({ ...editContactForm, leadSource: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadSourceOptions.map((opt) => (
@@ -6195,11 +6195,11 @@ export default function FunilDetailPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Lead</label>
                   <select
                     value={editContactForm.leadType}
                     onChange={(e) => setEditContactForm({ ...editContactForm, leadType: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadTypeOptions.map((opt) => (
@@ -6209,44 +6209,44 @@ export default function FunilDetailPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Aniversário</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Aniversário</label>
                   <input
                     type="date"
                     value={editContactForm.birthday}
                     onChange={(e) => setEditContactForm({ ...editContactForm, birthday: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Alerta de retorno</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alerta de retorno</label>
                   <input
                     type="date"
                     value={editContactForm.returnAlert}
                     onChange={(e) => setEditContactForm({ ...editContactForm, returnAlert: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Descrição</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Descrição</label>
                   <textarea
                     value={editContactForm.description}
                     onChange={(e) => setEditContactForm({ ...editContactForm, description: e.target.value })}
                     placeholder="Descrição da empresa ou notas sobre o contato..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 dark:bg-white/5 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowEditContactModal(false)}
                 disabled={savingEditContact}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -6275,7 +6275,7 @@ export default function FunilDetailPage() {
       {deletingClient && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !deletingClientLoading && setDeletingClient(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -6285,14 +6285,14 @@ export default function FunilDetailPage() {
                 <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir <strong>{deletingClient.name}</strong>? Todos os dados, anotações e histórico deste contato serão removidos permanentemente.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setDeletingClient(null)}
                 disabled={deletingClientLoading}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -6323,9 +6323,9 @@ export default function FunilDetailPage() {
               () => { setSelectedClient(null); setNewNote(''); setEditingComments(false) }
             )}
           />
-          <div className="relative ml-auto w-full max-w-6xl bg-white shadow-2xl flex flex-col lg:flex-row h-full overflow-y-auto lg:overflow-hidden">
+          <div className="relative ml-auto w-full max-w-6xl bg-white dark:bg-surface-dark shadow-2xl flex flex-col lg:flex-row h-full overflow-y-auto lg:overflow-hidden">
             {/* Left side - Client Info */}
-            <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
+            <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-white/10 flex flex-col lg:h-full overflow-visible lg:overflow-hidden">
               {/* Client Header */}
               <div className="px-4 sm:px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
                 <div className="flex items-center gap-4">
@@ -6343,7 +6343,7 @@ export default function FunilDetailPage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-xl font-bold text-slate-800 truncate">{selectedClient.name}</h2>
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white truncate">{selectedClient.name}</h2>
                     {selectedClient.company && (
                       <p className="text-sm text-slate-500 flex items-center gap-1.5">
                         <BuildingOfficeIcon className="w-4 h-4" />
@@ -6367,7 +6367,7 @@ export default function FunilDetailPage() {
                               className="fixed inset-0 z-10"
                               onClick={() => { setFunnelDropdownOpen(false); setFunnelDropdownStep('funnels'); setMoveFunnelTarget('') }}
                             />
-                            <div className="absolute left-0 top-full mt-1 z-20 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 max-h-64 overflow-y-auto">
+                            <div className="absolute left-0 top-full mt-1 z-20 w-56 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-white/10 py-2 max-h-64 overflow-y-auto">
                               {funnelDropdownStep === 'funnels' ? (
                                 <>
                                   {allOrgFunnels.map((f) => {
@@ -6383,7 +6383,7 @@ export default function FunilDetailPage() {
                                             setFunnelDropdownStep('stages')
                                           }
                                         }}
-                                        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors ${isCurrentFunnel ? 'bg-violet-50' : ''}`}
+                                        className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors ${isCurrentFunnel ? 'bg-violet-50' : ''}`}
                                       >
                                         <FunnelIcon className="w-3.5 h-3.5 text-violet-500" />
                                         <span className={`text-sm flex-1 ${isCurrentFunnel ? 'font-medium text-violet-700' : 'text-slate-700'}`}>
@@ -6409,7 +6409,7 @@ export default function FunilDetailPage() {
                                         key={stage.id}
                                         onClick={() => handleMoveToFunnel(moveFunnelTarget, stage.id)}
                                         disabled={movingFunnel}
-                                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors disabled:opacity-50"
+                                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors disabled:opacity-50"
                                       >
                                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-violet-400 to-violet-600" />
                                         <span className="text-sm flex-1 text-slate-700 dark:text-slate-300">{stage.name}</span>
@@ -6419,7 +6419,7 @@ export default function FunilDetailPage() {
                                   <div className="border-t border-slate-100 mt-1 pt-1">
                                     <button
                                       onClick={() => { setFunnelDropdownStep('funnels'); setMoveFunnelTarget('') }}
-                                      className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors text-slate-500"
+                                      className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors text-slate-500"
                                     >
                                       <ChevronLeftIcon className="w-3.5 h-3.5" />
                                       <span className="text-sm">Voltar</span>
@@ -6449,7 +6449,7 @@ export default function FunilDetailPage() {
                               className="fixed inset-0 z-10"
                               onClick={() => setStageDropdownOpen(false)}
                             />
-                            <div className="absolute left-0 top-full mt-1 z-20 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 max-h-64 overflow-y-auto">
+                            <div className="absolute left-0 top-full mt-1 z-20 w-56 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-white/10 py-2 max-h-64 overflow-y-auto">
                               {funnelStages.map((stage) => {
                                 const color = getColorByIndex(parseInt(stage.color || '0'))
                                 const isCurrentStage = selectedClient.funnelStage === stage.id
@@ -6463,7 +6463,7 @@ export default function FunilDetailPage() {
                                       }
                                       setStageDropdownOpen(false)
                                     }}
-                                    className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors ${
+                                    className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors ${
                                       isCurrentStage ? 'bg-primary-50' : ''
                                     }`}
                                   >
@@ -6487,7 +6487,7 @@ export default function FunilDetailPage() {
                                     }
                                     setStageDropdownOpen(false)
                                   }}
-                                  className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 transition-colors ${
+                                  className={`w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-slate-50 dark:bg-white/5 transition-colors ${
                                     !selectedClient.funnelStage ? 'bg-slate-100' : ''
                                   }`}
                                 >
@@ -6588,13 +6588,13 @@ export default function FunilDetailPage() {
                   </div>
 
                   {selectedClient.phone && (
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-white/5 rounded-xl">
                       <div className="w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
                         <PhoneIcon className="w-4 h-4 text-emerald-600" />
                       </div>
                       <div className="flex-1 cursor-pointer" onClick={openEditContactModal}>
                         <p className="text-xs text-slate-500">Telefone</p>
-                        <p className="text-sm font-medium text-slate-700 hover:text-primary-600 transition-colors">{selectedClient.phone}</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 transition-colors">{selectedClient.phone}</p>
                       </div>
                       <a
                         href={`https://wa.me/${formatWhatsAppNumber(selectedClient.phone)}`}
@@ -6608,13 +6608,13 @@ export default function FunilDetailPage() {
                   )}
 
                   {selectedClient.email && (
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-white/5 rounded-xl">
                       <div className="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center">
                         <EnvelopeClosedIcon className="w-4 h-4 text-blue-600" />
                       </div>
                       <div className="flex-1 cursor-pointer" onClick={openEditContactModal}>
                         <p className="text-xs text-slate-500">Email</p>
-                        <p className="text-sm font-medium text-slate-700 hover:text-primary-600 transition-colors">{selectedClient.email}</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 transition-colors">{selectedClient.email}</p>
                       </div>
                       <a
                         href={`mailto:${selectedClient.email}`}
@@ -6661,19 +6661,19 @@ export default function FunilDetailPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {selectedClient.industry && (
-                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors group">
                         <p className="text-xs text-slate-500">Ramo</p>
-                        <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.industry}</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600">{selectedClient.industry}</p>
                       </div>
                     )}
                     {selectedClient.document && (
-                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors group">
                         <p className="text-xs text-slate-500">CNPJ/CPF</p>
-                        <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.document}</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600">{selectedClient.document}</p>
                       </div>
                     )}
                     {selectedClient.leadSource && (
-                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors group">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors group">
                         <p className="text-xs text-slate-500">Origem</p>
                         <div className="flex items-center gap-1.5">
                           {leadSourceIcons[selectedClient.leadSource] && (
@@ -6684,22 +6684,22 @@ export default function FunilDetailPage() {
                               height={16}
                             />
                           )}
-                          <p className="text-sm font-medium text-slate-700 group-hover:text-primary-600">{selectedClient.leadSource}</p>
+                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-600">{selectedClient.leadSource}</p>
                         </div>
                       </div>
                     )}
                     {selectedClient.leadType && (
-                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                      <div onClick={openEditContactModal} className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors">
                         <p className="text-xs text-slate-500">Tipo de Lead</p>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                          leadTypeOptions.find(opt => opt.value === selectedClient.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                          leadTypeOptions.find(opt => opt.value === selectedClient.leadType)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200'
                         }`}>
                           {selectedClient.leadType}
                         </span>
                       </div>
                     )}
                     {selectedClient.createdAt && (
-                      <div className="p-3 bg-slate-50 rounded-xl">
+                      <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl">
                         <p className="text-xs text-slate-500">Cadastro</p>
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                           {new Date(selectedClient.createdAt).toLocaleDateString('pt-BR')}
@@ -6737,7 +6737,7 @@ export default function FunilDetailPage() {
                   </div>
 
                   {selectedClient.description && (
-                    <div className="p-3 bg-slate-50 rounded-xl">
+                    <div className="p-3 bg-slate-50 dark:bg-white/5 rounded-xl">
                       <p className="text-xs text-slate-500 mb-1">Descrição</p>
                       <p className="text-sm text-slate-700 dark:text-slate-300">{selectedClient.description}</p>
                     </div>
@@ -6752,7 +6752,7 @@ export default function FunilDetailPage() {
                         {selectedClient.partners.split(',').map((partner, index) => (
                           <span
                             key={index}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white rounded-lg border border-primary-200 text-sm text-slate-700 dark:text-slate-300"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white dark:bg-surface-dark rounded-lg border border-primary-200 text-sm text-slate-700 dark:text-slate-300"
                           >
                             <span className="w-5 h-5 rounded-full bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center text-primary-600 font-semibold text-[10px]">
                               {partner.trim().charAt(0).toUpperCase()}
@@ -6795,7 +6795,7 @@ export default function FunilDetailPage() {
                           handleUpdateDealValue(val)
                         }
                       }}
-                      className="w-full px-3 py-2 text-sm bg-white border border-emerald-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
+                      className="w-full px-3 py-2 text-sm bg-white dark:bg-surface-dark border border-emerald-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400"
                     />
                     {selectedClient.dealValue != null && selectedClient.dealValue > 0 && (
                       <p className="text-xs text-emerald-600 mt-1">
@@ -6810,7 +6810,7 @@ export default function FunilDetailPage() {
                     <select
                       value={selectedClient.costCenterId || ''}
                       onChange={(e) => handleUpdateCostCenter(e.target.value || null)}
-                      className="w-full px-3 py-2 text-sm bg-white border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2 text-sm bg-white dark:bg-surface-dark border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Selecionar centro de custos...</option>
                       {costCenters.map((cc) => (
@@ -6828,14 +6828,14 @@ export default function FunilDetailPage() {
                       <div className="relative">
                         <button
                           onClick={() => setShowResponsibleDropdown(!showResponsibleDropdown)}
-                          className="w-full flex items-center gap-2 px-3 py-2 text-sm bg-white border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors text-left"
+                          className="w-full flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-surface-dark border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors text-left"
                         >
                           {selectedClient.assignedToName ? (
                             <>
                               <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
                                 <span className="text-[10px] font-bold text-primary-600">{selectedClient.assignedToName.charAt(0).toUpperCase()}</span>
                               </div>
-                              <span className="text-slate-700 flex-1 truncate">{selectedClient.assignedToName}</span>
+                              <span className="text-slate-700 dark:text-slate-300 flex-1 truncate">{selectedClient.assignedToName}</span>
                             </>
                           ) : (
                             <>
@@ -6848,7 +6848,7 @@ export default function FunilDetailPage() {
                         {showResponsibleDropdown && (
                           <>
                             <div className="fixed inset-0 z-10" onClick={() => setShowResponsibleDropdown(false)} />
-                            <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white rounded-xl shadow-xl border border-slate-200 py-1 max-h-48 overflow-y-auto">
+                            <div className="absolute left-0 right-0 top-full mt-1 z-20 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-slate-200 dark:border-white/10 py-1 max-h-48 overflow-y-auto">
                               {orgMembers.map((m) => (
                                 <button
                                   key={m.id}
@@ -6859,7 +6859,7 @@ export default function FunilDetailPage() {
                                     <span className="text-[10px] font-bold text-primary-600">{m.displayName.charAt(0).toUpperCase()}</span>
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-slate-700 truncate">{m.displayName}</p>
+                                    <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{m.displayName}</p>
                                     <p className="text-[10px] text-slate-400 capitalize">{m.role}</p>
                                   </div>
                                   {selectedClient.assignedTo === m.id && (
@@ -6883,7 +6883,7 @@ export default function FunilDetailPage() {
                         )}
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 px-3 py-2 text-sm bg-white border border-primary-200 rounded-lg">
+                      <div className="flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-surface-dark border border-primary-200 rounded-lg">
                         {selectedClient.assignedToName ? (
                           <>
                             <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
@@ -6932,7 +6932,7 @@ export default function FunilDetailPage() {
                         <span className="text-lg font-bold text-primary-600">%</span>
                       </div>
                     </div>
-                    <div className="h-2 bg-white rounded-full overflow-hidden">
+                    <div className="h-2 bg-white dark:bg-surface-dark rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-primary-500 to-purple-500 transition-all"
                         style={{
@@ -7007,8 +7007,8 @@ export default function FunilDetailPage() {
                         Ligar pelo Agente de Voz
                       </button>
                       {showCallConfirm && (
-                        <div className="absolute bottom-full left-0 right-0 mb-2 p-4 bg-white rounded-xl shadow-2xl border border-slate-200 z-30">
-                          <p className="text-sm text-slate-700 mb-1 font-medium">Confirmar ligação</p>
+                        <div className="absolute bottom-full left-0 right-0 mb-2 p-4 bg-white dark:bg-surface-dark rounded-xl shadow-2xl border border-slate-200 dark:border-white/10 z-30">
+                          <p className="text-sm text-slate-700 dark:text-slate-300 mb-1 font-medium">Confirmar ligação</p>
                           <p className="text-xs text-slate-500 mb-3">
                             O agente de voz vai ligar para <span className="font-medium text-slate-700 dark:text-slate-300">{selectedClient.name}</span> no número <span className="font-medium text-slate-700 dark:text-slate-300">{selectedClient.phone}</span>
                           </p>
@@ -7036,7 +7036,7 @@ export default function FunilDetailPage() {
                             <button
                               onClick={() => setShowCallConfirm(false)}
                               disabled={callingContact}
-                              className="px-3 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium hover:bg-slate-200 transition-colors disabled:opacity-50"
+                              className="px-3 py-2 bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 rounded-lg text-xs font-medium hover:bg-slate-200 transition-colors disabled:opacity-50"
                             >
                               Cancelar
                             </button>
@@ -7128,7 +7128,7 @@ export default function FunilDetailPage() {
               {/* Proposals Section (Story 11.3) */}
               <div className="p-4 sm:p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <DocumentDuplicateIcon className="w-4 h-4 text-primary-500" />
                     Propostas
                   </h4>
@@ -7145,7 +7145,7 @@ export default function FunilDetailPage() {
                     <div className="w-5 h-5 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
                   </div>
                 ) : clientProposals.length === 0 ? (
-                  <div className="p-4 bg-slate-50 rounded-xl text-center">
+                  <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-xl text-center">
                     <p className="text-xs text-slate-400">Nenhuma proposta encontrada</p>
                     <button
                       onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/nova?returnUrl=${encodeURIComponent(`/funil/${funnelId}`)}`)}
@@ -7162,22 +7162,22 @@ export default function FunilDetailPage() {
                         'Pendente': 'bg-amber-100 text-amber-700',
                         'Em análise': 'bg-blue-100 text-blue-700',
                         'Recusada': 'bg-red-100 text-red-700',
-                        'Expirada': 'bg-slate-100 text-slate-600',
+                        'Expirada': 'bg-slate-100 dark:bg-white/10 text-slate-600',
                         'Cancelada': 'bg-rose-100 text-rose-700',
                       }
                       return (
                         <button
                           key={proposal.id}
                           onClick={() => router.push(`/contatos/${selectedClient.id}/proposta/${proposal.id}`)}
-                          className="w-full p-3 bg-slate-50 hover:bg-primary-50 rounded-xl border border-slate-100 hover:border-primary-200 transition-colors text-left"
+                          className="w-full p-3 bg-slate-50 dark:bg-white/5 hover:bg-primary-50 rounded-xl border border-slate-100 hover:border-primary-200 transition-colors text-left"
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-sm font-medium text-slate-700 truncate">
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
                               {proposal.number ? `#${String(proposal.number).padStart(4, '0')} · ` : ''}{proposal.projectName || 'Proposta'}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[proposal.status || ''] || 'bg-slate-100 text-slate-600'}`}>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${statusColors[proposal.status || ''] || 'bg-slate-100 dark:bg-white/10 text-slate-600'}`}>
                               {proposal.status || 'Pendente'}
                             </span>
                             {proposal.total !== undefined && (
@@ -7201,14 +7201,14 @@ export default function FunilDetailPage() {
               {/* Comments Section */}
               <div className="p-4 sm:p-6 border-b border-slate-100">
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                     <DocumentTextIcon className="w-4 h-4 text-amber-500" />
                     Comentários sobre o Contato
                   </h4>
                   {!editingComments && (
                     <button
                       onClick={() => setEditingComments(true)}
-                      className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                     >
                       <Pencil1Icon className="w-4 h-4 text-slate-400" />
                     </button>
@@ -7221,7 +7221,7 @@ export default function FunilDetailPage() {
                       onChange={(e) => setContactComments(e.target.value)}
                       placeholder="Adicione comentários, observações e notas sobre o contato..."
                       rows={5}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-amber-50/30"
+                      className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-amber-50/30"
                     />
                     <div className="flex justify-end gap-2">
                       <button
@@ -7229,7 +7229,7 @@ export default function FunilDetailPage() {
                           setContactComments(selectedClient.needsDetail || '')
                           setEditingComments(false)
                         }}
-                        className="px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                       >
                         Cancelar
                       </button>
@@ -7244,7 +7244,7 @@ export default function FunilDetailPage() {
                   </div>
                 ) : (
                   <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-100 min-h-[100px]">
-                    <p className="text-sm text-slate-600 whitespace-pre-wrap">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
                       {contactComments || (
                         <span className="text-slate-400 italic">
                           Clique no lápis para adicionar comentários...
@@ -7258,7 +7258,7 @@ export default function FunilDetailPage() {
               {/* Notes Section */}
               <div className="flex-1 flex flex-col overflow-visible lg:overflow-hidden">
                 <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
-                  <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-3">
+                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-3">
                     <ChatBubbleIcon className="w-4 h-4 text-primary-500" />
                     Anotações & Follow-ups
                   </h4>
@@ -7277,7 +7277,7 @@ export default function FunilDetailPage() {
                         className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                           logFilter === f.key
                             ? 'bg-primary-100 text-primary-700 ring-1 ring-primary-300'
-                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                            : 'bg-slate-100 dark:bg-white/10 text-slate-500 hover:bg-slate-200'
                         }`}
                       >
                         {f.label}
@@ -7293,7 +7293,7 @@ export default function FunilDetailPage() {
                     onChange={(e) => setNewNote(e.target.value)}
                     placeholder="Adicione uma nova anotação..."
                     rows={3}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-white dark:bg-surface-dark"
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-white dark:bg-surface-dark"
                   />
                   <div className="flex justify-end mt-2">
                     <button
@@ -7347,8 +7347,8 @@ export default function FunilDetailPage() {
                           )}
                           <div className={`border rounded-xl p-3 shadow-sm ${
                             note.source === 'log'
-                              ? 'bg-slate-50 border-slate-200'
-                              : 'bg-white border-slate-200'
+                              ? 'bg-slate-50 dark:bg-white/5 border-slate-200'
+                              : 'bg-white dark:bg-surface-dark border-slate-200'
                           }`}>
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
@@ -7389,7 +7389,7 @@ export default function FunilDetailPage() {
                                 {note.author}
                               </p>
                             )}
-                            <p className="text-sm text-slate-600 whitespace-pre-wrap">
+                            <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
                               {/* Render text, replacing recording URLs with clickable links */}
                               {note.text?.split('\n').map((line, li) => {
                                 const recordingMatch = line.match(/Gravação:\s*(https?:\/\/\S+)/)
@@ -7432,7 +7432,7 @@ export default function FunilDetailPage() {
             !!quickFollowUpText.trim(),
             () => { setQuickFollowUpClient(null); setQuickFollowUpText('') }
           )} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
                 <ChatBubbleIcon className="w-6 h-6 text-primary-600" />
@@ -7447,7 +7447,7 @@ export default function FunilDetailPage() {
               onChange={(e) => setQuickFollowUpText(e.target.value)}
               placeholder="Descreva o follow-up realizado..."
               rows={4}
-              className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none mb-4"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none mb-4"
               autoFocus
             />
             <div className="flex items-center justify-end gap-3">
@@ -7456,7 +7456,7 @@ export default function FunilDetailPage() {
                   !!quickFollowUpText.trim(),
                   () => { setQuickFollowUpClient(null); setQuickFollowUpText('') }
                 )}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -7481,7 +7481,7 @@ export default function FunilDetailPage() {
       {changingStageClient && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setChangingStageClient(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
                 <ArrowTrendingUpIcon className="w-6 h-6 text-amber-600" />
@@ -7504,7 +7504,7 @@ export default function FunilDetailPage() {
                     className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                       isCurrentStage
                         ? `${color.bg} ${color.border} cursor-default`
-                        : 'border-slate-200 hover:border-primary-200 hover:bg-primary-50'
+                        : 'border-slate-200 dark:border-white/10 hover:border-primary-200 hover:bg-primary-50'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -7516,7 +7516,7 @@ export default function FunilDetailPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-slate-500">{stage.probability}%</span>
                       {isCurrentStage && (
-                        <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium text-primary-600">
+                        <span className="px-2 py-0.5 bg-white dark:bg-surface-dark rounded-full text-xs font-medium text-primary-600">
                           Atual
                         </span>
                       )}
@@ -7529,8 +7529,8 @@ export default function FunilDetailPage() {
                 disabled={!changingStageClient.funnelStage}
                 className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all ${
                   !changingStageClient.funnelStage
-                    ? 'bg-slate-100 border-slate-300 cursor-default'
-                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'bg-slate-100 dark:bg-white/10 border-slate-300 cursor-default'
+                    : 'border-slate-200 dark:border-white/10 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -7540,7 +7540,7 @@ export default function FunilDetailPage() {
                   </span>
                 </div>
                 {!changingStageClient.funnelStage && (
-                  <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium text-slate-500">
+                  <span className="px-2 py-0.5 bg-white dark:bg-surface-dark rounded-full text-xs font-medium text-slate-500">
                     Atual
                   </span>
                 )}
@@ -7549,7 +7549,7 @@ export default function FunilDetailPage() {
             <div className="flex items-center justify-end">
               <button
                 onClick={() => setChangingStageClient(null)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Fechar
               </button>
@@ -7565,7 +7565,7 @@ export default function FunilDetailPage() {
             !!selectedReturnDate,
             () => { setSchedulingReturnClient(null); setSelectedReturnDate('') }
           )} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
                 <CalendarDaysIcon className="w-6 h-6 text-amber-600" />
@@ -7578,7 +7578,7 @@ export default function FunilDetailPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Selecione a data do retorno
                 </label>
                 <input
@@ -7586,7 +7586,7 @@ export default function FunilDetailPage() {
                   value={selectedReturnDate}
                   onChange={(e) => setSelectedReturnDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                  className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                 />
               </div>
 
@@ -7598,7 +7598,7 @@ export default function FunilDetailPage() {
                     date.setDate(date.getDate() + 1)
                     setSelectedReturnDate(date.toISOString().split('T')[0])
                   }}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
                 >
                   Amanhã
                 </button>
@@ -7608,7 +7608,7 @@ export default function FunilDetailPage() {
                     date.setDate(date.getDate() + 3)
                     setSelectedReturnDate(date.toISOString().split('T')[0])
                   }}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
                 >
                   Em 3 dias
                 </button>
@@ -7618,7 +7618,7 @@ export default function FunilDetailPage() {
                     date.setDate(date.getDate() + 7)
                     setSelectedReturnDate(date.toISOString().split('T')[0])
                   }}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
                 >
                   Em 1 semana
                 </button>
@@ -7628,7 +7628,7 @@ export default function FunilDetailPage() {
                     date.setDate(date.getDate() + 14)
                     setSelectedReturnDate(date.toISOString().split('T')[0])
                   }}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
                 >
                   Em 2 semanas
                 </button>
@@ -7638,7 +7638,7 @@ export default function FunilDetailPage() {
                     date.setMonth(date.getMonth() + 1)
                     setSelectedReturnDate(date.toISOString().split('T')[0])
                   }}
-                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-lg transition-colors"
                 >
                   Em 1 mês
                 </button>
@@ -7665,7 +7665,7 @@ export default function FunilDetailPage() {
                   !!selectedReturnDate,
                   () => { setSchedulingReturnClient(null); setSelectedReturnDate('') }
                 )}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -7690,7 +7690,7 @@ export default function FunilDetailPage() {
       {cadenceActionClient && cadenceActionClient.currentStep && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setCadenceActionClient(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-lg m-4 p-6">
             <div className="flex items-center gap-4 mb-6">
               {(() => {
                 const step = cadenceActionClient.currentStep!
@@ -7724,8 +7724,8 @@ export default function FunilDetailPage() {
 
             {cadenceActionClient.currentStep.messageTemplate && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700 mb-2">Mensagem a enviar:</label>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-700 whitespace-pre-wrap">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mensagem a enviar:</label>
+                <div className="p-4 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                   {cadenceActionClient.currentStep.messageTemplate}
                 </div>
               </div>
@@ -7734,7 +7734,7 @@ export default function FunilDetailPage() {
             <div className="flex items-center justify-end gap-3 mt-6">
               <button
                 onClick={() => setCadenceActionClient(null)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -7762,7 +7762,7 @@ export default function FunilDetailPage() {
             setShowResponseModal(false)
             setRespondedClient(null)
           }} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
                 <CheckCircleIcon className="w-6 h-6 text-emerald-600" />
@@ -7774,19 +7774,19 @@ export default function FunilDetailPage() {
             </div>
 
             {respondedClient.currentStep && (
-              <div className="mb-6 p-3 bg-slate-50 rounded-xl border border-slate-200 dark:border-white/10">
-                <p className="text-sm text-slate-600">
+              <div className="mb-6 p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   <span className="font-medium">Step atual:</span> {respondedClient.currentStep.name}
                 </p>
               </div>
             )}
 
-            <p className="text-sm text-slate-600 mb-4">O cliente respondeu ao contato?</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">O cliente respondeu ao contato?</p>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleClientResponse(false)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-medium text-sm transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl font-medium text-sm transition-colors"
               >
                 <XMarkIcon className="w-5 h-5" />
                 Não Respondeu
@@ -7810,9 +7810,9 @@ export default function FunilDetailPage() {
             !!(bulkMoveFromStage || bulkMoveToStage),
             resetBulkMoveModal
           )} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl m-4 max-h-[90vh] overflow-hidden flex flex-col">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl m-4 max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
+            <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-gradient-to-r from-amber-50 to-orange-50">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-200">
                   <ArrowsRightLeftIcon className="w-6 h-6 text-white" />
@@ -7829,11 +7829,11 @@ export default function FunilDetailPage() {
               {/* Stage Selection */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">De (Etapa Origem)</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">De (Etapa Origem)</label>
                   <select
                     value={bulkMoveFromStage}
                     onChange={(e) => setBulkMoveFromStage(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                   >
                     <option value="">Selecione a etapa...</option>
                     <option value="unassigned">
@@ -7847,11 +7847,11 @@ export default function FunilDetailPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Para (Etapa Destino)</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Para (Etapa Destino)</label>
                   <select
                     value={bulkMoveToStage}
                     onChange={(e) => setBulkMoveToStage(e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                     disabled={!bulkMoveFromStage}
                   >
                     <option value="">Selecione a etapa...</option>
@@ -7865,8 +7865,8 @@ export default function FunilDetailPage() {
               </div>
 
               {/* Filters Section */}
-              <div className="border-t border-slate-200 pt-6">
-                <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+              <div className="border-t border-slate-200 dark:border-white/10 pt-6">
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
                   <FunnelIcon className="w-4 h-4" />
                   Filtros (Opcional)
                 </h4>
@@ -7874,7 +7874,7 @@ export default function FunilDetailPage() {
                 <div className="grid grid-cols-2 gap-4">
                   {/* Capital Social Range */}
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-600 mb-2">
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Capital Social (R$)
                     </label>
                     <div className="flex items-center gap-3">
@@ -7886,7 +7886,7 @@ export default function FunilDetailPage() {
                           ...prev,
                           capitalSocialMin: Number(e.target.value) || 0
                         }))}
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                        className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                       />
                       <span className="text-slate-400">até</span>
                       <input
@@ -7897,7 +7897,7 @@ export default function FunilDetailPage() {
                           ...prev,
                           capitalSocialMax: Number(e.target.value) || 0
                         }))}
-                        className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                        className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                       />
                     </div>
                     {bulkMoveFilterOptions.maxCapitalSocial > 0 && (
@@ -7909,7 +7909,7 @@ export default function FunilDetailPage() {
 
                   {/* Porte Empresa - Multi-select */}
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-slate-600 mb-2">
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">
                       Porte da Empresa (selecione um ou mais)
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -7928,7 +7928,7 @@ export default function FunilDetailPage() {
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                             bulkMoveFilters.porteEmpresa.includes(porte)
                               ? 'bg-amber-100 text-amber-700 border-2 border-amber-400'
-                              : 'bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200'
+                              : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-2 border-transparent hover:bg-slate-200'
                           }`}
                         >
                           {porte}
@@ -7942,11 +7942,11 @@ export default function FunilDetailPage() {
 
                   {/* Municipio */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">Cidade</label>
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Cidade</label>
                     <select
                       value={bulkMoveFilters.municipio}
                       onChange={(e) => setBulkMoveFilters(prev => ({ ...prev, municipio: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                     >
                       <option value="">Todas</option>
                       {bulkMoveFilterOptions.municipioOptions.map((m) => (
@@ -7957,11 +7957,11 @@ export default function FunilDetailPage() {
 
                   {/* Estado */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">Estado</label>
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Estado</label>
                     <select
                       value={bulkMoveFilters.estado}
                       onChange={(e) => setBulkMoveFilters(prev => ({ ...prev, estado: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                     >
                       <option value="">Todos</option>
                       {bulkMoveFilterOptions.estadoOptions.map((e) => (
@@ -7972,11 +7972,11 @@ export default function FunilDetailPage() {
 
                   {/* Tipo */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">Tipo</label>
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Tipo</label>
                     <select
                       value={bulkMoveFilters.tipo}
                       onChange={(e) => setBulkMoveFilters(prev => ({ ...prev, tipo: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                     >
                       <option value="">Todos</option>
                       {bulkMoveFilterOptions.tipoOptions.map((t) => (
@@ -7987,11 +7987,11 @@ export default function FunilDetailPage() {
 
                   {/* Natureza Juridica */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-2">Natureza Jurídica</label>
+                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Natureza Jurídica</label>
                     <select
                       value={bulkMoveFilters.naturezaJuridica}
                       onChange={(e) => setBulkMoveFilters(prev => ({ ...prev, naturezaJuridica: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                     >
                       <option value="">Todas</option>
                       {bulkMoveFilterOptions.naturezaJuridicaOptions.map((n) => (
@@ -8003,11 +8003,11 @@ export default function FunilDetailPage() {
                   {/* Centro de Custos */}
                   {costCenters.length > 0 && (
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-slate-600 mb-2">Centro de Custos</label>
+                      <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Centro de Custos</label>
                       <select
                         value={bulkMoveFilters.costCenterId}
                         onChange={(e) => setBulkMoveFilters(prev => ({ ...prev, costCenterId: e.target.value }))}
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
+                        className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400"
                       >
                         <option value="">Todos os centros de custos</option>
                         <option value="none">Sem centro de custos</option>
@@ -8046,13 +8046,13 @@ export default function FunilDetailPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+            <div className="p-6 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center justify-between">
               <button
                 onClick={() => guardedClose(
                   !!(bulkMoveFromStage || bulkMoveToStage),
                   resetBulkMoveModal
                 )}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -8073,7 +8073,7 @@ export default function FunilDetailPage() {
       {showBulkMoveConfirm && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowBulkMoveConfirm(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
                 <ExclamationTriangleIcon className="w-6 h-6 text-amber-600" />
@@ -8084,8 +8084,8 @@ export default function FunilDetailPage() {
               </div>
             </div>
 
-            <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-200 dark:border-white/10">
-              <p className="text-sm text-slate-600 mb-2">
+            <div className="mb-6 p-4 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
                 Você está prestes a mover <strong className="text-amber-600">{bulkMoveFilteredClients.length} contato{bulkMoveFilteredClients.length !== 1 ? 's' : ''}</strong>
               </p>
               <div className="flex items-center gap-2 text-sm">
@@ -8102,7 +8102,7 @@ export default function FunilDetailPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowBulkMoveConfirm(false)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 rounded-xl transition-colors"
                 disabled={executingBulkMove}
               >
                 Cancelar
@@ -8134,9 +8134,9 @@ export default function FunilDetailPage() {
               () => { setShowBulkCostCenterModal(false); setBulkCostCenterStage(''); setBulkCostCenterId('') }
             )}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-lg m-4">
             {/* Header */}
-            <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-primary-50 to-primary-50">
+            <div className="p-6 border-b border-slate-200 dark:border-white/10 bg-gradient-to-r from-primary-50 to-primary-50">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-primary-500 flex items-center justify-center shadow-lg shadow-primary-200">
                   <CurrencyDollarIcon className="w-6 h-6 text-white" />
@@ -8152,11 +8152,11 @@ export default function FunilDetailPage() {
             <div className="p-6 space-y-4">
               {/* Stage Selection */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Etapa do Funil</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Etapa do Funil</label>
                 <select
                   value={bulkCostCenterStage}
                   onChange={(e) => setBulkCostCenterStage(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                 >
                   <option value="">Selecione a etapa...</option>
                   <option value="unassigned">
@@ -8172,11 +8172,11 @@ export default function FunilDetailPage() {
 
               {/* Cost Center Selection */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Novo Centro de Custos</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Novo Centro de Custos</label>
                 <select
                   value={bulkCostCenterId}
                   onChange={(e) => setBulkCostCenterId(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                  className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                   disabled={!bulkCostCenterStage}
                 >
                   <option value="">Remover centro de custos</option>
@@ -8214,13 +8214,13 @@ export default function FunilDetailPage() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-200 bg-slate-50 flex items-center justify-between rounded-b-2xl">
+            <div className="p-6 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center justify-between rounded-b-2xl">
               <button
                 onClick={() => guardedClose(
                   !!(bulkCostCenterStage || bulkCostCenterId),
                   () => { setShowBulkCostCenterModal(false); setBulkCostCenterStage(''); setBulkCostCenterId('') }
                 )}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -8248,7 +8248,7 @@ export default function FunilDetailPage() {
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAdvancedFilters(false)} />
 
           {/* Modal */}
-          <div className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="relative w-full max-w-lg max-h-[85vh] bg-white dark:bg-surface-dark rounded-2xl shadow-2xl flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-200">
             {/* Modal Header */}
             <div className="flex-shrink-0 px-5 pt-5 pb-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50 rounded-t-2xl">
               <div className="flex items-center justify-between">
@@ -8265,7 +8265,7 @@ export default function FunilDetailPage() {
                   {activeAdvancedFiltersCount > 0 && (
                     <button
                       onClick={clearAdvancedFilters}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white hover:bg-slate-50 rounded-lg border border-slate-200 transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark hover:bg-slate-50 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10 transition-colors"
                     >
                       <Cross2Icon className="w-3.5 h-3.5" />
                       Limpar
@@ -8273,7 +8273,7 @@ export default function FunilDetailPage() {
                   )}
                   <button
                     onClick={() => setShowAdvancedFilters(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/80 text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                   >
                     <XMarkIcon className="w-5 h-5" />
                   </button>
@@ -8285,7 +8285,7 @@ export default function FunilDetailPage() {
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {/* Capital Social Range */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Capital Social (R$)
                 </label>
                 <div className="flex items-center gap-3">
@@ -8297,7 +8297,7 @@ export default function FunilDetailPage() {
                       ...prev,
                       capitalSocialMin: Number(e.target.value) || 0
                     }))}
-                    className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="flex-1 px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                   />
                   <span className="text-slate-400 text-sm">até</span>
                   <input
@@ -8308,7 +8308,7 @@ export default function FunilDetailPage() {
                       ...prev,
                       capitalSocialMax: Number(e.target.value) || 0
                     }))}
-                    className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="flex-1 px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                   />
                 </div>
                 {advancedFilterOptions.maxCapitalSocial > 0 && (
@@ -8321,7 +8321,7 @@ export default function FunilDetailPage() {
               {/* Porte Empresa - Multi-select */}
               {advancedFilterOptions.porteOptions.length > 0 && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Porte da Empresa
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -8340,7 +8340,7 @@ export default function FunilDetailPage() {
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                           advancedFilters.porteEmpresa.includes(porte)
                             ? 'bg-primary-100 text-primary-700 border-2 border-primary-400'
-                            : 'bg-slate-100 text-slate-600 border-2 border-transparent hover:bg-slate-200'
+                            : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 border-2 border-transparent hover:bg-slate-200'
                         }`}
                       >
                         {porte}
@@ -8355,11 +8355,11 @@ export default function FunilDetailPage() {
                 {/* Estado */}
                 {advancedFilterOptions.estadoOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Estado</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Estado</label>
                     <select
                       value={advancedFilters.estado}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, estado: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todos</option>
                       {advancedFilterOptions.estadoOptions.map((e) => (
@@ -8372,11 +8372,11 @@ export default function FunilDetailPage() {
                 {/* Cidade */}
                 {advancedFilterOptions.municipioOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Cidade</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Cidade</label>
                     <select
                       value={advancedFilters.municipio}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, municipio: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todas</option>
                       {advancedFilterOptions.municipioOptions.map((m) => (
@@ -8389,11 +8389,11 @@ export default function FunilDetailPage() {
                 {/* Tipo */}
                 {advancedFilterOptions.tipoOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Tipo</label>
                     <select
                       value={advancedFilters.tipo}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, tipo: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todos</option>
                       {advancedFilterOptions.tipoOptions.map((t) => (
@@ -8406,11 +8406,11 @@ export default function FunilDetailPage() {
                 {/* Natureza Jurídica */}
                 {advancedFilterOptions.naturezaJuridicaOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Natureza Jurídica</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Natureza Jurídica</label>
                     <select
                       value={advancedFilters.naturezaJuridica}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, naturezaJuridica: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todas</option>
                       {advancedFilterOptions.naturezaJuridicaOptions.map((n) => (
@@ -8423,11 +8423,11 @@ export default function FunilDetailPage() {
                 {/* Situação */}
                 {advancedFilterOptions.situacaoOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Situação</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Situação</label>
                     <select
                       value={advancedFilters.situacao}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, situacao: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todas</option>
                       {advancedFilterOptions.situacaoOptions.map((s) => (
@@ -8440,11 +8440,11 @@ export default function FunilDetailPage() {
                 {/* Setor/Indústria */}
                 {advancedFilterOptions.industryOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Setor</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Setor</label>
                     <select
                       value={advancedFilters.industry}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, industry: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todos</option>
                       {advancedFilterOptions.industryOptions.map((i) => (
@@ -8464,11 +8464,11 @@ export default function FunilDetailPage() {
                 {/* Origem do Lead */}
                 {advancedFilterOptions.leadSourceOptions.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Origem</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Origem</label>
                     <select
                       value={advancedFilters.leadSource}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadSource: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todas</option>
                       {advancedFilterOptions.leadSourceOptions.map((ls) => (
@@ -8480,11 +8480,11 @@ export default function FunilDetailPage() {
 
                 {/* Tipo de Lead */}
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo de Lead</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Tipo de Lead</label>
                   <select
                     value={advancedFilters.leadType}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, leadType: e.target.value as '' | 'Inbound' | 'Outbound' }))}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                   >
                     <option value="">Todos</option>
                     <option value="Inbound">Inbound</option>
@@ -8494,11 +8494,11 @@ export default function FunilDetailPage() {
 
                 {/* Etapa do Funil */}
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Etapa do Funil</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Etapa do Funil</label>
                   <select
                     value={advancedFilters.funnelStage}
                     onChange={(e) => setAdvancedFilters(prev => ({ ...prev, funnelStage: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                   >
                     <option value="">Todas</option>
                     <option value="unassigned">Sem etapa</option>
@@ -8511,11 +8511,11 @@ export default function FunilDetailPage() {
                 {/* Centro de Custos */}
                 {costCenters.length > 0 && (
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Centro de Custos</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Centro de Custos</label>
                     <select
                       value={advancedFilters.costCenterId}
                       onChange={(e) => setAdvancedFilters(prev => ({ ...prev, costCenterId: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                     >
                       <option value="">Todos</option>
                       {costCenters.map((cc) => (
@@ -8528,9 +8528,9 @@ export default function FunilDetailPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50/80 rounded-b-2xl">
+            <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 bg-slate-50 dark:bg-white/5/80 rounded-b-2xl">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   <span className="font-semibold">{filteredClients.length}</span> contato{filteredClients.length !== 1 ? 's' : ''} encontrado{filteredClients.length !== 1 ? 's' : ''}
                 </p>
                 <button
@@ -8555,7 +8555,7 @@ export default function FunilDetailPage() {
               () => { setShowReportModal(false); setReportDateFrom(''); setReportDateTo('') }
             )}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
@@ -8571,7 +8571,7 @@ export default function FunilDetailPage() {
                   !!(reportDateFrom || reportDateTo),
                   () => { setShowReportModal(false); setReportDateFrom(''); setReportDateTo('') }
                 )}
-                className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               >
                 <XMarkIcon className="w-5 h-5 text-slate-400" />
               </button>
@@ -8579,13 +8579,13 @@ export default function FunilDetailPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Período</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Período</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="date"
                     value={reportDateFrom}
                     onChange={(e) => setReportDateFrom(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                     placeholder="Data início"
                   />
                   <span className="text-sm text-slate-400">a</span>
@@ -8593,7 +8593,7 @@ export default function FunilDetailPage() {
                     type="date"
                     value={reportDateTo}
                     onChange={(e) => setReportDateTo(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                     placeholder="Data fim"
                   />
                 </div>
@@ -8641,7 +8641,7 @@ export default function FunilDetailPage() {
               () => { setForceCadenceStageId(null); setForceCadenceLimit(10) }
             )}
           />
-          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-xl">
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Forçar Cadência</h3>
             <p className="mt-1 text-sm text-slate-500">
               Executar a próxima ação de cadência para os contatos mais antigos desta etapa.
@@ -8663,7 +8663,7 @@ export default function FunilDetailPage() {
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 transition-colors"
                 onClick={() => guardedClose(
                   forceCadenceLimit !== 10,
                   () => { setForceCadenceStageId(null); setForceCadenceLimit(10) }
@@ -8695,9 +8695,9 @@ export default function FunilDetailPage() {
               () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
             )}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
+            <div className="sticky top-0 bg-white dark:bg-surface-dark border-b border-slate-100 px-6 py-4 flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <PersonIcon className="w-5 h-5 text-white" />
@@ -8712,7 +8712,7 @@ export default function FunilDetailPage() {
                   !!(newContactForm.name || newContactForm.phone || newContactForm.email || newContactForm.company || newContactForm.document || newContactForm.industry || newContactForm.description || newContactForm.birthday || newContactForm.returnAlert || newContactForm.leadSource || newContactForm.leadType || newContactForm.costCenterId || newContactPhotoFile || newContactPartners.length > 0),
                   () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
                 )}
-                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-5 h-5 text-slate-500" />
               </button>
@@ -8736,7 +8736,7 @@ export default function FunilDetailPage() {
                   </div>
                 )}
                 <div>
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 cursor-pointer transition-colors">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -8770,7 +8770,7 @@ export default function FunilDetailPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Nome <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -8783,14 +8783,14 @@ export default function FunilDetailPage() {
                         if (newContactErrors.name) setNewContactErrors(prev => { const { name, ...rest } = prev; return rest })
                       }}
                       placeholder="Nome do contato"
-                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
+                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.name ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 dark:border-white/10 focus:ring-primary-500/20 focus:border-primary-400'}`}
                     />
                   </div>
                   {newContactErrors.name && <p className="mt-1 text-xs text-red-500">{newContactErrors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Telefone <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -8803,14 +8803,14 @@ export default function FunilDetailPage() {
                         if (newContactErrors.phone) setNewContactErrors(prev => { const { phone, ...rest } = prev; return rest })
                       }}
                       placeholder="(00) 00000-0000"
-                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.phone ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
+                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.phone ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 dark:border-white/10 focus:ring-primary-500/20 focus:border-primary-400'}`}
                     />
                   </div>
                   {newContactErrors.phone && <p className="mt-1 text-xs text-red-500">{newContactErrors.phone}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
                   <div className="relative">
                     <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -8821,14 +8821,14 @@ export default function FunilDetailPage() {
                         if (newContactErrors.email) setNewContactErrors(prev => { const { email, ...rest } = prev; return rest })
                       }}
                       placeholder="email@exemplo.com"
-                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
+                      className={`w-full pl-10 pr-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 dark:border-white/10 focus:ring-primary-500/20 focus:border-primary-400'}`}
                     />
                   </div>
                   {newContactErrors.email && <p className="mt-1 text-xs text-red-500">{newContactErrors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Empresa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Empresa</label>
                   <div className="relative">
                     <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -8836,13 +8836,13 @@ export default function FunilDetailPage() {
                       value={newContactForm.company}
                       onChange={(e) => setNewContactForm({ ...newContactForm, company: e.target.value })}
                       placeholder="Nome da empresa"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">CNPJ / CPF</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">CNPJ / CPF</label>
                   <input
                     type="text"
                     value={newContactForm.document}
@@ -8851,28 +8851,28 @@ export default function FunilDetailPage() {
                       if (newContactErrors.document) setNewContactErrors(prev => { const { document, ...rest } = prev; return rest })
                     }}
                     placeholder="000.000.000-00"
-                    className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.document ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 focus:ring-primary-500/20 focus:border-primary-400'}`}
+                    className={`w-full px-4 py-2.5 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all ${newContactErrors.document ? 'border-red-300 focus:ring-red-500/20 focus:border-red-400' : 'border-slate-200 dark:border-white/10 focus:ring-primary-500/20 focus:border-primary-400'}`}
                   />
                   {newContactErrors.document && <p className="mt-1 text-xs text-red-500">{newContactErrors.document}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ramo de atuação</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ramo de atuação</label>
                   <input
                     type="text"
                     value={newContactForm.industry}
                     onChange={(e) => setNewContactForm({ ...newContactForm, industry: e.target.value })}
                     placeholder="Ex: Tecnologia, Varejo..."
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Origem do Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Origem do Lead</label>
                   <select
                     value={newContactForm.leadSource}
                     onChange={(e) => setNewContactForm({ ...newContactForm, leadSource: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadSourceOptions.map((opt) => (
@@ -8882,11 +8882,11 @@ export default function FunilDetailPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Lead</label>
                   <select
                     value={newContactForm.leadType}
                     onChange={(e) => setNewContactForm({ ...newContactForm, leadType: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadTypeOptions.map((opt) => (
@@ -8897,11 +8897,11 @@ export default function FunilDetailPage() {
 
                 {costCenters.length > 0 && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Centro de Custos</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Centro de Custos</label>
                     <select
                       value={newContactForm.costCenterId}
                       onChange={(e) => setNewContactForm({ ...newContactForm, costCenterId: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
+                      className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                     >
                       <option value="">Selecione...</option>
                       {costCenters.map((cc) => (
@@ -8912,28 +8912,28 @@ export default function FunilDetailPage() {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Aniversário</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Aniversário</label>
                   <input
                     type="date"
                     value={newContactForm.birthday}
                     onChange={(e) => setNewContactForm({ ...newContactForm, birthday: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Alerta de retorno</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alerta de retorno</label>
                   <input
                     type="date"
                     value={newContactForm.returnAlert}
                     onChange={(e) => setNewContactForm({ ...newContactForm, returnAlert: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 {/* Sócios */}
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Socios</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Socios</label>
                   {newContactPartners.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-2">
                       {newContactPartners.map((p, i) => (
@@ -8966,7 +8966,7 @@ export default function FunilDetailPage() {
                         }
                       }}
                       placeholder="Nome do socio e pressione Enter ou clique +"
-                      className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                     <button
                       type="button"
@@ -8985,26 +8985,26 @@ export default function FunilDetailPage() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Descricao</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Descricao</label>
                   <textarea
                     value={newContactForm.description}
                     onChange={(e) => setNewContactForm({ ...newContactForm, description: e.target.value })}
                     placeholder="Descrição da empresa ou notas sobre o contato..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 dark:bg-white/5 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
               <button
                 onClick={() => guardedClose(
                   !!(newContactForm.name || newContactForm.phone || newContactForm.email || newContactForm.company || newContactForm.document || newContactForm.industry || newContactForm.description || newContactForm.birthday || newContactForm.returnAlert || newContactForm.leadSource || newContactForm.leadType || newContactForm.costCenterId || newContactPhotoFile || newContactPartners.length > 0),
                   () => { setShowNewContactModal(false); setNewContactForm(emptyContactForm); setNewContactPhotoFile(null); setNewContactPhotoPreview(null); setNewContactPartners([]); setNewPartnerInput(''); setNewContactErrors({}) }
                 )}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -9144,12 +9144,12 @@ export default function FunilDetailPage() {
             !!(crossFunnelTarget || crossFunnelTargetStage),
             () => { setShowCrossFunnelModal(false); setCrossFunnelTarget(''); setCrossFunnelTargetStage('') }
           )} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Transferir para outro Funil</h3>
             <p className="text-sm text-slate-500">{bulkSelectedIds.size} contato{bulkSelectedIds.size !== 1 ? 's' : ''} selecionado{bulkSelectedIds.size !== 1 ? 's' : ''}</p>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Funil destino</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Funil destino</label>
               <select
                 value={crossFunnelTarget}
                 onChange={(e) => { setCrossFunnelTarget(e.target.value); setCrossFunnelTargetStage('') }}
@@ -9164,7 +9164,7 @@ export default function FunilDetailPage() {
 
             {crossFunnelTarget && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Etapa destino</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Etapa destino</label>
                 <select
                   value={crossFunnelTargetStage}
                   onChange={(e) => setCrossFunnelTargetStage(e.target.value)}
@@ -9184,7 +9184,7 @@ export default function FunilDetailPage() {
                   !!(crossFunnelTarget || crossFunnelTargetStage),
                   () => { setShowCrossFunnelModal(false); setCrossFunnelTarget(''); setCrossFunnelTargetStage('') }
                 )}
-                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -9203,8 +9203,8 @@ export default function FunilDetailPage() {
       {/* WhatsApp Modal */}
       {showWhatsAppModal && selectedClient && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-green-50">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/10 bg-green-50">
               <div className="flex items-center gap-2">
                 <ChatBubbleLeftRightIcon className="w-5 h-5 text-green-600" />
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Enviar WhatsApp</h3>
@@ -9225,7 +9225,7 @@ export default function FunilDetailPage() {
                 <p className="text-xs text-slate-400">{selectedClient.phone}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Mensagem</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mensagem</label>
                 <textarea
                   value={whatsappMessage}
                   onChange={(e) => setWhatsappMessage(e.target.value)}
@@ -9240,7 +9240,7 @@ export default function FunilDetailPage() {
                     !!whatsappMessage.trim(),
                     () => { setShowWhatsAppModal(false); setWhatsappMessage('') }
                   )}
-                  className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                 >
                   Cancelar
                 </button>
@@ -9260,8 +9260,8 @@ export default function FunilDetailPage() {
       {/* Email Modal */}
       {showEmailModal && selectedClient && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-blue-50">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-3xl mx-4 overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/10 bg-blue-50">
               <div className="flex items-center gap-2">
                 <EnvelopeClosedIcon className="w-5 h-5 text-blue-600" />
                 <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Enviar Email</h3>
@@ -9297,7 +9297,7 @@ export default function FunilDetailPage() {
                       }
                       e.target.value = ''
                     }}
-                    className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    className="px-3 py-1.5 border border-slate-200 dark:border-white/10 rounded-lg text-sm bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     defaultValue=""
                   >
                     <option value="" disabled>Usar template...</option>
@@ -9308,7 +9308,7 @@ export default function FunilDetailPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Assunto</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assunto</label>
                 <input
                   type="text"
                   value={emailSubject}
@@ -9318,7 +9318,7 @@ export default function FunilDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Mensagem</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mensagem</label>
                 <RichTextEditor
                   value={emailBody}
                   onChange={setEmailBody}
@@ -9326,7 +9326,7 @@ export default function FunilDetailPage() {
                 />
               </div>
             </div>
-            <div className="flex items-center justify-between p-4 border-t border-slate-200 bg-slate-50">
+            <div className="flex items-center justify-between p-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
               <button
                 onClick={async () => {
                   if (!emailSubject.trim() || !emailBody.trim()) return
@@ -9352,7 +9352,7 @@ export default function FunilDetailPage() {
                   }
                 }}
                 disabled={!emailSubject.trim() || !emailBody.trim() || savingTemplate}
-                className="text-sm text-slate-500 hover:text-slate-700 underline decoration-dotted disabled:opacity-40 disabled:no-underline"
+                className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-300 underline decoration-dotted disabled:opacity-40 disabled:no-underline"
               >
                 {savingTemplate ? 'Salvando...' : 'Salvar como template'}
               </button>
@@ -9362,7 +9362,7 @@ export default function FunilDetailPage() {
                     !!(emailSubject.trim() || emailBody.trim()),
                     () => { setShowEmailModal(false); setEmailSubject(''); setEmailBody('') }
                   )}
-                  className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                 >
                   Cancelar
                 </button>

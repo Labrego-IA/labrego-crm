@@ -101,13 +101,13 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50/50 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 dark:bg-white/5/50 transition-colors"
       >
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 text-left">Provedor de Email</h3>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white text-left">Provedor de Email</h3>
           <p className="mt-0.5 text-sm text-slate-500 text-left">
             Configure o provedor de envio de emails para campanhas e cadencias.
           </p>
@@ -118,22 +118,22 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
       </button>
 
       {expanded && (
-        <div className="px-6 pb-6 border-t border-slate-100 pt-4 space-y-5">
+        <div className="px-6 pb-6 border-t border-slate-100 dark:border-white/5 pt-4 space-y-5">
           {loading ? (
             <div className="py-8 text-center text-sm text-slate-400">Carregando...</div>
           ) : (
             <>
               {/* Primary provider */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Provedor primario</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Provedor primario</label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {PROVIDER_OPTIONS.map(opt => (
                     <button
                       key={opt.id}
                       onClick={() => setConfig(prev => ({ ...prev, primaryProvider: opt.id }))}
-                      className={`text-left p-4 rounded-xl border-2 transition-all ${config.primaryProvider === opt.id ? 'border-primary-400 bg-primary-50/50 ring-1 ring-primary-200' : 'border-slate-200 hover:border-slate-300'}`}
+                      className={`text-left p-4 rounded-xl border-2 transition-all ${config.primaryProvider === opt.id ? 'border-primary-400 bg-primary-50/50 ring-1 ring-primary-200' : 'border-slate-200 dark:border-white/10 hover:border-slate-300'}`}
                     >
-                      <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-white">{opt.label}</p>
                       <p className="text-xs text-slate-500 mt-1">{opt.description}</p>
                       {opt.id === 'gmail' && config.hasGmailCredentials && (
                         <span className="inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">Credenciais configuradas</span>
@@ -151,11 +151,11 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
 
               {/* Fallback provider */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Provedor de fallback (opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Provedor de fallback (opcional)</label>
                 <select
                   value={config.fallbackProvider}
                   onChange={e => setConfig(prev => ({ ...prev, fallbackProvider: e.target.value as EmailProviderId | '' }))}
-                  className="w-full md:w-64 border border-slate-200 rounded-lg px-3 py-2 text-sm bg-white"
+                  className="w-full md:w-64 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm bg-white dark:bg-surface-dark"
                 >
                   <option value="">Nenhum</option>
                   {PROVIDER_OPTIONS.filter(o => o.id !== config.primaryProvider).map(opt => (
@@ -168,42 +168,42 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
               {/* From config */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome do remetente</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome do remetente</label>
                   <input
                     value={config.fromName}
                     onChange={e => setConfig(prev => ({ ...prev, fromName: e.target.value }))}
                     placeholder="Voxium"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                    className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Email do remetente</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email do remetente</label>
                   <input
                     value={config.fromEmail}
                     onChange={e => setConfig(prev => ({ ...prev, fromEmail: e.target.value }))}
                     placeholder="contato@suaempresa.com"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                    className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm"
                   />
                 </div>
               </div>
 
               {/* Gmail Credentials */}
               {(config.primaryProvider === 'gmail' || config.fallbackProvider === 'gmail') && (
-                <div className="space-y-3 p-4 rounded-xl bg-slate-50 border border-slate-200">
-                  <p className="text-sm font-medium text-slate-700">Credenciais Gmail (SMTP)</p>
+                <div className="space-y-3 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Credenciais Gmail (SMTP)</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Email Gmail</label>
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Email Gmail</label>
                       <input
                         type="email"
                         value={config.gmailUser}
                         onChange={e => setConfig(prev => ({ ...prev, gmailUser: e.target.value }))}
                         placeholder="seuemail@gmail.com"
-                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                        className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">
+                      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                         Senha de App {config.hasGmailCredentials && <span className="text-emerald-600">(configurada)</span>}
                       </label>
                       <input
@@ -211,7 +211,7 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
                         value={gmailAppPassword}
                         onChange={e => setGmailAppPassword(e.target.value)}
                         placeholder={config.hasGmailCredentials ? '••••••••••••••••' : 'xxxx xxxx xxxx xxxx'}
-                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono"
+                        className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm font-mono"
                       />
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
               {/* Resend API Key */}
               {(config.primaryProvider === 'resend' || config.fallbackProvider === 'resend') && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     Resend API Key {config.hasResendKey && <span className="text-emerald-600 text-xs">(configurada)</span>}
                   </label>
                   <input
@@ -232,7 +232,7 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
                     value={resendApiKey}
                     onChange={e => setResendApiKey(e.target.value)}
                     placeholder={config.hasResendKey ? '••••••••••••••••' : 're_xxxxxxxxxxxxxxxxxxxxxxxx'}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono"
+                    className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm font-mono"
                   />
                 </div>
               )}
@@ -240,7 +240,7 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
               {/* SendGrid API Key */}
               {(config.primaryProvider === 'sendgrid' || config.fallbackProvider === 'sendgrid') && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                     SendGrid API Key {config.hasSendgridKey && <span className="text-emerald-600 text-xs">(configurada)</span>}
                   </label>
                   <input
@@ -248,7 +248,7 @@ export default function EmailProviderSection({ defaultExpanded = false }: EmailP
                     value={sendgridApiKey}
                     onChange={e => setSendgridApiKey(e.target.value)}
                     placeholder={config.hasSendgridKey ? '••••••••••••••••' : 'SG.xxxxxxxxxxxxxxxxxxxxxxxx'}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono"
+                    className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm font-mono"
                   />
                 </div>
               )}

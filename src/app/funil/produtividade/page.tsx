@@ -653,7 +653,7 @@ export default function ProdutividadePage() {
                     return (
                       <tr
                         key={author}
-                        className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-surface-dark' : 'bg-slate-50/50 dark:bg-surface-dark/80'}`}
+                        className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-surface-dark' : 'bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80'}`}
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
@@ -808,7 +808,7 @@ export default function ProdutividadePage() {
                   {authors.map((author, idx) => (
                     <tr
                       key={author}
-                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-surface-dark' : 'bg-slate-50/50 dark:bg-surface-dark/80'}`}
+                      className={`border-t border-slate-100 ${idx % 2 === 0 ? 'bg-white dark:bg-surface-dark' : 'bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80'}`}
                     >
                       <td className={`px-4 py-3 sticky left-0 z-10 ${idx % 2 === 0 ? 'bg-white dark:bg-surface-dark' : 'bg-slate-50 dark:bg-surface-dark/80'}`}>
                         <div className="flex items-center gap-3">

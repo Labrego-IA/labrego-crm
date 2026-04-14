@@ -38,17 +38,17 @@ export default function PageAccessGuard({ children }: PageAccessGuardProps) {
   if (!canAccessPage(pathname)) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center p-4">
-        <div className="text-center space-y-4 p-8 bg-white border border-slate-200 rounded-2xl shadow-lg max-w-md">
+        <div className="text-center space-y-4 p-8 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl shadow-lg max-w-md">
           <div className="flex justify-center">
             <ShieldCheckIcon className="w-16 h-16 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Acesso negado</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Acesso negado</h1>
           <p className="text-slate-500">
             Você não tem permissão para acessar esta página. Entre em contato com o administrador para solicitar acesso.
           </p>
           <button
             onClick={() => router.push('/contatos')}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-slate-900 font-medium rounded-lg hover:bg-secondary/80 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-slate-900 dark:text-white font-medium rounded-lg hover:bg-secondary/80 transition"
           >
             Voltar ao CRM
           </button>

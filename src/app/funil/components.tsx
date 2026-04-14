@@ -190,7 +190,7 @@ const proposalStatusColors: Record<string, string> = {
   'Pendente': 'bg-amber-100 text-amber-700',
   'Em análise': 'bg-blue-100 text-blue-700',
   'Recusada': 'bg-red-100 text-red-700',
-  'Expirada': 'bg-slate-100 text-slate-600',
+  'Expirada': 'bg-slate-100 dark:bg-white/10 text-slate-600',
   'Cancelada': 'bg-rose-100 text-rose-700',
 }
 
@@ -259,12 +259,12 @@ export const KanbanCard = memo(function KanbanCard({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={() => !snapshot.isDragging && onSelect(client)}
-          className={`p-3 bg-white rounded-xl border cursor-pointer ${
+          className={`p-3 bg-white dark:bg-surface-dark rounded-xl border cursor-pointer ${
             snapshot.isDragging
               ? 'shadow-2xl border-primary-300 z-50'
               : isOverdue
               ? 'border-red-200 hover:border-red-300 shadow-sm hover:shadow-md transition-shadow'
-              : 'border-slate-200 hover:border-primary-200 shadow-sm hover:shadow-md transition-shadow'
+              : 'border-slate-200 dark:border-white/10 hover:border-primary-200 shadow-sm hover:shadow-md transition-shadow'
           }`}
           style={{
             ...provided.draggableProps.style,
@@ -276,7 +276,7 @@ export const KanbanCard = memo(function KanbanCard({
             {client.leadType && (
               <span
                 className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium border ${
-                  leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                  leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200'
                 }`}
                 title={`Tipo: ${client.leadType}`}
               >
@@ -343,7 +343,7 @@ export const KanbanCard = memo(function KanbanCard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-sm text-slate-800 truncate leading-tight">
+              <h4 className="font-semibold text-sm text-slate-800 dark:text-white truncate leading-tight">
                 {client.name}
               </h4>
               {client.company && (
@@ -368,7 +368,7 @@ export const KanbanCard = memo(function KanbanCard({
             <div className="flex items-center gap-1.5 mt-2">
               {proposalData ? (
                 <>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium ${proposalStatusColors[proposalData.status] || 'bg-slate-100 text-slate-600'}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium ${proposalStatusColors[proposalData.status] || 'bg-slate-100 dark:bg-white/10 text-slate-600'}`}>
                     <DocumentDuplicateIcon className="w-3 h-3" />
                     {proposalData.total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </span>
@@ -481,10 +481,10 @@ export const UnassignedCard = memo(function UnassignedCard({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           onClick={() => !snapshot.isDragging && onSelect(client)}
-          className={`p-3 bg-white rounded-xl border cursor-pointer ${
+          className={`p-3 bg-white dark:bg-surface-dark rounded-xl border cursor-pointer ${
             snapshot.isDragging
               ? 'shadow-2xl border-primary-300 z-50'
-              : 'border-slate-200 hover:border-primary-200 shadow-sm hover:shadow-md transition-shadow'
+              : 'border-slate-200 dark:border-white/10 hover:border-primary-200 shadow-sm hover:shadow-md transition-shadow'
           }`}
           style={{
             ...provided.draggableProps.style,
@@ -507,7 +507,7 @@ export const UnassignedCard = memo(function UnassignedCard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-sm text-slate-800 truncate">
+              <h4 className="font-semibold text-sm text-slate-800 dark:text-white truncate">
                 {client.name}
               </h4>
               {client.company && (
@@ -622,7 +622,7 @@ export const TableRow = memo(function TableRow({
   }, [menuOpen])
 
   return (
-    <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => onSelect(contact)}>
+    <tr className="hover:bg-slate-50 dark:bg-white/5/50 transition-colors cursor-pointer" onClick={() => onSelect(contact)}>
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           {contact.photoUrl ? (
@@ -640,7 +640,7 @@ export const TableRow = memo(function TableRow({
             </div>
           )}
           <div>
-            <p className="font-semibold text-sm text-slate-800">{contact.name}</p>
+            <p className="font-semibold text-sm text-slate-800 dark:text-white">{contact.name}</p>
             {contact.company && (
               <p className="text-xs text-slate-500 flex items-center gap-1">
                 <BuildingOfficeIcon className="w-3 h-3" />
@@ -674,7 +674,7 @@ export const TableRow = memo(function TableRow({
       <td className="px-4 py-3">
         {step ? (
           <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-800">{step.name}</span>
+            <span className="text-sm font-medium text-slate-800 dark:text-white">{step.name}</span>
             <span className={`inline-flex items-center gap-1 text-xs ${methodConfig?.text || 'text-slate-500'}`}>
               <MethodIcon className="w-3 h-3" />
               {methodConfig?.label || step.contactMethod}
@@ -684,14 +684,14 @@ export const TableRow = memo(function TableRow({
           <span className="text-xs text-slate-400">Sem cadencia</span>
         )}
       </td>
-      <td className="px-4 py-3 text-sm text-slate-600">
+      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
         {contact.daysInStage !== null ? (
           <span className={contact.isOverdue ? 'text-red-600 font-medium' : ''}>
             {contact.daysInStage} dia{contact.daysInStage !== 1 ? 's' : ''}
           </span>
         ) : '-'}
       </td>
-      <td className="px-4 py-3 text-sm text-slate-600">
+      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
         {contact.daysSinceLastFollowUp !== null ? (
           <span>
             {contact.daysSinceLastFollowUp === 0 ? 'Hoje' : `${contact.daysSinceLastFollowUp}d`}
@@ -704,7 +704,7 @@ export const TableRow = memo(function TableRow({
           <button
             ref={buttonRef}
             onClick={handleMenuToggle}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:bg-white/10 text-slate-500 transition-colors"
             title="Ações"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -718,7 +718,7 @@ export const TableRow = memo(function TableRow({
           {mounted && menuOpen && createPortal(
             <div
               ref={menuRef}
-              className="fixed w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1"
+              className="fixed w-48 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-slate-200 dark:border-white/10 py-1"
               style={{
                 top: menuPosition.top,
                 left: menuPosition.left,
@@ -733,7 +733,7 @@ export const TableRow = memo(function TableRow({
                     onCadenceAction(contact)
                     setMenuOpen(false)
                   }}
-                  className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 ${methodConfig?.text || 'text-slate-700'}`}
+                  className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 ${methodConfig?.text || 'text-slate-700'}`}
                 >
                   <MethodIcon className="w-4 h-4" />
                   Executar: {step.name}
@@ -748,7 +748,7 @@ export const TableRow = memo(function TableRow({
                     onMarkResponse(contact)
                     setMenuOpen(false)
                   }}
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-emerald-600"
+                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-emerald-600"
                 >
                   <CheckCircleIcon className="w-4 h-4" />
                   Marcar resposta
@@ -766,7 +766,7 @@ export const TableRow = memo(function TableRow({
                     onSendWhatsApp(contact)
                     setMenuOpen(false)
                   }}
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-green-600"
+                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-green-600"
                 >
                   <ChatBubbleLeftRightIcon className="w-4 h-4" />
                   Enviar WhatsApp
@@ -781,7 +781,7 @@ export const TableRow = memo(function TableRow({
                     onSendEmail(contact)
                     setMenuOpen(false)
                   }}
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-blue-600"
+                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-blue-600"
                 >
                   <EnvelopeIcon className="w-4 h-4" />
                   Enviar Email
@@ -796,7 +796,7 @@ export const TableRow = memo(function TableRow({
                     onCallContact(contact)
                     setMenuOpen(false)
                   }}
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-emerald-600"
+                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-emerald-600"
                 >
                   <PhoneIcon className="w-4 h-4" />
                   Ligar (Agente de Voz)
@@ -813,7 +813,7 @@ export const TableRow = memo(function TableRow({
                   onQuickFollowUp(contact)
                   setMenuOpen(false)
                 }}
-                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-blue-600"
+                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-blue-600"
               >
                 <ChatBubbleIcon className="w-4 h-4" />
                 Adicionar follow-up
@@ -826,7 +826,7 @@ export const TableRow = memo(function TableRow({
                   onChangeStage(contact)
                   setMenuOpen(false)
                 }}
-                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-amber-600"
+                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-amber-600"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -841,7 +841,7 @@ export const TableRow = memo(function TableRow({
                   onSelect(contact)
                   setMenuOpen(false)
                 }}
-                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 text-primary-600"
+                className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:bg-white/5 text-primary-600"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -877,7 +877,7 @@ export const Pagination = memo(function Pagination({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
+        className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
       >
         ←
       </button>
@@ -887,7 +887,7 @@ export const Pagination = memo(function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
+        className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-xs"
       >
         →
       </button>
@@ -1099,7 +1099,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-primary-50">
         <div className="flex items-center justify-between">
@@ -1108,7 +1108,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
               <ClockIcon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800">Log de Atividade</h3>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">Log de Atividade</h3>
               <p className="text-xs text-slate-500">
                 {sortedLogs.length} registro{sortedLogs.length !== 1 ? 's' : ''} encontrado{sortedLogs.length !== 1 ? 's' : ''}
               </p>
@@ -1130,10 +1130,10 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
         <>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-100">
+              <thead className="bg-slate-50 dark:bg-white/5 border-b border-slate-100">
                 <tr>
                   <th
-                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors"
                     onClick={() => handleSort('createdAt')}
                   >
                     <div className="flex items-center gap-2">
@@ -1142,7 +1142,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors"
                     onClick={() => handleSort('clientName')}
                   >
                     <div className="flex items-center gap-2">
@@ -1151,7 +1151,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors"
                     onClick={() => handleSort('type')}
                   >
                     <div className="flex items-center gap-2">
@@ -1160,7 +1160,7 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                     </div>
                   </th>
                   <th
-                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 cursor-pointer hover:bg-slate-100 transition-colors"
+                    className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:bg-white/10 transition-colors"
                     onClick={() => handleSort('author')}
                   >
                     <div className="flex items-center gap-2">
@@ -1168,18 +1168,18 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                       <SortIcon field="author" />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400">
                     Conteúdo
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedLogs.map((log) => (
-                  <tr key={`${log.type}-${log.id}`} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                    <td className="px-4 py-3 text-sm text-slate-700 whitespace-nowrap">
+                  <tr key={`${log.type}-${log.id}`} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50 transition-colors">
+                    <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">
                       {formatDate(log.createdAt)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-700 font-medium">
+                    <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 font-medium">
                       {log.clientName}
                     </td>
                     <td className="px-4 py-3">
@@ -1189,16 +1189,16 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
                           Follow-up
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 rounded-full text-xs font-medium">
                           <ClockIcon className="w-3 h-3" />
                           Log
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-700">
+                    <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
                       {log.author}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600 max-w-md truncate">
+                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-md truncate">
                       {log.text || '-'}
                     </td>
                   </tr>
@@ -1213,17 +1213,17 @@ export function ActivityLogView({ clients }: ActivityLogViewProps) {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 ← Anterior
               </button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-slate-600 dark:text-slate-400">
                 Página {currentPage} de {totalPages}
               </span>
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Próxima →
               </button>

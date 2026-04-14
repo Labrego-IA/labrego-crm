@@ -369,14 +369,14 @@ function CampanhasContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar campanha..."
-            className="w-full rounded-xl border border-slate-200 bg-white dark:bg-surface-dark py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark py-2 pl-10 pr-4 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as CampaignStatus | '')}
-          className="rounded-xl border border-slate-200 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {STATUS_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -386,7 +386,7 @@ function CampanhasContent() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as CampaignType | '')}
-          className="rounded-xl border border-slate-200 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+          className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
         >
           {TYPE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -407,7 +407,7 @@ function CampanhasContent() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white dark:bg-surface-dark shadow-sm">
+          <div className="hidden md:block overflow-x-auto max-h-[70vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
             <table className="min-w-full divide-y divide-slate-200 dark:divide-white/10">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr>
@@ -550,7 +550,7 @@ function CampanhasContent() {
               <div
                 key={c.id}
                 onClick={() => router.push(`/campanhas/${c.id}`)}
-                className="rounded-2xl border border-slate-200 bg-white dark:bg-surface-dark p-4 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-4 shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1 min-w-0">

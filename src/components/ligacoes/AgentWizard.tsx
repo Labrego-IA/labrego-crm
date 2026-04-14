@@ -365,14 +365,14 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
 
       {/* Phase content */}
       {currentConfig && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
           {/* Phase header */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-amber-400 flex items-center justify-center text-white">
               {currentConfig.icon}
             </div>
             <div>
-              <h2 className="font-bold text-slate-800">{currentConfig.title}</h2>
+              <h2 className="font-bold text-slate-800 dark:text-white">{currentConfig.title}</h2>
               <p className="text-sm text-slate-500">{currentConfig.subtitle}</p>
             </div>
             {saving && (
@@ -404,7 +404,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
           )}
 
           {/* Navigation + Actions */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100 dark:border-white/5">
             <button
               onClick={handleBack}
               disabled={!canGoBack}
@@ -454,7 +454,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
       <div className="flex items-center justify-end">
         <button
           onClick={toggleAdvancedMode}
-          className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-xs text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
         >
           {advancedMode ? 'Voltar ao Wizard' : 'Modo Avancado'}
         </button>
@@ -462,10 +462,10 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
 
       {/* Advanced Mode — Direct prompt editing */}
       {advancedMode && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-slate-800">Edicao Direta do Prompt</h3>
+              <h3 className="font-bold text-slate-800 dark:text-white">Edicao Direta do Prompt</h3>
               <p className="text-xs text-slate-500">Edite o prompt completo diretamente. Alteracoes manuais sobrescrevem o wizard.</p>
             </div>
             <button
@@ -489,7 +489,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
             value={advancedPrompt}
             onChange={(e) => setAdvancedPrompt(e.target.value)}
             rows={20}
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl text-xs font-mono leading-relaxed focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-y"
+            className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-mono leading-relaxed focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-y"
           />
 
           <div className="flex items-center justify-between text-xs text-slate-400">
@@ -540,11 +540,11 @@ function WizardInput({
   placeholder: string
   type?: 'text' | 'textarea'
 }) {
-  const inputClass = 'w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all'
+  const inputClass = 'w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all'
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">{label}</label>
       {type === 'textarea' ? (
         <textarea
           value={value}
@@ -704,7 +704,7 @@ function Phase4Fields({ answers, updateField, onBlur, setAnswers }: DynamicPhase
     <div className="space-y-4">
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Quais perguntas o agente deve fazer para entender o problema do prospect?
           </label>
           <span className="text-xs text-slate-400">{answers.discoveryQuestions.length}/8</span>
@@ -719,7 +719,7 @@ function Phase4Fields({ answers, updateField, onBlur, setAnswers }: DynamicPhase
                 onChange={(e) => updateQuestion(index, e.target.value)}
                 onBlur={onBlur}
                 placeholder="Ex: Como funciona a prospecção de novos clientes hoje?"
-                className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                className="flex-1 px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all"
               />
               <button
                 type="button"
@@ -778,7 +778,7 @@ function Phase5Fields({ answers, updateField, onBlur }: PhaseFieldsProps) {
           placeholder="Ex: Lucas"
         />
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
             Duracao ideal da reuniao
           </label>
           <select
@@ -787,7 +787,7 @@ function Phase5Fields({ answers, updateField, onBlur }: PhaseFieldsProps) {
               updateField('meetingDuration', Number(e.target.value))
               setTimeout(onBlur, 100)
             }}
-            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all bg-white"
+            className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all bg-white dark:bg-surface-dark"
           >
             <option value={15}>15 minutos</option>
             <option value={30}>30 minutos</option>
@@ -843,7 +843,7 @@ function Phase6Fields({ answers, onBlur, setAnswers }: DynamicPhaseFieldsProps) 
     <div className="space-y-4">
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Quais objecoes seus prospects mais fazem?
           </label>
           <span className="text-xs text-slate-400">{answers.objections.length}/10</span>
@@ -851,7 +851,7 @@ function Phase6Fields({ answers, onBlur, setAnswers }: DynamicPhaseFieldsProps) 
 
         <div className="space-y-3">
           {answers.objections.map((obj, index) => (
-            <div key={index} className="border border-slate-100 rounded-xl p-3 space-y-2">
+            <div key={index} className="border border-slate-100 dark:border-white/5 rounded-xl p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -859,7 +859,7 @@ function Phase6Fields({ answers, onBlur, setAnswers }: DynamicPhaseFieldsProps) 
                   onChange={(e) => updateObjection(index, 'objection', e.target.value)}
                   onBlur={onBlur}
                   placeholder="Ex: Nao tenho tempo"
-                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all"
                 />
                 <button
                   type="button"
@@ -875,7 +875,7 @@ function Phase6Fields({ answers, onBlur, setAnswers }: DynamicPhaseFieldsProps) 
                 onBlur={onBlur}
                 placeholder="Ex: Eu entendo a correria. Me responde uma coisa so..."
                 rows={2}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none"
               />
             </div>
           ))}
@@ -902,7 +902,7 @@ function Phase6Fields({ answers, onBlur, setAnswers }: DynamicPhaseFieldsProps) 
                   key={suggestion}
                   type="button"
                   onClick={() => addSuggestion(suggestion)}
-                  className="px-2.5 py-1 text-xs border border-slate-200 rounded-full text-slate-600 hover:border-primary hover:text-primary transition-colors"
+                  className="px-2.5 py-1 text-xs border border-slate-200 dark:border-white/10 rounded-full text-slate-600 dark:text-slate-400 hover:border-primary hover:text-primary transition-colors"
                 >
                   + {suggestion}
                 </button>

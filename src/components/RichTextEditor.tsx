@@ -94,7 +94,7 @@ export default function RichTextEditor({ value, onChange, className = '', placeh
       className={`p-1.5 rounded-md text-xs transition-colors ${
         active
           ? 'bg-primary-100 text-primary-700'
-          : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+          : 'text-slate-500 hover:bg-slate-100 dark:bg-white/10 hover:text-slate-700'
       }`}
     >
       {children}
@@ -102,9 +102,9 @@ export default function RichTextEditor({ value, onChange, className = '', placeh
   )
 
   return (
-    <div className={`rounded-xl border border-slate-200 overflow-hidden bg-white ${className}`}>
+    <div className={`rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-white dark:bg-surface-dark ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-slate-100 bg-slate-50 flex-wrap">
+      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/5 flex-wrap">
         <ToolbarBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Negrito">
           <span className="font-bold text-sm">B</span>
         </ToolbarBtn>
@@ -153,7 +153,7 @@ export default function RichTextEditor({ value, onChange, className = '', placeh
         <input
           type="color"
           onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
-          className="w-6 h-6 rounded cursor-pointer border border-slate-200"
+          className="w-6 h-6 rounded cursor-pointer border border-slate-200 dark:border-white/10"
           title="Cor do texto"
         />
         <ToolbarBtn active={editor.isActive('highlight')} onClick={() => editor.chain().focus().toggleHighlight({ color: '#fef08a' }).run()} title="Destacar">

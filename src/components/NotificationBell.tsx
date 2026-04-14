@@ -129,7 +129,7 @@ export default function NotificationBell() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-xl hover:bg-slate-100 transition-colors"
+        className="relative p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
         title="Notificacoes"
       >
         <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,10 +153,10 @@ export default function NotificationBell() {
       )}
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-lg border border-slate-200 z-50 animate-scale-in overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-slate-200 dark:border-white/10 z-50 animate-scale-in overflow-hidden">
           {/* Header do dropdown */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-            <h3 className="text-sm font-semibold text-slate-800">Notificacoes</h3>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5">
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">Notificacoes</h3>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
@@ -194,15 +194,15 @@ export default function NotificationBell() {
                       if (!isExpiring) setOpen(false)
                     }}
                     className={`flex items-start gap-3 px-4 py-3 transition-colors cursor-pointer ${
-                      n.read ? 'bg-white hover:bg-slate-50' : 'bg-primary-50/40 hover:bg-primary-50/60'
-                    } border-b border-slate-100 last:border-b-0`}
+                      n.read ? 'bg-white dark:bg-surface-dark hover:bg-slate-50' : 'bg-primary-50/40 hover:bg-primary-50/60'
+                    } border-b border-slate-100 dark:border-white/5 last:border-b-0`}
                   >
                     <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${iconInfo.bg}`}>
                       {iconInfo.icon}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-sm ${n.read ? 'text-slate-700' : 'text-slate-900 font-medium'}`}>
+                        <p className={`text-sm ${n.read ? 'text-slate-700' : 'text-slate-900 dark:text-white font-medium'}`}>
                           {n.title}
                         </p>
                         {!n.read && (

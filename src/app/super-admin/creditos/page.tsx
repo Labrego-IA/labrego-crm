@@ -121,21 +121,21 @@ export default function SuperAdminCreditosPage() {
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 flex items-center gap-4">
                   <div className="p-3 bg-primary-50 rounded-lg"><Wallet className="w-5 h-5 text-primary-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Saldo Minutos</p>
                     <p className="text-xl font-bold text-gray-900">{balance?.balance?.toLocaleString('pt-BR') ?? 0} min</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 flex items-center gap-4">
                   <div className="p-3 bg-green-50 rounded-lg"><TrendingUp className="w-5 h-5 text-green-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Comprado (min)</p>
                     <p className="text-xl font-bold text-gray-900">{balance?.totalPurchased?.toLocaleString('pt-BR') ?? 0}</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 flex items-center gap-4">
                   <div className="p-3 bg-orange-50 rounded-lg"><TrendingDown className="w-5 h-5 text-orange-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Consumido (min)</p>
@@ -145,21 +145,21 @@ export default function SuperAdminCreditosPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white rounded-xl border border-violet-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-violet-200 p-4 flex items-center gap-4">
                   <div className="p-3 bg-violet-50 rounded-lg"><CreditCard className="w-5 h-5 text-violet-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Saldo Acoes</p>
                     <p className="text-xl font-bold text-violet-700">{balance?.actionBalance?.toLocaleString('pt-BR') ?? 0}</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 flex items-center gap-4">
                   <div className="p-3 bg-green-50 rounded-lg"><TrendingUp className="w-5 h-5 text-green-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Comprado (acoes)</p>
                     <p className="text-xl font-bold text-gray-900">{balance?.actionTotalPurchased?.toLocaleString('pt-BR') ?? 0}</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4">
+                <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 flex items-center gap-4">
                   <div className="p-3 bg-orange-50 rounded-lg"><TrendingDown className="w-5 h-5 text-orange-600" /></div>
                   <div>
                     <p className="text-sm text-gray-500">Consumido (acoes)</p>
@@ -168,7 +168,7 @@ export default function SuperAdminCreditosPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-6">
                 <h3 className="text-sm font-semibold text-gray-900 mb-4">Adicionar / Remover Creditos</h3>
                 <form onSubmit={handleAddCredits} className="flex flex-wrap gap-3 items-end">
                   <div className="min-w-[140px]">
@@ -193,7 +193,7 @@ export default function SuperAdminCreditosPage() {
                 {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg mt-3">{error}</p>}
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
                 <div className="px-4 py-3 border-b border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-900">Historico de Transacoes</h3>
                 </div>

@@ -209,7 +209,7 @@ function TriggersPageContent() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Automações — Triggers</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Automações — Triggers</h1>
           <p className="text-sm text-slate-500">Configure ações automáticas baseadas em eventos</p>
         </div>
         <button
@@ -226,7 +226,7 @@ function TriggersPageContent() {
         <button
           onClick={() => setActiveTab('triggers')}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'triggers' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            activeTab === 'triggers' ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
           }`}
         >
           Triggers ({triggers.length})
@@ -234,7 +234,7 @@ function TriggersPageContent() {
         <button
           onClick={() => setActiveTab('logs')}
           className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === 'logs' ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            activeTab === 'logs' ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
           }`}
         >
           Logs ({logs.length})
@@ -245,14 +245,14 @@ function TriggersPageContent() {
       {activeTab === 'triggers' && (
         <div className="space-y-3">
           {triggers.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center">
+            <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-12 text-center">
               <BoltIcon className="h-10 w-10 text-slate-300 mx-auto mb-3" />
               <p className="text-sm text-slate-500">Nenhum trigger configurado</p>
               <p className="text-xs text-slate-400 mt-1">Crie seu primeiro trigger para automatizar ações</p>
             </div>
           ) : (
             triggers.map((t) => (
-              <div key={t.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div key={t.id} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     <div className={`rounded-full p-2 ${t.isActive ? 'bg-emerald-100' : 'bg-slate-100'}`}>
@@ -260,14 +260,14 @@ function TriggersPageContent() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-slate-900">{t.name}</h3>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${t.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{t.name}</h3>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${t.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 dark:bg-white/10 text-slate-500'}`}>
                           {t.isActive ? 'Ativo' : 'Inativo'}
                         </span>
                       </div>
                       {t.description && <p className="text-xs text-slate-400 mt-0.5">{t.description}</p>}
                       <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
-                        <span className="bg-slate-100 rounded px-1.5 py-0.5">{EVENT_TYPE_LABELS[t.eventType]}</span>
+                        <span className="bg-slate-100 dark:bg-white/10 rounded px-1.5 py-0.5">{EVENT_TYPE_LABELS[t.eventType]}</span>
                         <span>{t.actions.length} ação(ões)</span>
                         {t.executionCount > 0 && <span>{t.executionCount}x executado</span>}
                         {t.lastExecutedAt && (
@@ -280,10 +280,10 @@ function TriggersPageContent() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => toggleActive(t.id, t.isActive)} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors" title={t.isActive ? 'Desativar' : 'Ativar'}>
+                    <button onClick={() => toggleActive(t.id, t.isActive)} className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors" title={t.isActive ? 'Desativar' : 'Ativar'}>
                       {t.isActive ? <PauseIcon className="h-4 w-4 text-amber-500" /> : <PlayIcon className="h-4 w-4 text-emerald-500" />}
                     </button>
-                    <button onClick={() => openEditForm(t)} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors">
+                    <button onClick={() => openEditForm(t)} className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors">
                       <PencilIcon className="h-4 w-4 text-slate-500" />
                     </button>
                     <button onClick={() => deleteTrigger(t.id)} className="p-1.5 hover:bg-red-50 rounded-lg transition-colors">
@@ -299,7 +299,7 @@ function TriggersPageContent() {
 
       {/* Logs list */}
       {activeTab === 'logs' && (
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm overflow-hidden">
           {logs.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-sm text-slate-400">Nenhum log de execução ainda</p>
@@ -307,7 +307,7 @@ function TriggersPageContent() {
           ) : (
             <div className="max-h-[600px] overflow-y-auto">
               <table className="min-w-full divide-y divide-slate-100">
-                <thead className="bg-slate-50 sticky top-0">
+                <thead className="bg-slate-50 dark:bg-white/5 sticky top-0">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500">Status</th>
                     <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500">Trigger</th>
@@ -320,7 +320,7 @@ function TriggersPageContent() {
                   {logs.map((log) => {
                     const allSuccess = log.actionsExecuted.every((a) => a.success)
                     return (
-                      <tr key={log.id} className="hover:bg-slate-50">
+                      <tr key={log.id} className="hover:bg-slate-50 dark:bg-white/5">
                         <td className="px-4 py-2">
                           {allSuccess ? (
                             <CheckCircleIcon className="h-5 w-5 text-emerald-500" />
@@ -329,10 +329,10 @@ function TriggersPageContent() {
                           )}
                         </td>
                         <td className="px-4 py-2">
-                          <p className="text-sm text-slate-900">{log.triggerName}</p>
+                          <p className="text-sm text-slate-900 dark:text-white">{log.triggerName}</p>
                           <p className="text-[10px] text-slate-400">{EVENT_TYPE_LABELS[log.eventType]}</p>
                         </td>
-                        <td className="px-4 py-2 text-sm text-slate-600">{log.contactName || log.contactId}</td>
+                        <td className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400">{log.contactName || log.contactId}</td>
                         <td className="px-4 py-2">
                           <div className="flex flex-wrap gap-1">
                             {log.actionsExecuted.map((a, i) => (
@@ -361,43 +361,43 @@ function TriggersPageContent() {
       {/* Create/Edit Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto py-8">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl my-auto">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 w-full max-w-lg shadow-xl my-auto">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
               {editingId ? 'Editar Trigger' : 'Novo Trigger'}
             </h3>
 
             <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               {/* Name */}
               <label className="block">
-                <span className="text-sm text-slate-600">Nome</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Nome</span>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder="Ex: Notificar ao mudar etapa"
-                  className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
+                  className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
                 />
               </label>
 
               {/* Description */}
               <label className="block">
-                <span className="text-sm text-slate-600">Descrição</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Descrição</span>
                 <input
                   type="text"
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                   placeholder="Opcional"
-                  className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
+                  className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
                 />
               </label>
 
               {/* Event type */}
               <label className="block">
-                <span className="text-sm text-slate-600">Quando</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Quando</span>
                 <select
                   value={formEventType}
                   onChange={(e) => setFormEventType(e.target.value as TriggerEventType)}
-                  className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
+                  className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
                 >
                   {Object.entries(EVENT_TYPE_LABELS).map(([val, label]) => (
                     <option key={val} value={val}>{label}</option>
@@ -415,7 +415,7 @@ function TriggersPageContent() {
                       value={formFromStageId}
                       onChange={(e) => setFormFromStageId(e.target.value)}
                       placeholder="Qualquer"
-                      className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none"
+                      className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-sm outline-none"
                     />
                   </label>
                   <label className="block">
@@ -425,7 +425,7 @@ function TriggersPageContent() {
                       value={formToStageId}
                       onChange={(e) => setFormToStageId(e.target.value)}
                       placeholder="Qualquer"
-                      className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm outline-none"
+                      className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-sm outline-none"
                     />
                   </label>
                 </div>
@@ -434,13 +434,13 @@ function TriggersPageContent() {
               {/* Inactive days */}
               {formEventType === 'lead_inactive_days' && (
                 <label className="block">
-                  <span className="text-sm text-slate-600">Dias de inatividade</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Dias de inatividade</span>
                   <input
                     type="number"
                     value={formInactiveDays}
                     onChange={(e) => setFormInactiveDays(+e.target.value)}
                     min={1}
-                    className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm outline-none"
                   />
                 </label>
               )}
@@ -448,19 +448,19 @@ function TriggersPageContent() {
               {/* Actions */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-600">Então executar</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">Então executar</span>
                   <button onClick={addAction} className="text-xs text-primary-600 hover:text-primary-700">
                     + Ação
                   </button>
                 </div>
                 <div className="space-y-2">
                   {formActions.map((action, idx) => (
-                    <div key={idx} className="rounded-lg border border-slate-200 p-3 space-y-2">
+                    <div key={idx} className="rounded-lg border border-slate-200 dark:border-white/10 p-3 space-y-2">
                       <div className="flex items-center gap-2">
                         <select
                           value={action.type}
                           onChange={(e) => updateAction(idx, { type: e.target.value as TriggerActionType })}
-                          className="flex-1 rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="flex-1 rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         >
                           {Object.entries(ACTION_TYPE_LABELS).map(([val, label]) => (
                             <option key={val} value={val}>{label}</option>
@@ -479,7 +479,7 @@ function TriggersPageContent() {
                           value={action.notificationMessage || ''}
                           onChange={(e) => updateAction(idx, { notificationMessage: e.target.value })}
                           placeholder="Mensagem da notificação"
-                          className="block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="block w-full rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         />
                       )}
                       {action.type === 'move_to_stage' && (
@@ -488,7 +488,7 @@ function TriggersPageContent() {
                           value={action.targetStageId || ''}
                           onChange={(e) => updateAction(idx, { targetStageId: e.target.value })}
                           placeholder="ID da etapa destino"
-                          className="block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="block w-full rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         />
                       )}
                       {action.type === 'assign_to_user' && (
@@ -497,7 +497,7 @@ function TriggersPageContent() {
                           value={action.targetUserName || ''}
                           onChange={(e) => updateAction(idx, { targetUserName: e.target.value })}
                           placeholder="Nome do vendedor"
-                          className="block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="block w-full rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         />
                       )}
                       {action.type === 'send_email' && (
@@ -506,7 +506,7 @@ function TriggersPageContent() {
                           value={action.emailSubject || ''}
                           onChange={(e) => updateAction(idx, { emailSubject: e.target.value })}
                           placeholder="Assunto do email"
-                          className="block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="block w-full rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         />
                       )}
                       {action.type === 'add_tag' && (
@@ -515,7 +515,7 @@ function TriggersPageContent() {
                           value={action.tagName || ''}
                           onChange={(e) => updateAction(idx, { tagName: e.target.value })}
                           placeholder="Nome da tag"
-                          className="block w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none"
+                          className="block w-full rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-sm outline-none"
                         />
                       )}
                     </div>
@@ -528,7 +528,7 @@ function TriggersPageContent() {
             <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={() => { setShowForm(false); resetForm() }}
-                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               >
                 Cancelar
               </button>

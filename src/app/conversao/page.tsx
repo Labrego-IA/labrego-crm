@@ -206,7 +206,7 @@ function ConversionTable({
                       </td>
                     )
                   })}
-                  <td className="px-4 py-3 text-center bg-slate-50/60 dark:bg-surface-dark/80">
+                  <td className="px-4 py-3 text-center bg-slate-50 dark:bg-white/5/60 dark:bg-surface-dark/80">
                     <span className={`text-sm font-bold ${
                       total.total === 0
                         ? 'text-slate-300'

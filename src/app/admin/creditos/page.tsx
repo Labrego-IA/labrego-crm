@@ -146,10 +146,10 @@ export default function CreditsPage() {
                 <span className="inline-flex items-center gap-2 rounded-full bg-primary-100/70 px-3 py-1 text-xs font-medium text-primary-700">
                   Gestao de Creditos
                 </span>
-                <h1 className="mt-4 text-2xl font-semibold text-slate-900 sm:text-3xl">
+                <h1 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-white sm:text-3xl">
                   Creditos
                 </h1>
-                <p className="mt-2 max-w-xl text-sm text-slate-600 sm:text-base">
+                <p className="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-400 sm:text-base">
                   Acompanhe o saldo de creditos de acoes e minutos de ligacao da sua
                   organizacao.
                 </p>
@@ -160,7 +160,7 @@ export default function CreditsPage() {
             <div>
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500">Acoes (Ligacoes + WhatsApp)</h2>
               <section className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-primary-500">
                     Saldo de acoes
                   </p>
@@ -177,7 +177,7 @@ export default function CreditsPage() {
                     </>
                   )}
                 </div>
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-red-500">
                     Acoes consumidas
                   </p>
@@ -194,7 +194,7 @@ export default function CreditsPage() {
                     </>
                   )}
                 </div>
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-green-500">
                     Acoes adquiridas
                   </p>
@@ -218,7 +218,7 @@ export default function CreditsPage() {
             <div>
               <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-slate-500">Minutos de Ligacao</h2>
               <section className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-primary-500">
                     Saldo de minutos
                   </p>
@@ -235,7 +235,7 @@ export default function CreditsPage() {
                     </>
                   )}
                 </div>
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-red-500">
                     Minutos consumidos
                   </p>
@@ -252,7 +252,7 @@ export default function CreditsPage() {
                     </>
                   )}
                 </div>
-                <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-primary-100/80">
+                <div className="rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm ring-1 ring-primary-100/80">
                   <p className="text-xs font-medium uppercase tracking-wider text-green-500">
                     Minutos adquiridos
                   </p>
@@ -276,21 +276,21 @@ export default function CreditsPage() {
             <section className="rounded-3xl bg-white/90 shadow-sm ring-1 ring-primary-100/70">
               <div className="flex items-center justify-between border-b border-primary-50 px-6 py-5">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                     Historico de transacoes
                   </h2>
                   <p className="mt-1 text-xs text-slate-500">
                     Ultimas 50 transacoes de creditos da organizacao.
                   </p>
                 </div>
-                <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
+                <div className="flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-white/10 p-0.5">
                   {(['all', 'actions', 'minutes'] as CreditFilter[]).map((f) => (
                     <button
                       key={f}
                       onClick={() => setFilter(f)}
                       className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                         filter === f
-                          ? 'bg-white text-primary-700 shadow-sm'
+                          ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm'
                           : 'text-slate-500 hover:text-slate-700'
                       }`}
                     >
@@ -308,7 +308,7 @@ export default function CreditsPage() {
                   </div>
                 ) : filteredTransactions.length === 0 ? (
                   <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-primary-200 bg-primary-50/40 px-6 py-12 text-center">
-                    <p className="text-sm font-medium text-slate-600">
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
                       Nenhuma transacao registrada.
                     </p>
                     <p className="text-xs text-slate-400">
@@ -318,7 +318,7 @@ export default function CreditsPage() {
                   </div>
                 ) : (
                   <div className="overflow-x-auto max-h-[70vh] overflow-y-auto rounded-2xl border border-primary-100 shadow-sm">
-                    <table className="min-w-full divide-y divide-primary-100 text-left text-sm text-slate-600">
+                    <table className="min-w-full divide-y divide-primary-100 text-left text-sm text-slate-600 dark:text-slate-400">
                       <thead className="sticky top-0 z-10 bg-primary-50/80 text-xs font-semibold uppercase tracking-wider text-primary-600">
                         <tr>
                           <th className="whitespace-nowrap px-4 py-3">Data</th>
@@ -344,7 +344,7 @@ export default function CreditsPage() {
                             key={tx.id}
                             className="transition-colors hover:bg-primary-50/60"
                           >
-                            <td className="whitespace-nowrap px-4 py-3 text-slate-700">
+                            <td className="whitespace-nowrap px-4 py-3 text-slate-700 dark:text-slate-300">
                               {formatDate(tx.createdAt)}
                             </td>
                             <td className="whitespace-nowrap px-4 py-3">
@@ -375,10 +375,10 @@ export default function CreditsPage() {
                                 {tx.amount.toLocaleString('pt-BR')}
                               </span>
                             </td>
-                            <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-slate-700">
+                            <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-slate-700 dark:text-slate-300">
                               {tx.balance.toLocaleString('pt-BR')}
                             </td>
-                            <td className="max-w-xs truncate px-4 py-3 text-slate-600">
+                            <td className="max-w-xs truncate px-4 py-3 text-slate-600 dark:text-slate-400">
                               {tx.description || '-'}
                             </td>
                             <td className="whitespace-nowrap px-4 py-3 text-slate-500">

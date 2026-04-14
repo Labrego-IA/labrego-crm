@@ -22,7 +22,7 @@ const ACTION_CONFIG: Record<AgentActivityAction, { label: string; color: string;
   meeting_scheduled: { label: 'Reuniao agendada', color: 'bg-blue-50 text-blue-700', icon: 'MTG' },
   followup_created: { label: 'Follow-up criado', color: 'bg-green-50 text-green-700', icon: 'FUP' },
   funnel_moved: { label: 'Funil atualizado', color: 'bg-purple-50 text-purple-700', icon: 'FNL' },
-  off_hours_reply: { label: 'Fora do horario', color: 'bg-slate-100 text-slate-600', icon: 'OFF' },
+  off_hours_reply: { label: 'Fora do horario', color: 'bg-slate-100 dark:bg-white/10 text-slate-600', icon: 'OFF' },
   error: { label: 'Erro', color: 'bg-red-50 text-red-700', icon: 'ERR' },
 }
 
@@ -62,7 +62,7 @@ export default function AgentLogsPage() {
     <div className="max-w-5xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Logs do Agente IA</h1>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Logs do Agente IA</h1>
         <p className="text-slate-500 mt-1">Acompanhe cada acao, recebimento, erro e ferramenta usada pelo agente.</p>
       </div>
 
@@ -71,7 +71,7 @@ export default function AgentLogsPage() {
         <select
           value={filterChannel}
           onChange={e => { setFilterChannel(e.target.value as 'all' | MessageChannel); setLoading(true) }}
-          className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 text-sm"
+          className="px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-700 dark:text-slate-300 text-sm"
         >
           <option value="all">Todos os canais</option>
           <option value="whatsapp">WhatsApp</option>
@@ -80,7 +80,7 @@ export default function AgentLogsPage() {
         <select
           value={filterAction}
           onChange={e => { setFilterAction(e.target.value); setLoading(true) }}
-          className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 text-sm"
+          className="px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-700 dark:text-slate-300 text-sm"
         >
           <option value="all">Todas as acoes</option>
           <option value="message_received">Mensagens recebidas</option>
@@ -94,7 +94,7 @@ export default function AgentLogsPage() {
       </div>
 
       {/* Logs */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-6 h-6 border-2 border-cyan-600 border-t-transparent rounded-full" />
@@ -107,7 +107,7 @@ export default function AgentLogsPage() {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50">
+              <tr className="border-b border-slate-100 bg-slate-50 dark:bg-white/5">
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 w-40">Data/Hora</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 w-16">Canal</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-slate-500 w-44">Acao</th>
@@ -118,7 +118,7 @@ export default function AgentLogsPage() {
               {logs.map(log => {
                 const actionCfg = ACTION_CONFIG[log.action] || ACTION_CONFIG.error
                 return (
-                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                     <td className="px-4 py-3 text-xs text-slate-500 font-mono">{formatTime(log.createdAt)}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
@@ -133,7 +133,7 @@ export default function AgentLogsPage() {
                         {actionCfg.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-slate-600 max-w-md truncate">{log.detail}</td>
+                    <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400 max-w-md truncate">{log.detail}</td>
                   </tr>
                 )
               })}

@@ -327,7 +327,7 @@ export default function AdminCentrosCustoPage() {
           {costCenters.map((cc) => (
             <div
               key={cc.id}
-              className="bg-white rounded-xl border border-neutral-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-surface-dark rounded-xl border border-neutral-200 p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -379,7 +379,7 @@ export default function AdminCentrosCustoPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseModal}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-neutral-200">
               <h2 className="text-lg font-semibold">
                 {editingId ? 'Editar Centro de Custo' : 'Novo Centro de Custo'}
@@ -466,7 +466,7 @@ export default function AdminCentrosCustoPage() {
                   }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                    className={`inline-block h-4 w-4 rounded-full bg-white dark:bg-surface-dark shadow-sm transition-transform ${
                       form.isActive ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -506,7 +506,7 @@ export default function AdminCentrosCustoPage() {
       {/* Delete confirmation modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden">
             <div className="p-6 text-center">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
                 <TrashIcon className="h-6 w-6 text-red-600" />

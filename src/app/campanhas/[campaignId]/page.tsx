@@ -30,6 +30,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline'
 import { type EmailEvent, calcEngagement, EMPTY_ENGAGEMENT } from '@/types/email'
+import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 /* ================================= Component ================================= */
@@ -237,12 +238,12 @@ function CampaignDetailsContent() {
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.push('/campanhas')} className="rounded-lg p-2 hover:bg-slate-100 transition-colors">
-          <ArrowLeftIcon className="h-5 w-5 text-slate-600" />
+        <button onClick={() => router.push('/campanhas')} className="rounded-lg p-2 hover:bg-slate-100 dark:bg-white/10 transition-colors">
+          <ArrowLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
         </button>
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-slate-900">{campaign.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{campaign.name}</h1>
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${CAMPAIGN_STATUS_COLORS[campaign.status]}`}>
               {CAMPAIGN_STATUS_LABELS[campaign.status]}
             </span>
@@ -253,7 +254,7 @@ function CampaignDetailsContent() {
           {['draft', 'scheduled'].includes(campaign.status) && (
             <button
               onClick={() => router.push(`/campanhas/${campaignId}/editar`)}
-              className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-white/5 transition-colors shadow-sm"
             >
               <PencilSquareIcon className="h-4 w-4" />
               <span className="hidden sm:inline">Editar</span>
@@ -273,7 +274,7 @@ function CampaignDetailsContent() {
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+                    className="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:bg-white/5 transition-colors"
                   >
                     Não
                   </button>
@@ -281,7 +282,7 @@ function CampaignDetailsContent() {
               ) : (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors shadow-sm"
+                  className="flex items-center gap-1.5 rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors shadow-sm"
                 >
                   <TrashIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">Excluir</span>
@@ -294,39 +295,39 @@ function CampaignDetailsContent() {
 
       {/* Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-3 shadow-sm">
           <p className="text-xs text-slate-500">Tipo</p>
-          <p className="text-sm font-semibold text-slate-900">{CAMPAIGN_TYPE_LABELS[campaign.type]}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">{CAMPAIGN_TYPE_LABELS[campaign.type]}</p>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-3 shadow-sm">
           <p className="text-xs text-slate-500">Destinatários</p>
-          <p className="text-sm font-semibold text-slate-900">{counts.total}</p>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">{counts.total}</p>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-3 shadow-sm">
           <p className="text-xs text-slate-500">Enviados</p>
           <p className="text-sm font-semibold text-emerald-600">{counts.sent}</p>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-3 shadow-sm">
           <p className="text-xs text-slate-500">Falhos</p>
           <p className="text-sm font-semibold text-red-600">{counts.failed}</p>
         </div>
-        <div className="rounded-xl bg-white border border-slate-200 p-3 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 p-3 shadow-sm">
           <p className="text-xs text-slate-500">Pendentes</p>
           <p className="text-sm font-semibold text-amber-600">{counts.pending}</p>
         </div>
       </div>
 
       {/* Engagement section */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
         <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Engajamento</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Engajamento</h3>
           <div className="flex items-center gap-1">
             {(['metrics', 'timeline', 'contacts'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setEngagementTab(tab)}
                 className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                  engagementTab === tab ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  engagementTab === tab ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                 }`}
               >
                 {tab === 'metrics' ? 'Métricas' : tab === 'timeline' ? 'Timeline' : 'Contatos'}
@@ -418,7 +419,7 @@ function CampaignDetailsContent() {
               ) : (
                 <div className="max-h-[400px] overflow-y-auto">
                   <table className="min-w-full divide-y divide-slate-100">
-                    <thead className="bg-slate-50 sticky top-0">
+                    <thead className="bg-slate-50 dark:bg-white/5 sticky top-0">
                       <tr>
                         <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500">Email</th>
                         <th className="px-4 py-2 text-center text-xs font-semibold text-slate-500">Abriu</th>
@@ -428,8 +429,8 @@ function CampaignDetailsContent() {
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                       {engagedContacts.map((c) => (
-                        <tr key={c.contactId} className="hover:bg-slate-50">
-                          <td className="px-4 py-2 text-sm text-slate-900">{c.email}</td>
+                        <tr key={c.contactId} className="hover:bg-slate-50 dark:bg-white/5">
+                          <td className="px-4 py-2 text-sm text-slate-900 dark:text-white">{c.email}</td>
                           <td className="px-4 py-2 text-center">
                             {c.opened ? <EyeIcon className="h-4 w-4 text-blue-500 mx-auto" /> : <span className="text-slate-300">—</span>}
                           </td>
@@ -452,33 +453,33 @@ function CampaignDetailsContent() {
       {/* Campaign info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Details */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-          <h3 className="text-sm font-semibold text-slate-700">Detalhes</h3>
+        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-5 shadow-sm space-y-3">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Detalhes</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-slate-500">Criado por</span>
-              <span className="font-medium text-slate-900">{campaign.createdByName}</span>
+              <span className="font-medium text-slate-900 dark:text-white">{campaign.createdByName}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Criado em</span>
-              <span className="font-medium text-slate-900">{formatDateTimeAt(campaign.createdAt)}</span>
+              <span className="font-medium text-slate-900 dark:text-white">{formatDateTimeAt(campaign.createdAt)}</span>
             </div>
             {campaign.scheduledAt && (
               <div className="flex justify-between">
                 <span className="text-slate-500">Agendado para</span>
-                <span className="font-medium text-slate-900">{formatDateTimeAt(campaign.scheduledAt)}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{formatDateTimeAt(campaign.scheduledAt)}</span>
               </div>
             )}
             {campaign.lastSentAt && (
               <div className="flex justify-between">
                 <span className="text-slate-500">Último envio</span>
-                <span className="font-medium text-slate-900">{formatDateTimeAt(campaign.lastSentAt)}</span>
+                <span className="font-medium text-slate-900 dark:text-white">{formatDateTimeAt(campaign.lastSentAt)}</span>
               </div>
             )}
             {campaign.recurrence && (
               <div className="flex justify-between">
                 <span className="text-slate-500">Recorrência</span>
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-slate-900 dark:text-white">
                   {RECURRENCE_LABELS[campaign.recurrence.frequency]}
                 </span>
               </div>
@@ -491,32 +492,32 @@ function CampaignDetailsContent() {
               <p className="text-xs font-medium text-slate-500 mb-2">Filtros usados</p>
               <div className="flex flex-wrap gap-1">
                 {campaign.filters.funnelId && (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     Funil selecionado
                   </span>
                 )}
                 {campaign.filters.status?.map((s) => (
-                  <span key={s} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span key={s} className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {s}
                   </span>
                 ))}
                 {campaign.filters.leadSource?.map((s) => (
-                  <span key={s} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span key={s} className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {s}
                   </span>
                 ))}
                 {campaign.filters.leadType?.map((s) => (
-                  <span key={s} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span key={s} className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {s}
                   </span>
                 ))}
                 {campaign.filters.industry && (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {campaign.filters.industry}
                   </span>
                 )}
                 {campaign.filters.hasEmail && (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                  <span className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                     Com email
                   </span>
                 )}
@@ -526,28 +527,28 @@ function CampaignDetailsContent() {
         </div>
 
         {/* Email preview */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Preview do email</h3>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 max-h-[300px] overflow-y-auto">
+        <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-5 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Preview do email</h3>
+          <div className="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-4 max-h-[300px] overflow-y-auto">
             <p className="text-xs text-slate-400 mb-2">Assunto: {campaign.subject}</p>
             <hr className="mb-3" />
-            <div className="text-sm text-slate-600 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: campaign.body }} />
+            <div className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: sanitizeHtml(campaign.body) }} />
           </div>
         </div>
       </div>
 
       {/* Recipients table */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm">
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <h3 className="text-sm font-semibold text-slate-700">Destinatários</h3>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Destinatários</h3>
             <div className="flex items-center gap-1">
               {(['', 'sent', 'failed', 'pending'] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setRecipientFilter(f)}
                   className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                    recipientFilter === f ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    recipientFilter === f ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                   }`}
                 >
                   {f === '' ? `Todos (${counts.total})` : f === 'sent' ? `Enviados (${counts.sent})` : f === 'failed' ? `Falhos (${counts.failed})` : `Pendentes (${counts.pending})`}
@@ -575,7 +576,7 @@ function CampaignDetailsContent() {
         ) : (
           <div className="max-h-[500px] overflow-y-auto">
             <table className="min-w-full divide-y divide-slate-100">
-              <thead className="bg-slate-50 sticky top-0">
+              <thead className="bg-slate-50 dark:bg-white/5 sticky top-0">
                 <tr>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500">Status</th>
                   <th className="px-4 py-2 text-left text-xs font-semibold text-slate-500">Nome</th>
@@ -587,7 +588,7 @@ function CampaignDetailsContent() {
               </thead>
               <tbody className="divide-y divide-slate-50">
                 {filteredRecipients.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-50">
+                  <tr key={r.id} className="hover:bg-slate-50 dark:bg-white/5">
                     <td className="px-4 py-2">
                       {r.status === 'sent' ? (
                         <CheckCircleIcon className="h-5 w-5 text-emerald-500" />
@@ -597,7 +598,7 @@ function CampaignDetailsContent() {
                         <ClockIcon className="h-5 w-5 text-amber-500" />
                       )}
                     </td>
-                    <td className="px-4 py-2 text-sm text-slate-900">{r.name}</td>
+                    <td className="px-4 py-2 text-sm text-slate-900 dark:text-white">{r.name}</td>
                     <td className="px-4 py-2 text-sm text-slate-500">{r.email}</td>
                     <td className="px-4 py-2 text-sm text-slate-500 hidden md:table-cell">{r.company || '—'}</td>
                     <td className="px-4 py-2 text-sm text-slate-500 hidden md:table-cell">

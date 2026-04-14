@@ -175,18 +175,18 @@ function EditorPageContent() {
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col">
       {/* Template toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-b border-slate-200 shrink-0">
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-white/5 border-b border-slate-200 dark:border-white/10 shrink-0">
         <div className="flex items-center gap-2">
           {currentTemplateName && (
             <span className="text-xs text-slate-500">
-              Template: <strong className="text-slate-700">{currentTemplateName}</strong>
+              Template: <strong className="text-slate-700 dark:text-slate-300">{currentTemplateName}</strong>
             </span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => { loadTemplatesList(); setShowLoadModal(true) }}
-            className="text-xs text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-white transition-colors"
+            className="text-xs text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 px-3 py-1.5 rounded-lg hover:bg-white dark:bg-surface-dark transition-colors"
           >
             Carregar template
           </button>
@@ -217,16 +217,16 @@ function EditorPageContent() {
             }
           }}
         >
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Salvar template</h3>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Salvar template</h3>
             <label className="block mb-4">
-              <span className="text-sm text-slate-600">Nome do template</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Nome do template</span>
               <input
                 type="text"
                 value={saveName}
                 onChange={(e) => setSaveName(e.target.value)}
                 placeholder="Ex: Newsletter Semanal"
-                className="mt-1 block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-white/10 px-3 py-2 text-sm focus:ring-2 focus:ring-primary-300 outline-none"
                 autoFocus
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') {
@@ -252,7 +252,7 @@ function EditorPageContent() {
                     setPendingSave(null)
                   }
                 }}
-                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               >
                 Cancelar
               </button>
@@ -282,8 +282,8 @@ function EditorPageContent() {
       {/* Load Modal */}
       {showLoadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl max-h-[80vh] flex flex-col">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Carregar template</h3>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 w-full max-w-lg shadow-xl max-h-[80vh] flex flex-col">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Carregar template</h3>
             {loadingTemplates ? (
               <div className="flex items-center justify-center py-10">
                 <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
@@ -295,13 +295,13 @@ function EditorPageContent() {
                 {templates.map((tmpl) => (
                   <div
                     key={tmpl.id}
-                    className="flex items-center justify-between rounded-lg border border-slate-200 p-3 hover:border-primary-300 transition-colors"
+                    className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-white/10 p-3 hover:border-primary-300 transition-colors"
                   >
                     <button
                       onClick={() => handleLoadTemplate(tmpl)}
                       className="flex-1 text-left"
                     >
-                      <p className="text-sm font-medium text-slate-900">{tmpl.name}</p>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">{tmpl.name}</p>
                       <p className="text-xs text-slate-400">{tmpl.subject || 'Sem assunto'} &middot; {tmpl.blocks?.length || 0} blocos</p>
                     </button>
                     <button
@@ -317,7 +317,7 @@ function EditorPageContent() {
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => setShowLoadModal(false)}
-                className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               >
                 Fechar
               </button>

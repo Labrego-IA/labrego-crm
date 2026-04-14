@@ -31,8 +31,8 @@ export default function FileInputButton({
 
   const baseClass =
     variant === 'icon'
-      ? 'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30'
-      : 'btn bg-gray-100 hover:bg-gray-200 text-gray-700'
+      ? 'inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark text-gray-500 dark:text-slate-400 transition-colors hover:border-gray-300 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30'
+      : 'btn bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-700'
 
   const disabledClass = disabled ? 'cursor-not-allowed opacity-50' : ''
 

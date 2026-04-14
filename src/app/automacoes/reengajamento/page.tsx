@@ -176,7 +176,7 @@ function ReengajamentoContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50/50 p-8">
+      <div className="min-h-screen bg-slate-50 dark:bg-white/5/50 p-8">
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => <div key={i} className="skeleton rounded-2xl h-32" />)}
         </div>
@@ -185,13 +185,13 @@ function ReengajamentoContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50 dark:bg-white/5/50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
+      <div className="bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/10 px-4 md:px-8 py-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <ArrowPathIcon className="w-6 h-6 text-primary-600" />
-            <h1 className="text-2xl font-bold text-slate-900">Reengajamento</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Reengajamento</h1>
             {config && (
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${config.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
                 <span className={`w-2 h-2 rounded-full ${config.enabled ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
@@ -282,8 +282,8 @@ function ConfigSection({ config, onSave, saving }: {
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Trigger settings */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Configurações de Trigger</h3>
+      <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Configurações de Trigger</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-slate-500 mb-1">Dias de inatividade</label>
@@ -293,7 +293,7 @@ function ConfigSection({ config, onSave, saving }: {
               min={1}
               max={365}
               onChange={e => onSave({ inactiveDays: parseInt(e.target.value) || 14 })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm"
             />
             <p className="text-xs text-slate-400 mt-1">Lead sem atividade por X dias entra na cadência</p>
           </div>
@@ -305,18 +305,18 @@ function ConfigSection({ config, onSave, saving }: {
               min={1}
               max={10}
               onChange={e => onSave({ maxCycles: parseInt(e.target.value) || 3 })}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm"
             />
             <p className="text-xs text-slate-400 mt-1">Limite de tentativas de reengajamento</p>
           </div>
           <div className="flex flex-col justify-center">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-600">Incluir leads perdidos</span>
+              <span className="text-sm text-slate-600 dark:text-slate-400">Incluir leads perdidos</span>
               <button
                 onClick={() => onSave({ includeLost: !config.includeLost })}
                 className={`relative w-11 h-6 rounded-full transition-colors ${config.includeLost ? 'bg-emerald-500' : 'bg-slate-300'}`}
               >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${config.includeLost ? 'translate-x-5' : ''}`} />
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow transition-transform ${config.includeLost ? 'translate-x-5' : ''}`} />
               </button>
             </div>
             <p className="text-xs text-slate-400 mt-1">Leads em etapas negativas</p>
@@ -325,10 +325,10 @@ function ConfigSection({ config, onSave, saving }: {
       </div>
 
       {/* Reengagement steps */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <button
           onClick={() => setExpandSteps(!expandSteps)}
-          className="w-full flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors"
+          className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:bg-white/5/50 transition-colors"
         >
           <div className="flex items-center gap-3">
             <ArrowPathIcon className="w-5 h-5 text-primary-600" />
@@ -351,18 +351,18 @@ function ConfigSection({ config, onSave, saving }: {
                   const Icon = CHANNEL_ICONS[step.contactMethod]
                   return (
                     <div key={step.id} className="relative flex items-start gap-4 mb-4 last:mb-0">
-                      <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${step.isActive ? 'bg-primary-50 border-primary-300' : 'bg-slate-50 border-slate-200'}`}>
+                      <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${step.isActive ? 'bg-primary-50 border-primary-300' : 'bg-slate-50 dark:bg-white/5 border-slate-200'}`}>
                         <Icon className={`w-4 h-4 ${step.isActive ? 'text-primary-600' : 'text-slate-400'}`} />
                       </div>
 
-                      <div className={`flex-1 p-4 rounded-xl border transition-all ${step.isActive ? 'border-slate-200 bg-white' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                      <div className={`flex-1 p-4 rounded-xl border transition-all ${step.isActive ? 'border-slate-200 dark:border-white/10 bg-white' : 'border-slate-100 bg-slate-50 dark:bg-white/5 opacity-60'}`}>
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 flex-wrap">
                               <input
                                 value={step.name}
                                 onChange={e => updateStep(step.id, { name: e.target.value })}
-                                className="text-sm font-medium text-slate-800 border-0 bg-transparent p-0 focus:ring-0 focus:outline-none"
+                                className="text-sm font-medium text-slate-800 dark:text-white border-0 bg-transparent p-0 focus:ring-0 focus:outline-none"
                               />
                               <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${CONTACT_METHOD_COLORS[step.contactMethod]}`}>
                                 {CONTACT_METHOD_LABELS[step.contactMethod]}
@@ -375,12 +375,12 @@ function ConfigSection({ config, onSave, saving }: {
                             </div>
                             <div className="flex items-center gap-1">
                               {i > 0 && (
-                                <button onClick={() => moveStep(step.id, 'up')} className="p-1 rounded hover:bg-slate-100">
+                                <button onClick={() => moveStep(step.id, 'up')} className="p-1 rounded hover:bg-slate-100 dark:bg-white/10">
                                   <ChevronUpIcon className="w-4 h-4 text-slate-400" />
                                 </button>
                               )}
                               {i < config.steps.length - 1 && (
-                                <button onClick={() => moveStep(step.id, 'down')} className="p-1 rounded hover:bg-slate-100">
+                                <button onClick={() => moveStep(step.id, 'down')} className="p-1 rounded hover:bg-slate-100 dark:bg-white/10">
                                   <ChevronDownIcon className="w-4 h-4 text-slate-400" />
                                 </button>
                               )}
@@ -396,7 +396,7 @@ function ConfigSection({ config, onSave, saving }: {
                               <select
                                 value={step.contactMethod}
                                 onChange={e => updateStep(step.id, { contactMethod: e.target.value as ContactMethod })}
-                                className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white"
+                                className="w-full text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 bg-white dark:bg-surface-dark"
                               >
                                 <option value="email">Email</option>
                                 <option value="whatsapp">WhatsApp</option>
@@ -410,13 +410,13 @@ function ConfigSection({ config, onSave, saving }: {
                                 value={step.daysAfterPrevious}
                                 min={0}
                                 onChange={e => updateStep(step.id, { daysAfterPrevious: parseInt(e.target.value) || 0 })}
-                                className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5"
+                                className="w-full text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5"
                               />
                             </div>
                             <div className="flex items-end">
                               <button
                                 onClick={() => updateStep(step.id, { isActive: !step.isActive })}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${step.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 text-slate-500'}`}
+                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${step.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-50 dark:bg-white/5 text-slate-500'}`}
                               >
                                 {step.isActive ? 'Ativo' : 'Inativo'}
                               </button>
@@ -429,14 +429,14 @@ function ConfigSection({ config, onSave, saving }: {
                                 value={step.emailSubject || ''}
                                 onChange={e => updateStep(step.id, { emailSubject: e.target.value })}
                                 placeholder="Assunto do email..."
-                                className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5"
+                                className="w-full text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5"
                               />
                               <textarea
                                 value={step.emailBody || ''}
                                 onChange={e => updateStep(step.id, { emailBody: e.target.value })}
                                 placeholder="Corpo do email..."
                                 rows={2}
-                                className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 resize-none"
+                                className="w-full text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 resize-none"
                               />
                             </div>
                           )}
@@ -447,7 +447,7 @@ function ConfigSection({ config, onSave, saving }: {
                               onChange={e => updateStep(step.id, { messageTemplate: e.target.value })}
                               placeholder="Template da mensagem..."
                               rows={2}
-                              className="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 resize-none"
+                              className="w-full text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 resize-none"
                             />
                           )}
                         </div>
@@ -461,7 +461,7 @@ function ConfigSection({ config, onSave, saving }: {
             <button
               onClick={addStep}
               disabled={saving}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50/30 transition-all"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50/30 transition-all"
             >
               <PlusIcon className="w-4 h-4" /> Adicionar step
             </button>
@@ -517,23 +517,23 @@ function DashboardSection({ enrollments, logs }: {
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Em cadência</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">{stats.active.length}</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{stats.active.length}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Recuperados</p>
           <p className="text-2xl font-bold text-emerald-600 mt-1">{stats.responded.length}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Taxa de reativação</p>
           <p className="text-2xl font-bold text-primary-600 mt-1">{stats.reactivationRate}%</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Cadência completa</p>
-          <p className="text-2xl font-bold text-slate-600 mt-1">{stats.completed.length}</p>
+          <p className="text-2xl font-bold text-slate-600 dark:text-slate-400 mt-1">{stats.completed.length}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Máx. ciclos atingido</p>
           <p className="text-2xl font-bold text-amber-600 mt-1">{stats.maxCycles.length}</p>
         </div>
@@ -541,17 +541,17 @@ function DashboardSection({ enrollments, logs }: {
 
       {/* By reason */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Por motivo de entrada</h3>
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Por motivo de entrada</h3>
           <div className="space-y-2">
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-slate-600 flex items-center gap-2">
+              <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
                 <ClockIcon className="w-4 h-4 text-amber-500" /> Inatividade
               </span>
               <span className="text-sm font-semibold text-slate-800 dark:text-white">{stats.byReason.inactive}</span>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-slate-600 flex items-center gap-2">
+              <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
                 <XMarkIcon className="w-4 h-4 text-red-500" /> Lead perdido
               </span>
               <span className="text-sm font-semibold text-slate-800 dark:text-white">{stats.byReason.lost}</span>
@@ -559,12 +559,12 @@ function DashboardSection({ enrollments, logs }: {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Por ciclo</h3>
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Por ciclo</h3>
           <div className="space-y-2">
             {Object.entries(stats.byCycle).sort(([a], [b]) => Number(a) - Number(b)).map(([cycle, count]) => (
               <div key={cycle} className="flex items-center justify-between py-2">
-                <span className="text-sm text-slate-600">Ciclo {cycle}</span>
+                <span className="text-sm text-slate-600 dark:text-slate-400">Ciclo {cycle}</span>
                 <span className="text-sm font-semibold text-slate-800 dark:text-white">{count}</span>
               </div>
             ))}
@@ -576,9 +576,9 @@ function DashboardSection({ enrollments, logs }: {
       </div>
 
       {/* Active enrollments table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Leads em cadência de reengajamento</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Leads em cadência de reengajamento</h3>
         </div>
         {stats.active.length === 0 ? (
           <div className="p-8 text-center text-sm text-slate-400">Nenhum lead em cadência ativa</div>
@@ -586,7 +586,7 @@ function DashboardSection({ enrollments, logs }: {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                <tr className="bg-slate-50 text-slate-600">
+                <tr className="bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-center p-3 font-medium">Motivo</th>
                   <th className="text-center p-3 font-medium">Ciclo</th>
@@ -597,7 +597,7 @@ function DashboardSection({ enrollments, logs }: {
               </thead>
               <tbody>
                 {stats.active.map(e => (
-                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                     <td className="p-3">
                       <a href={`/contatos/${e.contactId}`} className="text-primary-600 hover:text-primary-800 font-medium">
                         {e.contactName || e.contactId}
@@ -608,8 +608,8 @@ function DashboardSection({ enrollments, logs }: {
                         {e.reason === 'inactive' ? 'Inativo' : 'Perdido'}
                       </span>
                     </td>
-                    <td className="p-3 text-center text-slate-600">{e.cycle}</td>
-                    <td className="p-3 text-center text-slate-600">Step {e.currentStepIndex + 1}</td>
+                    <td className="p-3 text-center text-slate-600 dark:text-slate-400">{e.cycle}</td>
+                    <td className="p-3 text-center text-slate-600 dark:text-slate-400">Step {e.currentStepIndex + 1}</td>
                     <td className="p-3 text-center">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                         <ArrowPathIcon className="w-3 h-3" /> Ativo
@@ -628,16 +628,16 @@ function DashboardSection({ enrollments, logs }: {
 
       {/* Recovered leads */}
       {stats.responded.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="p-5 border-b border-slate-100">
-            <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-2">
               <CheckCircleIcon className="w-5 h-5 text-emerald-500" /> Leads recuperados
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                <tr className="bg-slate-50 text-slate-600">
+                <tr className="bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-center p-3 font-medium">Motivo original</th>
                   <th className="text-center p-3 font-medium">Ciclo</th>
@@ -646,7 +646,7 @@ function DashboardSection({ enrollments, logs }: {
               </thead>
               <tbody>
                 {stats.responded.slice(0, 20).map(e => (
-                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={e.id} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                     <td className="p-3">
                       <a href={`/contatos/${e.contactId}`} className="text-primary-600 hover:text-primary-800 font-medium">
                         {e.contactName || e.contactId}
@@ -657,7 +657,7 @@ function DashboardSection({ enrollments, logs }: {
                         {e.reason === 'inactive' ? 'Inativo' : 'Perdido'}
                       </span>
                     </td>
-                    <td className="p-3 text-center text-slate-600">{e.cycle}</td>
+                    <td className="p-3 text-center text-slate-600 dark:text-slate-400">{e.cycle}</td>
                     <td className="p-3 text-right text-slate-500 text-xs">
                       {e.respondedAt ? new Date(e.respondedAt).toLocaleDateString('pt-BR') : '—'}
                     </td>
@@ -670,9 +670,9 @@ function DashboardSection({ enrollments, logs }: {
       )}
 
       {/* Recent logs */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Ações recentes de reengajamento</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ações recentes de reengajamento</h3>
         </div>
         {logs.length === 0 ? (
           <div className="p-8 text-center text-sm text-slate-400">Nenhuma ação registrada</div>
@@ -680,7 +680,7 @@ function DashboardSection({ enrollments, logs }: {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                <tr className="bg-slate-50 text-slate-600">
+                <tr className="bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-left p-3 font-medium">Step</th>
                   <th className="text-center p-3 font-medium">Canal</th>
@@ -690,19 +690,19 @@ function DashboardSection({ enrollments, logs }: {
               </thead>
               <tbody>
                 {logs.slice(0, 30).map(log => (
-                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                     <td className="p-3">
                       <a href={`/contatos/${log.contactId}`} className="text-primary-600 hover:text-primary-800 font-medium">
                         {log.contactName || log.contactId}
                       </a>
                     </td>
-                    <td className="p-3 text-slate-600">{log.stepName}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{log.stepName}</td>
                     <td className="p-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${CONTACT_METHOD_COLORS[log.channel]}`}>
                         {CONTACT_METHOD_LABELS[log.channel]}
                       </span>
                     </td>
-                    <td className="p-3 text-center text-slate-600">{log.cycle}</td>
+                    <td className="p-3 text-center text-slate-600 dark:text-slate-400">{log.cycle}</td>
                     <td className="p-3 text-right text-slate-500 text-xs">
                       {new Date(log.executedAt).toLocaleDateString('pt-BR')}
                     </td>

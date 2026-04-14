@@ -77,12 +77,12 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-md bg-white shadow-2xl flex flex-col animate-in slide-in-from-right">
+      <div className="relative w-full max-w-md bg-white dark:bg-surface-dark shadow-2xl flex flex-col animate-in slide-in-from-right">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/10">
           <div className="flex items-center gap-2">
             <DocumentTextIcon className="w-5 h-5 text-primary" />
-            <h3 className="font-bold text-slate-800">
+            <h3 className="font-bold text-slate-800 dark:text-white">
               {editing ? 'Editar Prompt' : isCustom ? 'Prompt Customizado' : 'Prompt Gerado'}
             </h3>
             {!editing && isCustom && (
@@ -95,7 +95,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
             {onSave && (
               <button
                 onClick={editing ? () => setEditing(false) : handleStartEditing}
-                className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                 title={editing ? 'Voltar ao preview' : 'Editar prompt'}
               >
                 {editing ? (
@@ -107,7 +107,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
             )}
             <button
               onClick={onClose}
-              className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
               aria-label="Fechar"
             >
               <XMarkIcon className="w-5 h-5 text-slate-500" />
@@ -123,7 +123,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
                 <p className="text-xs text-slate-500">Edite o prompt e salve para aplicar nas proximas ligacoes.</p>
                 <button
                   onClick={handleRegenerate}
-                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                  className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 dark:text-slate-400 transition-colors"
                   title="Regenerar do wizard"
                 >
                   <ArrowPathIcon className="w-3.5 h-3.5" />
@@ -133,7 +133,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
               <textarea
                 value={editedPrompt}
                 onChange={(e) => setEditedPrompt(e.target.value)}
-                className="flex-1 min-h-[400px] w-full px-3 py-3 border border-slate-200 rounded-xl text-xs font-mono leading-relaxed focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none"
+                className="flex-1 min-h-[400px] w-full px-3 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-mono leading-relaxed focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none"
               />
             </div>
           ) : charCount > 0 ? (
@@ -147,7 +147,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+        <div className="p-4 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-500">
           <span>{charCount.toLocaleString()} caracteres | ~{estimatedTokens.toLocaleString()} tokens</span>
           {editing && onSave && (
             <button
@@ -186,7 +186,7 @@ function PromptRenderer({ text }: { text: string }) {
           return (
             <h3
               key={i}
-              className="text-sm font-bold text-slate-800 mt-5 mb-1.5 pb-1 border-b border-slate-100 first:mt-0"
+              className="text-sm font-bold text-slate-800 dark:text-white mt-5 mb-1.5 pb-1 border-b border-slate-100 dark:border-white/5 first:mt-0"
             >
               {line.replace('## ', '')}
             </h3>
@@ -196,7 +196,7 @@ function PromptRenderer({ text }: { text: string }) {
         // H3 headers (### Abertura)
         if (line.startsWith('### ')) {
           return (
-            <h4 key={i} className="text-xs font-semibold text-slate-700 mt-3 mb-1">
+            <h4 key={i} className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-3 mb-1">
               {line.replace('### ', '')}
             </h4>
           )
@@ -205,7 +205,7 @@ function PromptRenderer({ text }: { text: string }) {
         // Numbered list items (1. ESCUTA ATIVA: ...)
         if (/^\d+\.\s/.test(line)) {
           return (
-            <p key={i} className="text-xs text-slate-600 pl-3 py-0.5">
+            <p key={i} className="text-xs text-slate-600 dark:text-slate-400 pl-3 py-0.5">
               <BoldRenderer text={line} />
             </p>
           )
@@ -216,7 +216,7 @@ function PromptRenderer({ text }: { text: string }) {
           return (
             <div key={i} className="flex gap-1.5 pl-3 py-0.5">
               <span className="text-slate-400 text-xs mt-0.5">&#8226;</span>
-              <span className="text-xs text-slate-600">
+              <span className="text-xs text-slate-600 dark:text-slate-400">
                 <BoldRenderer text={line.replace(/^- /, '')} />
               </span>
             </div>
@@ -230,7 +230,7 @@ function PromptRenderer({ text }: { text: string }) {
 
         // Regular text with bold rendering
         return (
-          <p key={i} className="text-xs text-slate-600 py-0.5">
+          <p key={i} className="text-xs text-slate-600 dark:text-slate-400 py-0.5">
             <BoldRenderer text={line} />
           </p>
         )
@@ -250,7 +250,7 @@ function BoldRenderer({ text }: { text: string }) {
       {parts.map((part, i) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return (
-            <strong key={i} className="text-slate-700 font-semibold">
+            <strong key={i} className="text-slate-700 dark:text-slate-300 font-semibold">
               {part.slice(2, -2)}
             </strong>
           )

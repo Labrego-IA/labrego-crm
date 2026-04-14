@@ -43,13 +43,13 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
 
   if (!isSuperAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center space-y-4 p-8 bg-white rounded-2xl shadow-lg max-w-md mx-4">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-white/5">
+        <div className="text-center space-y-4 p-8 bg-white dark:bg-surface-dark rounded-2xl shadow-lg max-w-md mx-4">
           <div className="flex justify-center">
             <ShieldCheck className="w-16 h-16 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Acesso negado</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Acesso negado</h1>
+          <p className="text-gray-600 dark:text-slate-400">
             Voce nao tem permissao para acessar o painel de Super Admin.
           </p>
           {userEmail && (
@@ -68,21 +68,21 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-50 dark:bg-white/5">
+      <header className="bg-white dark:bg-surface-dark border-b border-gray-200 dark:border-white/10">
         <div className="px-4 md:px-6">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 shrink-0" />
-              <h1 className="text-base sm:text-lg font-bold text-gray-900 truncate">Super Admin</h1>
+              <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white truncate">Super Admin</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               {userEmail && (
-                <span className="text-xs sm:text-sm text-gray-500 hidden sm:inline">{userEmail}</span>
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 hidden sm:inline">{userEmail}</span>
               )}
               <Link
                 href="/contatos"
-                className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 hover:text-gray-700 transition"
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 transition"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">Voltar ao CRM</span>
@@ -94,7 +94,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
       </header>
 
       <div className="px-4 md:px-6 py-4 md:py-6">
-        <nav className="flex gap-1 bg-white rounded-xl p-1 shadow-sm border border-gray-200 mb-4 sm:mb-6">
+        <nav className="flex gap-1 bg-white dark:bg-surface-dark rounded-xl p-1 shadow-sm border border-gray-200 dark:border-white/10 mb-4 sm:mb-6">
           {tabs.map((tab) => {
             const isActive =
               tab.href === '/super-admin'
@@ -107,7 +107,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
                 className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-lg text-sm font-medium transition ${
                   isActive
                     ? 'bg-primary-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:text-white hover:bg-gray-50'
                 }`}
               >
                 {tab.icon}

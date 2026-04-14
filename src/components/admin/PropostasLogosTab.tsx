@@ -111,7 +111,7 @@ export default function PropostasLogosTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-slate-400">
             {logos.length} logo{logos.length !== 1 ? 's' : ''} de clientes cadastrado{logos.length !== 1 ? 's' : ''}
           </p>
           <p className="text-xs text-gray-400 mt-0.5">
@@ -139,7 +139,7 @@ export default function PropostasLogosTab() {
       </div>
 
       {logos.length === 0 ? (
-        <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
           <p className="text-gray-400 text-sm">Nenhum logo de cliente cadastrado.</p>
           <button
             onClick={() => inputRef.current?.click()}
@@ -153,7 +153,7 @@ export default function PropostasLogosTab() {
           {logos.map(logo => (
             <div
               key={logo.id}
-              className="group relative rounded-2xl bg-white border border-gray-200 p-4 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
+              className="group relative rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-4 flex flex-col items-center gap-3 hover:shadow-md transition-shadow"
             >
               <div className="h-16 w-full flex items-center justify-center">
                 <img
@@ -162,7 +162,7 @@ export default function PropostasLogosTab() {
                   className="max-h-16 max-w-full object-contain"
                 />
               </div>
-              <p className="text-xs text-gray-500 text-center truncate w-full">{logo.name}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 text-center truncate w-full">{logo.name}</p>
               <button
                 onClick={() => setDeletingLogo(logo)}
                 className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity w-6 h-6 rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 flex items-center justify-center text-xs"

@@ -70,24 +70,24 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
       <div className="fixed inset-0 z-50 bg-black/50 transition-opacity" onClick={onClose} />
 
       {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg transform bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col">
+      <div className="fixed inset-y-0 right-0 z-50 w-full max-w-lg transform bg-white dark:bg-surface-dark shadow-2xl transition-transform duration-300 ease-out flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 px-6 py-4">
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-white/10 hover:text-slate-600 dark:text-slate-400 transition"
               aria-label="Voltar"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
             </button>
-            <h2 className="text-lg font-bold text-slate-900">Resumo da assinatura</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Resumo da assinatura</h2>
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-white/10 hover:text-slate-600 dark:text-slate-400 transition"
             aria-label="Fechar"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -105,7 +105,7 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
                 <span className="inline-block rounded-full bg-primary-100 px-2.5 py-0.5 text-xs font-semibold text-primary-700 mb-2">
                   {category === 'agency' ? 'Agency' : 'Direct'}
                 </span>
-                <h3 className="text-xl font-bold text-slate-900">{display.displayName}</h3>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{display.displayName}</h3>
                 <p className="text-sm text-slate-500 mt-1">Assinatura mensal recorrente</p>
               </div>
               <div className="text-right">
@@ -117,53 +117,53 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
 
           {/* What's included */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-700 mb-3">O que esta incluso</h4>
+            <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">O que esta incluso</h4>
             <div className="space-y-2">
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Usuarios</span>
-                <span className="font-semibold text-slate-800">{limits.maxUsers}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{limits.maxUsers}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Contatos</span>
-                <span className="font-semibold text-slate-800">{formatLimit(limits.maxContacts)}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{formatLimit(limits.maxContacts)}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Funis</span>
-                <span className="font-semibold text-slate-800">{limits.maxFunnels}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{limits.maxFunnels}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Acoes/mes</span>
-                <span className="font-semibold text-slate-800">{formatLimit(limits.monthlyActions)}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{formatLimit(limits.monthlyActions)}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Minutos falados/mes</span>
-                <span className="font-semibold text-slate-800">{formatLimit(limits.monthlyMinutes)}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{formatLimit(limits.monthlyMinutes)}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Agentes simultaneos</span>
-                <span className="font-semibold text-slate-800">{limits.maxConcurrentAgents}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{limits.maxConcurrentAgents}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Numeros dedicados</span>
-                <span className="font-semibold text-slate-800">{limits.maxNumbers}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{limits.maxNumbers}</span>
               </div>
-              <div className="flex justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+              <div className="flex justify-between rounded-lg bg-slate-50 dark:bg-white/5 px-3 py-2 text-sm">
                 <span className="text-slate-500">Cadencias</span>
-                <span className="font-semibold text-slate-800">{formatLimit(limits.maxCadences)}</span>
+                <span className="font-semibold text-slate-800 dark:text-white">{formatLimit(limits.maxCadences)}</span>
               </div>
             </div>
           </div>
 
           {/* Features */}
           <div>
-            <h4 className="text-sm font-semibold text-slate-700 mb-3">Funcionalidades</h4>
+            <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Funcionalidades</h4>
             <ul className="space-y-1.5">
               {Object.values(FEATURE_LABELS).map((label) => (
                 <li key={label} className="flex items-center gap-2 text-sm">
                   <svg className="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
-                  <span className="text-slate-600">{label}</span>
+                  <span className="text-slate-600 dark:text-slate-400">{label}</span>
                 </li>
               ))}
             </ul>
@@ -181,7 +181,7 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
 
           {/* Phone field */}
           <div>
-            <label htmlFor="checkout-phone" className="block text-sm font-medium text-slate-700 mb-1">
+            <label htmlFor="checkout-phone" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Telefone (opcional)
             </label>
             <input
@@ -190,7 +190,7 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
               placeholder="(11) 99999-9999"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none transition"
             />
             <p className="mt-1 text-xs text-slate-400">
               Os demais dados serao solicitados na tela de pagamento seguro.
@@ -199,10 +199,10 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
         </div>
 
         {/* Footer - total + CTA */}
-        <div className="border-t border-slate-200 px-6 py-4 space-y-3 bg-white">
+        <div className="border-t border-slate-200 dark:border-white/10 px-6 py-4 space-y-3 bg-white dark:bg-surface-dark">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">Total mensal</span>
-            <span className="text-xl font-bold text-slate-900">R$ {formatCurrency(display.price)}</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">R$ {formatCurrency(display.price)}</span>
           </div>
 
           <button
@@ -225,7 +225,7 @@ export default function CheckoutDrawer({ planId, orgId, userEmail, userName, onC
 
           <button
             onClick={onClose}
-            className="w-full rounded-xl bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 transition"
+            className="w-full rounded-xl bg-slate-100 dark:bg-white/10 px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition"
           >
             Voltar para planos
           </button>

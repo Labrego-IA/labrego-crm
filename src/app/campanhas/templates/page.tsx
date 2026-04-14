@@ -182,11 +182,11 @@ function TemplatesLibraryContent() {
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.push('/campanhas')} className="rounded-lg p-2 hover:bg-slate-100 transition-colors">
-          <ArrowLeftIcon className="h-5 w-5 text-slate-600" />
+        <button onClick={() => router.push('/campanhas')} className="rounded-lg p-2 hover:bg-slate-100 dark:bg-white/10 transition-colors">
+          <ArrowLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
         </button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-slate-900">Templates de Email</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Templates de Email</h1>
           <p className="text-sm text-slate-500">Escolha um template para começar sua campanha</p>
         </div>
         <button
@@ -207,14 +207,14 @@ function TemplatesLibraryContent() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar templates..."
-            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-300 focus:border-primary-400 outline-none"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-primary-300 focus:border-primary-400 outline-none"
           />
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => setSelectedCategory('')}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              !selectedCategory ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              !selectedCategory ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
             }`}
           >
             Todos
@@ -224,7 +224,7 @@ function TemplatesLibraryContent() {
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                selectedCategory === cat.value ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                selectedCategory === cat.value ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
               }`}
             >
               {cat.label}
@@ -247,10 +247,10 @@ function TemplatesLibraryContent() {
           {filtered.map((tmpl) => (
             <div
               key={tmpl.id}
-              className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden hover:shadow-md hover:border-primary-200 transition-all group"
+              className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shadow-sm overflow-hidden hover:shadow-md hover:border-primary-200 transition-all group"
             >
               {/* Thumbnail preview */}
-              <div className="h-48 bg-slate-50 overflow-hidden relative">
+              <div className="h-48 bg-slate-50 dark:bg-white/5 overflow-hidden relative">
                 <iframe
                   srcDoc={replaceVariables(blocksToHtml(tmpl.blocks || []), SAMPLE_VARS)}
                   title={tmpl.name}
@@ -261,7 +261,7 @@ function TemplatesLibraryContent() {
                 <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-3">
                   <button
                     onClick={() => setPreviewTemplate(tmpl)}
-                    className="text-xs font-medium text-primary-600 bg-white/90 px-3 py-1.5 rounded-full shadow-sm hover:bg-white"
+                    className="text-xs font-medium text-primary-600 bg-white/90 px-3 py-1.5 rounded-full shadow-sm hover:bg-white dark:bg-surface-dark"
                   >
                     Preview
                   </button>
@@ -272,11 +272,11 @@ function TemplatesLibraryContent() {
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{tmpl.name}</h3>
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{tmpl.name}</h3>
                     <p className="text-xs text-slate-400 mt-0.5">{tmpl.subject}</p>
                   </div>
                   {tmpl.category && (
-                    <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500">
+                    <span className="shrink-0 rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-medium text-slate-500">
                       {TEMPLATE_CATEGORIES.find((c) => c.value === tmpl.category)?.label || tmpl.category}
                     </span>
                   )}
@@ -301,10 +301,10 @@ function TemplatesLibraryContent() {
       {/* Preview Modal */}
       {previewTemplate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setPreviewTemplate(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-white/10">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">{previewTemplate.name}</h3>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{previewTemplate.name}</h3>
                 <p className="text-xs text-slate-400">{previewTemplate.subject}</p>
               </div>
               <div className="flex items-center gap-2">
@@ -314,13 +314,13 @@ function TemplatesLibraryContent() {
                 >
                   Usar template
                 </button>
-                <button onClick={() => setPreviewTemplate(null)} className="text-xs text-slate-500 hover:text-slate-700 px-2 py-1">
+                <button onClick={() => setPreviewTemplate(null)} className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-300 px-2 py-1">
                   Fechar
                 </button>
               </div>
             </div>
-            <div className="flex-1 overflow-auto bg-slate-100 p-4">
-              <div className="mx-auto bg-white rounded-lg shadow-sm" style={{ maxWidth: 620 }}>
+            <div className="flex-1 overflow-auto bg-slate-100 dark:bg-white/10 p-4">
+              <div className="mx-auto bg-white dark:bg-surface-dark rounded-lg shadow-sm" style={{ maxWidth: 620 }}>
                 <iframe
                   srcDoc={replaceVariables(blocksToHtml(previewTemplate.blocks || []), SAMPLE_VARS)}
                   title="Preview"

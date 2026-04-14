@@ -228,7 +228,7 @@ const proposalStatusColors: Record<string, string> = {
   'Recusada': 'bg-red-100 text-red-700 border border-red-200',
   'Pendente': 'bg-amber-100 text-amber-700 border border-amber-200',
   'Em análise': 'bg-blue-100 text-blue-700 border border-blue-200',
-  'Expirada': 'bg-slate-100 text-slate-700 border border-slate-200',
+  'Expirada': 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200',
   'Cancelada': 'bg-rose-100 text-rose-700 border border-rose-200',
 }
 
@@ -237,7 +237,7 @@ const paymentStatusColors: Record<string, string> = {
   'Pagamento realizado': 'bg-emerald-100 text-emerald-700 border border-emerald-200',
   'Pendente de pagamento': 'bg-amber-100 text-amber-700 border border-amber-200',
   'Atrasado': 'bg-red-100 text-red-700 border border-red-200',
-  'Cancelado': 'bg-slate-100 text-slate-700 border border-slate-200',
+  'Cancelado': 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-200',
 }
 
 export default function ContactDetailsPage() {
@@ -475,7 +475,7 @@ export default function ContactDetailsPage() {
 
   const getStageColor = useCallback(
     (stageId?: string) => {
-      if (!stageId) return 'bg-slate-100 text-slate-600'
+      if (!stageId) return 'bg-slate-100 dark:bg-white/10 text-slate-600'
       const stage = funnelStages.find((s) => s.id === stageId)
       if (stage?.color) return stage.color
       return 'bg-primary-100 text-primary-700'
@@ -977,12 +977,12 @@ export default function ContactDetailsPage() {
   return (
     <div className="min-h-full bg-gradient-to-br from-slate-50 to-slate-100/50">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200 dark:border-white/10/60 sticky top-0 z-10">
         <div className="px-3 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => router.back()}
-              className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 transition-colors flex-shrink-0"
+              className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors flex-shrink-0"
             >
               <ArrowLeftIcon className="w-5 h-5 text-slate-500" />
             </button>
@@ -1004,7 +1004,7 @@ export default function ContactDetailsPage() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-                  <h1 className="text-base sm:text-xl font-bold text-slate-800 truncate max-w-[150px] sm:max-w-none">{client.name}</h1>
+                  <h1 className="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate max-w-[150px] sm:max-w-none">{client.name}</h1>
                   {editingFunnel ? (
                     <div className="flex items-center gap-2">
                       <select
@@ -1015,7 +1015,7 @@ export default function ContactDetailsPage() {
                           handleSaveFunnelStage(newFunnelId, '')
                         }}
                         disabled={savingFunnel}
-                        className="px-2 py-1 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
+                        className="px-2 py-1 text-xs border border-slate-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-surface-dark"
                       >
                         <option value="">Sem funil</option>
                         {funnels.map((f) => (
@@ -1029,7 +1029,7 @@ export default function ContactDetailsPage() {
                             handleSaveFunnelStage(client.funnelId || '', e.target.value)
                           }}
                           disabled={savingFunnel}
-                          className="px-2 py-1 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white"
+                          className="px-2 py-1 text-xs border border-slate-200 dark:border-white/10 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-surface-dark"
                         >
                           <option value="">Sem etapa</option>
                           {funnelStages
@@ -1041,7 +1041,7 @@ export default function ContactDetailsPage() {
                       )}
                       <button
                         onClick={() => setEditingFunnel(false)}
-                        className="p-1 text-slate-400 hover:text-slate-600"
+                        className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-400"
                       >
                         <Cross2Icon className="w-3.5 h-3.5" />
                       </button>
@@ -1086,7 +1086,7 @@ export default function ContactDetailsPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowActionsMenu(!showActionsMenu)}
-                  className="p-2 sm:p-2.5 rounded-xl hover:bg-slate-100 transition-colors"
+                  className="p-2 sm:p-2.5 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
                 >
                   <DotsHorizontalIcon className="w-5 h-5 text-slate-500" />
                 </button>
@@ -1098,10 +1098,10 @@ export default function ContactDetailsPage() {
                       className="fixed inset-0 z-20"
                       onClick={() => setShowActionsMenu(false)}
                     />
-                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200/60 py-1 z-30">
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-slate-200 dark:border-white/10/60 py-1 z-30">
                       <button
                         onClick={openEditModal}
-                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-white/5 transition-colors"
                       >
                         <Pencil1Icon className="w-4 h-4" />
                         Editar
@@ -1131,10 +1131,10 @@ export default function ContactDetailsPage() {
           {/* Left column - Info */}
           <div className="lg:col-span-1 space-y-4">
             {/* Resumo */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               <button
                 onClick={() => toggleSection('resumo')}
-                className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50/50 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:bg-white/5/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
@@ -1203,7 +1203,7 @@ export default function ContactDetailsPage() {
                             value={client.leadType || ''}
                             onChange={(e) => handleSaveLeadType(e.target.value)}
                             disabled={savingLeadType}
-                            className="px-2 py-1 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white"
+                            className="px-2 py-1 text-sm border border-slate-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-white dark:bg-surface-dark"
                             autoFocus
                           >
                             <option value="">Selecione...</option>
@@ -1213,7 +1213,7 @@ export default function ContactDetailsPage() {
                           </select>
                           <button
                             onClick={() => setEditingLeadType(false)}
-                            className="p-1 text-slate-400 hover:text-slate-600"
+                            className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-400"
                           >
                             <Cross2Icon className="w-4 h-4" />
                           </button>
@@ -1221,11 +1221,11 @@ export default function ContactDetailsPage() {
                       ) : (
                         <button
                           onClick={() => setEditingLeadType(true)}
-                          className="group flex items-center gap-1.5 hover:bg-slate-50 rounded px-1 -ml-1 transition-colors"
+                          className="group flex items-center gap-1.5 hover:bg-slate-50 dark:bg-white/5 rounded px-1 -ml-1 transition-colors"
                         >
                           {client.leadType ? (
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 border-slate-200'
+                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200'
                             }`}>
                               {client.leadType}
                             </span>
@@ -1271,10 +1271,10 @@ export default function ContactDetailsPage() {
             </div>
 
             {/* Detalhes */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               <button
                 onClick={() => toggleSection('detalhes')}
-                className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50/50 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:bg-white/5/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -1338,7 +1338,7 @@ export default function ContactDetailsPage() {
                   {client.description && (
                     <div className="pt-3 border-t border-slate-100">
                       <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Descrição</p>
-                      <p className="text-sm text-slate-600 leading-relaxed">{client.description}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{client.description}</p>
                     </div>
                   )}
                   <div className="pt-3 border-t border-slate-100">
@@ -1350,7 +1350,7 @@ export default function ContactDetailsPage() {
                         {!editingPartners && (
                           <button
                             onClick={openPartnersEdit}
-                            className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:bg-white/10 transition-colors"
                             title="Editar sócios"
                           >
                             <Pencil1Icon className="w-3.5 h-3.5 text-slate-400" />
@@ -1389,7 +1389,7 @@ export default function ContactDetailsPage() {
                                       setEditingPartnerIndex(null)
                                       setEditingPartnerName('')
                                     }}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:bg-white/10 text-slate-400 transition-colors"
                                     title="Cancelar"
                                   >
                                     <Cross2Icon className="w-3.5 h-3.5" />
@@ -1397,15 +1397,15 @@ export default function ContactDetailsPage() {
                                 </>
                               ) : (
                                 <>
-                                  <div className="flex-1 flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg">
+                                  <div className="flex-1 flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-white/5 rounded-lg">
                                     <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center text-primary-600 font-semibold text-[10px]">
                                       {partner.charAt(0).toUpperCase()}
                                     </div>
-                                    <span className="text-sm text-slate-700">{partner}</span>
+                                    <span className="text-sm text-slate-700 dark:text-slate-300">{partner}</span>
                                   </div>
                                   <button
                                     onClick={() => handleStartEditPartner(index)}
-                                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors"
+                                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:bg-white/10 text-slate-400 transition-colors"
                                     title="Editar"
                                   >
                                     <Pencil1Icon className="w-3.5 h-3.5" />
@@ -1430,7 +1430,7 @@ export default function ContactDetailsPage() {
                                 if (e.key === 'Enter') handleAddPartner()
                               }}
                               placeholder="Nome do sócio"
-                              className="flex-1 px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                              className="flex-1 px-3 py-1.5 text-sm border border-slate-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                             />
                             <button
                               onClick={handleAddPartner}
@@ -1444,7 +1444,7 @@ export default function ContactDetailsPage() {
                           <div className="flex justify-end gap-2 pt-1">
                             <button
                               onClick={() => setEditingPartners(false)}
-                              className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                              className="px-3 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                             >
                               Cancelar
                             </button>
@@ -1463,12 +1463,12 @@ export default function ContactDetailsPage() {
                             client.partners.split(',').map((partner, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-lg"
+                                className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-white/5 rounded-lg"
                               >
                                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center text-primary-600 font-semibold text-xs">
                                   {partner.trim().charAt(0).toUpperCase()}
                                 </div>
-                                <span className="text-sm text-slate-700">{partner.trim()}</span>
+                                <span className="text-sm text-slate-700 dark:text-slate-300">{partner.trim()}</span>
                               </div>
                             ))
                           ) : (
@@ -1482,7 +1482,7 @@ export default function ContactDetailsPage() {
             </div>
 
             {/* Necessidades */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
@@ -1493,7 +1493,7 @@ export default function ContactDetailsPage() {
                 {!editingNeeds && (
                   <button
                     onClick={() => setEditingNeeds(true)}
-                    className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                    className="p-2 rounded-lg hover:bg-slate-100 dark:bg-white/10 transition-colors"
                   >
                     <Pencil1Icon className="w-4 h-4 text-slate-400" />
                   </button>
@@ -1507,7 +1507,7 @@ export default function ContactDetailsPage() {
                       onChange={(e) => setNeedsDetail(e.target.value)}
                       placeholder="Descreva as necessidades do cliente..."
                       rows={4}
-                      className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-slate-50/50"
+                      className="w-full px-4 py-3 text-sm border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-slate-50 dark:bg-white/5/50"
                     />
                     <div className="flex justify-end gap-2">
                       <button
@@ -1515,7 +1515,7 @@ export default function ContactDetailsPage() {
                           setNeedsDetail(client.needsDetail || '')
                           setEditingNeeds(false)
                         }}
-                        className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-lg transition-colors"
                       >
                         Cancelar
                       </button>
@@ -1528,7 +1528,7 @@ export default function ContactDetailsPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     {client.needsDetail || (
                       <span className="text-slate-400 italic">
                         Clique no lápis para adicionar...
@@ -1571,9 +1571,9 @@ export default function ContactDetailsPage() {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               {/* Tab Headers */}
-              <div className="overflow-x-auto scrollbar-hide border-b border-slate-200/60">
+              <div className="overflow-x-auto scrollbar-hide border-b border-slate-200 dark:border-white/10/60">
                 <div className="flex min-w-max">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -1592,13 +1592,13 @@ export default function ContactDetailsPage() {
                         className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-all relative whitespace-nowrap ${
                           isActive
                             ? 'text-primary-600'
-                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50/50'
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-white/5/50'
                         }`}
                       >
                         <Icon className="w-4 h-4" />
                         <span>{tab.label}</span>
                         <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                          isActive ? 'bg-primary-100 text-primary-600' : 'bg-slate-100 text-slate-500'
+                          isActive ? 'bg-primary-100 text-primary-600' : 'bg-slate-100 dark:bg-white/10 text-slate-500'
                         }`}>
                           {count}
                         </span>
@@ -1663,7 +1663,7 @@ export default function ContactDetailsPage() {
                                   }`} />
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-slate-800 group-hover:text-primary-700 transition-colors truncate">
+                                  <p className="text-sm font-semibold text-slate-800 dark:text-white group-hover:text-primary-700 transition-colors truncate">
                                     {proposal.projectName || `Proposta #${proposal.number || proposal.id.slice(0, 6)}`}
                                   </p>
                                   <p className="text-xs text-slate-500 mt-0.5">
@@ -1724,10 +1724,10 @@ export default function ContactDetailsPage() {
                               const statusColor = paymentStatusColors[displayStatus] || paymentStatusColors['Pendente de pagamento']
 
                               return (
-                                <tr key={billing.id} className="group hover:bg-slate-50/50">
-                                  <td className="py-3.5 text-sm text-slate-700 font-medium whitespace-nowrap">{billing.competence || '-'}</td>
-                                  <td className="py-3.5 text-sm text-slate-600 whitespace-nowrap">{formatDate(billing.expectedDate)}</td>
-                                  <td className="py-3.5 text-sm font-bold text-slate-800 whitespace-nowrap">
+                                <tr key={billing.id} className="group hover:bg-slate-50 dark:bg-white/5/50">
+                                  <td className="py-3.5 text-sm text-slate-700 dark:text-slate-300 font-medium whitespace-nowrap">{billing.competence || '-'}</td>
+                                  <td className="py-3.5 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{formatDate(billing.expectedDate)}</td>
+                                  <td className="py-3.5 text-sm font-bold text-slate-800 dark:text-white whitespace-nowrap">
                                     {formatCurrency(billing.amount)}
                                   </td>
                                   <td className="py-3.5 whitespace-nowrap">
@@ -1735,7 +1735,7 @@ export default function ContactDetailsPage() {
                                       {displayStatus}
                                     </span>
                                   </td>
-                                  <td className="py-3.5 text-sm text-slate-600 whitespace-nowrap">
+                                  <td className="py-3.5 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                     {billing.paymentDate ? formatDate(billing.paymentDate) : '-'}
                                   </td>
                                 </tr>
@@ -1769,7 +1769,7 @@ export default function ContactDetailsPage() {
                           onChange={(e) => setNewFollowUp(e.target.value)}
                           placeholder="Digite uma anotação..."
                           rows={3}
-                          className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-white"
+                          className="w-full px-4 py-3 text-sm border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-none bg-white dark:bg-surface-dark"
                           autoFocus
                         />
                         <div className="flex justify-end gap-2 mt-3">
@@ -1778,7 +1778,7 @@ export default function ContactDetailsPage() {
                               setNewFollowUp('')
                               setShowFollowUpForm(false)
                             }}
-                            className="px-4 py-2 text-sm text-slate-600 hover:bg-white rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-surface-dark rounded-lg transition-colors"
                           >
                             Cancelar
                           </button>
@@ -1812,14 +1812,14 @@ export default function ContactDetailsPage() {
                                 <ChatBubbleIcon className="w-5 h-5 text-primary-600" />
                               )}
                             </div>
-                            <div className="flex-1 min-w-0 bg-slate-50/50 rounded-xl p-4 border border-slate-100">
+                            <div className="flex-1 min-w-0 bg-slate-50 dark:bg-white/5/50 rounded-xl p-4 border border-slate-100">
                               <div className="flex items-baseline justify-between gap-2 mb-1">
                                 <span className="text-sm font-semibold text-slate-800 dark:text-white">{fu.author}</span>
                                 <span className="text-xs text-slate-400">
                                   {formatDateTime(fu.createdAt)}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{fu.text}</p>
+                              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">{fu.text}</p>
                               {fu.recordingUrl && (
                                 <div className="mt-2">
                                   <audio controls className="w-full h-8" preload="none">
@@ -1848,7 +1848,7 @@ export default function ContactDetailsPage() {
                           value={fileSearch}
                           onChange={(e) => setFileSearch(e.target.value)}
                           placeholder="Buscar arquivos..."
-                          className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-slate-50/50"
+                          className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 bg-slate-50 dark:bg-white/5/50"
                         />
                       </div>
 
@@ -1856,7 +1856,7 @@ export default function ContactDetailsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setShowNewFolderModal(true)}
-                          className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                          className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
                         >
                           <FolderPlusIcon className="w-4 h-4" />
                           <span className="hidden sm:inline">Nova Pasta</span>
@@ -1876,7 +1876,7 @@ export default function ContactDetailsPage() {
                           <span className="hidden sm:inline">Upload</span>
                         </label>
                         {(files.length > 0 || contracts.length > 0) && (
-                          <button className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
+                          <button className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors">
                             <ArchiveBoxIcon className="w-4 h-4" />
                             <span className="hidden sm:inline">Baixar ZIP</span>
                           </button>
@@ -1891,7 +1891,7 @@ export default function ContactDetailsPage() {
                         className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-colors ${
                           currentFolderId === null
                             ? 'text-primary-600 font-medium'
-                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100'
                         }`}
                       >
                         <FolderIcon className="w-4 h-4" />
@@ -1905,7 +1905,7 @@ export default function ContactDetailsPage() {
                             className={`px-2 py-1 rounded-lg transition-colors ${
                               index === folderPath.length - 1
                                 ? 'text-primary-600 font-medium'
-                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                                : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100'
                             }`}
                           >
                             {folder.name}
@@ -1927,14 +1927,14 @@ export default function ContactDetailsPage() {
                         {currentItems.folders.map((folder) => (
                           <div
                             key={folder.id}
-                            className="group relative bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200/60 hover:border-primary-200 hover:shadow-md transition-all cursor-pointer"
+                            className="group relative bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4 border border-slate-200 dark:border-white/10/60 hover:border-primary-200 hover:shadow-md transition-all cursor-pointer"
                             onClick={() => setCurrentFolderId(folder.id)}
                           >
                             <div className="flex flex-col items-center text-center">
                               <div className="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center mb-3 shadow-sm group-hover:shadow-md transition-shadow">
                                 <FolderIcon className="w-7 h-7 text-amber-600" />
                               </div>
-                              <p className="text-sm font-medium text-slate-700 truncate w-full">{folder.name}</p>
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate w-full">{folder.name}</p>
                               {folder.source && (
                                 <p className="text-xs text-slate-400 mt-1">{folder.source}</p>
                               )}
@@ -1957,7 +1957,7 @@ export default function ContactDetailsPage() {
                         {currentItems.files.map((file) => (
                           <div
                             key={file.id}
-                            className="group relative bg-white rounded-xl p-4 border border-slate-200/60 hover:border-primary-200 hover:shadow-md transition-all"
+                            className="group relative bg-white dark:bg-surface-dark rounded-xl p-4 border border-slate-200 dark:border-white/10/60 hover:border-primary-200 hover:shadow-md transition-all"
                           >
                             <a
                               href={file.url}
@@ -1974,7 +1974,7 @@ export default function ContactDetailsPage() {
                                   <FileTextIcon className="w-7 h-7 text-blue-600" />
                                 )}
                               </div>
-                              <p className="text-sm font-medium text-slate-700 truncate w-full" title={file.name}>
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate w-full" title={file.name}>
                                 {file.name}
                               </p>
                               {file.size && (
@@ -1985,7 +1985,7 @@ export default function ContactDetailsPage() {
                               <a
                                 href={file.url}
                                 download
-                                className="p-1.5 rounded-lg bg-white/80 hover:bg-slate-100 transition-colors"
+                                className="p-1.5 rounded-lg bg-white/80 hover:bg-slate-100 dark:bg-white/10 transition-colors"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 <DownloadIcon className="w-3.5 h-3.5 text-slate-500" />
@@ -2024,7 +2024,7 @@ export default function ContactDetailsPage() {
               setNewFolderName('')
             }}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 overflow-hidden">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
@@ -2040,30 +2040,30 @@ export default function ContactDetailsPage() {
                   setShowNewFolderModal(false)
                   setNewFolderName('')
                 }}
-                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-4 h-4 text-slate-400" />
               </button>
             </div>
             <div className="p-6">
-              <label className="block text-sm font-medium text-slate-700 mb-2">Nome da pasta</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nome da pasta</label>
               <input
                 type="text"
                 value={newFolderName}
                 onChange={(e) => setNewFolderName(e.target.value)}
                 placeholder="Ex: Documentos fiscais"
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+                className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
               />
             </div>
-            <div className="flex justify-end gap-2 px-6 py-4 bg-slate-50 border-t border-slate-100">
+            <div className="flex justify-end gap-2 px-6 py-4 bg-slate-50 dark:bg-white/5 border-t border-slate-100">
               <button
                 onClick={() => {
                   setShowNewFolderModal(false)
                   setNewFolderName('')
                 }}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-surface-dark rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2091,7 +2091,7 @@ export default function ContactDetailsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setDeletingItem(null)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -2103,13 +2103,13 @@ export default function ContactDetailsPage() {
                 <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir {deletingItem.type === 'folder' ? 'esta pasta' : 'este arquivo'}?
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeletingItem(null)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2131,7 +2131,7 @@ export default function ContactDetailsPage() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={handleCloseProposalModal}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] m-4 overflow-hidden flex flex-col">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] m-4 overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-primary-50 to-purple-50">
               <div className="flex items-center gap-4">
@@ -2191,9 +2191,9 @@ export default function ContactDetailsPage() {
                       </p>
                     </div>
                     {selectedProposal.subtotal && selectedProposal.subtotal !== selectedProposal.total && (
-                      <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                      <div className="bg-slate-50 dark:bg-white/5 rounded-xl p-4 border border-slate-100">
                         <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Subtotal</p>
-                        <p className="text-lg font-bold text-slate-700 mt-1">
+                        <p className="text-lg font-bold text-slate-700 dark:text-slate-300 mt-1">
                           {formatCurrency(selectedProposal.subtotal)}
                         </p>
                       </div>
@@ -2211,9 +2211,9 @@ export default function ContactDetailsPage() {
                   {/* Context */}
                   {selectedProposal.context && (
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-2">Contexto</h4>
-                      <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed">
+                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Contexto</h4>
+                      <div className="bg-slate-50 dark:bg-white/5 rounded-xl p-4 border border-slate-100">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
                           {selectedProposal.context}
                         </p>
                       </div>
@@ -2223,8 +2223,8 @@ export default function ContactDetailsPage() {
                   {/* Items/Scope */}
                   {selectedProposal.items && selectedProposal.items.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-2">Escopo / Produtos</h4>
-                      <div className="bg-slate-50 rounded-xl border border-slate-100 divide-y divide-slate-100">
+                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Escopo / Produtos</h4>
+                      <div className="bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 divide-y divide-slate-100">
                         {selectedProposal.items.map((item, index) => (
                           <div key={index} className="p-4">
                             <div className="flex items-start justify-between">
@@ -2236,7 +2236,7 @@ export default function ContactDetailsPage() {
                               </div>
                               {item.qty && item.price && (
                                 <div className="text-right ml-4">
-                                  <p className="text-sm font-bold text-slate-700">
+                                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                     {formatCurrency(item.qty * item.price)}
                                   </p>
                                   <p className="text-xs text-slate-400">
@@ -2254,7 +2254,7 @@ export default function ContactDetailsPage() {
                   {/* Monthly Fees */}
                   {selectedProposal.monthlyFees && selectedProposal.monthlyFees.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-2">Mensalidades</h4>
+                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Mensalidades</h4>
                       <div className="bg-amber-50 rounded-xl border border-amber-100 divide-y divide-amber-100">
                         {selectedProposal.monthlyFees.map((fee, index) => (
                           <div key={index} className="p-4 flex items-center justify-between">
@@ -2271,7 +2271,7 @@ export default function ContactDetailsPage() {
                   {/* Schedule */}
                   {selectedProposal.schedule && selectedProposal.schedule.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-2">Cronograma</h4>
+                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Cronograma</h4>
                       <div className="bg-blue-50 rounded-xl border border-blue-100 p-4">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                           {selectedProposal.schedule.map((stage, index) => (
@@ -2296,9 +2296,9 @@ export default function ContactDetailsPage() {
                   {/* Payment Method */}
                   {selectedProposal.paymentMethod && (
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-700 mb-2">Forma de Pagamento</h4>
-                      <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <p className="text-sm text-slate-600 whitespace-pre-wrap">
+                      <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Forma de Pagamento</h4>
+                      <div className="bg-slate-50 dark:bg-white/5 rounded-xl p-4 border border-slate-100">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
                           {selectedProposal.paymentMethod}
                         </p>
                       </div>
@@ -2313,10 +2313,10 @@ export default function ContactDetailsPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50">
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50 dark:bg-white/5">
               <button
                 onClick={handleCloseProposalModal}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-white rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-white dark:bg-surface-dark rounded-xl transition-colors"
               >
                 Fechar
               </button>
@@ -2339,9 +2339,9 @@ export default function ContactDetailsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowEditModal(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto m-4">
             {/* Header */}
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white dark:bg-surface-dark border-b border-slate-100 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-200">
                   <PersonIcon className="w-5 h-5 text-white" />
@@ -2353,7 +2353,7 @@ export default function ContactDetailsPage() {
               </div>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
                 <Cross2Icon className="w-5 h-5 text-slate-500" />
               </button>
@@ -2377,7 +2377,7 @@ export default function ContactDetailsPage() {
                   </div>
                 )}
                 <div>
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 cursor-pointer transition-colors">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer transition-colors">
                     <input
                       type="file"
                       accept="image/*"
@@ -2397,7 +2397,7 @@ export default function ContactDetailsPage() {
               {/* Form fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Nome <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -2407,13 +2407,13 @@ export default function ContactDetailsPage() {
                       value={editForm.name}
                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                       placeholder="Nome do contato"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Telefone <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -2423,13 +2423,13 @@ export default function ContactDetailsPage() {
                       value={editForm.phone}
                       onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
                       placeholder="(00) 00000-0000"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
                   <div className="relative">
                     <EnvelopeClosedIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -2437,13 +2437,13 @@ export default function ContactDetailsPage() {
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                       placeholder="email@exemplo.com"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Empresa</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Empresa</label>
                   <div className="relative">
                     <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
@@ -2451,39 +2451,39 @@ export default function ContactDetailsPage() {
                       value={editForm.company}
                       onChange={(e) => setEditForm({ ...editForm, company: e.target.value })}
                       placeholder="Nome da empresa"
-                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">CNPJ / CPF</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">CNPJ / CPF</label>
                   <input
                     type="text"
                     value={editForm.document}
                     onChange={(e) => setEditForm({ ...editForm, document: e.target.value })}
                     placeholder="00.000.000/0000-00"
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ramo de atuacao</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ramo de atuacao</label>
                   <input
                     type="text"
                     value={editForm.industry}
                     onChange={(e) => setEditForm({ ...editForm, industry: e.target.value })}
                     placeholder="Ex: Tecnologia, Varejo..."
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Origem do Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Origem do Lead</label>
                   <select
                     value={editForm.leadSource}
                     onChange={(e) => setEditForm({ ...editForm, leadSource: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadSourceOptions.map((opt) => (
@@ -2493,11 +2493,11 @@ export default function ContactDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Tipo de Lead</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tipo de Lead</label>
                   <select
                     value={editForm.leadType}
                     onChange={(e) => setEditForm({ ...editForm, leadType: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all bg-white dark:bg-surface-dark"
                   >
                     <option value="">Selecione...</option>
                     {leadTypeOptions.map((opt) => (
@@ -2507,43 +2507,43 @@ export default function ContactDetailsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Aniversario</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Aniversario</label>
                   <input
                     type="date"
                     value={editForm.birthday}
                     onChange={(e) => setEditForm({ ...editForm, birthday: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Alerta de retorno</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alerta de retorno</label>
                   <input
                     type="date"
                     value={editForm.returnAlert}
                     onChange={(e) => setEditForm({ ...editForm, returnAlert: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Descricao</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Descricao</label>
                   <textarea
                     value={editForm.description}
                     onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                     placeholder="Descricao da empresa ou notas sobre o contato..."
                     rows={3}
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
+                    className="w-full px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 transition-all resize-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
+            <div className="sticky bottom-0 bg-slate-50 dark:bg-white/5 border-t border-slate-100 px-6 py-4 flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2576,7 +2576,7 @@ export default function ContactDetailsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowDeleteConfirm(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
+          <div className="relative bg-white dark:bg-surface-dark rounded-2xl shadow-2xl w-full max-w-md m-4 p-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <TrashIcon className="w-6 h-6 text-red-600" />
@@ -2586,13 +2586,13 @@ export default function ContactDetailsPage() {
                 <p className="text-sm text-slate-500">Esta acao nao pode ser desfeita</p>
               </div>
             </div>
-            <p className="text-sm text-slate-600 mb-6">
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
               Tem certeza que deseja excluir este contato? Todos os dados associados serao removidos permanentemente.
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-white/10 rounded-xl transition-colors"
               >
                 Cancelar
               </button>
@@ -2649,7 +2649,7 @@ function InfoRow({
       {copyable && (
         <button
           onClick={onCopy}
-          className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-slate-100 transition-all flex-shrink-0"
+          className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-slate-100 dark:bg-white/10 transition-all flex-shrink-0"
           title="Copiar"
         >
           {copied ? (
@@ -2682,11 +2682,11 @@ function StatCard({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/60 p-2.5 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10/60 p-2.5 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl ${colors[color]} flex items-center justify-center mb-2 sm:mb-3 shadow-sm [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5`}>
         {icon}
       </div>
-      <p className="text-sm sm:text-lg font-bold text-slate-800 truncate">{value}</p>
+      <p className="text-sm sm:text-lg font-bold text-slate-800 dark:text-white truncate">{value}</p>
       <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">{label}</p>
     </div>
   )
@@ -2703,10 +2703,10 @@ function EmptyState({
 }) {
   return (
     <div className="py-12 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4 text-slate-400">
+      <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/10 flex items-center justify-center mx-auto mb-4 text-slate-400">
         {icon}
       </div>
-      <p className="text-sm font-medium text-slate-600">{title}</p>
+      <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{title}</p>
       <p className="text-xs text-slate-400 mt-1">{description}</p>
     </div>
   )

@@ -15,7 +15,7 @@ function cx(...classes: (string | false | null | undefined)[]) {
 }
 
 const baseButton =
-  "inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+  "inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-white/10 px-3.5 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-surface-dark hover:bg-gray-50 dark:bg-white/5 hover:border-gray-300 transition active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
 
 export function PaginationControls({
   currentPage,
@@ -43,7 +43,7 @@ export function PaginationControls({
       <button type="button" className={baseButton} onClick={onPrevious} disabled={prevDisabled}>
         Anterior
       </button>
-      <span className="text-sm font-medium text-gray-700">
+      <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
         Página {computedCurrent} de {computedTotal}
       </span>
       <button type="button" className={baseButton} onClick={onNext} disabled={nextDisabled}>

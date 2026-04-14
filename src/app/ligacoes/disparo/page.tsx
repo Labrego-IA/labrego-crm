@@ -379,20 +379,20 @@ export default function DisparoPage() {
   }
 
   return (
-    <div className="h-full bg-slate-50 flex flex-col">
+    <div className="h-full bg-slate-50 dark:bg-white/5 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
+      <div className="flex-shrink-0 bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/10 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           {/* Left: back + title */}
           <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 sm:w-56">
             <Link
               href="/ligacoes/configuracao"
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 transition-colors"
             >
-              <ArrowLeftIcon className="w-4 h-4 text-slate-600" />
+              <ArrowLeftIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </Link>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                 <RocketLaunchIcon className="w-5 h-5 text-green-600 flex-shrink-0" />
                 <span className="truncate">Disparo Massivo de Ligacoes</span>
               </h1>
@@ -404,13 +404,13 @@ export default function DisparoPage() {
 
           {/* Center: Tabs */}
           <div className="flex-1 flex sm:justify-center">
-            <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 p-1 rounded-lg w-full sm:w-auto">
+            <div className="flex items-center gap-1 sm:gap-2 bg-slate-100 dark:bg-white/10 p-1 rounded-lg w-full sm:w-auto">
               <button
                 onClick={() => setActiveTab('trigger')}
                 className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap ${
                   activeTab === 'trigger'
-                    ? 'bg-white text-slate-800 shadow-sm'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
                 }`}
               >
                 <RocketLaunchIcon className="w-4 h-4" />
@@ -420,8 +420,8 @@ export default function DisparoPage() {
                 onClick={() => setActiveTab('reports')}
                 className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap ${
                   activeTab === 'reports'
-                    ? 'bg-white text-slate-800 shadow-sm'
-                    : 'text-slate-600 hover:text-slate-800'
+                    ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-800'
                 }`}
               >
                 <ChartBarIcon className="w-4 h-4" />
@@ -443,7 +443,7 @@ export default function DisparoPage() {
         {activeTab === 'trigger' && (
           <div className="space-y-6">
             {/* Controles */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                   <RocketLaunchIcon className="w-5 h-5 text-white" />
@@ -459,7 +459,7 @@ export default function DisparoPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Total de ligacoes
                     </label>
                     <input
@@ -469,11 +469,11 @@ export default function DisparoPage() {
                       min={1}
                       max={500}
                       disabled={triggering}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm disabled:opacity-50"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm disabled:opacity-50"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1">
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                       Simultaneas (max VAPI)
                     </label>
                     <input
@@ -483,7 +483,7 @@ export default function DisparoPage() {
                       min={1}
                       max={20}
                       disabled={triggering}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm disabled:opacity-50"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -576,11 +576,11 @@ export default function DisparoPage() {
 
             {/* Progresso e lista de ligacoes */}
             {(triggerProgress.phase === 'calling' || triggerProgress.phase === 'done') && triggerCalls.length > 0 && (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
                 {/* Header com status */}
                 <div className="mb-5">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                    <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                       {triggerProgress.phase === 'calling' && (
                         <>
                           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -609,7 +609,7 @@ export default function DisparoPage() {
                     </div>
                   </div>
                   {/* Barra de progresso */}
-                  <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full bg-slate-100 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
                     <div className="h-2.5 flex">
                       {/* Barra de concluidas (verde) */}
                       <div
@@ -635,7 +635,7 @@ export default function DisparoPage() {
 
                 {/* Contadores em tempo real */}
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
+                  <div className="bg-slate-50 dark:bg-white/5 rounded-xl p-3 text-center">
                     <p className="text-2xl font-bold text-slate-800 dark:text-white">
                       {triggerProgress.total}
                     </p>
@@ -707,8 +707,8 @@ export default function DisparoPage() {
                           : call.status === 'queued'
                           ? 'bg-amber-50 border border-amber-100'
                           : call.status === 'cancelled'
-                          ? 'bg-slate-50 border border-slate-100 opacity-50'
-                          : 'bg-slate-50 border border-slate-100'
+                          ? 'bg-slate-50 dark:bg-white/5 border border-slate-100 opacity-50'
+                          : 'bg-slate-50 dark:bg-white/5 border border-slate-100'
                       }`}
                     >
                       {/* Icone de status */}
@@ -746,7 +746,7 @@ export default function DisparoPage() {
 
                       {/* Info do prospect */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-800 truncate">
+                        <p className="font-medium text-slate-800 dark:text-white truncate">
                           {call.prospect}
                         </p>
                         <p className="text-xs text-slate-400 truncate">
@@ -808,7 +808,7 @@ export default function DisparoPage() {
         {/* Reports Tab */}
         {activeTab === 'reports' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center flex-shrink-0">
@@ -827,7 +827,7 @@ export default function DisparoPage() {
                     type="date"
                     value={reportDate}
                     onChange={e => setReportDate(e.target.value)}
-                    className="flex-1 sm:flex-initial px-3 py-2 border border-slate-200 rounded-lg text-sm min-w-0"
+                    className="flex-1 sm:flex-initial px-3 py-2 border border-slate-200 dark:border-white/10 rounded-lg text-sm min-w-0"
                   />
                   <button
                     onClick={handleLoadReport}
@@ -848,7 +848,7 @@ export default function DisparoPage() {
                 <div className="space-y-6">
                   {/* KPIs */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="bg-slate-50 rounded-xl p-4">
+                    <div className="bg-slate-50 dark:bg-white/5 rounded-xl p-4">
                       <p className="text-3xl font-bold text-slate-800 dark:text-white">
                         {report.total}
                       </p>
@@ -880,14 +880,14 @@ export default function DisparoPage() {
                   {/* Outcomes */}
                   {Object.keys(report.outcomes).length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-slate-800 mb-3">
+                      <h3 className="font-semibold text-slate-800 dark:text-white mb-3">
                         Resultados
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {Object.entries(report.outcomes).map(([outcome, count]) => (
                           <div
                             key={outcome}
-                            className="bg-slate-50 rounded-lg p-3"
+                            className="bg-slate-50 dark:bg-white/5 rounded-lg p-3"
                           >
                             <p className="text-lg font-bold text-slate-800 dark:text-white">
                               {count}
@@ -902,7 +902,7 @@ export default function DisparoPage() {
                   {/* Details */}
                   {report.details.length > 0 && (
                     <div>
-                      <h3 className="font-semibold text-slate-800 mb-3">
+                      <h3 className="font-semibold text-slate-800 dark:text-white mb-3">
                         Detalhes
                       </h3>
                       <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -921,7 +921,7 @@ export default function DisparoPage() {
                               ) : (
                                 <XCircleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
                               )}
-                              <span className="font-medium text-slate-800 truncate">
+                              <span className="font-medium text-slate-800 dark:text-white truncate">
                                 {detail.name}
                               </span>
                             </div>
@@ -935,7 +935,7 @@ export default function DisparoPage() {
                                 </span>
                               )}
                               {detail.outcome && (
-                                <span className="text-sm font-medium text-slate-600">
+                                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                                   {detail.outcome}
                                 </span>
                               )}

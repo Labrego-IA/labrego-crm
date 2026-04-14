@@ -260,7 +260,7 @@ export default function PerfilPage() {
   const infoTab = (
     <div className="space-y-6">
       {/* Profile Card */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm overflow-hidden">
         <div className={`h-28 relative ${isPartnerView ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-500' : 'bg-gradient-to-r from-primary-600 via-primary-500 to-accent'}`}>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-50" />
         </div>
@@ -345,7 +345,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Account Info */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm p-6">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm p-6">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -392,7 +392,7 @@ export default function PerfilPage() {
 
       {/* Permissions */}
       {member?.permissions && (
-        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm p-6">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm p-6">
           <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -451,7 +451,7 @@ export default function PerfilPage() {
   const securityTab = (
     <div className="space-y-6">
       {/* Change Password */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm p-6">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm p-6">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -659,7 +659,7 @@ export default function PerfilPage() {
   const planTab = (
     <div className="space-y-6">
       {/* Current Plan Hero */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm overflow-hidden">
         <div className="relative p-6 bg-gradient-to-r from-primary-600 via-primary-500 to-accent overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-40" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -740,7 +740,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Features Cards */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm p-6">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm p-6">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -754,7 +754,7 @@ export default function PerfilPage() {
             return (
               <div
                 key={key}
-                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all"
+                className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-white/5/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all"
               >
                 <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
                   {detail?.icon ?? (
@@ -774,7 +774,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Plan Comparison */}
-      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200/60 dark:border-white/[0.07] shadow-sm p-6">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] shadow-sm p-6">
         <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
           <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -963,7 +963,7 @@ export default function PerfilPage() {
 
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10">
+    <div className="p-3 rounded-xl bg-slate-50 dark:bg-white/5/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10">
       <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</span>
       <p className="text-sm font-medium text-slate-800 dark:text-slate-200 mt-0.5 truncate">{value}</p>
     </div>
@@ -972,7 +972,7 @@ function InfoField({ label, value }: { label: string; value: string }) {
 
 function PlanLimitCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10">
+    <div className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-white/5/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10">
       <div className="w-8 h-8 rounded-lg bg-primary-100 text-primary-600 flex items-center justify-center flex-shrink-0">
         {icon}
       </div>
@@ -1142,7 +1142,7 @@ const PLAN_LIMIT_ICONS: Record<string, JSX.Element> = {
 
 function PlanLimitRow({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10 gap-3">
+    <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5/80 dark:bg-surface-dark/50 border border-slate-100 dark:border-white/10 gap-3">
       <div className="flex items-center gap-2.5 min-w-0">
         <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center text-primary-500">
           {PLAN_LIMIT_ICONS[icon] ?? PLAN_LIMIT_ICONS.list}

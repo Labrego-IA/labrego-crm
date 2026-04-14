@@ -53,10 +53,10 @@ export function TableWrapper({ children, className = '' }: TableWrapperProps) {
         <button
           type="button"
           onClick={() => scroll('left')}
-          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 opacity-90 hover:opacity-100 transition-opacity md:hidden"
+          className="absolute left-0 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-surface-dark shadow-lg border border-gray-200 dark:border-white/10 opacity-90 hover:opacity-100 transition-opacity md:hidden"
           aria-label="Rolar para esquerda"
         >
-          <ChevronLeftIcon className="h-5 w-5 text-gray-700" />
+          <ChevronLeftIcon className="h-5 w-5 text-gray-700 dark:text-slate-300" />
         </button>
       )}
 
@@ -74,10 +74,10 @@ export function TableWrapper({ children, className = '' }: TableWrapperProps) {
         <button
           type="button"
           onClick={() => scroll('right')}
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 opacity-90 hover:opacity-100 transition-opacity md:hidden"
+          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-surface-dark shadow-lg border border-gray-200 dark:border-white/10 opacity-90 hover:opacity-100 transition-opacity md:hidden"
           aria-label="Rolar para direita"
         >
-          <ChevronRightIcon className="h-5 w-5 text-gray-700" />
+          <ChevronRightIcon className="h-5 w-5 text-gray-700 dark:text-slate-300" />
         </button>
       )}
 

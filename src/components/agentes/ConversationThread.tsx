@@ -68,13 +68,13 @@ export default function ConversationThread({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium">
+          <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 font-medium">
             {(conversation.contactName || '?')[0].toUpperCase()}
           </div>
           <div>
-            <h3 className="text-slate-800 font-medium text-sm">{conversation.contactName}</h3>
+            <h3 className="text-slate-800 dark:text-white font-medium text-sm">{conversation.contactName}</h3>
             <p className="text-slate-400 text-xs">
               {conversation.contactPhone || conversation.contactEmail}
             </p>
@@ -88,7 +88,7 @@ export default function ConversationThread({
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
               conversation.aiEnabled
                 ? 'bg-cyan-50 text-cyan-600 hover:bg-cyan-100'
-                : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                : 'bg-slate-100 dark:bg-white/10 text-slate-400 hover:bg-slate-200'
             }`}
           >
             IA {conversation.aiEnabled ? 'On' : 'Off'}
@@ -115,13 +115,13 @@ export default function ConversationThread({
                 }}
                 placeholder="Nome da tag..."
                 autoFocus
-                className="w-28 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+                className="w-28 px-2 py-1 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-lg text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
               />
             </div>
           ) : (
             <button
               onClick={() => setShowTagInput(true)}
-              className="flex items-center gap-1 px-2 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 text-xs font-medium rounded-lg transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:bg-white/10 text-slate-500 text-xs font-medium rounded-lg transition-colors"
             >
               <PlusIcon className="w-3.5 h-3.5" />
               Tag
@@ -165,7 +165,7 @@ export default function ConversationThread({
           <button
             onClick={() => handleAction(onResumeAI)}
             disabled={actionLoading}
-            className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-600 dark:text-slate-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
             Reabrir
@@ -188,7 +188,7 @@ export default function ConversationThread({
 
       {/* Input (apenas se nao resolvida) */}
       {conversation.status !== 'resolved' && (
-        <div className="px-4 py-3 border-t border-slate-200 bg-white">
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark">
           <div className="flex items-end gap-2">
             <textarea
               value={newMessage}
@@ -200,12 +200,12 @@ export default function ConversationThread({
                   : 'Enviar mensagem manual (o agente IA esta respondendo)...'
               }
               rows={1}
-              className="flex-1 px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
+              className="flex-1 px-4 py-2.5 bg-white dark:bg-surface-dark border border-slate-300 rounded-xl text-slate-800 dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
             />
             <button
               onClick={handleSend}
               disabled={!newMessage.trim() || sending}
-              className="p-2.5 bg-secondary hover:bg-secondary/90 text-slate-900 rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-2.5 bg-secondary hover:bg-secondary/90 text-slate-900 dark:text-white rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               aria-label="Enviar mensagem"
             >
               <PaperAirplaneIcon className="w-5 h-5" />

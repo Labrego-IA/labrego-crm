@@ -56,17 +56,17 @@ export default function ConversationInbox({
   }
 
   return (
-    <div className="flex flex-col h-full border-r border-slate-200">
+    <div className="flex flex-col h-full border-r border-slate-200 dark:border-white/10">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-200">
-        <h2 className="text-slate-800 font-semibold flex items-center gap-2">
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10">
+        <h2 className="text-slate-800 dark:text-white font-semibold flex items-center gap-2">
           <ChatBubbleLeftRightIcon className="w-5 h-5 text-cyan-600" />
           Conversas
         </h2>
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 border-b border-slate-200">
+      <div className="px-3 py-2 border-b border-slate-200 dark:border-white/10">
         <div className="relative">
           <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -74,13 +74,13 @@ export default function ConversationInbox({
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar por nome ou telefone..."
-            className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+            className="w-full pl-9 pr-3 py-2 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-lg text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
           />
         </div>
       </div>
 
       {/* Filters */}
-      <div className="px-3 py-2 border-b border-slate-200 flex gap-1 overflow-x-auto">
+      <div className="px-3 py-2 border-b border-slate-200 dark:border-white/10 flex gap-1 overflow-x-auto">
         {([
           { key: 'all', label: 'Todas' },
           { key: 'active', label: 'IA' },
@@ -135,20 +135,20 @@ export default function ConversationInbox({
             <button
               key={conv.id}
               onClick={() => onSelect(conv.id)}
-              className={`w-full px-4 py-3 text-left border-b border-slate-100 transition-all hover:bg-slate-50 ${
+              className={`w-full px-4 py-3 text-left border-b border-slate-100 dark:border-white/5 transition-all hover:bg-slate-50 dark:bg-white/5 ${
                 isSelected ? 'bg-slate-100' : ''
               }`}
             >
               <div className="flex items-start gap-3">
                 {/* Avatar */}
-                <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-medium text-sm flex-shrink-0">
+                <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 font-medium text-sm flex-shrink-0">
                   {(conv.contactName || '?')[0].toUpperCase()}
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-slate-800 font-medium text-sm truncate">
+                    <span className="text-slate-800 dark:text-white font-medium text-sm truncate">
                       {conv.contactName}
                     </span>
                     <span className="text-slate-300 text-[10px] flex-shrink-0">
@@ -161,7 +161,7 @@ export default function ConversationInbox({
                     </p>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {conv.unreadCount > 0 && (
-                        <span className="w-5 h-5 bg-secondary text-slate-900 text-[10px] font-bold rounded-full flex items-center justify-center">
+                        <span className="w-5 h-5 bg-secondary text-slate-900 dark:text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                           {conv.unreadCount > 9 ? '9+' : conv.unreadCount}
                         </span>
                       )}

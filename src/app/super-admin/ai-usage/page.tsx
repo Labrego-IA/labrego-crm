@@ -151,9 +151,9 @@ export default function SuperAdminAIUsagePage() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-          <span className="text-sm font-medium text-slate-700">{orgs.length} empresas com uso de IA</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{orgs.length} empresas com uso de IA</span>
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400">Ordenar por:</span>
             {(['cost', 'tokens', 'messages'] as const).map(s => (
@@ -169,7 +169,7 @@ export default function SuperAdminAIUsagePage() {
         </div>
         <table className="w-full">
           <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-            <tr className="bg-slate-50 border-b border-slate-100">
+            <tr className="bg-slate-50 dark:bg-white/5 border-b border-slate-100">
               <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Empresa</th>
               <th className="text-left px-4 py-3 text-xs font-medium text-slate-500">Plano</th>
               <th className="text-right px-4 py-3 text-xs font-medium text-slate-500">Tokens</th>
@@ -184,15 +184,15 @@ export default function SuperAdminAIUsagePage() {
             {sorted.length === 0 ? (
               <tr><td colSpan={8} className="text-center py-8 text-slate-400 text-sm">Nenhuma empresa com uso de IA registrado.</td></tr>
             ) : sorted.map(org => (
-              <tr key={org.orgId} className="border-b border-slate-50 hover:bg-slate-50/50">
+              <tr key={org.orgId} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                 <td className="px-4 py-3 text-sm font-medium text-slate-800 dark:text-white">{org.orgName}</td>
                 <td className="px-4 py-3">
-                  <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs">{org.plan}</span>
+                  <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 text-xs">{org.plan}</span>
                 </td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right font-mono">{org.totalTokens.toLocaleString('pt-BR')}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{org.totalMessages}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{org.totalAudioMinutes.toFixed(1)}</td>
-                <td className="px-4 py-3 text-sm text-slate-600 text-right">{org.totalImageDescriptions}</td>
+                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right font-mono">{org.totalTokens.toLocaleString('pt-BR')}</td>
+                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{org.totalMessages}</td>
+                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{org.totalAudioMinutes.toFixed(1)}</td>
+                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 text-right">{org.totalImageDescriptions}</td>
                 <td className="px-4 py-3 text-sm font-medium text-right">
                   <span className={org.estimatedCostUSD > 1 ? 'text-amber-600' : 'text-slate-600'}>
                     ${org.estimatedCostUSD.toFixed(2)}
@@ -208,8 +208,8 @@ export default function SuperAdminAIUsagePage() {
       </div>
 
       {/* Referencia de custos */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-        <h3 className="text-sm font-medium text-slate-600 mb-2">Referencia de custos (OpenAI + ElevenLabs)</h3>
+      <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4">
+        <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Referencia de custos (OpenAI + ElevenLabs)</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-500">
           <div>GPT-4o-mini: $0.15/1M input, $0.60/1M output</div>
           <div>GPT-4o: $2.50/1M input, $10/1M output</div>
@@ -223,7 +223,7 @@ export default function SuperAdminAIUsagePage() {
 
 function KPICard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-4">
+    <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl p-4">
       <div className={`text-xl font-bold ${highlight ? 'text-amber-600' : 'text-slate-800'}`}>{value}</div>
       <div className="text-slate-500 text-xs mt-1">{label}</div>
     </div>

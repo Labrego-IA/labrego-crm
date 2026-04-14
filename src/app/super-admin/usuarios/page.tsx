@@ -31,7 +31,7 @@ const SYSTEM_ROLE_LABELS: Record<string, string> = {
 
 const SYSTEM_ROLE_BADGE: Record<string, string> = {
   admin: 'bg-purple-100 text-purple-800',
-  usuario: 'bg-slate-100 text-slate-700',
+  usuario: 'bg-slate-100 dark:bg-white/10 text-slate-700',
 }
 
 function timeAgo(dateStr: string): string {
@@ -260,7 +260,7 @@ export default function SuperAdminUsuariosPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10">
           <UserX className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">
             {search ? 'Nenhum usuario encontrado para essa busca.' : 'Nenhum usuario registrado.'}
@@ -269,7 +269,7 @@ export default function SuperAdminUsuariosPage() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-visible">
+          <div className="hidden md:block bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 overflow-visible">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
                 <tr className="border-b border-gray-100 bg-gray-50">
@@ -346,7 +346,7 @@ export default function SuperAdminUsuariosPage() {
                         <MoreVertical className="w-4 h-4 text-gray-500" />
                       </button>
                       {openMenuUid === user.uid && (
-                        <div data-actions-menu className="absolute right-4 bottom-full mb-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                        <div data-actions-menu className="absolute right-4 bottom-full mb-1 z-50 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-gray-200 dark:border-white/10 py-1 min-w-[160px]">
                           <button
                             onClick={() => { openEdit(user); }}
                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -374,7 +374,7 @@ export default function SuperAdminUsuariosPage() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {filteredUsers.map((user) => (
-              <div key={user.uid} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+              <div key={user.uid} className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-gray-900 truncate">
@@ -403,7 +403,7 @@ export default function SuperAdminUsuariosPage() {
                       <MoreVertical className="w-4 h-4 text-gray-500" />
                     </button>
                     {openMenuUid === user.uid && (
-                      <div data-actions-menu className="absolute right-0 bottom-full mb-1 z-50 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[160px]">
+                      <div data-actions-menu className="absolute right-0 bottom-full mb-1 z-50 bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-gray-200 dark:border-white/10 py-1 min-w-[160px]">
                         <button
                           onClick={() => { openEdit(user); }}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
@@ -466,7 +466,7 @@ export default function SuperAdminUsuariosPage() {
       {/* Edit modal */}
       {editingUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseEdit}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">Editar Usuario</h3>
               <button onClick={handleCloseEdit} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">
@@ -483,7 +483,7 @@ export default function SuperAdminUsuariosPage() {
                 <select
                   value={editForm.systemRole}
                   onChange={(e) => setEditForm({ ...editForm, systemRole: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white dark:bg-surface-dark"
                 >
                   <option value="admin">Administrador</option>
                   <option value="usuario">Usuário</option>
@@ -505,7 +505,7 @@ export default function SuperAdminUsuariosPage() {
                 <select
                   value={editForm.plan}
                   onChange={(e) => setEditForm({ ...editForm, plan: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white dark:bg-surface-dark"
                 >
                   <option value="">Sem plano</option>
                   {Object.entries(PLAN_DISPLAY).map(([id, info]) => (
@@ -528,7 +528,7 @@ export default function SuperAdminUsuariosPage() {
                 <select
                   value={editForm.disabled ? 'blocked' : 'active'}
                   onChange={(e) => setEditForm({ ...editForm, disabled: e.target.value === 'blocked' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 bg-white dark:bg-surface-dark"
                 >
                   <option value="active">Ativo</option>
                   <option value="blocked">Bloqueado</option>
@@ -555,7 +555,7 @@ export default function SuperAdminUsuariosPage() {
       {/* Confirm action dialog */}
       {confirmAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !actionLoading && setConfirmAction(null)}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-md mx-4 p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-gray-900 mb-2">{getActionLabel()}</h3>
             <p className="text-sm text-gray-600 mb-6">{getActionDescription(confirmAction.email)}</p>
             <div className="flex justify-end gap-3">

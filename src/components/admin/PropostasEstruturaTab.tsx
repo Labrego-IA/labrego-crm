@@ -96,9 +96,9 @@ export default function PropostasEstruturaTab() {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Secoes do PDF</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Secoes do PDF</h3>
           <p className="text-xs text-gray-400 mt-1">
             Arraste para reordenar e ative/desative as secoes que aparecem no PDF de propostas.
           </p>
@@ -110,8 +110,8 @@ export default function PropostasEstruturaTab() {
               key={section.key}
               className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors ${
                 section.enabled
-                  ? 'border-gray-200 bg-white'
-                  : 'border-gray-100 bg-gray-50 opacity-60'
+                  ? 'border-gray-200 dark:border-white/10 bg-white'
+                  : 'border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5 opacity-60'
               }`}
             >
               {/* Reorder buttons */}
@@ -120,7 +120,7 @@ export default function PropostasEstruturaTab() {
                   type="button"
                   onClick={() => moveSection(index, 'up')}
                   disabled={index === 0}
-                  className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs leading-none"
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-400 disabled:opacity-30 text-xs leading-none"
                 >
                   &#9650;
                 </button>
@@ -128,7 +128,7 @@ export default function PropostasEstruturaTab() {
                   type="button"
                   onClick={() => moveSection(index, 'down')}
                   disabled={index === sections.length - 1}
-                  className="text-gray-400 hover:text-gray-600 disabled:opacity-30 text-xs leading-none"
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-400 disabled:opacity-30 text-xs leading-none"
                 >
                   &#9660;
                 </button>
@@ -148,7 +148,7 @@ export default function PropostasEstruturaTab() {
                   disabled={section.key === 'cover'}
                   className="peer sr-only"
                 />
-                <div className="h-5 w-9 rounded-full bg-gray-200 peer-checked:bg-primary-500 peer-disabled:opacity-50 transition-colors after:content-[''] after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:after:translate-x-full" />
+                <div className="h-5 w-9 rounded-full bg-gray-200 peer-checked:bg-primary-500 peer-disabled:opacity-50 transition-colors after:content-[''] after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:bg-white dark:bg-surface-dark after:transition-transform peer-checked:after:translate-x-full" />
               </label>
 
               {/* Label */}
@@ -165,8 +165,8 @@ export default function PropostasEstruturaTab() {
       </section>
 
       {/* Preview */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3">Preview da Estrutura</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Preview da Estrutura</h3>
         <div className="flex flex-wrap gap-2">
           {sections
             .filter(s => s.enabled)
@@ -187,7 +187,7 @@ export default function PropostasEstruturaTab() {
         <button
           type="button"
           onClick={handleReset}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="text-sm text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:text-slate-300"
         >
           Restaurar padrao
         </button>

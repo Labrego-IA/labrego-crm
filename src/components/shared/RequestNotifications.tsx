@@ -41,7 +41,7 @@ export default function RequestNotifications() {
 
   return (
     <div className="fixed bottom-4 left-4 md:left-[18rem] z-40 pointer-events-none">
-      <div className="bg-white p-4 rounded shadow-lg max-w-xs text-sm flex items-start gap-2 pointer-events-auto">
+      <div className="bg-white dark:bg-surface-dark p-4 rounded shadow-lg max-w-xs text-sm flex items-start gap-2 pointer-events-auto">
         <span className="flex-1">Deseja ativar as notificações?</span>
         <button
           onClick={handleClick}
@@ -54,7 +54,7 @@ export default function RequestNotifications() {
             localStorage.setItem('notifications-status', 'denied')
             setVisible(false)
           }}
-          className="text-gray-600 hover:text-gray-800"
+          className="text-gray-600 dark:text-slate-400 hover:text-gray-800"
           aria-label="Fechar"
         >
           &times;

@@ -211,19 +211,19 @@ function CadenciaDashboard() {
   }, [stages, selectedFunnel])
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50 dark:bg-white/5/50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
+      <div className="bg-white dark:bg-surface-dark border-b border-slate-200 dark:border-white/10 px-4 md:px-8 py-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push(selectedFunnel ? `/funil/${selectedFunnel}` : '/funil')}
-              className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-slate-100 dark:bg-white/10 text-slate-500 hover:text-slate-700 dark:text-slate-300 transition-colors"
               title="Voltar para o funil"
             >
               <ArrowLeftIcon className="w-5 h-5" />
             </button>
-            <h1 className="text-2xl font-bold text-slate-900">Cadência de Vendas</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Cadência de Vendas</h1>
             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${autoConfig.enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
               <span className={`w-2 h-2 rounded-full ${autoConfig.enabled ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
               {autoConfig.enabled ? 'Automação ativa' : 'Automação pausada'}
@@ -231,7 +231,7 @@ function CadenciaDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <select value={selectedFunnel} onChange={e => setSelectedFunnel(e.target.value)}
-              className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700">
+              className="text-sm border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-300">
               {funnels.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
           </div>
@@ -352,33 +352,33 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">{stages.length} etapas • {steps.length} steps configurados</p>
         <button onClick={() => setShowSettings(!showSettings)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50">
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl hover:bg-slate-50 dark:bg-white/5">
           <Cog6ToothIcon className="w-4 h-4" /> Configurações gerais
         </button>
       </div>
 
       {/* Global settings panel */}
       {showSettings && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
-          <h3 className="text-sm font-semibold text-slate-700">Configurações de Automação</h3>
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 border border-slate-100 shadow-sm space-y-4">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Configurações de Automação</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Horário de início</label>
               <input type="time" value={autoConfig.workHoursStart}
                 onChange={e => saveAutomationConfig({ workHoursStart: e.target.value })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Horário de término</label>
               <input type="time" value={autoConfig.workHoursEnd}
                 onChange={e => saveAutomationConfig({ workHoursEnd: e.target.value })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ações/dia</label>
               <input type="number" value={autoConfig.maxActionsPerDay} min={1} max={5000}
                 onChange={e => saveAutomationConfig({ maxActionsPerDay: parseInt(e.target.value) || 100 })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
@@ -386,29 +386,29 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ligações simultâneas</label>
               <input type="number" value={autoConfig.maxConcurrentCalls ?? 10} min={1} max={50}
                 onChange={e => saveAutomationConfig({ maxConcurrentCalls: parseInt(e.target.value) || 10 })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Limite VAPI (free: 10)</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Máx. ligações/dia</label>
               <input type="number" value={autoConfig.maxCallsPerDay ?? 300} min={1} max={5000}
                 onChange={e => saveAutomationConfig({ maxCallsPerDay: parseInt(e.target.value) || 300 })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Independente do limite total de ações</p>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Intervalo entre ligações (seg)</label>
               <input type="number" value={Math.round((autoConfig.callStaggerDelayMs ?? 10000) / 1000)} min={0} max={120}
                 onChange={e => saveAutomationConfig({ callStaggerDelayMs: (parseInt(e.target.value) || 10) * 1000 })}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
               <p className="text-xs text-slate-400 mt-0.5">Tempo entre disparos consecutivos</p>
             </div>
           </div>
           <div className="flex items-center gap-3 pt-2">
-            <span className="text-sm text-slate-600">Automação ativa</span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">Automação ativa</span>
             <button onClick={() => saveAutomationConfig({ enabled: !autoConfig.enabled })}
               className={`relative w-11 h-6 rounded-full transition-colors ${autoConfig.enabled ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${autoConfig.enabled ? 'translate-x-5' : ''}`} />
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow transition-transform ${autoConfig.enabled ? 'translate-x-5' : ''}`} />
             </button>
           </div>
         </div>
@@ -416,7 +416,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 
       {/* Stages list */}
       {stages.length === 0 ? (
-        <div className="bg-white rounded-2xl p-12 border border-slate-100 text-center">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-12 border border-slate-100 text-center">
           <p className="text-slate-400">Nenhuma etapa configurada neste funil</p>
         </div>
       ) : (
@@ -426,10 +426,10 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
           const isPaused = autoConfig.pausedStageIds.includes(stage.id)
 
           return (
-            <div key={stage.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div key={stage.id} className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               {/* Stage header */}
               <button onClick={() => toggleStage(stage.id)}
-                className="w-full flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors">
+                className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:bg-white/5/50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-primary-400" />
                   <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{stage.name}</h3>
@@ -458,12 +458,12 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                       return (
                         <div key={step.id} className="relative flex items-start gap-4 mb-4 last:mb-0">
                           {/* Timeline dot */}
-                          <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${step.isActive ? 'bg-primary-50 border-primary-300' : 'bg-slate-50 border-slate-200'}`}>
+                          <div className={`relative z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 ${step.isActive ? 'bg-primary-50 border-primary-300' : 'bg-slate-50 dark:bg-white/5 border-slate-200'}`}>
                             <Icon className={`w-4 h-4 ${step.isActive ? 'text-primary-600' : 'text-slate-400'}`} />
                           </div>
 
                           {/* Step card */}
-                          <div className={`flex-1 p-4 rounded-xl border transition-all ${step.isActive ? 'border-slate-200 bg-white' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
+                          <div className={`flex-1 p-4 rounded-xl border transition-all ${step.isActive ? 'border-slate-200 dark:border-white/10 bg-white' : 'border-slate-100 bg-slate-50 dark:bg-white/5 opacity-60'}`}>
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
@@ -499,7 +499,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                                   {step.isActive ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); setEditStep(step) }}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                                  className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:bg-white/10 hover:text-slate-600 dark:text-slate-400">
                                   <PencilSquareIcon className="w-4 h-4" />
                                 </button>
                                 <button onClick={(e) => { e.stopPropagation(); handleDeleteStep(step.id) }}
@@ -516,7 +516,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 
                   {/* Add step button */}
                   <button onClick={() => setAddingToStage(stage.id)}
-                    className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50/30 transition-all">
+                    className="mt-4 w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-500 hover:border-primary-300 hover:text-primary-600 hover:bg-primary-50/30 transition-all">
                     <PlusIcon className="w-4 h-4" /> Adicionar step
                   </button>
 
@@ -528,7 +528,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                     <div className="flex flex-wrap gap-2">
                       {(['keep', 'move', 'notify'] as CadenceExhaustedAction[]).map(action => (
                         <button key={action} onClick={() => handleSaveExhaustedAction(stage.id, action)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${(stage.cadenceExhaustedAction || 'keep') === action ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
+                          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${(stage.cadenceExhaustedAction || 'keep') === action ? 'bg-primary-50 text-primary-700 ring-1 ring-primary-200' : 'bg-slate-50 dark:bg-white/5 text-slate-500 hover:bg-slate-100'}`}>
                           {action === 'keep' && 'Manter na etapa'}
                           {action === 'move' && 'Mover para etapa'}
                           {action === 'notify' && 'Notificar responsável'}
@@ -538,7 +538,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                         <select
                           value={stage.cadenceExhaustedTargetStageId || ''}
                           onChange={e => handleSaveExhaustedAction(stage.id, 'move', e.target.value)}
-                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white">
+                          className="text-xs border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 bg-white dark:bg-surface-dark">
                           <option value="">Selecionar etapa...</option>
                           {allStages.filter(s => s.id !== stage.id).map(s => (
                             <option key={s.id} value={s.id}>{s.name}</option>
@@ -562,7 +562,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                             value={stage.automationConfig?.callStartHour || ''}
                             placeholder={autoConfig.workHoursStart}
                             onChange={e => handleSaveStageCallConfig(stage.id, { callStartHour: e.target.value })}
-                            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
+                            className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.callStartHour && (
                             <span className="text-[10px] text-slate-300">Global: {autoConfig.workHoursStart}</span>
                           )}
@@ -573,7 +573,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                             value={stage.automationConfig?.callEndHour || ''}
                             placeholder={autoConfig.workHoursEnd}
                             onChange={e => handleSaveStageCallConfig(stage.id, { callEndHour: e.target.value })}
-                            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
+                            className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.callEndHour && (
                             <span className="text-[10px] text-slate-300">Global: {autoConfig.workHoursEnd}</span>
                           )}
@@ -588,7 +588,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                               const val = e.target.value ? parseInt(e.target.value) : null
                               handleSaveStageCallConfig(stage.id, { maxCallsPerDay: val })
                             }}
-                            className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs" />
+                            className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1.5 text-xs" />
                           {!stage.automationConfig?.maxCallsPerDay && (
                             <span className="text-[10px] text-slate-300">Global: {autoConfig.maxCallsPerDay ?? 300}</span>
                           )}
@@ -597,7 +597,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                       {(stage.automationConfig?.callStartHour || stage.automationConfig?.callEndHour || stage.automationConfig?.maxCallsPerDay) && (
                         <button
                           onClick={() => handleSaveStageCallConfig(stage.id, { callStartHour: '', callEndHour: '', maxCallsPerDay: null })}
-                          className="mt-2 text-[10px] text-slate-400 hover:text-slate-600 underline">
+                          className="mt-2 text-[10px] text-slate-400 hover:text-slate-600 dark:text-slate-400 underline">
                           Usar padrão global
                         </button>
                       )}
@@ -612,7 +612,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                         : [...autoConfig.pausedStageIds, stage.id]
                       saveAutomationConfig({ pausedStageIds: newPaused })
                     }}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${isPaused ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${isPaused ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 dark:bg-white/5 text-slate-500 hover:bg-slate-100'}`}>
                       {isPaused ? <><PlayIcon className="w-3 h-3" /> Retomar cadência</> : <><PauseIcon className="w-3 h-3" /> Pausar cadência</>}
                     </button>
                   </div>
@@ -715,10 +715,10 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
+      <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-lg font-semibold text-slate-900">{step ? 'Editar Step' : 'Novo Step'}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100" aria-label="Fechar"><XMarkIcon className="w-5 h-5 text-slate-500" /></button>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{step ? 'Editar Step' : 'Novo Step'}</h3>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100 dark:bg-white/10" aria-label="Fechar"><XMarkIcon className="w-5 h-5 text-slate-500" /></button>
         </div>
 
         <div className="space-y-4">
@@ -727,7 +727,7 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
             <label className="block text-xs font-medium text-slate-500 mb-1">Nome do step</label>
             <input value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="Ex: WhatsApp de apresentação"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400" />
+              className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400" />
           </div>
 
           {/* Channel */}
@@ -738,7 +738,7 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
                 const Icon = CHANNEL_ICONS[method]
                 return (
                   <button key={method} onClick={() => setForm(prev => ({ ...prev, contactMethod: method }))}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border transition-all ${form.contactMethod === method ? `${CONTACT_METHOD_COLORS[method]} border-current` : 'border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium border transition-all ${form.contactMethod === method ? `${CONTACT_METHOD_COLORS[method]} border-current` : 'border-slate-200 dark:border-white/10 text-slate-500 hover:bg-slate-50'}`}>
                     <Icon className="w-4 h-4" /> {CONTACT_METHOD_LABELS[method]}
                   </button>
                 )
@@ -752,13 +752,13 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
               <label className="block text-xs font-medium text-slate-500 mb-1">Após X dias</label>
               <input type="number" value={form.daysAfterPrevious} min={0}
                 onChange={e => setForm(prev => ({ ...prev, daysAfterPrevious: parseInt(e.target.value) || 0 }))}
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Objetivo</label>
               <input value={form.objective} onChange={e => setForm(prev => ({ ...prev, objective: e.target.value }))}
                 placeholder="Ex: Qualificar interesse"
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
             </div>
           </div>
 
@@ -768,7 +768,7 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
               <label className="block text-xs font-medium text-slate-500 mb-1">Template da mensagem</label>
               <textarea value={form.messageTemplate} onChange={e => setForm(prev => ({ ...prev, messageTemplate: e.target.value }))}
                 rows={4} placeholder="Olá {{nome}}, tudo bem? Sou da {{empresa}}..."
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm resize-none" />
               <VariableButtons onInsert={(key) => insertVariable(key, 'messageTemplate')} />
             </div>
           )}
@@ -779,14 +779,14 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
                 <label className="block text-xs font-medium text-slate-500 mb-1">Speech / Roteiro do agente (System Prompt)</label>
                 <textarea value={form.vapiSystemPrompt} onChange={e => setForm(prev => ({ ...prev, vapiSystemPrompt: e.target.value }))}
                   rows={5} placeholder="Você é um consultor de vendas. Seu objetivo é..."
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none" />
+                  className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm resize-none" />
                 <VariableButtons onInsert={(key) => insertVariable(key, 'vapiSystemPrompt')} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Mensagem inicial do agente</label>
                 <input value={form.vapiFirstMessage} onChange={e => setForm(prev => ({ ...prev, vapiFirstMessage: e.target.value }))}
                   placeholder="Bom dia {{nome}}, aqui é da..."
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                  className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
               </div>
             </>
           )}
@@ -797,14 +797,14 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
                 <label className="block text-xs font-medium text-slate-500 mb-1">Assunto do email</label>
                 <input value={form.emailSubject} onChange={e => setForm(prev => ({ ...prev, emailSubject: e.target.value }))}
                   placeholder="{{nome}}, temos uma proposta para você"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" />
+                  className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm" />
                 <VariableButtons onInsert={(key) => insertVariable(key, 'emailSubject')} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-500 mb-1">Corpo do email (HTML)</label>
                 <textarea value={form.emailBody} onChange={e => setForm(prev => ({ ...prev, emailBody: e.target.value }))}
                   rows={6} placeholder="<p>Olá {{nome}},</p><p>Gostaríamos de apresentar...</p>"
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono resize-none" />
+                  className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm font-mono resize-none" />
                 <VariableButtons onInsert={(key) => insertVariable(key, 'emailBody')} />
               </div>
             </>
@@ -815,23 +815,23 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
               <label className="block text-xs font-medium text-slate-500 mb-1">Mensagem de convite</label>
               <textarea value={form.messageTemplate} onChange={e => setForm(prev => ({ ...prev, messageTemplate: e.target.value }))}
                 rows={3} placeholder="Gostaria de agendar uma reunião para..."
-                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none" />
+                className="w-full border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm resize-none" />
             </div>
           )}
 
           {/* Active toggle */}
           <div className="flex items-center gap-3 pt-2">
-            <span className="text-sm text-slate-600">Step ativo</span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">Step ativo</span>
             <button onClick={() => setForm(prev => ({ ...prev, isActive: !prev.isActive }))}
               className={`relative w-11 h-6 rounded-full transition-colors ${form.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : ''}`} />
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-surface-dark rounded-full shadow transition-transform ${form.isActive ? 'translate-x-5' : ''}`} />
             </button>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-xl hover:bg-slate-100">Cancelar</button>
+          <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-white/5 rounded-xl hover:bg-slate-100 dark:bg-white/10">Cancelar</button>
           <button onClick={handleSave} disabled={saving || !form.name.trim()}
             className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-xl hover:bg-primary-700 disabled:opacity-50">
             {saving ? 'Salvando...' : step ? 'Salvar' : 'Criar Step'}
@@ -1032,7 +1032,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
           className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all ${autoConfig.enabled ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}`}>
           {autoConfig.enabled ? <><PauseIcon className="w-4 h-4" /> Pausar toda automação</> : <><PlayIcon className="w-4 h-4" /> Retomar automação</>}
         </button>
-        <div className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-xl border ${autoConfig.enabled ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+        <div className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-xl border ${autoConfig.enabled ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500'}`}>
           <ClockIcon className="w-4 h-4" />
           <span className="font-medium">Próximo cron:</span>
           {nextCronRun.time ? (
@@ -1061,29 +1061,29 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Em cadência ativa</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">{totalActive}</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{totalActive}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Ações hoje</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">{successToday.length}</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{successToday.length}</p>
           <p className="text-xs text-slate-400 mt-0.5">de {autoConfig.maxActionsPerDay} max</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Ligações hoje</p>
           <p className="text-2xl font-bold text-blue-600 mt-1">{channelCounts['phone'] || 0}</p>
           <p className="text-xs text-slate-400 mt-0.5">de {autoConfig.maxCallsPerDay ?? 300} max</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Pulados (24h)</p>
           <p className="text-2xl font-bold text-amber-600 mt-1">{skippedRecent.length}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Falhas (24h)</p>
           <p className="text-2xl font-bold text-red-600 mt-1">{failedRecent.length}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
           <p className="text-xs text-slate-500">Por canal hoje</p>
           <div className="flex flex-wrap gap-1 mt-2">
             {Object.entries(channelCounts).map(([ch, count]) => (
@@ -1098,14 +1098,14 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
 
       {/* Active by stage */}
       {Object.keys(activeCounts).length > 0 && (
-        <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-3">Contatos em cadência por etapa</h3>
+        <div className="bg-white dark:bg-surface-dark rounded-2xl p-5 border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Contatos em cadência por etapa</h3>
           <div className="space-y-2">
             {Object.entries(activeCounts).map(([stageId, count]) => {
               const stage = stages.find(s => s.id === stageId)
               return (
                 <div key={stageId} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
-                  <span className="text-sm text-slate-600">{stage?.name || stageId}</span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">{stage?.name || stageId}</span>
                   <span className="text-sm font-semibold text-slate-800 dark:text-white">{count}</span>
                 </div>
               )
@@ -1115,9 +1115,9 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
       )}
 
       {/* Recent execution logs */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Ações recentes (últimas 24h)</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ações recentes (últimas 24h)</h3>
         </div>
         {loading ? (
           <div className="p-8 text-center text-sm text-slate-400">Carregando...</div>
@@ -1127,7 +1127,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
           <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                <tr className="bg-slate-50 text-slate-600">
+                <tr className="bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400">
                   <th className="text-left p-3 font-medium">Contato</th>
                   <th className="text-left p-3 font-medium">Step</th>
                   <th className="text-left p-3 font-medium">Etapa</th>
@@ -1139,12 +1139,12 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
               </thead>
               <tbody>
                 {logs.slice(0, 50).map(log => (
-                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={log.id} className="border-b border-slate-50 hover:bg-slate-50 dark:bg-white/5/50">
                     <td className="p-3">
                       <a href={`/contatos/${log.clientId}`} className="text-primary-600 hover:text-primary-800 font-medium">{log.clientName || '—'}</a>
                     </td>
-                    <td className="p-3 text-slate-600">{log.stepName || '—'}</td>
-                    <td className="p-3 text-slate-600">{log.stageName}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{log.stepName || '—'}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{log.stageName}</td>
                     <td className="p-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${CONTACT_METHOD_COLORS[log.channel]}`}>
                         {CONTACT_METHOD_LABELS[log.channel]}

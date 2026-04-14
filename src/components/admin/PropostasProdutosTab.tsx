@@ -262,13 +262,13 @@ export default function PropostasProdutosTab() {
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {editing ? 'Editar Produto' : 'Novo Produto'}
           </h3>
           <button
             type="button"
             onClick={handleCloseModal}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -279,7 +279,7 @@ export default function PropostasProdutosTab() {
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nome do Produto</label>
               <input
                 type="text"
                 value={form.name}
@@ -289,7 +289,7 @@ export default function PropostasProdutosTab() {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Descricao</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Descricao</label>
               <textarea
                 value={form.description}
                 onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))}
@@ -299,7 +299,7 @@ export default function PropostasProdutosTab() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Preco (R$)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Preco (R$)</label>
               <input
                 type="number"
                 min={0}
@@ -310,7 +310,7 @@ export default function PropostasProdutosTab() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Valor/Hora (R$)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Valor/Hora (R$)</label>
               <input
                 type="number"
                 min={0}
@@ -321,7 +321,7 @@ export default function PropostasProdutosTab() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Margem (%)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Margem (%)</label>
               <input
                 type="number"
                 min={0}
@@ -332,7 +332,7 @@ export default function PropostasProdutosTab() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Imposto (%)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Imposto (%)</label>
               <input
                 type="number"
                 min={0}
@@ -347,7 +347,7 @@ export default function PropostasProdutosTab() {
           {/* Schedule */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-gray-700">Cronograma Padrao</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Cronograma Padrao</label>
               <button
                 type="button"
                 onClick={addScheduleEntry}
@@ -391,11 +391,11 @@ export default function PropostasProdutosTab() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-white/5">
           <button
             type="button"
             onClick={handleCloseModal}
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800"
+            className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 hover:text-gray-800"
           >
             Cancelar
           </button>
@@ -453,7 +453,7 @@ export default function PropostasProdutosTab() {
     <div className="space-y-4">
       {renderProductModal()}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-slate-400">
           {filteredProducts.length === products.length
             ? <>{products.length} produto{products.length !== 1 ? 's' : ''} cadastrado{products.length !== 1 ? 's' : ''}</>
             : <>{filteredProducts.length} de {products.length} produto{products.length !== 1 ? 's' : ''}</>
@@ -494,13 +494,13 @@ export default function PropostasProdutosTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Pesquisar por nome ou descricao..."
-          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+          className="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-3 py-2 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40"
         />
         {search && (
           <button
             type="button"
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400 transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -510,7 +510,7 @@ export default function PropostasProdutosTab() {
       </div>
 
       {products.length === 0 ? (
-        <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
           <p className="text-gray-400 text-sm">Nenhum produto cadastrado ainda.</p>
           <button
             onClick={openNew}
@@ -520,7 +520,7 @@ export default function PropostasProdutosTab() {
           </button>
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="rounded-2xl bg-white border border-gray-200 p-12 text-center">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-12 text-center">
           <p className="text-gray-400 text-sm">Nenhum resultado encontrado.</p>
           <button
             onClick={() => setSearch('')}
@@ -530,10 +530,10 @@ export default function PropostasProdutosTab() {
           </button>
         </div>
       ) : (
-        <div className="rounded-2xl bg-white border border-gray-200 overflow-hidden">
+        <div className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50">
+              <tr className="border-b border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/5/50">
                 {([
                   { key: 'name' as SortColumn, label: 'Nome', align: 'left', responsive: '' },
                   { key: 'price' as SortColumn, label: 'Preco', align: 'right', responsive: '' },
@@ -544,12 +544,12 @@ export default function PropostasProdutosTab() {
                 ]).map((col) => (
                   <th
                     key={col.key}
-                    className={`px-4 py-3 text-${col.align} font-medium text-gray-600 ${col.responsive}`}
+                    className={`px-4 py-3 text-${col.align} font-medium text-gray-600 dark:text-slate-400 ${col.responsive}`}
                   >
                     <button
                       type="button"
                       onClick={() => handleSort(col.key)}
-                      className={`inline-flex items-center gap-1 hover:text-gray-900 transition ${
+                      className={`inline-flex items-center gap-1 hover:text-gray-900 dark:text-white transition ${
                         col.align === 'right' ? 'ml-auto' : ''
                       }`}
                     >
@@ -558,23 +558,23 @@ export default function PropostasProdutosTab() {
                     </button>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-right font-medium text-gray-600">Acoes</th>
+                <th className="px-4 py-3 text-right font-medium text-gray-600 dark:text-slate-400">Acoes</th>
               </tr>
             </thead>
             <tbody>
               {filteredProducts.map(p => (
-                <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50 dark:bg-white/5/50 transition-colors">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-gray-900">{p.name}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{p.name}</div>
                     {p.description && (
                       <div className="text-xs text-gray-400 mt-0.5 line-clamp-1">{p.description}</div>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right text-gray-700">{formatCurrency(p.price)}</td>
-                  <td className="px-4 py-3 text-right text-gray-700 hidden sm:table-cell">{formatCurrency(p.hourValue)}</td>
-                  <td className="px-4 py-3 text-right text-gray-700 hidden md:table-cell">{p.margin}%</td>
-                  <td className="px-4 py-3 text-right text-gray-700 hidden md:table-cell">{p.tax}%</td>
-                  <td className="px-4 py-3 text-right text-gray-500">{p.schedule?.length || 0}</td>
+                  <td className="px-4 py-3 text-right text-gray-700 dark:text-slate-300">{formatCurrency(p.price)}</td>
+                  <td className="px-4 py-3 text-right text-gray-700 dark:text-slate-300 hidden sm:table-cell">{formatCurrency(p.hourValue)}</td>
+                  <td className="px-4 py-3 text-right text-gray-700 dark:text-slate-300 hidden md:table-cell">{p.margin}%</td>
+                  <td className="px-4 py-3 text-right text-gray-700 dark:text-slate-300 hidden md:table-cell">{p.tax}%</td>
+                  <td className="px-4 py-3 text-right text-gray-500 dark:text-slate-400">{p.schedule?.length || 0}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
                       <button

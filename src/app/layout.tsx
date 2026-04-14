@@ -489,7 +489,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           <link rel="icon" href="/icon-192.png" />
           <link rel="apple-touch-icon" href="/icon-512.png" />
         </head>
-        <body className="bg-white">
+        <body className="bg-white dark:bg-surface-dark">
           {children}
           <Toaster />
         </body>
@@ -511,7 +511,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           <link rel="icon" href="/icon-192.png" />
           <link rel="apple-touch-icon" href="/icon-512.png" />
         </head>
-        <body className="bg-white">
+        <body className="bg-white dark:bg-surface-dark">
           <Loading />
         </body>
       </html>
@@ -587,7 +587,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           {/* Main content */}
           <main id="main-content" className="flex-1 flex flex-col overflow-hidden" role="main">
             {/* Header */}
-            <header className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200/60 dark:border-navy-mid px-4 py-3">
+            <header className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200 dark:border-white/10/60 dark:border-navy-mid px-4 py-3">
               <div className="flex items-center justify-between">
                 {/* Mobile menu button */}
                 <button
@@ -595,7 +595,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                   aria-label="Abrir menu"
                 >
-                  <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-5 h-5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
@@ -649,7 +649,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                       <span className="text-slate-300">|</span>
                       <Link
                         href="/plano"
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition-colors"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -687,7 +687,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                     <div className="md:hidden flex items-center gap-1">
                       <Link
                         href="/plano"
-                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700"
+                        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300"
                       >
                         <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -774,7 +774,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                   <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition-colors"
+                      className="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
                     >
                       {userPhoto ? (
                         <Image
@@ -809,7 +809,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                           <Link
                             href="/perfil"
                             onClick={() => setUserMenuOpen(false)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-white/5 transition-colors"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -869,7 +869,7 @@ function ImpersonateButton({ onClick, isOpen }: { onClick: () => void; isOpen: b
       className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
         isImpersonating
           ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
-          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
       }`}
       title="Ver como outro usuário"
     >
@@ -908,7 +908,7 @@ function ImpersonateDropdown({
   })
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50 animate-scale-in">
+    <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-surface-dark rounded-xl shadow-lg border border-slate-200 dark:border-white/10 py-2 z-50 animate-scale-in">
       <div className="px-4 py-2 border-b border-slate-100">
         <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ver como usuário</p>
         <p className="text-[11px] text-slate-400 mt-0.5">Plano: {planLabel}</p>
@@ -935,7 +935,7 @@ function ImpersonateDropdown({
           placeholder="Buscar usuário..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-3 py-1.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full px-3 py-1.5 text-sm border border-slate-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           autoFocus
         />
       </div>
@@ -959,11 +959,11 @@ function ImpersonateDropdown({
               className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                 isImpersonated
                   ? 'bg-primary-50 text-primary-700'
-                  : 'hover:bg-slate-50 text-slate-700'
+                  : 'hover:bg-slate-50 dark:bg-white/5 text-slate-700'
               }`}
             >
               <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
-                <span className="text-xs font-semibold text-slate-600">
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
                   {m.displayName.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -978,7 +978,7 @@ function ImpersonateDropdown({
                 m.role === 'admin' ? 'bg-purple-100 text-purple-700' :
                 m.role === 'manager' ? 'bg-blue-100 text-blue-700' :
                 m.role === 'seller' ? 'bg-green-100 text-green-700' :
-                'bg-slate-100 text-slate-600'
+                'bg-slate-100 dark:bg-white/10 text-slate-600'
               }`}>
                 {ROLE_LABELS[m.role] || m.role}
               </span>
@@ -1035,7 +1035,7 @@ function PartnerViewSwitcherMobile() {
       className={`md:hidden flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium transition-colors ${
         isPartnerView
           ? 'bg-indigo-100 text-indigo-700'
-          : 'bg-slate-100 text-slate-600'
+          : 'bg-slate-100 dark:bg-white/10 text-slate-600'
       }`}
     >
       {isPartnerView ? (
@@ -1060,12 +1060,12 @@ function PartnerViewSwitcher() {
   const isPartnerView = activeView === 'partner'
 
   return (
-    <div className="hidden md:flex items-center gap-1 bg-slate-100 rounded-lg p-0.5">
+    <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/10 rounded-lg p-0.5">
       <button
         onClick={() => switchView('personal')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
           !isPartnerView
-            ? 'bg-white text-primary-700 shadow-sm'
+            ? 'bg-white dark:bg-surface-dark text-primary-700 shadow-sm'
             : 'text-slate-500 hover:text-slate-700'
         }`}
         title={`Conta pessoal${personalMembership ? ` — ${personalMembership.orgName}` : ''}`}
@@ -1079,7 +1079,7 @@ function PartnerViewSwitcher() {
         onClick={() => switchView('partner')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
           isPartnerView
-            ? 'bg-white text-indigo-700 shadow-sm'
+            ? 'bg-white dark:bg-surface-dark text-indigo-700 shadow-sm'
             : 'text-slate-500 hover:text-slate-700'
         }`}
         title={`Conta parceiro${partnerMembership ? ` — ${partnerMembership.orgName}` : ''}`}

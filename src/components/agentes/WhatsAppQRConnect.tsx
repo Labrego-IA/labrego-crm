@@ -130,9 +130,9 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-6">
+    <div className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-800">Conexao WhatsApp</h3>
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Conexao WhatsApp</h3>
         <StatusBadge status={status} />
       </div>
 
@@ -172,16 +172,16 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
                 </ol>
               </div>
               <div>
-                <label className="block text-slate-600 text-sm font-medium mb-1">Instance ID</label>
+                <label className="block text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Instance ID</label>
                 <input type="text" value={instanceId} onChange={e => setInstanceId(e.target.value)}
                   placeholder="Cole o ID da instancia"
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+                  className="w-full px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-800 dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
               </div>
               <div>
-                <label className="block text-slate-600 text-sm font-medium mb-1">Token</label>
+                <label className="block text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Token</label>
                 <input type="password" value={instanceToken} onChange={e => setInstanceToken(e.target.value)}
                   placeholder="Cole o token da instancia"
-                  className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
+                  className="w-full px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-800 dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500" />
               </div>
               <button
                 onClick={handleConnect}
@@ -198,20 +198,20 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
       {/* QR Code */}
       {(status === 'qr_ready' || status === 'connecting') && !needsCredentials && (
         <div className="text-center py-4">
-          <p className="text-slate-600 mb-4">Escaneie o QR Code com seu WhatsApp:</p>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">Escaneie o QR Code com seu WhatsApp:</p>
           {qrCode ? (
-            <div className="inline-block p-4 bg-white border border-slate-200 rounded-2xl mb-4 shadow-sm">
+            <div className="inline-block p-4 bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl mb-4 shadow-sm">
               <img
                 src={qrCode.startsWith('data:') ? qrCode : `data:image/png;base64,${qrCode}`}
                 alt="QR Code WhatsApp" className="w-64 h-64" />
             </div>
           ) : (
-            <div className="inline-flex items-center justify-center w-64 h-64 bg-slate-50 rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-64 h-64 bg-slate-50 dark:bg-white/5 rounded-2xl mb-4">
               <div className="animate-spin w-8 h-8 border-2 border-cyan-600 border-t-transparent rounded-full" />
             </div>
           )}
           <p className="text-slate-400 text-sm">Aguardando escaneamento...</p>
-          <button onClick={handleDisconnect} className="mt-4 px-4 py-2 text-slate-500 hover:text-slate-700 text-sm">Cancelar</button>
+          <button onClick={handleDisconnect} className="mt-4 px-4 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-300 text-sm">Cancelar</button>
         </div>
       )}
 
@@ -237,7 +237,7 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
         <div className="text-center py-8">
           <p className="text-red-600 mb-4">Erro na conexao. Verifique as credenciais.</p>
           <button onClick={() => { setNeedsCredentials(true); updateStatus('disconnected') }}
-            className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors">
+            className="px-6 py-3 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-medium rounded-xl transition-colors">
             Reconfigurar
           </button>
         </div>

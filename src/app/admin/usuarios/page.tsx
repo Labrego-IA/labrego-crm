@@ -823,7 +823,7 @@ export default function UsuariosPage() {
               <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
                 <table className="min-w-full text-sm">
                   <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                    <tr className="border-b border-gray-100 bg-slate-50/80 dark:bg-surface-dark/80">
+                    <tr className="border-b border-gray-100 bg-slate-50 dark:bg-white/5/80 dark:bg-surface-dark/80">
                       {([
                         { key: 'name' as SortColumn, label: 'Parceiro', align: 'left' },
                         { key: 'email' as SortColumn, label: 'Email', align: 'left' },
@@ -1426,7 +1426,7 @@ export default function UsuariosPage() {
                 <p className="text-xs text-gray-400 mb-1">
                   Apenas paginas disponiveis no seu plano sao exibidas.
                 </p>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50/50 dark:bg-surface-dark/80">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80">
                   {planAllowedPages.map((page) => (
                     <label
                       key={page.path}
@@ -1447,7 +1447,7 @@ export default function UsuariosPage() {
               {/* Actions checklist */}
               <div>
                 <span className={ui.label}>Acoes permitidas</span>
-                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50/50 dark:bg-surface-dark/80">
+                <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl border border-gray-200 dark:border-white/10 p-3 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80">
                   {ALL_ACTIONS.map((action) => (
                     <label
                       key={action.key}

@@ -17,7 +17,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   if (isSystem) {
     return (
       <div className="flex justify-center my-3">
-        <span className="px-3 py-1.5 bg-slate-100 text-slate-400 text-xs rounded-full">
+        <span className="px-3 py-1.5 bg-slate-100 dark:bg-white/10 text-slate-400 text-xs rounded-full">
           {message.content}
         </span>
       </div>
@@ -34,10 +34,10 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         <div
           className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
             isContact
-              ? 'bg-slate-200/60 text-slate-800 rounded-bl-md'
+              ? 'bg-slate-200/60 text-slate-800 dark:text-white rounded-bl-md'
               : isAgent
-                ? 'bg-cyan-50 text-slate-800 border border-cyan-200 rounded-br-md'
-                : 'bg-green-50 text-slate-800 border border-green-200 rounded-br-md'
+                ? 'bg-cyan-50 text-slate-800 dark:text-white border border-cyan-200 rounded-br-md'
+                : 'bg-green-50 text-slate-800 dark:text-white border border-green-200 rounded-br-md'
           }`}
         >
           {/* Role label */}

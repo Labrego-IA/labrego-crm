@@ -84,26 +84,26 @@ export default function PartnerInvitePopup({
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">Convite de parceria</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            <span className="font-medium text-gray-700">{inviterName}</span> convidou voce para ser
-            parceiro(a) na organizacao <span className="font-medium text-gray-700">{orgName}</span>.
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Convite de parceria</h3>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+            <span className="font-medium text-gray-700 dark:text-slate-300">{inviterName}</span> convidou voce para ser
+            parceiro(a) na organizacao <span className="font-medium text-gray-700 dark:text-slate-300">{orgName}</span>.
           </p>
         </div>
 
         {/* Details */}
-        <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2">
+        <div className="rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Organizacao</span>
-            <span className="text-sm font-medium text-gray-900">{orgName}</span>
+            <span className="text-sm text-gray-500 dark:text-slate-400">Organizacao</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">{orgName}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Cargo</span>
-            <span className="text-sm font-medium text-gray-900">{roleLabel}</span>
+            <span className="text-sm text-gray-500 dark:text-slate-400">Cargo</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">{roleLabel}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">Convidado por</span>
-            <span className="text-sm font-medium text-gray-900">{inviterName}</span>
+            <span className="text-sm text-gray-500 dark:text-slate-400">Convidado por</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-white">{inviterName}</span>
           </div>
         </div>
 
@@ -117,7 +117,7 @@ export default function PartnerInvitePopup({
             type="button"
             onClick={() => handleResponse('reject')}
             disabled={loading}
-            className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition active:scale-[0.99] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 dark:border-white/10 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-surface-dark hover:bg-gray-50 dark:bg-white/5 hover:border-gray-300 transition active:scale-[0.99] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Recusar
           </button>

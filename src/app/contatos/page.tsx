@@ -43,6 +43,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { useAllowedMemberIds } from '@/hooks/useAllowedMemberIds'
 import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
 import FreePlanDialog from '@/components/FreePlanDialog'
+import { toast } from 'sonner'
 
 // Types
 type Cliente = {
@@ -152,7 +153,7 @@ const formatDays = (days: number | null): string => {
 
 // Get days badge color
 const getDaysBadgeColor = (days: number | null): string => {
-  if (days === null) return 'bg-slate-100 text-slate-500'
+  if (days === null) return 'bg-slate-100 dark:bg-white/10 text-slate-500'
   if (days <= 2) return 'bg-emerald-100 text-emerald-700'
   if (days <= 7) return 'bg-amber-100 text-amber-700'
   if (days <= 14) return 'bg-orange-100 text-orange-700'
@@ -424,11 +425,12 @@ export default function ContatosPage() {
         createdAt: new Date().toISOString(),
       })
 
+      toast.success('Etapa alterada com sucesso')
       setStageChangeClient(null)
       setNewStageId('')
     } catch (error) {
       console.error('Erro ao mudar etapa:', error)
-      alert('Erro ao mudar etapa')
+      toast.error('Erro ao mudar etapa')
     } finally {
       setSavingStage(false)
     }
@@ -459,9 +461,10 @@ export default function ContatosPage() {
       // Add to local state immediately
       setClientFollowUps((prev) => [{ id: followUpRef.id, ...newFollowUp } as FollowUp, ...prev])
       setFollowUpNote('')
+      toast.success('Follow-up registrado com sucesso')
     } catch (error) {
       console.error('Erro ao registrar follow-up:', error)
-      alert('Erro ao registrar follow-up')
+      toast.error('Erro ao registrar follow-up')
     } finally {
       setSavingFollowUp(false)
     }
@@ -476,7 +479,7 @@ export default function ContatosPage() {
   // Open Email
   const openEmail = (email?: string, name?: string) => {
     if (!email) {
-      alert('Este contato não possui email cadastrado')
+      toast.error('Este contato não possui email cadastrado')
       return
     }
     const subject = encodeURIComponent(`Contato - ${name || 'Cliente'}`)
@@ -540,7 +543,7 @@ export default function ContatosPage() {
 
           setImportPreview(preview)
         } catch {
-          alert('Erro ao ler arquivo Excel')
+          toast.error('Erro ao ler arquivo Excel')
         }
       }
       reader.readAsArrayBuffer(file)
@@ -569,7 +572,7 @@ export default function ContatosPage() {
 
           setImportPreview(preview)
         } catch {
-          alert('Erro ao ler arquivo CSV')
+          toast.error('Erro ao ler arquivo CSV')
         }
       }
       reader.readAsText(file, 'UTF-8')
@@ -1109,7 +1112,7 @@ export default function ContatosPage() {
       XLSXStyled.writeFile(wb, `contatos_${new Date().toISOString().slice(0, 10)}.xlsx`)
     } catch (error) {
       console.error('Erro ao exportar:', error)
-      alert('Erro ao exportar contatos')
+      toast.error('Erro ao exportar contatos')
     } finally {
       setExporting(false)
     }
@@ -1204,7 +1207,7 @@ export default function ContatosPage() {
       XLSXStyled.writeFile(wb, 'modelo-importacao-contatos.xlsx')
     } catch (error) {
       console.error('Erro ao baixar modelo:', error)
-      alert('Erro ao baixar modelo')
+      toast.error('Erro ao baixar modelo')
     }
   }, [getExcelStyles])
 
@@ -1311,11 +1314,11 @@ export default function ContatosPage() {
         setPartnersPreview(parsed.slice(0, 5))
 
         if (parsed.length === 0) {
-          alert('Não foi possível encontrar as colunas CNPJ e Sócios no arquivo. Verifique se o arquivo contém essas colunas.')
+          toast.error('Não foi possível encontrar as colunas CNPJ e Sócios no arquivo. Verifique se o arquivo contém essas colunas.')
         }
       } catch (err) {
         console.error('Erro ao ler arquivo:', err)
-        alert('Erro ao ler arquivo')
+        toast.error('Erro ao ler arquivo')
       }
     }
 
@@ -1380,7 +1383,7 @@ export default function ContatosPage() {
           setPartnersResult({ updated, notFound })
         } catch (error) {
           console.error('Erro ao processar arquivo:', error)
-          alert('Erro ao processar arquivo')
+          toast.error('Erro ao processar arquivo')
         } finally {
           setUploadingPartners(false)
         }
@@ -1513,7 +1516,7 @@ export default function ContatosPage() {
     if (editingId && !can('canEditContacts')) return
 
     if (!form.name.trim() || !form.phone.trim()) {
-      alert('Nome e telefone são obrigatórios')
+      toast.error('Nome e telefone são obrigatórios')
       return
     }
 
@@ -1523,7 +1526,7 @@ export default function ContatosPage() {
       (c) => c.name.trim().toLowerCase() === trimmedName && c.id !== editingId
     )
     if (duplicateName) {
-      alert('Já existe um contato com este nome. Por favor, use um nome diferente.')
+      toast.error('Já existe um contato com este nome. Por favor, use um nome diferente.')
       return
     }
 
@@ -1538,20 +1541,20 @@ export default function ContatosPage() {
           c.id !== editingId
       )
       if (duplicateDoc) {
-        alert('Já existe um contato com este CPF/CNPJ. Por favor, verifique o documento informado.')
+        toast.error('Já existe um contato com este CPF/CNPJ. Por favor, verifique o documento informado.')
         return
       }
     }
 
     // Validar telefone
     if (!validatePhone(form.phone)) {
-      alert('Telefone invalido. Use o formato: +55 (11) 99999-9999')
+      toast.error('Telefone invalido. Use o formato: +55 (11) 99999-9999')
       return
     }
 
     // Validar email se preenchido
     if (form.email && !validateEmail(form.email)) {
-      alert('Email invalido. Verifique o formato do email.')
+      toast.error('Email invalido. Verifique o formato do email.')
       return
     }
 
@@ -1560,17 +1563,17 @@ export default function ContatosPage() {
       const docDigits = trimmedDoc.replace(/\D/g, '')
       if (form.personType === 'pj') {
         if (!validateCNPJ(trimmedDoc)) {
-          alert('CNPJ invalido. Verifique os digitos informados.')
+          toast.error('CNPJ invalido. Verifique os digitos informados.')
           return
         }
       } else if (docDigits.length === 11) {
         if (!validateCPF(trimmedDoc)) {
-          alert('CPF invalido. Verifique os digitos informados.')
+          toast.error('CPF invalido. Verifique os digitos informados.')
           return
         }
       } else if (docDigits.length === 14) {
         if (!validateCNPJ(trimmedDoc)) {
-          alert('CNPJ invalido. Verifique os digitos informados.')
+          toast.error('CNPJ invalido. Verifique os digitos informados.')
           return
         }
       }
@@ -1634,7 +1637,7 @@ export default function ContatosPage() {
       setEditingId(null)
     } catch (error) {
       console.error('Erro ao salvar:', error)
-      alert('Erro ao salvar contato')
+      toast.error('Erro ao salvar contato')
     } finally {
       setSaving(false)
     }
@@ -1648,7 +1651,7 @@ export default function ContatosPage() {
       setDeleteId(null)
     } catch (error) {
       console.error('Erro ao excluir:', error)
-      alert('Erro ao excluir contato')
+      toast.error('Erro ao excluir contato')
     }
   }
 
@@ -1691,7 +1694,7 @@ export default function ContatosPage() {
       setShowBulkDeleteModal(false)
     } catch (error) {
       console.error('Erro ao excluir contatos:', error)
-      alert('Erro ao excluir alguns contatos')
+      toast.error('Erro ao excluir alguns contatos')
     } finally {
       setDeletingBulk(false)
     }
@@ -1739,7 +1742,7 @@ export default function ContatosPage() {
       setBulkStageId('')
     } catch (error) {
       console.error('Erro ao mover contatos:', error)
-      alert('Erro ao mover alguns contatos')
+      toast.error('Erro ao mover alguns contatos')
     } finally {
       setSavingBulkMove(false)
     }
@@ -1892,7 +1895,7 @@ export default function ContatosPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {/* Total Contacts Card */}
-        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-5">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center">
               <UserGroupIcon className="w-6 h-6 text-primary-600" />
@@ -1905,7 +1908,7 @@ export default function ContatosPage() {
         </div>
 
         {/* Active Clients Card */}
-        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-5">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] p-5">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
               <CheckBadgeIcon className="w-6 h-6 text-emerald-600" />
@@ -1992,7 +1995,7 @@ export default function ContatosPage() {
         {loading ? (
           <Skeleton variant="table-row" count={4} className="py-4" />
         ) : paginatedClients.length === 0 ? (
-          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-8">
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] p-8">
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center">
                 <PersonIcon className="w-6 h-6 text-slate-400" />
@@ -2021,7 +2024,7 @@ export default function ContatosPage() {
                 <div
                   key={client.id}
                   onClick={() => router.push(`/contatos/${client.id}`)}
-                  className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] p-4 active:bg-slate-50 dark:active:bg-white/5 transition-colors cursor-pointer"
+                  className="bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] p-4 active:bg-slate-50 dark:active:bg-white/5 transition-colors cursor-pointer"
                 >
                   {/* Top: Avatar + Name + Stage */}
                   <div className="flex items-center gap-3 mb-3">
@@ -2084,7 +2087,7 @@ export default function ContatosPage() {
                     )}
                     {client.leadType && (
                       <span className={`inline-flex items-center px-1.5 py-0 rounded-full text-[10px] font-medium border ${
-                        leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 dark:text-slate-300 border-slate-200'
+                        leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200'
                       }`}>
                         {client.leadType}
                       </span>
@@ -2140,7 +2143,7 @@ export default function ContatosPage() {
       </div>
 
       {/* Table Card (Desktop) */}
-      <div className="hidden md:block bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/[0.07] overflow-hidden">
+      <div className="hidden md:block bg-white dark:bg-surface-dark rounded-2xl shadow-sm border border-slate-200 dark:border-white/10/60 dark:border-white/[0.07] overflow-hidden">
         {loading ? (
           <Skeleton variant="table-row" count={8} className="py-4" />
         ) : (
@@ -2149,7 +2152,7 @@ export default function ContatosPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-slate-50 dark:bg-surface-dark/80 border-b border-slate-200/60 dark:border-white/[0.07]">
+                  <tr className="bg-slate-50 dark:bg-surface-dark/80 border-b border-slate-200 dark:border-white/10/60 dark:border-white/[0.07]">
                     {/* Checkbox column */}
                     <th className="w-12 px-4 py-3">
                       <button
@@ -2267,7 +2270,7 @@ export default function ContatosPage() {
                       <tr
                         key={client.id}
                         onClick={() => router.push(`/contatos/${client.id}`)}
-                        className={`hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors group cursor-pointer ${
+                        className={`hover:bg-slate-50 dark:bg-white/5/50 dark:hover:bg-white/5 transition-colors group cursor-pointer ${
                           selectedIds.has(client.id) ? 'bg-primary-50' : ''
                         }`}
                       >
@@ -2357,7 +2360,7 @@ export default function ContatosPage() {
                         <td className="px-4 py-2.5">
                           {client.leadType ? (
                             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${
-                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 text-slate-700 dark:text-slate-300 border-slate-200'
+                              leadTypeOptions.find(opt => opt.value === client.leadType)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200'
                             }`}>
                               {client.leadType}
                             </span>
@@ -3132,7 +3135,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => setStageChangeClient(null)}
                 className="px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
@@ -3302,7 +3305,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
+            <div className="flex items-center justify-end p-4 border-t border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => {
                   setFollowUpClient(null)
@@ -3521,7 +3524,7 @@ export default function ContatosPage() {
 
             {/* Footer */}
             {!importing && (
-              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
+              <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/50">
                 <button
                   onClick={() => {
                     setShowImportModal(false)
@@ -3758,7 +3761,7 @@ export default function ContatosPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50/50 dark:bg-surface-dark/50">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/50">
               <button
                 onClick={() => {
                   setShowPartnersModal(false)

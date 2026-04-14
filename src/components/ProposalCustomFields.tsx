@@ -22,12 +22,12 @@ export default function ProposalCustomFields({
   if (filtered.length === 0) return null
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm space-y-4">
+    <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm space-y-4">
       {filtered.map((field) => {
         const path = `customFields.${field.key}` as const
         return (
           <div key={field.id}>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
               {field.label}
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -36,7 +36,7 @@ export default function ProposalCustomFields({
               <input
                 type="text"
                 {...register(path, { required: field.required })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700 dark:text-slate-300"
               />
             )}
 
@@ -45,7 +45,7 @@ export default function ProposalCustomFields({
                 type="number"
                 step="any"
                 {...register(path, { required: field.required, valueAsNumber: true })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700 dark:text-slate-300"
               />
             )}
 
@@ -53,14 +53,14 @@ export default function ProposalCustomFields({
               <textarea
                 {...register(path, { required: field.required })}
                 rows={3}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700 dark:text-slate-300 resize-none"
               />
             )}
 
             {field.type === 'select' && (
               <select
                 {...register(path, { required: field.required })}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-sm text-slate-700 dark:text-slate-300"
               >
                 <option value="">Selecione...</option>
                 {(field.options ?? []).map((opt) => (
@@ -72,7 +72,7 @@ export default function ProposalCustomFields({
             )}
 
             {field.type === 'checkbox' && (
-              <label className="flex items-center gap-2 text-sm text-slate-700">
+              <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
                 <input
                   type="checkbox"
                   checked={!!watch(path)}

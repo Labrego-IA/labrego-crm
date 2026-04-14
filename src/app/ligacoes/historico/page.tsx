@@ -520,7 +520,7 @@ export default function HistoricoLigacoesPage() {
             <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
               <table className="w-full">
                 <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                  <tr className="border-b border-slate-100 bg-slate-50/50 dark:bg-surface-dark/80">
+                  <tr className="border-b border-slate-100 bg-slate-50 dark:bg-white/5/50 dark:bg-surface-dark/80">
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">
                       Data/Hora
                     </th>

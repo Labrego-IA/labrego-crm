@@ -48,17 +48,17 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
 
     return (
       <div className="flex items-center justify-center min-h-full px-6 py-16">
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-10 max-w-lg text-center">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-10 max-w-lg text-center">
           <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.832c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
             Plano expirado
           </h2>
-          <p className="text-slate-600 mb-2">
+          <p className="text-slate-600 dark:text-slate-400 mb-2">
             O plano da organizacao que voce faz parte como parceiro expirou.
           </p>
           <p className="text-slate-500 text-sm mb-4">
@@ -84,7 +84,7 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
   // Expired plan for non-partner - block access with upgrade option
   return (
     <div className="flex items-center justify-center min-h-full px-6 py-16">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-10 max-w-lg text-center">
+      <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-lg border border-slate-200 dark:border-white/10 p-10 max-w-lg text-center">
         <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg className="w-10 h-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -93,10 +93,10 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
 
         {isFreePlan ? (
           <>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
               Seu periodo de teste expirou
             </h2>
-            <p className="text-slate-600 mb-2">
+            <p className="text-slate-600 dark:text-slate-400 mb-2">
               O periodo gratuito de 7 dias chegou ao fim.
             </p>
             <p className="text-slate-500 text-sm mb-8">
@@ -105,10 +105,10 @@ export default function FreePlanExpiredGate({ children }: FreePlanExpiredGatePro
           </>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
               Sua assinatura expirou
             </h2>
-            <p className="text-slate-600 mb-2">
+            <p className="text-slate-600 dark:text-slate-400 mb-2">
               O periodo da sua assinatura atual chegou ao fim.
             </p>
             <p className="text-slate-500 text-sm mb-8">

@@ -21,9 +21,9 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] p-4">
-      <div className="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl shadow-xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-2xl shadow-xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1">
-          <p className="text-sm text-slate-700 font-medium">Este site utiliza cookies</p>
+          <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">Este site utiliza cookies</p>
           <p className="text-xs text-slate-500 mt-1">
             Usamos cookies para melhorar sua experiencia. Ao continuar, voce concorda com nossa{' '}
             <Link href="/privacidade" className="text-cyan-600 hover:underline">Politica de Privacidade</Link>.
@@ -32,7 +32,7 @@ export default function CookieConsent() {
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={() => accept('essential')}
-            className="px-4 py-2 text-sm font-medium text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-300 rounded-lg hover:bg-slate-50 dark:bg-white/5 transition-colors"
           >
             Apenas essenciais
           </button>

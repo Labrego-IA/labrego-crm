@@ -25,6 +25,7 @@ import { toast } from 'sonner'
 
 const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false })
 import { formatDate } from '@/lib/format'
+import { sanitizeHtml } from '@/lib/sanitizeHtml'
 import { leadSourceOptions, leadTypeOptions } from '@/lib/leadSources'
 import {
   type CampaignFilters,
@@ -1103,9 +1104,11 @@ function NovasCampanhasContent() {
                   <div
                     className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{
-                      __html: previewContact
-                        ? replaceVariables(body, previewContact as Record<string, unknown>)
-                        : body,
+                      __html: sanitizeHtml(
+                        previewContact
+                          ? replaceVariables(body, previewContact as Record<string, unknown>)
+                          : body,
+                      ),
                     }}
                   />
                 </div>

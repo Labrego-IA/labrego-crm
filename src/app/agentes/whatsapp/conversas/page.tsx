@@ -151,7 +151,7 @@ export default function WhatsAppConversasPage() {
       </div>
 
       {/* Main — Thread */}
-      <div className="flex-1 bg-slate-50">
+      <div className="flex-1 bg-slate-50 dark:bg-white/5">
         {!selectedId ? (
           <div className="flex flex-col items-center justify-center h-full text-slate-300">
             <svg className="w-16 h-16 mb-4 text-slate-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">

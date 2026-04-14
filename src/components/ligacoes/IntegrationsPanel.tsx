@@ -46,13 +46,13 @@ function IntegrationCard({ title, service, status, children, defaultOpen = false
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+    <div className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-slate-800">{title}</span>
+          <span className="text-sm font-semibold text-slate-800 dark:text-white">{title}</span>
           <StatusBadge status={status} />
         </div>
         <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ function IntegrationCard({ title, service, status, children, defaultOpen = false
         </div>
       </button>
       {open && (
-        <div className="px-5 pb-5 pt-1 border-t border-slate-100 space-y-3">
+        <div className="px-5 pb-5 pt-1 border-t border-slate-100 dark:border-white/5 space-y-3">
           {children}
         </div>
       )}
@@ -96,13 +96,13 @@ function FieldInput({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">{label}</label>
+      <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">{label}</label>
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
+        className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400"
       />
     </div>
   )
@@ -177,7 +177,7 @@ export default function IntegrationsPanel({ orgId, integrations, onSave }: Integ
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h3 className="text-base font-semibold text-slate-800">Integracoes</h3>
+          <h3 className="text-base font-semibold text-slate-800 dark:text-white">Integracoes</h3>
           <p className="text-xs text-slate-500 mt-0.5">Configure suas chaves de API para cada servico.</p>
         </div>
         <button

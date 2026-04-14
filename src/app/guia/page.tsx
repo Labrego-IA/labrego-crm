@@ -396,10 +396,10 @@ function GuideItem({ section, accentColor }: { section: GuideSection; accentColo
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition-all overflow-hidden">
+    <div className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 hover:border-slate-300 transition-all overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full text-left p-4 sm:p-5 flex items-center gap-3.5 hover:bg-slate-50/50 transition-colors duration-150"
+        className="w-full text-left p-4 sm:p-5 flex items-center gap-3.5 hover:bg-slate-50 dark:bg-white/5/50 transition-colors duration-150"
       >
         <div className={`${section.color} w-9 h-9 rounded-lg flex items-center justify-center text-white flex-shrink-0`}>
           {section.icon}
@@ -416,7 +416,7 @@ function GuideItem({ section, accentColor }: { section: GuideSection; accentColo
       {expanded && (
         <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0">
           <div className="border-t border-slate-100 pt-4">
-            <p className="text-sm text-slate-600 leading-relaxed mb-4">
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
               {section.summary}
             </p>
 
@@ -424,7 +424,7 @@ function GuideItem({ section, accentColor }: { section: GuideSection; accentColo
               <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2.5">Como funciona</h4>
               <ul className="space-y-2">
                 {section.details.map((detail, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed">
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     <span className={`w-1.5 h-1.5 rounded-full ${accentColor} flex-shrink-0 mt-1.5`} />
                     {detail}
                   </li>
@@ -472,7 +472,7 @@ function SectionGroup({
       <div className="flex items-center gap-3 mb-1">
         <div className={`w-1 h-6 rounded-full ${accentColor}`} />
         <h2 className="text-lg font-bold text-slate-800 dark:text-white">{title}</h2>
-        <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{count}</span>
+        <span className="text-xs text-slate-400 bg-slate-100 dark:bg-white/10 px-2 py-0.5 rounded-full font-medium">{count}</span>
       </div>
       <p className="text-sm text-slate-500 mb-4 ml-4">{description}</p>
       <div className="space-y-3">
@@ -486,7 +486,7 @@ function SectionGroup({
 
 export default function GuiaPage() {
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-white/5 p-4 md:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>

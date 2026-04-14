@@ -181,14 +181,14 @@ export default function SuperAdminPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
         </div>
       ) : orgs.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+        <div className="text-center py-12 bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10">
           <Building2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">Nenhuma empresa cadastrada.</p>
         </div>
       ) : (
         <>
         {/* Desktop: tabela */}
-        <div className="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="hidden md:block bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
               <tr className="border-b border-gray-100 bg-gray-50">
@@ -214,7 +214,7 @@ export default function SuperAdminPage() {
                       title={org.status === 'active' ? 'Ativo — clique para inativar' : 'Inativo — clique para ativar'}
                     >
                       <span
-                        className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
+                        className={`inline-block h-4 w-4 rounded-full bg-white dark:bg-surface-dark shadow transition-transform ${
                           org.status === 'active' ? 'translate-x-6' : 'translate-x-1'
                         }`}
                       />
@@ -234,7 +234,7 @@ export default function SuperAdminPage() {
         {/* Mobile: cards */}
         <div className="md:hidden space-y-3">
           {orgs.map((org) => (
-            <div key={org.id} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+            <div key={org.id} className="bg-white dark:bg-surface-dark rounded-xl border border-gray-200 dark:border-white/10 p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="text-base font-semibold text-gray-900 truncate">{org.name}</h3>
@@ -251,7 +251,7 @@ export default function SuperAdminPage() {
                   title={org.status === 'active' ? 'Ativo — clique para inativar' : 'Inativo — clique para ativar'}
                 >
                   <span
-                    className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                    className={`inline-block h-5 w-5 rounded-full bg-white dark:bg-surface-dark shadow transition-transform ${
                       org.status === 'active' ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -283,7 +283,7 @@ export default function SuperAdminPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={handleCloseModal}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">{editingOrg ? 'Editar Empresa' : 'Nova Empresa'}</h3>
               <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">

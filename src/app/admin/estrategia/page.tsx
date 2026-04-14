@@ -311,17 +311,17 @@ export default function EstrategiaComercialPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-white/5 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-          <p className="text-slate-600 font-medium">Carregando playbook...</p>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Carregando playbook...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-white/5 p-4 md:p-6">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
@@ -355,12 +355,12 @@ export default function EstrategiaComercialPage() {
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-6 bg-white rounded-2xl border border-slate-200 p-4">
+      <div className="mb-6 bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 p-4">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-medium text-slate-700">Progresso do Playbook</p>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Progresso do Playbook</p>
           <p className="text-sm font-bold text-primary-600">{Math.round((filledCount / SECTIONS.length) * 100)}%</p>
         </div>
-        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-primary-500 to-purple-500 rounded-full transition-all duration-500"
             style={{ width: `${(filledCount / SECTIONS.length) * 100}%` }}
@@ -378,12 +378,12 @@ export default function EstrategiaComercialPage() {
           return (
             <div
               key={section.key}
-              className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all"
+              className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10 overflow-hidden transition-all"
             >
               {/* Section Header */}
               <button
                 onClick={() => setExpandedSection(isExpanded ? null : section.key)}
-                className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors text-left"
+                className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 dark:bg-white/5 transition-colors text-left"
               >
                 <div className={`p-2 rounded-xl bg-gradient-to-br ${section.color} shadow-sm`}>
                   <Icon className="w-5 h-5 text-white" />
@@ -417,7 +417,7 @@ export default function EstrategiaComercialPage() {
                     onChange={(e) => handleChange(section.key, e.target.value)}
                     placeholder={section.placeholder}
                     rows={6}
-                    className="w-full mt-3 px-4 py-3 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-y"
+                    className="w-full mt-3 px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl text-sm text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400 resize-y"
                   />
                   <p className="text-xs text-slate-400 mt-2">
                     {data[section.key]?.length || 0} caracteres

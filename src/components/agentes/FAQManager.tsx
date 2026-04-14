@@ -47,7 +47,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-800">Perguntas Frequentes (FAQ)</h3>
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Perguntas Frequentes (FAQ)</h3>
           <p className="text-slate-500 text-sm">Cadastre perguntas e respostas para o agente usar como referencia.</p>
         </div>
         <button
@@ -60,7 +60,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
       </div>
 
       {items.length === 0 && (
-        <div className="text-center py-8 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+        <div className="text-center py-8 bg-slate-50 dark:bg-white/5 rounded-xl border border-dashed border-slate-300">
           <p className="text-slate-400">Nenhuma pergunta cadastrada ainda.</p>
           <p className="text-slate-300 text-sm mt-1">Clique em &quot;Adicionar&quot; para comecar.</p>
         </div>
@@ -68,14 +68,14 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
 
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <div key={item.id} className="bg-white dark:bg-surface-dark border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden">
             {/* Header */}
             <div
-              className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50 dark:bg-white/5 transition-colors"
               onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
             >
               <span className="text-slate-400 text-sm font-mono w-6">#{index + 1}</span>
-              <span className="flex-1 text-slate-700 text-sm truncate">
+              <span className="flex-1 text-slate-700 dark:text-slate-300 text-sm truncate">
                 {item.question || 'Nova pergunta...'}
               </span>
               <div className="flex items-center gap-1">
@@ -104,7 +104,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
 
             {/* Content */}
             {expandedId === item.id && (
-              <div className="px-4 pb-4 space-y-3 border-t border-slate-200 pt-3">
+              <div className="px-4 pb-4 space-y-3 border-t border-slate-200 dark:border-white/10 pt-3">
                 <div>
                   <label className="block text-slate-500 text-xs font-medium mb-1">Pergunta</label>
                   <input
@@ -112,7 +112,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
                     value={item.question}
                     onChange={(e) => updateItem(item.id, 'question', e.target.value)}
                     placeholder="Ex: Qual o prazo de entrega?"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-800 dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500"
                   />
                 </div>
                 <div>
@@ -122,7 +122,7 @@ export default function FAQManager({ items, onChange }: FAQManagerProps) {
                     onChange={(e) => updateItem(item.id, 'answer', e.target.value)}
                     placeholder="Ex: Nosso prazo de entrega e de 3 a 5 dias uteis..."
                     rows={3}
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
+                    className="w-full px-3 py-2 bg-white dark:bg-surface-dark border border-slate-300 rounded-lg text-slate-800 dark:text-white text-sm placeholder:text-slate-400 focus:outline-none focus:border-cyan-500 resize-none"
                   />
                 </div>
               </div>

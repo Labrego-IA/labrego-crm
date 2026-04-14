@@ -113,32 +113,32 @@ export default function TransferLeadModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white dark:bg-surface-dark rounded-xl shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
               <ArrowsRightLeftIcon className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Transferir Lead</h3>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Transferir Lead</h3>
               <p className="text-xs text-slate-500 truncate max-w-[250px]">{clientName}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-white/10">
             <Cross2Icon className="w-4 h-4" />
           </button>
         </div>
 
         {currentAssignedToName && (
-          <div className="mb-4 px-3 py-2 bg-slate-50 rounded-lg text-sm">
+          <div className="mb-4 px-3 py-2 bg-slate-50 dark:bg-white/5 rounded-lg text-sm">
             <span className="text-slate-500">Responsável atual:</span>{' '}
-            <span className="font-medium text-slate-700">{currentAssignedToName}</span>
+            <span className="font-medium text-slate-700 dark:text-slate-300">{currentAssignedToName}</span>
           </div>
         )}
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Novo responsável *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Novo responsável *</label>
             <select
               value={selectedMemberId}
               onChange={(e) => setSelectedMemberId(e.target.value)}
@@ -154,7 +154,7 @@ export default function TransferLeadModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Motivo da transferência * <span className="text-slate-400 font-normal">(min. 10 caracteres)</span>
             </label>
             <textarea
@@ -170,7 +170,7 @@ export default function TransferLeadModal({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+            className="flex-1 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-white/10 rounded-lg hover:bg-slate-200 transition-colors"
           >
             Cancelar
           </button>

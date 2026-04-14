@@ -253,14 +253,14 @@ export default function PropostasFieldsTab() {
     <div className="space-y-6">
       {/* Campos default (referencia) */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-3">
           Campos padrao (fixos)
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {DEFAULT_SECTIONS.map((s) => (
             <div
               key={s.position}
-              className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600"
+              className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-3 py-2 text-sm text-gray-600 dark:text-slate-400"
             >
               <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
               {s.label}
@@ -272,7 +272,7 @@ export default function PropostasFieldsTab() {
       {/* Campos customizados */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
             Campos personalizados
           </h3>
           <button
@@ -297,7 +297,7 @@ export default function PropostasFieldsTab() {
         </button>
 
         {fields.length === 0 ? (
-          <div className="rounded-lg border-2 border-dashed border-gray-200 p-8 text-center text-sm text-gray-400">
+          <div className="rounded-lg border-2 border-dashed border-gray-200 dark:border-white/10 p-8 text-center text-sm text-gray-400">
             Nenhum campo personalizado criado ainda.
           </div>
         ) : (
@@ -305,14 +305,14 @@ export default function PropostasFieldsTab() {
             {fields.map((field, idx) => (
               <div
                 key={field.id}
-                className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"
+                className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-3 shadow-sm"
               >
                 <div className="flex flex-col gap-0.5">
                   <button
                     type="button"
                     onClick={() => handleReorder(idx, -1)}
                     disabled={idx === 0 || saving}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                    className="text-gray-400 hover:text-gray-600 dark:text-slate-400 disabled:opacity-30"
                   >
                     <ChevronUpIcon className="h-4 w-4" />
                   </button>
@@ -320,7 +320,7 @@ export default function PropostasFieldsTab() {
                     type="button"
                     onClick={() => handleReorder(idx, 1)}
                     disabled={idx === fields.length - 1 || saving}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                    className="text-gray-400 hover:text-gray-600 dark:text-slate-400 disabled:opacity-30"
                   >
                     <ChevronDownIcon className="h-4 w-4" />
                   </button>
@@ -328,7 +328,7 @@ export default function PropostasFieldsTab() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900 truncate">
+                    <span className="font-medium text-gray-900 dark:text-white truncate">
                       {field.label}
                     </span>
                     {field.required && (
@@ -337,8 +337,8 @@ export default function PropostasFieldsTab() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                    <span className="rounded bg-gray-100 px-1.5 py-0.5">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                    <span className="rounded bg-gray-100 dark:bg-white/10 px-1.5 py-0.5">
                       {FIELD_TYPES.find((t) => t.value === field.type)?.label ?? field.type}
                     </span>
                     <span>
@@ -377,13 +377,13 @@ export default function PropostasFieldsTab() {
       >
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-900">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
               {editingField.id ? 'Editar campo' : 'Novo campo'}
             </h3>
             <button
               type="button"
               onClick={handleCloseModal}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:text-slate-400 transition-colors"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -392,7 +392,7 @@ export default function PropostasFieldsTab() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Nome do campo *
             </label>
             <input
@@ -407,7 +407,7 @@ export default function PropostasFieldsTab() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Tipo do campo
             </label>
             <select
@@ -430,7 +430,7 @@ export default function PropostasFieldsTab() {
 
           {editingField.type === 'select' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Opcoes (uma por linha)
               </label>
               <textarea
@@ -449,7 +449,7 @@ export default function PropostasFieldsTab() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Posicao no formulario
             </label>
             <select
@@ -470,7 +470,7 @@ export default function PropostasFieldsTab() {
             </select>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-slate-300">
             <input
               type="checkbox"
               checked={editingField.required}
@@ -489,7 +489,7 @@ export default function PropostasFieldsTab() {
             <button
               type="button"
               onClick={handleCloseModal}
-              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:bg-white/10"
             >
               Cancelar
             </button>

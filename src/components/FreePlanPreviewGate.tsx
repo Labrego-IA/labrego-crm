@@ -38,7 +38,7 @@ export default function FreePlanPreviewGate({ children, feature }: FreePlanPrevi
     <div className="relative">
       {/* Overlay de preview */}
       <div className="absolute inset-0 z-40 bg-white/80 backdrop-blur-[2px] flex items-start justify-center pt-20">
-        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 max-w-md text-center mx-4">
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-slate-200 dark:border-white/10 p-8 max-w-md text-center mx-4">
           <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -51,10 +51,10 @@ export default function FreePlanPreviewGate({ children, feature }: FreePlanPrevi
             </svg>
             Modo Preview
           </div>
-          <h3 className="text-lg font-bold text-slate-900 mb-2">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
             {featureLabel}
           </h3>
-          <p className="text-sm text-slate-600 mb-6">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
             Voce esta visualizando uma previa desta funcionalidade.
             Para utilizar todos os recursos, faca o upgrade do seu plano.
           </p>

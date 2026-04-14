@@ -54,7 +54,7 @@ const statusOptions = [
   { value: 'Em análise', label: 'Em análise', color: 'bg-blue-100 text-blue-700' },
   { value: 'Aprovada', label: 'Aprovada', color: 'bg-emerald-100 text-emerald-700' },
   { value: 'Recusada', label: 'Recusada', color: 'bg-red-100 text-red-700' },
-  { value: 'Expirada', label: 'Expirada', color: 'bg-slate-100 text-slate-700' },
+  { value: 'Expirada', label: 'Expirada', color: 'bg-slate-100 dark:bg-white/10 text-slate-700' },
   { value: 'Cancelada', label: 'Cancelada', color: 'bg-rose-100 text-rose-700' },
 ]
 
@@ -356,7 +356,7 @@ export default function EditProposalCRMPage() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }
 
-  const statusColor = statusOptions.find(s => s.value === currentStatus)?.color || 'bg-slate-100 text-slate-700'
+  const statusColor = statusOptions.find(s => s.value === currentStatus)?.color || 'bg-slate-100 dark:bg-white/10 text-slate-700'
 
   if (loading) {
     return (
@@ -369,15 +369,15 @@ export default function EditProposalCRMPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-primary-50/30">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/60">
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/10/60">
         <div className="px-6">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link
                 href={`/contatos/${clientId}`}
-                className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:bg-white/10 transition-colors"
               >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-600" />
+                <ArrowLeftIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               </Link>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center">
@@ -432,12 +432,12 @@ export default function EditProposalCRMPage() {
           {/* Left Column - Form */}
           <div className="lg:col-span-2 space-y-4">
             {/* Status and Proposal Name */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm space-y-4">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Status</label>
                 <select
                   {...register('status')}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 dark:text-slate-300"
                 >
                   {statusOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -445,23 +445,23 @@ export default function EditProposalCRMPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Nome da Proposta</label>
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Nome da Proposta</label>
                 <input
                   {...register('projectName')}
                   placeholder="Ex: Sistema de Gestão de Vendas"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 dark:text-slate-300"
                 />
               </div>
             </div>
 
             {/* Context */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Contexto</label>
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Contexto</label>
               <textarea
                 {...register('context')}
                 placeholder="Descreva o contexto e necessidades do projeto..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 dark:text-slate-300 resize-none"
               />
               <button
                 type="button"
@@ -478,28 +478,28 @@ export default function EditProposalCRMPage() {
             <ProposalCustomFields fields={customFields} position="after_context" register={register} setValue={setValue} watch={watch} />
 
             {/* Proposal Description */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Descrição da Proposta
               </label>
               <textarea
                 {...register('proposalDescription')}
                 placeholder="Descreva os módulos, funcionalidades e detalhes da solução proposta..."
                 rows={6}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 dark:text-slate-300 resize-none"
               />
             </div>
 
             {/* Scope/Products */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               <button
                 type="button"
                 onClick={() => toggleSection('escopo')}
-                className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:bg-white/5 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <CubeIcon className="w-5 h-5 text-primary-600" />
-                  <span className="font-semibold text-slate-700">Escopo / Produtos</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">Escopo / Produtos</span>
                   <span className="px-2 py-0.5 rounded-full bg-primary-100 text-primary-600 text-xs font-medium">
                     {numProducts}
                   </span>
@@ -517,7 +517,7 @@ export default function EditProposalCRMPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-                        <tr className="border-b border-slate-200">
+                        <tr className="border-b border-slate-200 dark:border-white/10">
                           <th className="text-left py-2 px-2 font-medium text-slate-500">Nome</th>
                           <th className="text-center py-2 px-2 font-medium text-slate-500 w-20">Qtd</th>
                           <th className="text-right py-2 px-2 font-medium text-slate-500 w-32">Valor Unit.</th>
@@ -539,7 +539,7 @@ export default function EditProposalCRMPage() {
                                     ref={setProductInputRef(i)}
                                     list={`product-options-${i}`}
                                     placeholder="Buscar produto ou digitar..."
-                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+                                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
                                     autoComplete="off"
                                     value={watch(`items.${i}.name`) || ''}
                                     onChange={e => {
@@ -567,7 +567,7 @@ export default function EditProposalCRMPage() {
                                   type="number"
                                   min={1}
                                   {...register(`items.${i}.qty`, { valueAsNumber: true })}
-                                  className="w-full px-2 py-2 rounded-lg border border-slate-200 text-sm text-center"
+                                  className="w-full px-2 py-2 rounded-lg border border-slate-200 dark:border-white/10 text-sm text-center"
                                 />
                               </td>
                               <td className="py-2 px-2">
@@ -577,13 +577,13 @@ export default function EditProposalCRMPage() {
                                   {...register(`items.${i}.price`, { valueAsNumber: true })}
                                   className={`w-full px-2 py-2 rounded-lg border text-sm text-right ${
                                     isManual
-                                      ? 'border-slate-200 bg-white'
-                                      : 'border-slate-100 bg-slate-50 text-slate-500'
+                                      ? 'border-slate-200 dark:border-white/10 bg-white'
+                                      : 'border-slate-100 bg-slate-50 dark:bg-white/5 text-slate-500'
                                   }`}
                                 />
                               </td>
                               <td className="py-2 px-2 text-right">
-                                <span className="text-sm font-semibold text-slate-700">
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                                   {formatCurrency(qty * price)}
                                 </span>
                               </td>
@@ -623,15 +623,15 @@ export default function EditProposalCRMPage() {
             <ProposalCustomFields fields={customFields} position="after_products" register={register} setValue={setValue} watch={watch} />
 
             {/* Observations */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Observações Adicionais
               </label>
               <textarea
                 {...register('observations')}
                 placeholder="Observações, condições especiais, prazos, etc..."
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all text-slate-700 dark:text-slate-300 resize-none"
               />
             </div>
 
@@ -639,15 +639,15 @@ export default function EditProposalCRMPage() {
             <ProposalCustomFields fields={customFields} position="after_observations" register={register} setValue={setValue} watch={watch} />
 
             {/* Payment and Discount */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
               <button
                 type="button"
                 onClick={() => toggleSection('desconto')}
-                className="w-full flex items-center justify-between p-5 hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center justify-between p-5 hover:bg-slate-50 dark:bg-white/5 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <CurrencyDollarIcon className="w-5 h-5 text-emerald-600" />
-                  <span className="font-semibold text-slate-700">Pagamento e Desconto</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">Pagamento e Desconto</span>
                 </div>
                 {expandedSections.desconto ? (
                   <ChevronUpIcon className="w-5 h-5 text-slate-400" />
@@ -659,44 +659,44 @@ export default function EditProposalCRMPage() {
               {expandedSections.desconto && (
                 <div className="px-5 pb-5 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Forma de Pagamento</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Forma de Pagamento</label>
                     <textarea
                       {...register('paymentMethod')}
                       placeholder="Descreva as condições de pagamento..."
                       rows={3}
-                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm resize-none"
+                      className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 text-sm resize-none"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Tipo de Desconto</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipo de Desconto</label>
                       <select
                         {...register('discountType')}
-                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm"
+                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 text-sm"
                       >
                         <option value="percent">Percentual (%)</option>
                         <option value="value">Valor (R$)</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Desconto</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Desconto</label>
                       <input
                         type="number"
                         step="0.01"
                         {...register('discount', { valueAsNumber: true })}
-                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm"
+                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 text-sm"
                       />
                     </div>
                   </div>
 
                   {discountValue > 0 && (
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">Motivo do Desconto</label>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Motivo do Desconto</label>
                       <input
                         {...register('discountReason')}
                         placeholder="Justificativa para o desconto..."
-                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm"
+                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 text-sm"
                       />
                     </div>
                   )}
@@ -712,12 +712,12 @@ export default function EditProposalCRMPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-4">
               {/* Summary Card */}
-              <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-sm">
-                <h3 className="text-sm font-semibold text-slate-700 mb-4">Resumo</h3>
+              <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Resumo</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Subtotal</span>
-                    <span className="font-medium text-slate-700">{formatCurrency(subtotal)}</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-300">{formatCurrency(subtotal)}</span>
                   </div>
                   {discountValue > 0 && (
                     <div className="flex justify-between text-sm">
@@ -726,16 +726,16 @@ export default function EditProposalCRMPage() {
                     </div>
                   )}
                   <div className="pt-3 border-t border-slate-100 flex justify-between">
-                    <span className="font-semibold text-slate-700">Total</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">Total</span>
                     <span className="text-xl font-bold text-primary-600">{formatCurrency(total)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Preview */}
-              <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-white/10/60 shadow-sm overflow-hidden">
                 <div className="flex items-center justify-between p-4 border-b border-slate-100">
-                  <span className="text-sm font-semibold text-slate-700">Preview</span>
+                  <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Preview</span>
                   <button
                     type="button"
                     onClick={() => setShowFullPreview(true)}
@@ -744,7 +744,7 @@ export default function EditProposalCRMPage() {
                     Tela cheia
                   </button>
                 </div>
-                <div className="p-4 flex justify-center bg-slate-50">
+                <div className="p-4 flex justify-center bg-slate-50 dark:bg-white/5">
                   <div className="transform scale-[0.4] origin-top">
                     <ProposalPdf
                       ref={pdfRef}
@@ -787,7 +787,7 @@ export default function EditProposalCRMPage() {
                       type="button"
                       onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                       disabled={currentPage === 1}
-                      className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
+                      className="p-1.5 rounded-lg hover:bg-slate-100 dark:bg-white/10 disabled:opacity-50"
                     >
                       <ChevronLeftIcon className="w-4 h-4" />
                     </button>
@@ -796,7 +796,7 @@ export default function EditProposalCRMPage() {
                       type="button"
                       onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                       disabled={currentPage === totalPages}
-                      className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-50"
+                      className="p-1.5 rounded-lg hover:bg-slate-100 dark:bg-white/10 disabled:opacity-50"
                     >
                       <ChevronRightIcon className="w-4 h-4" />
                     </button>
@@ -830,9 +830,9 @@ export default function EditProposalCRMPage() {
       {/* Full Preview Modal */}
       {showFullPreview && (
         <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4 sm:p-6 md:p-10">
-          <div className="bg-white w-full max-w-4xl max-h-full overflow-auto rounded-2xl">
-            <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b border-slate-200">
-              <span className="font-semibold text-slate-700">Preview da Proposta</span>
+          <div className="bg-white dark:bg-surface-dark w-full max-w-4xl max-h-full overflow-auto rounded-2xl">
+            <div className="sticky top-0 bg-white dark:bg-surface-dark z-10 flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/10">
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Preview da Proposta</span>
               <button
                 type="button"
                 onClick={() => setShowFullPreview(false)}

@@ -105,7 +105,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
   }
 
   const inputDisabledClass = !isEditing
-    ? 'bg-gray-50 text-gray-500 cursor-not-allowed'
+    ? 'bg-gray-50 dark:bg-white/5 text-gray-500 dark:text-slate-400 cursor-not-allowed'
     : ''
 
   return (
@@ -125,15 +125,15 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
       </div>
 
       {/* Premissas de Desconto */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Premissas de Desconto</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Premissas de Desconto</h3>
         <p className="text-xs text-gray-400">
           Esses valores sao usados como padrao ao criar uma nova proposta. O vendedor pode ajusta-los por proposta.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Desc. Desenvolvimento (&gt;N prod.)
             </label>
             <div className="flex items-center gap-2">
@@ -147,12 +147,12 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
                 disabled={!isEditing}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${inputDisabledClass}`}
               />
-              <span className="text-sm text-gray-500">%</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">Aplicado quando ha mais de N produtos</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Desc. Levantamento Padrao
             </label>
             <div className="flex items-center gap-2">
@@ -166,12 +166,12 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
                 disabled={!isEditing}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${inputDisabledClass}`}
               />
-              <span className="text-sm text-gray-500">%</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">Para variante &quot;padrao&quot; na etapa de levantamento</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Desc. Testes Padrao
             </label>
             <div className="flex items-center gap-2">
@@ -185,14 +185,14 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
                 disabled={!isEditing}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/40 ${inputDisabledClass}`}
               />
-              <span className="text-sm text-gray-500">%</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">%</span>
             </div>
             <p className="text-xs text-gray-400 mt-1">Para variante &quot;padrao&quot; na etapa de testes</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
             Qtd. minima de produtos para desconto de desenvolvimento
           </label>
           <input
@@ -207,11 +207,11 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
       </section>
 
       {/* Condicoes de Pagamento */}
-      <section className="rounded-2xl bg-white border border-gray-200 p-6 space-y-5">
-        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Condicoes de Pagamento</h3>
+      <section className="rounded-2xl bg-white dark:bg-surface-dark border border-gray-200 dark:border-white/10 p-6 space-y-5">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Condicoes de Pagamento</h3>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Condicoes padrao</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Condicoes padrao</label>
           <textarea
             value={form.defaultPaymentTerms}
             onChange={e => setForm(prev => ({ ...prev, defaultPaymentTerms: e.target.value }))}
@@ -229,7 +229,7 @@ export default function PropostasConfigTab({ onDirtyChange, onResetRef }: Propos
           <button
             onClick={handleCancel}
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-surface-dark border border-gray-300 hover:bg-gray-50 dark:bg-white/5 disabled:opacity-50 transition-colors"
           >
             Cancelar
           </button>

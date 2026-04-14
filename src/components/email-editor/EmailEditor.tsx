@@ -127,13 +127,13 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
   /* ======================== Render ======================== */
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white dark:bg-surface-dark">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white shrink-0">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark shrink-0">
         <div className="flex items-center gap-3">
           {onBack && (
-            <button onClick={onBack} className="rounded-lg p-1.5 hover:bg-slate-100 transition-colors" aria-label="Voltar">
-              <ArrowLeftIcon className="h-5 w-5 text-slate-600" />
+            <button onClick={onBack} className="rounded-lg p-1.5 hover:bg-slate-100 dark:bg-white/10 transition-colors" aria-label="Voltar">
+              <ArrowLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
             </button>
           )}
           <input
@@ -141,11 +141,11 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="Assunto do email"
-            className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:ring-2 focus:ring-primary-300 focus:border-primary-400 outline-none"
+            className="border border-slate-200 dark:border-white/10 rounded-lg px-3 py-1.5 text-sm w-64 focus:ring-2 focus:ring-primary-300 focus:border-primary-400 outline-none"
           />
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
+          <div className="flex items-center rounded-lg border border-slate-200 dark:border-white/10 overflow-hidden">
             {([
               { mode: 'edit' as const, Icon: PencilIcon, tip: 'Editar' },
               { mode: 'desktop' as const, Icon: ComputerDesktopIcon, tip: 'Desktop' },
@@ -164,7 +164,7 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
           <button
             onClick={() => { setShowHtml(!showHtml); setViewMode('edit') }}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              showHtml ? 'bg-slate-800 text-white border-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+              showHtml ? 'bg-slate-800 text-white border-slate-800' : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50'
             }`}
           >
             <CodeBracketIcon className="h-3.5 w-3.5" />
@@ -183,9 +183,9 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
 
       {/* Preview modes */}
       {viewMode !== 'edit' && !showHtml && (
-        <div className="flex-1 bg-slate-100 flex items-start justify-center p-6 overflow-y-auto">
+        <div className="flex-1 bg-slate-100 dark:bg-white/10 flex items-start justify-center p-6 overflow-y-auto">
           <div
-            className="bg-white rounded-lg shadow-lg border border-slate-200 overflow-hidden transition-all"
+            className="bg-white dark:bg-surface-dark rounded-lg shadow-lg border border-slate-200 dark:border-white/10 overflow-hidden transition-all"
             style={{ width: viewMode === 'mobile' ? 375 : 700 }}
           >
             <iframe
@@ -201,8 +201,8 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
 
       {/* HTML view */}
       {showHtml && (
-        <div className="flex-1 p-4 overflow-auto bg-slate-50">
-          <pre className="text-xs whitespace-pre-wrap text-slate-700 font-mono bg-white p-4 rounded-lg border border-slate-200">{rawHtml}</pre>
+        <div className="flex-1 p-4 overflow-auto bg-slate-50 dark:bg-white/5">
+          <pre className="text-xs whitespace-pre-wrap text-slate-700 dark:text-slate-300 font-mono bg-white dark:bg-surface-dark p-4 rounded-lg border border-slate-200 dark:border-white/10">{rawHtml}</pre>
         </div>
       )}
 
@@ -210,16 +210,16 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
       {viewMode === 'edit' && !showHtml && (
         <div className="flex flex-1 overflow-hidden">
           {/* Left: Block palette */}
-          <div className="w-48 border-r border-slate-200 bg-white p-3 overflow-y-auto shrink-0">
+          <div className="w-48 border-r border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 overflow-y-auto shrink-0">
             <p className="text-[10px] font-bold text-slate-400 tracking-wider mb-2">BLOCOS</p>
             <div className="space-y-1">
               {BLOCK_PALETTE.map((bp) => (
                 <button
                   key={bp.type}
                   onClick={() => addBlock(bp.type)}
-                  className="w-full text-left rounded-lg border border-slate-200 p-2 hover:border-primary-300 hover:bg-primary-50 transition-colors"
+                  className="w-full text-left rounded-lg border border-slate-200 dark:border-white/10 p-2 hover:border-primary-300 hover:bg-primary-50 transition-colors"
                 >
-                  <p className="text-sm font-medium text-slate-700">{bp.label}</p>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{bp.label}</p>
                   <p className="text-[10px] text-slate-400">{bp.desc}</p>
                 </button>
               ))}
@@ -232,7 +232,7 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
                   key={v.key}
                   onClick={() => insertVariable(v.key)}
                   disabled={!selectedBlock || selectedBlock.type !== 'text'}
-                  className="w-full text-left rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-600 hover:border-primary-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  className="w-full text-left rounded-lg border border-slate-200 dark:border-white/10 px-2 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:border-primary-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
                   {`{{${v.key}}}`} <span className="text-slate-400">— {v.label}</span>
                 </button>
@@ -241,8 +241,8 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
           </div>
 
           {/* Center: Canvas */}
-          <div className="flex-1 bg-slate-100 overflow-y-auto p-6">
-            <div className="max-w-[620px] mx-auto bg-white rounded-lg shadow-sm border border-slate-200 min-h-[400px]">
+          <div className="flex-1 bg-slate-100 dark:bg-white/10 overflow-y-auto p-6">
+            <div className="max-w-[620px] mx-auto bg-white dark:bg-surface-dark rounded-lg shadow-sm border border-slate-200 dark:border-white/10 min-h-[400px]">
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="canvas">
                   {(provided) => (
@@ -293,7 +293,7 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
           </div>
 
           {/* Right: Properties */}
-          <div className="w-64 border-l border-slate-200 bg-white p-3 overflow-y-auto shrink-0">
+          <div className="w-64 border-l border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-3 overflow-y-auto shrink-0">
             {selectedBlock ? (
               <BlockProperties
                 block={selectedBlock}
@@ -335,7 +335,7 @@ function BlockPreview({ block }: { block: EmailBlockData }) {
           {block.src ? (
             <img src={block.src} alt={block.alt || ''} style={{ maxWidth: block.imageWidth || 600, width: '100%', height: 'auto', display: 'block', margin: block.align === 'center' ? '0 auto' : undefined }} />
           ) : (
-            <div className="bg-slate-100 rounded-lg flex items-center justify-center h-32 text-sm text-slate-400">
+            <div className="bg-slate-100 dark:bg-white/10 rounded-lg flex items-center justify-center h-32 text-sm text-slate-400">
               Adicione URL da imagem →
             </div>
           )}
@@ -368,7 +368,7 @@ function BlockPreview({ block }: { block: EmailBlockData }) {
     case 'spacer':
       return (
         <div style={{ height: block.spacerHeight || 24, backgroundColor: block.backgroundColor || 'transparent', position: 'relative' }}>
-          <span className="absolute inset-0 border border-dashed border-slate-200 rounded" />
+          <span className="absolute inset-0 border border-dashed border-slate-200 dark:border-white/10 rounded" />
         </div>
       )
     case 'columns':
@@ -376,7 +376,7 @@ function BlockPreview({ block }: { block: EmailBlockData }) {
         <div style={style}>
           <div className="flex gap-2">
             {(block.columns || [[], []]).map((col, i) => (
-              <div key={i} className="flex-1 min-h-[60px] border border-dashed border-slate-200 rounded p-2 text-center text-xs text-slate-400">
+              <div key={i} className="flex-1 min-h-[60px] border border-dashed border-slate-200 dark:border-white/10 rounded p-2 text-center text-xs text-slate-400">
                 Coluna {i + 1} ({col.length} {col.length === 1 ? 'bloco' : 'blocos'})
               </div>
             ))}
@@ -399,7 +399,7 @@ const TYPE_LABELS: Record<BlockType, string> = {
   columns: 'Colunas',
 }
 
-const inputCls = 'mt-1 block w-full rounded-md border border-slate-200 px-2 py-1 text-sm focus:ring-1 focus:ring-primary-300 focus:border-primary-400 outline-none'
+const inputCls = 'mt-1 block w-full rounded-md border border-slate-200 dark:border-white/10 px-2 py-1 text-sm focus:ring-1 focus:ring-primary-300 focus:border-primary-400 outline-none'
 const labelCls = 'text-[11px] text-slate-500'
 
 function BlockProperties({
@@ -438,7 +438,7 @@ function BlockProperties({
             </label>
             <label className="block">
               <span className={labelCls}>Cor</span>
-              <input type="color" value={block.color || '#333333'} onChange={(e) => onChange({ color: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
+              <input type="color" value={block.color || '#333333'} onChange={(e) => onChange({ color: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 dark:border-white/10 cursor-pointer" />
             </label>
           </div>
           <label className="block">
@@ -487,11 +487,11 @@ function BlockProperties({
           <div className="grid grid-cols-2 gap-2">
             <label className="block">
               <span className={labelCls}>Cor fundo</span>
-              <input type="color" value={block.buttonColor || '#06B6D4'} onChange={(e) => onChange({ buttonColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
+              <input type="color" value={block.buttonColor || '#06B6D4'} onChange={(e) => onChange({ buttonColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 dark:border-white/10 cursor-pointer" />
             </label>
             <label className="block">
               <span className={labelCls}>Cor texto</span>
-              <input type="color" value={block.buttonTextColor || '#FFFFFF'} onChange={(e) => onChange({ buttonTextColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
+              <input type="color" value={block.buttonTextColor || '#FFFFFF'} onChange={(e) => onChange({ buttonTextColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 dark:border-white/10 cursor-pointer" />
             </label>
           </div>
           <label className="block">
@@ -506,7 +506,7 @@ function BlockProperties({
         <div className="grid grid-cols-2 gap-2">
           <label className="block">
             <span className={labelCls}>Cor</span>
-            <input type="color" value={block.dividerColor || '#E2E8F0'} onChange={(e) => onChange({ dividerColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 cursor-pointer" />
+            <input type="color" value={block.dividerColor || '#E2E8F0'} onChange={(e) => onChange({ dividerColor: e.target.value })} className="mt-1 block w-full h-8 rounded-md border border-slate-200 dark:border-white/10 cursor-pointer" />
           </label>
           <label className="block">
             <span className={labelCls}>Espessura</span>
@@ -530,13 +530,13 @@ function BlockProperties({
           <div className="flex gap-2 mt-1">
             <button
               onClick={() => onChange({ columnCount: 2, columns: [[], []] })}
-              className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${(block.columnCount || 2) === 2 ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${(block.columnCount || 2) === 2 ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}`}
             >
               2 colunas
             </button>
             <button
               onClick={() => onChange({ columnCount: 3, columns: [[], [], []] })}
-              className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${block.columnCount === 3 ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              className={`flex-1 py-1.5 rounded text-xs font-medium transition-colors ${block.columnCount === 3 ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}`}
             >
               3 colunas
             </button>
@@ -545,7 +545,7 @@ function BlockProperties({
       )}
 
       {/* Common style properties */}
-      <hr className="border-slate-100" />
+      <hr className="border-slate-100 dark:border-white/5" />
       <p className="text-[10px] font-bold text-slate-400 tracking-wider">ESTILO</p>
 
       <label className="block">
@@ -556,7 +556,7 @@ function BlockProperties({
               key={a}
               onClick={() => onChange({ align: a })}
               className={`flex-1 py-1 rounded text-xs font-medium transition-colors ${
-                (block.align || 'left') === a ? 'bg-primary-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                (block.align || 'left') === a ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
               }`}
             >
               {a === 'left' ? 'Esq.' : a === 'center' ? 'Centro' : 'Dir.'}
@@ -572,9 +572,9 @@ function BlockProperties({
             type="color"
             value={block.backgroundColor || '#ffffff'}
             onChange={(e) => onChange({ backgroundColor: e.target.value })}
-            className="w-8 h-8 rounded border border-slate-200 cursor-pointer"
+            className="w-8 h-8 rounded border border-slate-200 dark:border-white/10 cursor-pointer"
           />
-          <button onClick={() => onChange({ backgroundColor: '' })} className="text-[10px] text-slate-500 hover:text-slate-700">
+          <button onClick={() => onChange({ backgroundColor: '' })} className="text-[10px] text-slate-500 hover:text-slate-700 dark:text-slate-300">
             Limpar
           </button>
         </div>

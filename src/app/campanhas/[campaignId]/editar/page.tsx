@@ -227,12 +227,12 @@ function EditCampaignContent() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/campanhas/${campaignId}`)}
-            className="rounded-lg p-2 hover:bg-slate-100 transition-colors"
+            className="rounded-lg p-2 hover:bg-slate-100 dark:bg-white/10 transition-colors"
           >
-            <ArrowLeftIcon className="h-5 w-5 text-slate-600" />
+            <ArrowLeftIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Editar Campanha</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Editar Campanha</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CAMPAIGN_STATUS_COLORS[campaign.status]}`}>
                 {CAMPAIGN_STATUS_LABELS[campaign.status]}
@@ -252,32 +252,32 @@ function EditCampaignContent() {
       </div>
 
       {/* Campaign Name */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold text-slate-700">Informações gerais</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-5 shadow-sm space-y-4">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Informações gerais</h3>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Nome da campanha</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome da campanha</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
             placeholder="Ex: Newsletter de Março"
           />
         </div>
       </div>
 
       {/* Email Content */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold text-slate-700">Conteúdo do email</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-5 shadow-sm space-y-4">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Conteúdo do email</h3>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Assunto</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assunto</label>
           <input
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
             placeholder="Ex: Novidades para você!"
           />
         </div>
@@ -290,7 +290,7 @@ function EditCampaignContent() {
               key={v.key}
               type="button"
               onClick={() => setSubject((prev) => prev + ' ' + v.key)}
-              className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 hover:bg-slate-200 transition-colors"
+              className="rounded-full bg-slate-100 dark:bg-white/10 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors"
             >
               {v.key}
             </button>
@@ -298,14 +298,14 @@ function EditCampaignContent() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Corpo do email</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Corpo do email</label>
           <RichTextEditor value={body} onChange={setBody} />
         </div>
       </div>
 
       {/* Send Type */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-        <h3 className="text-sm font-semibold text-slate-700">Tipo de envio</h3>
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-5 shadow-sm space-y-4">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Tipo de envio</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {(['immediate', 'scheduled', 'recurring'] as const).map((type) => (
@@ -315,10 +315,10 @@ function EditCampaignContent() {
               className={`rounded-xl border p-4 text-left transition-all ${
                 sendType === type
                   ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500'
-                  : 'border-slate-200 hover:border-slate-300'
+                  : 'border-slate-200 dark:border-white/10 hover:border-slate-300'
               }`}
             >
-              <p className="text-sm font-medium text-slate-900">{CAMPAIGN_TYPE_LABELS[type]}</p>
+              <p className="text-sm font-medium text-slate-900 dark:text-white">{CAMPAIGN_TYPE_LABELS[type]}</p>
               <p className="text-xs text-slate-500 mt-1">
                 {type === 'immediate' ? 'Salva como rascunho para envio manual' : type === 'scheduled' ? 'Envio automático em data/hora' : 'Envio recorrente automático'}
               </p>
@@ -330,21 +330,21 @@ function EditCampaignContent() {
         {sendType === 'scheduled' && (
           <div className="grid grid-cols-2 gap-3 pt-2">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Data</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data</label>
               <input
                 type="date"
                 value={scheduledDate}
                 onChange={(e) => setScheduledDate(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Hora</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hora</label>
               <input
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
               />
             </div>
           </div>
@@ -355,11 +355,11 @@ function EditCampaignContent() {
           <div className="space-y-3 pt-2">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Frequência</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Frequência</label>
                 <select
                   value={recurrenceFreq}
                   onChange={(e) => setRecurrenceFreq(e.target.value as RecurrenceFrequency)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 >
                   {(Object.entries(RECURRENCE_LABELS) as [RecurrenceFrequency, string][]).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -367,23 +367,23 @@ function EditCampaignContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Horário</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Horário</label>
                 <input
                   type="time"
                   value={recurrenceTime}
                   onChange={(e) => setRecurrenceTime(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
             </div>
 
             {(recurrenceFreq === 'weekly' || recurrenceFreq === 'biweekly') && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Dia da semana</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Dia da semana</label>
                 <select
                   value={recurrenceDayOfWeek}
                   onChange={(e) => setRecurrenceDayOfWeek(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 >
                   {DAYS_OF_WEEK.map((day, idx) => (
                     <option key={idx} value={idx}>{day}</option>
@@ -394,11 +394,11 @@ function EditCampaignContent() {
 
             {recurrenceFreq === 'monthly' && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Dia do mês</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Dia do mês</label>
                 <select
                   value={recurrenceDayOfMonth}
                   onChange={(e) => setRecurrenceDayOfMonth(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 >
                   {Array.from({ length: 28 }, (_, i) => i + 1).map((day) => (
                     <option key={day} value={day}>{day}</option>
@@ -409,21 +409,21 @@ function EditCampaignContent() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Data de início</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data de início</label>
                 <input
                   type="date"
                   value={recurrenceStartDate}
                   onChange={(e) => setRecurrenceStartDate(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Data de fim (opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Data de fim (opcional)</label>
                 <input
                   type="date"
                   value={recurrenceEndDate}
                   onChange={(e) => setRecurrenceEndDate(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark px-4 py-2.5 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500 outline-none"
                 />
               </div>
             </div>
