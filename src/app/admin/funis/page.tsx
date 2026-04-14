@@ -521,7 +521,7 @@ export default function AdminFunisPage() {
           onClick={() => setViewMode('member')}
           className={`flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 text-sm font-medium rounded-md transition-colors ${
             viewMode === 'member'
-              ? 'bg-white text-slate-800 shadow-sm'
+              ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
               : 'text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -531,7 +531,7 @@ export default function AdminFunisPage() {
           onClick={() => setViewMode('funnel')}
           className={`flex-1 sm:flex-initial px-4 py-2.5 sm:py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-1.5 ${
             viewMode === 'funnel'
-              ? 'bg-white text-slate-800 shadow-sm'
+              ? 'bg-white dark:bg-surface-dark text-slate-800 dark:text-white shadow-sm'
               : 'text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -557,7 +557,7 @@ export default function AdminFunisPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Pesquisar por nome, email ou cargo..."
-          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 pl-9 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300"
+          className="w-full rounded-xl border border-gray-200 bg-white dark:bg-surface-dark px-3 py-2 pl-9 text-sm text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary-300"
         />
         {search && (
           <button
@@ -573,7 +573,7 @@ export default function AdminFunisPage() {
       </div>
 
       {filteredMembers.length === 0 && !loading ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+        <div className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 p-12 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
             <svg className="h-7 w-7 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.972 5.972 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 017.533-2.493M9 19.128a5.972 5.972 0 01.786-3.07m4.428 0a9.36 9.36 0 00-4.428 0M12 10.5a3 3 0 100-6 3 3 0 000 6z" />
@@ -595,7 +595,7 @@ export default function AdminFunisPage() {
           const expandedFunnel = expandedRows[member.id] || null
 
           return (
-            <div key={member.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div key={member.id} className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
               {/* Member header */}
               <div className="px-4 py-3 flex items-center justify-between border-b border-slate-100">
                 <div className="flex items-center gap-3">
@@ -654,7 +654,7 @@ export default function AdminFunisPage() {
                                 onChange={() => toggleFunnelAccess(member.id, funnel.id)}
                                 className="sr-only peer"
                               />
-                              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600" />
+                              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-surface-dark after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600" />
                             </label>
                           </div>
                         )}
@@ -687,11 +687,11 @@ export default function AdminFunisPage() {
       </div>
 
       {/* Desktop table layout */}
-      <div className="hidden sm:block bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="hidden sm:block bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
         <div className="overflow-x-auto max-h-[70vh] overflow-y-auto">
           <table className="w-full">
             <thead className="sticky top-0 z-10 bg-slate-50 dark:bg-surface-dark/80">
-              <tr className="border-b border-slate-200 bg-slate-50">
+              <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50">
                 {([
                   { key: 'name' as SortColumn, label: 'Membro', align: 'left' },
                 ] as const).map((col) => (
@@ -871,7 +871,7 @@ export default function AdminFunisPage() {
           const fStages = stagesByFunnel[funnel.id] || []
 
           return (
-            <div key={funnel.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+            <div key={funnel.id} className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden">
               {/* Funnel header */}
               <div className="px-4 sm:px-5 py-4 border-b border-slate-100 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
@@ -898,7 +898,7 @@ export default function AdminFunisPage() {
 
                   {/* Dropdown to add users */}
                   {isDropdownOpen && (
-                    <div className="absolute left-0 right-0 sm:left-auto sm:right-0 top-full mt-1 sm:w-72 bg-white rounded-xl border border-slate-200 shadow-lg z-20">
+                    <div className="absolute left-0 right-0 sm:left-auto sm:right-0 top-full mt-1 sm:w-72 bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 shadow-lg z-20">
                       <div className="p-2 border-b border-slate-100">
                         <input
                           type="text"
@@ -906,7 +906,7 @@ export default function AdminFunisPage() {
                           onChange={(e) => setFunnelSearch(e.target.value)}
                           placeholder="Buscar membro..."
                           autoFocus
-                          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 sm:py-1.5 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-300"
+                          className="w-full rounded-lg border border-gray-200 bg-white dark:bg-surface-dark px-3 py-2.5 sm:py-1.5 text-sm text-gray-800 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-300"
                         />
                       </div>
                       <div className="max-h-64 sm:max-h-56 overflow-y-auto p-1">

@@ -4741,7 +4741,7 @@ export default function FunilDetailPage() {
                                 ? 'bg-red-50/30'
                                 : hasDueToday
                                 ? 'bg-amber-50/30'
-                                : 'bg-white'
+                                : 'bg-white dark:bg-surface-dark'
                             }`}
                           >
                             {contacts.length === 0 ? (
@@ -4836,7 +4836,7 @@ export default function FunilDetailPage() {
                               ? 'border-red-200 bg-red-50/30'
                               : hasDueToday
                               ? 'border-amber-200 bg-amber-50/30'
-                              : 'border-slate-100 bg-white'
+                              : 'border-slate-100 bg-white dark:bg-surface-dark'
                           }`}
                         >
                           <div className={`text-xs font-bold mb-1 ${isToday(date) ? 'text-primary-600' : 'text-slate-600'}`}>
