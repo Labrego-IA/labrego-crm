@@ -330,7 +330,7 @@ export default function EstrategiaComercialPage() {
               <BookOpenIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Estratégia Comercial</h1>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Estratégia Comercial</h1>
               <p className="text-sm text-slate-500">Playbook de vendas da sua empresa</p>
             </div>
           </div>
@@ -390,7 +390,7 @@ export default function EstrategiaComercialPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-slate-800">{section.title}</h3>
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{section.title}</h3>
                     {isFilled && (
                       <span className="flex items-center justify-center w-5 h-5 bg-emerald-100 rounded-full">
                         <CheckIcon className="w-3 h-3 text-emerald-600" />

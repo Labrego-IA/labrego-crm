@@ -137,7 +137,7 @@ export default function SuperAdminAIUsagePage() {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Uso de IA por Empresa</h1>
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Uso de IA por Empresa</h1>
         <p className="text-slate-500 mt-1">Consumo de tokens, mensagens e custos estimados dos agentes IA.</p>
       </div>
 
@@ -185,7 +185,7 @@ export default function SuperAdminAIUsagePage() {
               <tr><td colSpan={8} className="text-center py-8 text-slate-400 text-sm">Nenhuma empresa com uso de IA registrado.</td></tr>
             ) : sorted.map(org => (
               <tr key={org.orgId} className="border-b border-slate-50 hover:bg-slate-50/50">
-                <td className="px-4 py-3 text-sm font-medium text-slate-800">{org.orgName}</td>
+                <td className="px-4 py-3 text-sm font-medium text-slate-800 dark:text-white">{org.orgName}</td>
                 <td className="px-4 py-3">
                   <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs">{org.plan}</span>
                 </td>

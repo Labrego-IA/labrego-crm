@@ -429,8 +429,8 @@ export default function FunnelHubPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Funis de Vendas</h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Funis de Vendas</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               {funnels.length} funil{funnels.length !== 1 ? 's' : ''} &middot; {visibleClients.length} contato{visibleClients.length !== 1 ? 's' : ''} no total
             </p>
           </div>
@@ -486,7 +486,7 @@ export default function FunnelHubPage() {
                         <FunnelIcon className="w-5 h-5" style={{ color: funnel.color }} />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-semibold text-slate-800 truncate">{funnel.name}</h3>
+                        <h3 className="font-semibold text-slate-800 dark:text-white truncate">{funnel.name}</h3>
                         {funnel.isDefault && (
                           <span className="inline-flex items-center text-xs font-medium text-primary-600 bg-primary-50 rounded px-1.5 py-0.5 mt-0.5">
                             Default
@@ -541,7 +541,7 @@ export default function FunnelHubPage() {
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                     <div className="flex items-center gap-1.5">
                       <UserGroupIcon className="w-4 h-4" />
                       <span>{stats.contacts} contato{stats.contacts !== 1 ? 's' : ''}</span>
@@ -571,7 +571,7 @@ export default function FunnelHubPage() {
                   )}
 
                   {funnel.description && (
-                    <p className="text-xs text-slate-400 mt-3 line-clamp-2">{funnel.description}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-3 line-clamp-2">{funnel.description}</p>
                   )}
                 </div>
               </div>
@@ -611,10 +611,10 @@ export default function FunnelHubPage() {
                   <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-6">
                     <TrashIcon className="w-7 h-7 text-red-600 animate-pulse" />
                   </div>
-                  <h4 className="text-lg font-bold text-slate-800 mb-1">
+                  <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
                     {deleteMode === 'move' ? 'Movendo contatos...' : 'Desvinculando contatos...'}
                   </h4>
-                  <p className="text-sm text-slate-500 mb-6">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
                     {deleteProgress.current} de {deleteProgress.total} contato{deleteProgress.total !== 1 ? 's' : ''}
                   </p>
                   <div className="w-full max-w-xs">
@@ -658,7 +658,7 @@ export default function FunnelHubPage() {
                       <label className={`block p-3 border rounded-lg cursor-pointer transition-all ${deleteMode === 'move' ? 'border-primary-300 bg-primary-50/50' : 'border-slate-200 dark:border-white/10 hover:border-slate-300'}`}>
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'move'} onChange={() => setDeleteMode('move')} className="text-primary-600" />
-                          <span className="text-sm font-medium text-slate-800">Mover para outro funil</span>
+                          <span className="text-sm font-medium text-slate-800 dark:text-slate-200">Mover para outro funil</span>
                         </div>
 
                         {deleteMode === 'move' && (
@@ -720,7 +720,7 @@ export default function FunnelHubPage() {
                         <div className="flex items-center gap-2">
                           <input type="radio" checked={deleteMode === 'discard'} onChange={() => setDeleteMode('discard')} className="text-red-600" />
                           <div>
-                            <span className="text-sm font-medium text-slate-800">Desvincular contatos</span>
+                            <span className="text-sm font-medium text-slate-800 dark:text-slate-200">Desvincular contatos</span>
                             <p className="text-xs text-slate-400">Os contatos ficam sem funil</p>
                           </div>
                         </div>
@@ -792,7 +792,7 @@ export default function FunnelHubPage() {
                 value={formName}
                 onChange={e => setFormName(e.target.value)}
                 placeholder="Ex: Funil de Vendas B2B"
-                className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-3 py-2.5 text-sm border border-slate-300 dark:border-white/10 rounded-lg bg-white dark:bg-white/5 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 autoFocus
               />
             </div>

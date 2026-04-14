@@ -336,7 +336,7 @@ export default function NewProposalCRMPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="text-lg font-bold text-slate-800">Nova Proposta</h1>
+                    <h1 className="text-lg font-bold text-slate-800 dark:text-white">Nova Proposta</h1>
                     <span className="px-2 py-0.5 rounded-lg bg-primary-100 text-primary-600 text-xs font-semibold">
                       #{String(nextNumber).padStart(4, '0')}
                     </span>

@@ -385,7 +385,7 @@ export default function EditProposalCRMPage() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="text-lg font-bold text-slate-800">
+                    <h1 className="text-lg font-bold text-slate-800 dark:text-white">
                       Proposta #{String(proposalNumber).padStart(4, '0')}
                     </h1>
                     <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${statusColor}`}>

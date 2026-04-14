@@ -405,7 +405,7 @@ function GuideItem({ section, accentColor }: { section: GuideSection; accentColo
           {section.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-slate-800">{section.title}</h3>
+          <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{section.title}</h3>
           <p className="text-xs text-slate-400 mt-0.5 truncate hidden sm:block">{section.summary}</p>
         </div>
         <ChevronDownIcon
@@ -471,7 +471,7 @@ function SectionGroup({
     <div className="mb-10">
       <div className="flex items-center gap-3 mb-1">
         <div className={`w-1 h-6 rounded-full ${accentColor}`} />
-        <h2 className="text-lg font-bold text-slate-800">{title}</h2>
+        <h2 className="text-lg font-bold text-slate-800 dark:text-white">{title}</h2>
         <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">{count}</span>
       </div>
       <p className="text-sm text-slate-500 mb-4 ml-4">{description}</p>
@@ -490,7 +490,7 @@ export default function GuiaPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Guia do Voxium</h1>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Guia do Voxium</h1>
           <p className="text-sm text-slate-500 mt-1">
             Entenda cada parte do sistema — clique para expandir os detalhes
           </p>

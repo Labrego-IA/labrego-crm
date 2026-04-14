@@ -1140,7 +1140,7 @@ export default function ContactDetailsPage() {
                   <div className="w-8 h-8 rounded-lg bg-primary-100 flex items-center justify-center">
                     <PersonIcon className="w-4 h-4 text-primary-600" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-800">Resumo</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">Resumo</span>
                 </div>
                 {expandedSections.resumo ? (
                   <ChevronUpIcon className="w-4 h-4 text-slate-400" />
@@ -1280,7 +1280,7 @@ export default function ContactDetailsPage() {
                   <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
                     <ClipboardDocumentListIcon className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-800">Detalhes</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">Detalhes</span>
                 </div>
                 {expandedSections.detalhes ? (
                   <ChevronUpIcon className="w-4 h-4 text-slate-400" />
@@ -1488,7 +1488,7 @@ export default function ContactDetailsPage() {
                   <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center">
                     <ChatBubbleIcon className="w-4 h-4 text-amber-600" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-800">Necessidades do Cliente</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">Necessidades do Cliente</span>
                 </div>
                 {!editingNeeds && (
                   <button
@@ -1675,7 +1675,7 @@ export default function ContactDetailsPage() {
                                 <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${statusColor}`}>
                                   {proposal.status || 'Pendente'}
                                 </span>
-                                <span className="text-base font-bold text-slate-800">
+                                <span className="text-base font-bold text-slate-800 dark:text-white">
                                   {formatCurrency(proposal.total || 0)}
                                 </span>
                                 <ChevronRightIcon className="w-4 h-4 text-slate-300 group-hover:text-primary-400 transition-colors ml-auto sm:ml-0" />
@@ -1814,7 +1814,7 @@ export default function ContactDetailsPage() {
                             </div>
                             <div className="flex-1 min-w-0 bg-slate-50/50 rounded-xl p-4 border border-slate-100">
                               <div className="flex items-baseline justify-between gap-2 mb-1">
-                                <span className="text-sm font-semibold text-slate-800">{fu.author}</span>
+                                <span className="text-sm font-semibold text-slate-800 dark:text-white">{fu.author}</span>
                                 <span className="text-xs text-slate-400">
                                   {formatDateTime(fu.createdAt)}
                                 </span>
@@ -2031,7 +2031,7 @@ export default function ContactDetailsPage() {
                   <FolderPlusIcon className="w-5 h-5 text-amber-600" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Nova Pasta</h3>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white">Nova Pasta</h3>
                   <p className="text-xs text-slate-500">Crie uma pasta para organizar arquivos</p>
                 </div>
               </div>
@@ -2097,7 +2097,7 @@ export default function ContactDetailsPage() {
                 <TrashIcon className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">
                   Excluir {deletingItem.type === 'folder' ? 'pasta' : 'arquivo'}
                 </h3>
                 <p className="text-sm text-slate-500">Esta ação não pode ser desfeita</p>
@@ -2149,7 +2149,7 @@ export default function ContactDetailsPage() {
                   }`} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white">
                     {selectedProposal?.projectName || `Proposta #${selectedProposal?.number || ''}`}
                   </h3>
                   <p className="text-sm text-slate-500">
@@ -2229,7 +2229,7 @@ export default function ContactDetailsPage() {
                           <div key={index} className="p-4">
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <p className="text-sm font-semibold text-slate-800">{item.name || 'Item'}</p>
+                                <p className="text-sm font-semibold text-slate-800 dark:text-white">{item.name || 'Item'}</p>
                                 {item.description && (
                                   <p className="text-xs text-slate-500 mt-1 whitespace-pre-wrap">{item.description}</p>
                                 )}
@@ -2347,7 +2347,7 @@ export default function ContactDetailsPage() {
                   <PersonIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800">Editar Contato</h2>
+                  <h2 className="text-lg font-bold text-slate-800 dark:text-white">Editar Contato</h2>
                   <p className="text-xs text-slate-500">Atualize os dados do contato</p>
                 </div>
               </div>
@@ -2582,7 +2582,7 @@ export default function ContactDetailsPage() {
                 <TrashIcon className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Excluir contato</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Excluir contato</h3>
                 <p className="text-sm text-slate-500">Esta acao nao pode ser desfeita</p>
               </div>
             </div>

@@ -1589,7 +1589,7 @@ function ConversionTab({ clients }: { clients: Client[] }) {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 <div className="bg-slate-50 dark:bg-surface-dark/80 rounded-xl p-3">
                   <p className="text-xs text-slate-500">Total</p>
-                  <p className="text-lg font-bold text-slate-800">{row.total}</p>
+                  <p className="text-lg font-bold text-slate-800 dark:text-white">{row.total}</p>
                 </div>
                 <div className="bg-primary-50 rounded-xl p-3">
                   <p className="text-xs text-primary-600">Convertidos</p>

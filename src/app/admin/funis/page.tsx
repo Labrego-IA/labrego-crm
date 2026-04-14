@@ -503,7 +503,7 @@ export default function AdminFunisPage() {
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Acesso a Funis</h1>
+          <h1 className="text-xl font-bold text-slate-800 dark:text-white">Acesso a Funis</h1>
           <p className="text-sm text-slate-500 mt-1">Configure quais membros podem ver cada funil e suas etapas</p>
         </div>
         <button
@@ -877,7 +877,7 @@ export default function AdminFunisPage() {
                 <div className="flex items-center gap-3">
                   <div className="w-3.5 h-3.5 rounded-full flex-shrink-0" style={{ backgroundColor: funnel.color }} />
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-800">{funnel.name}</h3>
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{funnel.name}</h3>
                     <p className="text-xs text-slate-400">
                       {fStages.length} etapa{fStages.length !== 1 ? 's' : ''}
                       {funnel.isDefault && <span className="ml-2 text-primary-500 font-medium">Padrão</span>}

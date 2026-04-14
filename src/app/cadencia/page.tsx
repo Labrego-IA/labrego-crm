@@ -432,7 +432,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                 className="w-full flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-primary-400" />
-                  <h3 className="text-sm font-semibold text-slate-800">{stage.name}</h3>
+                  <h3 className="text-sm font-semibold text-slate-800 dark:text-white">{stage.name}</h3>
                   <span className="text-xs text-slate-400">{stageSteps.length} steps</span>
                   {isPaused && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-amber-50 text-amber-600">
@@ -467,7 +467,7 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-sm font-medium text-slate-800">{step.name}</span>
+                                  <span className="text-sm font-medium text-slate-800 dark:text-white">{step.name}</span>
                                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${CONTACT_METHOD_COLORS[step.contactMethod]}`}>
                                     {CONTACT_METHOD_LABELS[step.contactMethod]}
                                   </span>
@@ -1106,7 +1106,7 @@ function ExecutionTab({ orgId, stages, steps, autoConfig, setAutoConfig, isPlanB
               return (
                 <div key={stageId} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0">
                   <span className="text-sm text-slate-600">{stage?.name || stageId}</span>
-                  <span className="text-sm font-semibold text-slate-800">{count}</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">{count}</span>
                 </div>
               )
             })}

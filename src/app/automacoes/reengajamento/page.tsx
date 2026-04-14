@@ -332,7 +332,7 @@ function ConfigSection({ config, onSave, saving }: {
         >
           <div className="flex items-center gap-3">
             <ArrowPathIcon className="w-5 h-5 text-primary-600" />
-            <h3 className="text-sm font-semibold text-slate-800">Steps de Reengajamento</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-white">Steps de Reengajamento</h3>
             <span className="text-xs text-slate-400">{config.steps.length} steps</span>
           </div>
           {expandSteps ? <ChevronUpIcon className="w-4 h-4 text-slate-400" /> : <ChevronDownIcon className="w-4 h-4 text-slate-400" />}
@@ -548,13 +548,13 @@ function DashboardSection({ enrollments, logs }: {
               <span className="text-sm text-slate-600 flex items-center gap-2">
                 <ClockIcon className="w-4 h-4 text-amber-500" /> Inatividade
               </span>
-              <span className="text-sm font-semibold text-slate-800">{stats.byReason.inactive}</span>
+              <span className="text-sm font-semibold text-slate-800 dark:text-white">{stats.byReason.inactive}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-sm text-slate-600 flex items-center gap-2">
                 <XMarkIcon className="w-4 h-4 text-red-500" /> Lead perdido
               </span>
-              <span className="text-sm font-semibold text-slate-800">{stats.byReason.lost}</span>
+              <span className="text-sm font-semibold text-slate-800 dark:text-white">{stats.byReason.lost}</span>
             </div>
           </div>
         </div>
@@ -565,7 +565,7 @@ function DashboardSection({ enrollments, logs }: {
             {Object.entries(stats.byCycle).sort(([a], [b]) => Number(a) - Number(b)).map(([cycle, count]) => (
               <div key={cycle} className="flex items-center justify-between py-2">
                 <span className="text-sm text-slate-600">Ciclo {cycle}</span>
-                <span className="text-sm font-semibold text-slate-800">{count}</span>
+                <span className="text-sm font-semibold text-slate-800 dark:text-white">{count}</span>
               </div>
             ))}
             {Object.keys(stats.byCycle).length === 0 && (

@@ -449,7 +449,7 @@ export default function DisparoPage() {
                   <RocketLaunchIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800">Disparar Ligacoes</h2>
+                  <h2 className="font-bold text-slate-800 dark:text-white">Disparar Ligacoes</h2>
                   <p className="text-sm text-slate-500">
                     Inicie um lote de ligacoes manualmente
                   </p>
@@ -636,7 +636,7 @@ export default function DisparoPage() {
                 {/* Contadores em tempo real */}
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-5">
                   <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-2xl font-bold text-slate-800">
+                    <p className="text-2xl font-bold text-slate-800 dark:text-white">
                       {triggerProgress.total}
                     </p>
                     <p className="text-xs text-slate-500">Total</p>
@@ -815,7 +815,7 @@ export default function DisparoPage() {
                     <ChartBarIcon className="w-5 h-5 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <h2 className="font-bold text-slate-800">Relatorio Diario</h2>
+                    <h2 className="font-bold text-slate-800 dark:text-white">Relatorio Diario</h2>
                     <p className="text-sm text-slate-500 truncate">
                       Visualize os resultados das ligacoes
                     </p>
@@ -849,7 +849,7 @@ export default function DisparoPage() {
                   {/* KPIs */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div className="bg-slate-50 rounded-xl p-4">
-                      <p className="text-3xl font-bold text-slate-800">
+                      <p className="text-3xl font-bold text-slate-800 dark:text-white">
                         {report.total}
                       </p>
                       <p className="text-sm text-slate-500">Total de ligacoes</p>
@@ -889,7 +889,7 @@ export default function DisparoPage() {
                             key={outcome}
                             className="bg-slate-50 rounded-lg p-3"
                           >
-                            <p className="text-lg font-bold text-slate-800">
+                            <p className="text-lg font-bold text-slate-800 dark:text-white">
                               {count}
                             </p>
                             <p className="text-xs text-slate-500">{outcome}</p>
