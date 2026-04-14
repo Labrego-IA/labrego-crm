@@ -255,7 +255,7 @@ function TriggersPageContent() {
               <div key={t.id} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-dark p-4 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
-                    <div className={`rounded-full p-2 ${t.isActive ? 'bg-emerald-100' : 'bg-slate-100'}`}>
+                    <div className={`rounded-full p-2 ${t.isActive ? 'bg-emerald-100' : 'bg-slate-100 dark:bg-white/10'}`}>
                       <BoltIcon className={`h-5 w-5 ${t.isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
                     </div>
                     <div>

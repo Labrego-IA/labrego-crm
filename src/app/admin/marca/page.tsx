@@ -887,7 +887,7 @@ export default function BrandBookPage() {
                     { nome: 'Joao Santos', email: 'joao@email.com', status: 'Pendente', statusColor: '#F59E0B', valor: 'R$ 8.200' },
                     { nome: 'Ana Costa', email: 'ana@email.com', status: 'Concluido', statusColor: '#8B5CF6', valor: 'R$ 25.000' },
                   ].map((row, i) => (
-                    <tr key={row.nome} className={`border-b border-[#EDE9FE] last:border-0 transition-colors hover:bg-[#8B5CF6]/[0.04] ${i % 2 === 1 ? 'bg-[#F5F3FF]/50' : 'bg-white'}`}>
+                    <tr key={row.nome} className={`border-b border-[#EDE9FE] last:border-0 transition-colors hover:bg-[#8B5CF6]/[0.04] ${i % 2 === 1 ? 'bg-[#F5F3FF]/50 dark:bg-white/5' : 'bg-white dark:bg-surface-dark'}`}>
                       <td className="px-4 py-3 font-medium text-[#1E1B4B]">{row.nome}</td>
                       <td className="px-4 py-3 text-[#64748B]">{row.email}</td>
                       <td className="px-4 py-3">

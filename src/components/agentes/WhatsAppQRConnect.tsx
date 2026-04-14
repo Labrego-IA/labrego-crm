@@ -248,7 +248,7 @@ export default function WhatsAppQRConnect({ orgId, onStatusChange }: WhatsAppQRC
 
 function StatusBadge({ status }: { status: WhatsAppConnectionStatus }) {
   const config = {
-    disconnected: { label: 'Desconectado', bg: 'bg-slate-100', text: 'text-slate-500' },
+    disconnected: { label: 'Desconectado', bg: 'bg-slate-100 dark:bg-white/10', text: 'text-slate-500' },
     connecting: { label: 'Conectando...', bg: 'bg-amber-50', text: 'text-amber-600' },
     qr_ready: { label: 'Aguardando QR', bg: 'bg-amber-50', text: 'text-amber-600' },
     connected: { label: 'Conectado', bg: 'bg-green-50', text: 'text-green-600' },

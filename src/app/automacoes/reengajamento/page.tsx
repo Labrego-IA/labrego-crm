@@ -212,11 +212,11 @@ function ReengajamentoContent() {
         {/* Tabs */}
         <div className="flex gap-1 mt-4">
           <button onClick={() => setTab('config')}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${tab === 'config' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50'}`}>
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${tab === 'config' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5'}`}>
             <BoltIcon className="w-4 h-4" /> Configuração
           </button>
           <button onClick={() => setTab('dashboard')}
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${tab === 'dashboard' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50'}`}>
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${tab === 'dashboard' ? 'bg-primary-50 text-primary-700' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5'}`}>
             <UserGroupIcon className="w-4 h-4" /> Dashboard
           </button>
         </div>

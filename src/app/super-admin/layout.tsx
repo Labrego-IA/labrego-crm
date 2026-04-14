@@ -53,7 +53,7 @@ export default function SuperAdminLayout({ children }: { children: ReactNode }) 
             Voce nao tem permissao para acessar o painel de Super Admin.
           </p>
           {userEmail && (
-            <p className="text-sm text-gray-400">Logado como: {userEmail}</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">Logado como: {userEmail}</p>
           )}
           <button
             onClick={() => router.push('/contatos')}

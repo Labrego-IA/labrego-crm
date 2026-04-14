@@ -154,7 +154,7 @@ export default function EmailEditor({ initialBlocks, initialSubject, onSave, onB
               <button
                 key={mode}
                 onClick={() => { setViewMode(mode); setShowHtml(false) }}
-                className={`px-2.5 py-1.5 ${viewMode === mode && !showHtml ? 'bg-primary-600 text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+                className={`px-2.5 py-1.5 ${viewMode === mode && !showHtml ? 'bg-primary-600 text-white' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-white/5'}`}
                 title={mode}
               >
                 <Icon className="h-4 w-4" />

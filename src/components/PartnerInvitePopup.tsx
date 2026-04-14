@@ -107,7 +107,7 @@ export default function PartnerInvitePopup({
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-400 dark:text-slate-500 text-center">
           Ao aceitar, voce tera acesso aos dados da organizacao com as permissoes do cargo atribuido.
         </p>
 

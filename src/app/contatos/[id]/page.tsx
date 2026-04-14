@@ -1651,7 +1651,7 @@ export default function ContactDetailsPage() {
                                   proposal.status === 'Aprovada' ? 'bg-emerald-100' :
                                   proposal.status === 'Recusada' ? 'bg-red-100' :
                                   proposal.status === 'Cancelada' ? 'bg-rose-100' :
-                                  proposal.status === 'Expirada' ? 'bg-slate-100' :
+                                  proposal.status === 'Expirada' ? 'bg-slate-100 dark:bg-white/10' :
                                   'bg-primary-100'
                                 }`}>
                                   <DocumentTextIcon className={`w-5 h-5 ${
@@ -1804,7 +1804,7 @@ export default function ContactDetailsPage() {
                         {followUps.map((fu) => (
                           <div key={fu.id} className="flex gap-4 group">
                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
-                              fu.source === 'log' ? 'bg-slate-100' : 'bg-primary-100'
+                              fu.source === 'log' ? 'bg-slate-100 dark:bg-white/10' : 'bg-primary-100'
                             }`}>
                               {fu.source === 'log' ? (
                                 <ClockIcon className="w-5 h-5 text-slate-500" />

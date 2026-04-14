@@ -398,7 +398,7 @@ export default function ProjecaoVendasPage() {
   const SortIcon = ({ field }: { field: SortField }) => (
     <svg
       className={`h-3.5 w-3.5 inline ml-1 transition-colors ${
-        sortField === field ? 'text-primary-600' : 'text-gray-300'
+        sortField === field ? 'text-primary-600' : 'text-gray-300 dark:text-slate-600'
       }`}
       fill="none"
       viewBox="0 0 24 24"

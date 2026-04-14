@@ -147,7 +147,7 @@ export default function MemberSelector({
                 key={m.id}
                 onClick={() => { onChange(m.id, m.displayName); setOpen(false); setSearch('') }}
                 className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-primary-50 ${
-                  m.id === value ? 'bg-primary-50 text-primary-700' : 'text-slate-700'
+                  m.id === value ? 'bg-primary-50 text-primary-700' : 'text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">

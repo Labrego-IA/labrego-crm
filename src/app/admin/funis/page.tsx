@@ -699,7 +699,7 @@ export default function AdminFunisPage() {
                     <button
                       type="button"
                       onClick={() => handleSort(col.key)}
-                      className="inline-flex items-center gap-1 hover:text-slate-900 transition"
+                      className="inline-flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition"
                     >
                       {col.label}
                       <svg
@@ -737,7 +737,7 @@ export default function AdminFunisPage() {
                   <button
                     type="button"
                     onClick={() => handleSort('summary')}
-                    className="inline-flex items-center gap-1 hover:text-slate-900 transition ml-auto"
+                    className="inline-flex items-center gap-1 hover:text-slate-900 dark:hover:text-white transition ml-auto"
                   >
                     Resumo
                     <svg
