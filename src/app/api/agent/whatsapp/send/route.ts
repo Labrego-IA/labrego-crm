@@ -9,8 +9,15 @@ import { getAdminDb } from '@/lib/firebaseAdmin'
 import { addMessage } from '@/lib/agentConversation'
 import { sendTextMessage } from '@/lib/channels/zapiConnector'
 import { canSendWhatsApp, deductAction } from '@/lib/credits'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export async function POST(request: Request) {
+  const ip = getClientIp(new Headers(request.headers))
+  const rl = checkRateLimit(`whatsapp-send:${ip}`, { limit: 20, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
     const { orgId, conversationId, message, senderEmail } = await request.json()
 

@@ -2,12 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { PLAN_LIMITS } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 function isValidPlan(plan: string): plan is PlanId {
   return plan in PLAN_LIMITS
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`change-plan:${ip}`, { limit: 5, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const { orgId, newPlan, userEmail } = body

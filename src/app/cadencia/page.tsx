@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo, Suspense } from 'react'
+import { toast } from 'sonner'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
   collection,
@@ -252,8 +253,8 @@ function CadenciaDashboard() {
       {/* Content */}
       <div className="p-4 md:p-8">
         {loading ? (
-          <div className="space-y-4 animate-pulse">
-            {[...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-32 border border-slate-100" />)}
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => <div key={i} className="skeleton rounded-2xl h-32" />)}
           </div>
         ) : mainTab === 'config' ? (
           <ConfigTab orgId={orgId!} stages={filteredStages} allStages={stages} steps={steps} setSteps={setSteps}
@@ -297,14 +298,25 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
 
   const handleDeleteStep = async (stepId: string) => {
     if (isPlanBlocked) return
-    await deleteDoc(doc(db, 'cadenceSteps', stepId))
-    setSteps(prev => prev.filter(s => s.id !== stepId))
+    try {
+      await deleteDoc(doc(db, 'cadenceSteps', stepId))
+      setSteps(prev => prev.filter(s => s.id !== stepId))
+      toast.success('Etapa excluída')
+    } catch (err) {
+      console.error('Error deleting step:', err)
+      toast.error('Erro ao excluir etapa')
+    }
   }
 
   const handleToggleStep = async (stepId: string, isActive: boolean) => {
     if (isPlanBlocked) return
-    await updateDoc(doc(db, 'cadenceSteps', stepId), { isActive: !isActive })
-    setSteps(prev => prev.map(s => s.id === stepId ? { ...s, isActive: !isActive } : s))
+    try {
+      await updateDoc(doc(db, 'cadenceSteps', stepId), { isActive: !isActive })
+      setSteps(prev => prev.map(s => s.id === stepId ? { ...s, isActive: !isActive } : s))
+    } catch (err) {
+      console.error('Error toggling step:', err)
+      toast.error('Erro ao alterar etapa')
+    }
   }
 
   const saveAutomationConfig = async (updates: Partial<AutomationConfig>) => {
@@ -437,6 +449,9 @@ function ConfigTab({ orgId, stages, allStages, steps, setSteps, autoConfig, setA
                   {/* Timeline */}
                   <div className="relative mt-4">
                     {stageSteps.length > 0 && <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-200" />}
+                    {stageSteps.length === 0 && (
+                      <p className="text-center text-sm text-slate-400 py-6">Nenhuma etapa de cadência configurada para esta fase.</p>
+                    )}
 
                     {stageSteps.map((step, i) => {
                       const Icon = CHANNEL_ICONS[step.contactMethod]
@@ -685,8 +700,10 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
         const ref = await addDoc(collection(db, 'cadenceSteps'), data)
         onSaved({ id: ref.id, ...data } as CadenceStep)
       }
+      toast.success(step ? 'Etapa atualizada!' : 'Etapa criada!')
     } catch (err) {
       console.error('Error saving step:', err)
+      toast.error('Erro ao salvar etapa')
     } finally {
       setSaving(false)
     }
@@ -701,7 +718,7 @@ function StepModal({ orgId, stageId, step, existingSteps, isPlanBlocked, onClose
       <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-semibold text-slate-900">{step ? 'Editar Step' : 'Novo Step'}</h3>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100"><XMarkIcon className="w-5 h-5 text-slate-500" /></button>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-slate-100" aria-label="Fechar"><XMarkIcon className="w-5 h-5 text-slate-500" /></button>
         </div>
 
         <div className="space-y-4">

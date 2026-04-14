@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isSuperAdmin } from '@/lib/superAdmin'
 import { addCredits } from '@/lib/credits'
 import { getAdminDb } from '@/lib/firebaseAdmin'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 async function requireSuperAdmin(req: NextRequest): Promise<string | NextResponse> {
   const email = req.headers.get('x-user-email')?.toLowerCase()
@@ -15,6 +16,12 @@ async function requireSuperAdmin(req: NextRequest): Promise<string | NextRespons
 }
 
 export async function GET(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`super-admin:${ip}`, { limit: 20, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const result = await requireSuperAdmin(req)
   if (result instanceof NextResponse) return result
 
@@ -48,6 +55,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`super-admin:${ip}`, { limit: 20, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const result = await requireSuperAdmin(req)
   if (result instanceof NextResponse) return result
 

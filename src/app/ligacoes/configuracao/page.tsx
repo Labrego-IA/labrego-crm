@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
@@ -232,10 +233,10 @@ export default function ConfiguracaoPage() {
       await setDoc(docRef, updatedConfig)
       setConfig(updatedConfig as CallRoutingConfig)
       setHasChanges(false)
-      alert('Configuracoes salvas com sucesso!')
+      toast.success('Configurações salvas com sucesso!')
     } catch (error) {
       console.error('Error saving config:', error)
-      alert('Erro ao salvar configuracoes')
+      toast.error('Erro ao salvar configurações')
     } finally {
       setSaving(false)
     }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { Users, Search, MoreVertical, Pencil, Ban, Trash2, CheckCircle, X, UserX } from 'lucide-react'
 import { PLAN_DISPLAY } from '@/types/plan'
 import { useCrmUser } from '@/contexts/CrmUserContext'
@@ -163,7 +164,7 @@ export default function SuperAdminUsuariosPage() {
       setConfirmAction(null)
     } catch (err: any) {
       console.error('[super-admin/usuarios] action error:', err)
-      alert(err.message)
+      toast.error(err.message)
     } finally {
       setActionLoading(false)
     }
@@ -468,7 +469,7 @@ export default function SuperAdminUsuariosPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">Editar Usuario</h3>
-              <button onClick={handleCloseEdit} className="p-1 rounded-lg hover:bg-gray-100 transition">
+              <button onClick={handleCloseEdit} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>

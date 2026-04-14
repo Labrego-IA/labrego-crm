@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import TextAgentWizard from '@/components/agentes/TextAgentWizard'
@@ -59,8 +60,10 @@ export default function EmailConfigPage() {
         body: JSON.stringify({ ...config, orgId }),
       })
       setDirty(false)
+      toast.success('Configuração salva com sucesso!')
     } catch (err) {
       console.error('Erro ao salvar:', err)
+      toast.error('Erro ao salvar configuração')
     } finally {
       setSaving(false)
     }

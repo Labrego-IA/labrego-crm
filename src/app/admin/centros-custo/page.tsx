@@ -387,6 +387,7 @@ export default function AdminCentrosCustoPage() {
               <button
                 onClick={handleCloseModal}
                 className="p-1 text-neutral-400 hover:text-neutral-600"
+                aria-label="Fechar"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>

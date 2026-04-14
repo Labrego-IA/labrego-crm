@@ -531,6 +531,12 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         <link rel="apple-touch-icon" href="/icon-512.png" />
       </head>
       <body className="bg-slate-50 dark:bg-[#0F0A2E] dark:text-white">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-white focus:rounded-lg focus:text-sm focus:font-medium"
+        >
+          Pular para o conteúdo principal
+        </a>
         <ImpersonationProvider>
         <PartnerViewProvider memberships={allMemberships}>
         <CrmUserProvider userEmail={userEmail} userUid={userUid} userPhoto={userPhoto} orgId={orgId} orgName={orgName} orgPlan={orgPlan} orgCreatedAt={orgCreatedAt} orgPlanSubscribedAt={orgPlanSubscribedAt} member={member}>
@@ -540,6 +546,8 @@ export default function RootLayout({ children }: CrmLayoutProps) {
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar - Desktop */}
           <aside
+            role="navigation"
+            aria-label="Menu principal"
             className={`
               ${sidebarCollapsed ? 'w-20' : 'w-72'}
               flex-shrink-0 transition-all duration-300 ease-in-out
@@ -553,11 +561,12 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           </aside>
 
           {/* Mobile sidebar */}
-          <div className={`md:hidden fixed inset-0 z-50 ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+          <div className={`md:hidden fixed inset-0 z-50 ${mobileOpen ? 'pointer-events-auto' : 'pointer-events-none'}`} role="dialog" aria-modal={mobileOpen} aria-label="Menu de navegação">
             {/* Overlay */}
             <div
               className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
               onClick={() => setMobileOpen(false)}
+              aria-hidden="true"
             />
 
             {/* Sidebar */}
@@ -576,7 +585,7 @@ export default function RootLayout({ children }: CrmLayoutProps) {
           </div>
 
           {/* Main content */}
-          <main className="flex-1 flex flex-col overflow-hidden">
+          <main id="main-content" className="flex-1 flex flex-col overflow-hidden" role="main">
             {/* Header */}
             <header className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200/60 dark:border-navy-mid px-4 py-3">
               <div className="flex items-center justify-between">
@@ -584,8 +593,9 @@ export default function RootLayout({ children }: CrmLayoutProps) {
                 <button
                   onClick={() => setMobileOpen(true)}
                   className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
+                  aria-label="Abrir menu"
                 >
-                  <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>

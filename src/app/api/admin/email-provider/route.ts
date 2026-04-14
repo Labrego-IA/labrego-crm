@@ -6,6 +6,8 @@ import {
   type EmailProviderConfig,
   type EmailProviderId,
 } from '@/lib/email/emailProvider'
+import { requireOrgId } from '@/lib/orgResolver'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 const VALID_PROVIDERS: EmailProviderId[] = ['gmail', 'resend', 'sendgrid']
 
@@ -26,15 +28,22 @@ async function verifyAuth(req: NextRequest): Promise<{ uid: string } | null> {
  * Returns the email provider configuration for an organization.
  */
 export async function GET(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`email-provider:${ip}`, { limit: 20, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await verifyAuth(req)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const orgId = req.nextUrl.searchParams.get('orgId')
-  if (!orgId) {
-    return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
+  const orgCtx = await requireOrgId(req.headers)
+  if (!orgCtx) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  const orgId = orgCtx.orgId
 
   try {
     const config = await getEmailProviderConfig(orgId)
@@ -60,18 +69,26 @@ export async function GET(req: NextRequest) {
  * Updates the email provider configuration.
  */
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`email-provider:${ip}`, { limit: 20, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const user = await verifyAuth(req)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const orgCtx = await requireOrgId(req.headers)
+  if (!orgCtx) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const orgId = orgCtx.orgId
+
   try {
     const body = await req.json()
-    const { orgId, primaryProvider, fallbackProvider, fromName, fromEmail, resendApiKey, sendgridApiKey } = body
-
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId is required' }, { status: 400 })
-    }
+    const { primaryProvider, fallbackProvider, fromName, fromEmail, resendApiKey, sendgridApiKey } = body
 
     if (primaryProvider && !VALID_PROVIDERS.includes(primaryProvider)) {
       return NextResponse.json({ error: 'Invalid primary provider' }, { status: 400 })

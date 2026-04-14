@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
 import { replaceVariables } from '@/types/campaign'
 import { getEmailProviderConfig, createProvider } from '@/lib/email/emailProvider'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -12,6 +13,12 @@ const BATCH_SIZE = 20
 const BATCH_INTERVAL_MS = 2000
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`campaigns-send:${ip}`, { limit: 5, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const { campaignId, orgId } = body as { campaignId: string; orgId: string }

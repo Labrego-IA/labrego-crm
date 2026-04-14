@@ -5,6 +5,7 @@ import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
+import { toast } from 'sonner'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import {
@@ -238,7 +239,7 @@ export default function NewProposalCRMPage() {
       const data = await res.json()
       if (data.result) setValue('context', data.result)
     } catch (err: any) {
-      alert(err.message)
+      toast.error(err.message)
     } finally {
       setTransforming(false)
     }
@@ -282,7 +283,7 @@ export default function NewProposalCRMPage() {
       router.push(returnUrl || `/contatos/${clientId}`)
     } catch (error) {
       console.error('Erro ao criar proposta', error)
-      alert('Erro ao criar proposta. Tente novamente.')
+      toast.error('Erro ao criar proposta. Tente novamente.')
     } finally {
       setGenerating(false)
     }

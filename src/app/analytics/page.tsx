@@ -879,13 +879,13 @@ function AnalyticsDashboard() {
 
 function LoadingSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
+    <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white dark:bg-surface-dark rounded-2xl p-5 h-28 border border-slate-100" />
+          <div key={i} className="skeleton rounded-2xl p-5 h-28" />
         ))}
       </div>
-      <div className="bg-white dark:bg-surface-dark rounded-2xl p-6 h-80 border border-slate-100" />
+      <div className="skeleton rounded-2xl p-6 h-80" />
     </div>
   )
 }

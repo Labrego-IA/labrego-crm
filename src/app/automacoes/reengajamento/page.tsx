@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, useCallback } from 'react'
+import { toast } from 'sonner'
 import {
   collection,
   doc,
@@ -164,8 +165,10 @@ function ReengajamentoContent() {
         updatedAt: updated.updatedAt,
       })
       setConfig({ ...updated, id: configId })
+      toast.success('Configuração de reengajamento salva!')
     } catch (err) {
       console.error('Error saving reengagement config:', err)
+      toast.error('Erro ao salvar configuração')
     } finally {
       setSaving(false)
     }
@@ -174,8 +177,8 @@ function ReengajamentoContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50/50 p-8">
-        <div className="space-y-4 animate-pulse">
-          {[...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-32 border border-slate-100" />)}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => <div key={i} className="skeleton rounded-2xl h-32" />)}
         </div>
       </div>
     )

@@ -8,14 +8,22 @@ import { NextResponse } from 'next/server'
 import { getConnectionStatus, getQRCodeImage } from '@/lib/channels/zapiConnector'
 import { getWhatsAppConnection, saveWhatsAppConnection } from '@/lib/agentConversation'
 import type { WhatsAppConnectionStatus } from '@/types/agentConfig'
+import { requireOrgId } from '@/lib/orgResolver'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export async function GET(request: Request) {
+  const ip = getClientIp(new Headers(request.headers))
+  const rl = checkRateLimit(`whatsapp-status:${ip}`, { limit: 30, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
-    const { searchParams } = new URL(request.url)
-    const orgId = searchParams.get('orgId')
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
+    const orgCtx = await requireOrgId(new Headers(request.headers))
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const orgId = orgCtx.orgId
 
     const conn = await getWhatsAppConnection(orgId)
     if (!conn?.instanceId || !conn?.instanceToken) {

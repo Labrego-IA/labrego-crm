@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useFreePlanGuard } from '@/hooks/useFreePlanGuard'
@@ -368,10 +369,10 @@ export default function DisparoPage() {
       if (data.success) {
         setReport(data.report)
       } else {
-        alert('Erro ao carregar relatorio: ' + data.error)
+        toast.error('Erro ao carregar relatório: ' + data.error)
       }
     } catch (error) {
-      alert('Erro ao carregar relatorio: ' + String(error))
+      toast.error('Erro ao carregar relatório: ' + String(error))
     } finally {
       setReportLoading(false)
     }
@@ -545,6 +546,7 @@ export default function DisparoPage() {
                       onClick={handleCancelTrigger}
                       className="px-4 py-3 bg-red-100 text-red-700 font-medium rounded-xl hover:bg-red-200 transition-colors"
                       title="Cancelar"
+                      aria-label="Cancelar disparo"
                     >
                       <XCircleIcon className="w-5 h-5" />
                     </button>
@@ -685,6 +687,9 @@ export default function DisparoPage() {
 
                 {/* Lista de ligacoes em tempo real */}
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                  {triggerCalls.length === 0 && !triggering && (
+                    <p className="text-center text-sm text-slate-400 py-8">Nenhuma ligação realizada ainda.</p>
+                  )}
                   {triggerCalls.map((call, i) => (
                     <div
                       key={i}

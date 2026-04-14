@@ -286,7 +286,7 @@ export default function SuperAdminPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900">{editingOrg ? 'Editar Empresa' : 'Nova Empresa'}</h3>
-              <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 transition">
+              <button onClick={handleCloseModal} className="p-1 rounded-lg hover:bg-gray-100 transition" aria-label="Fechar">
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>

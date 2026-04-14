@@ -108,6 +108,7 @@ export default function PromptPreview({ answers, open, onClose, onSave, savedCus
             <button
               onClick={onClose}
               className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+              aria-label="Fechar"
             >
               <XMarkIcon className="w-5 h-5 text-slate-500" />
             </button>

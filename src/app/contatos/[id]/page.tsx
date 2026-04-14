@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { db, storage } from '@/lib/firebaseClient'
 import { formatDate, formatCurrency, formatDateTime, formatWhatsAppNumber } from '@/lib/format'
+import { toast } from 'sonner'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import {
   collection,
@@ -625,7 +626,7 @@ export default function ContactDetailsPage() {
   const handleSaveEdit = async () => {
     if (isPlanBlocked) return
     if (!editForm.name.trim() || !editForm.phone.trim() || !id) {
-      alert('Nome e telefone são obrigatórios')
+      toast.error('Nome e telefone são obrigatórios')
       return
     }
 
@@ -683,7 +684,7 @@ export default function ContactDetailsPage() {
       setEditPhotoPreview(null)
     } catch (error) {
       console.error('Erro ao salvar:', error)
-      alert('Erro ao salvar contato')
+      toast.error('Erro ao salvar contato')
     } finally {
       setSavingEdit(false)
     }
@@ -743,7 +744,7 @@ export default function ContactDetailsPage() {
       setEditingPartners(false)
     } catch (error) {
       console.error('Erro ao salvar sócios:', error)
-      alert('Erro ao salvar sócios')
+      toast.error('Erro ao salvar sócios')
     } finally {
       setSavingPartners(false)
     }
@@ -759,7 +760,7 @@ export default function ContactDetailsPage() {
       router.push('/contatos')
     } catch (error) {
       console.error('Erro ao excluir:', error)
-      alert('Erro ao excluir contato')
+      toast.error('Erro ao excluir contato')
     } finally {
       setDeleting(false)
     }
@@ -812,7 +813,7 @@ export default function ContactDetailsPage() {
       setFiles((prev) => [...prev, { id: fileRef.id, ...newFile }])
     } catch (error) {
       console.error('Error uploading file:', error)
-      alert('Erro ao fazer upload do arquivo')
+      toast.error('Erro ao fazer upload do arquivo')
     } finally {
       setUploadingFile(false)
       e.target.value = ''
@@ -828,7 +829,7 @@ export default function ContactDetailsPage() {
         const hasSubfolders = folders.some((f) => f.parentId === deletingItem.id)
         const hasFiles = files.some((f) => f.folderId === deletingItem.id)
         if (hasSubfolders || hasFiles) {
-          alert('Pasta contém arquivos ou subpastas. Remova-os primeiro.')
+          toast.warning('Pasta contém arquivos ou subpastas. Remova-os primeiro.')
           setDeletingItem(null)
           return
         }

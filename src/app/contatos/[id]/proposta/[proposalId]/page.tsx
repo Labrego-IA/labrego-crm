@@ -5,6 +5,7 @@ import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
+import { toast } from 'sonner'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import { useProposalDataAccess } from '@/hooks/useProposalDataAccess'
 import {
@@ -163,7 +164,7 @@ export default function EditProposalCRMPage() {
         }
 
         if (!proposalSnap.exists()) {
-          alert('Proposta não encontrada.')
+          toast.error('Proposta não encontrada.')
           router.push(`/contatos/${clientId}`)
           return
         }
@@ -208,7 +209,7 @@ export default function EditProposalCRMPage() {
         setProposalCreatedAt(data.createdAt || '')
       } catch (error) {
         console.error('Error loading data:', error)
-        alert('Erro ao carregar proposta.')
+        toast.error('Erro ao carregar proposta.')
       } finally {
         setLoading(false)
       }
@@ -285,7 +286,7 @@ export default function EditProposalCRMPage() {
       const data = await res.json()
       if (data.result) setValue('context', data.result)
     } catch (err: any) {
-      alert(err.message)
+      toast.error(err.message)
     } finally {
       setTransforming(false)
     }
@@ -329,7 +330,7 @@ export default function EditProposalCRMPage() {
       router.push(`/contatos/${clientId}`)
     } catch (error) {
       console.error('Erro ao atualizar proposta', error)
-      alert('Erro ao atualizar proposta. Tente novamente.')
+      toast.error('Erro ao atualizar proposta. Tente novamente.')
     } finally {
       setGenerating(false)
     }

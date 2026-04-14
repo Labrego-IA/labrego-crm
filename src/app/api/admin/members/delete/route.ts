@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { ensurePartnerHasOwnOrg } from '@/lib/partnerOrg'
 import { unlinkLeaderPartners } from '@/lib/unlinkLeaderPartners'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export const runtime = 'nodejs'
 
@@ -12,6 +13,12 @@ export const runtime = 'nodejs'
  * 2. Deleting their Firestore member document (removes from list)
  */
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`members-delete:${ip}`, { limit: 5, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const callerEmail = req.headers.get('x-user-email')?.toLowerCase()
   if (!callerEmail) {
     return NextResponse.json({ error: 'unauthenticated' }, { status: 401 })

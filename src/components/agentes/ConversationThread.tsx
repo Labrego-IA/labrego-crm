@@ -206,6 +206,7 @@ export default function ConversationThread({
               onClick={handleSend}
               disabled={!newMessage.trim() || sending}
               className="p-2.5 bg-secondary hover:bg-secondary/90 text-slate-900 rounded-xl transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              aria-label="Enviar mensagem"
             >
               <PaperAirplaneIcon className="w-5 h-5" />
             </button>

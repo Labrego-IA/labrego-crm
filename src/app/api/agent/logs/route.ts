@@ -6,15 +6,24 @@
 
 import { NextResponse } from 'next/server'
 import { getAdminDb } from '@/lib/firebaseAdmin'
+import { requireOrgId } from '@/lib/orgResolver'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const orgId = searchParams.get('orgId')
-    if (!orgId) {
-      return NextResponse.json({ error: 'orgId obrigatorio' }, { status: 400 })
-    }
+  const ip = getClientIp(new Headers(request.headers))
+  const rl = checkRateLimit(`agent-logs:${ip}`, { limit: 30, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
 
+  try {
+    const orgCtx = await requireOrgId(new Headers(request.headers))
+    if (!orgCtx) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const orgId = orgCtx.orgId
+
+    const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '50')
     const channel = searchParams.get('channel')
     const action = searchParams.get('action')

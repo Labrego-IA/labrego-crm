@@ -407,14 +407,14 @@ export default function FunnelHubPage() {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-surface-dark/80 p-4 md:p-6">
         <div className="mb-8">
-          <div className="h-8 w-48 bg-slate-200 rounded-lg animate-pulse" />
-          <div className="h-4 w-32 bg-slate-200 rounded mt-2 animate-pulse" />
+          <div className="skeleton h-8 w-48 rounded-lg" />
+          <div className="skeleton h-4 w-32 rounded mt-2" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map(i => (
-            <div key={i} className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 p-6 h-44 animate-pulse">
-              <div className="h-5 w-32 bg-slate-200 rounded" />
-              <div className="h-4 w-24 bg-slate-200 rounded mt-3" />
+            <div key={i} className="bg-white dark:bg-surface-dark rounded-xl border border-slate-200 dark:border-white/10 p-6 h-44">
+              <div className="skeleton h-5 w-32 rounded" />
+              <div className="skeleton h-4 w-24 rounded mt-3" />
             </div>
           ))}
         </div>

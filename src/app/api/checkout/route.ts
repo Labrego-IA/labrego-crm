@@ -3,12 +3,19 @@ import { stripe } from '@/lib/stripe'
 import { getStripePriceId, isPaidPlan } from '@/lib/stripePrices'
 import { PLAN_DISPLAY, PLAN_LIMITS } from '@/types/plan'
 import type { PlanId } from '@/types/plan'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 function isValidPlan(plan: string): plan is PlanId {
   return plan in PLAN_LIMITS
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`checkout:${ip}`, { limit: 10, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const { planId, orgId, userEmail, userName, userPhone } = body

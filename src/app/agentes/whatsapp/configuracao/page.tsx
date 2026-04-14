@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
 import { useCrmUser } from '@/contexts/CrmUserContext'
 import WhatsAppQRConnect from '@/components/agentes/WhatsAppQRConnect'
 import TextAgentWizard from '@/components/agentes/TextAgentWizard'
@@ -65,8 +66,10 @@ export default function WhatsAppConfigPage() {
         body: JSON.stringify({ ...config, orgId }),
       })
       setDirty(false)
+      toast.success('Configuração salva com sucesso!')
     } catch (err) {
       console.error('Erro ao salvar:', err)
+      toast.error('Erro ao salvar configuração')
     } finally {
       setSaving(false)
     }

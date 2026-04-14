@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminDb, getAdminAuth } from '@/lib/firebaseAdmin'
 import { unlinkLeaderPartners } from '@/lib/unlinkLeaderPartners'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 
 export const runtime = 'nodejs'
 
@@ -13,6 +14,12 @@ export const runtime = 'nodejs'
  * 3. Deletes the Firebase Auth user
  */
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(new Headers(req.headers))
+  const rl = checkRateLimit(`account-delete:${ip}`, { limit: 3, windowSeconds: 60 })
+  if (!rl.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const callerEmail = req.headers.get('x-user-email')?.toLowerCase()
   const callerUid = req.headers.get('x-user-uid')
 

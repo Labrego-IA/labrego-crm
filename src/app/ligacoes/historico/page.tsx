@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { db } from '@/lib/firebaseClient'
 import {
@@ -294,7 +295,7 @@ export default function HistoricoLigacoesPage() {
   const handleDownloadZip = async () => {
     const recordingsToDownload = filteredCalls.filter((c) => c.recordingUrl)
     if (recordingsToDownload.length === 0) {
-      alert('Nenhuma gravacao encontrada nos resultados filtrados.')
+      toast.warning('Nenhuma gravação encontrada nos resultados filtrados.')
       return
     }
 
@@ -323,7 +324,7 @@ export default function HistoricoLigacoesPage() {
       }
 
       if (downloaded === 0) {
-        alert('Nao foi possivel baixar nenhuma gravacao.')
+        toast.warning('Não foi possível baixar nenhuma gravação.')
         setDownloading(false)
         return
       }
@@ -339,7 +340,7 @@ export default function HistoricoLigacoesPage() {
       URL.revokeObjectURL(url)
     } catch (err) {
       console.error('[historico] Erro ao gerar ZIP:', err)
-      alert('Erro ao gerar arquivo ZIP: ' + String(err))
+      toast.error('Erro ao gerar arquivo ZIP: ' + String(err))
     } finally {
       setDownloading(false)
     }
