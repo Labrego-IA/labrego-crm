@@ -79,7 +79,7 @@ export default function AgentesDashboardPage() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-3">
           <SparklesIcon className="w-7 h-7 text-cyan-600" />
           Painel de Agentes IA
         </h1>
@@ -87,7 +87,7 @@ export default function AgentesDashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         <StatCard
           icon={<ChatBubbleLeftRightIcon className="w-5 h-5" />}
           label="Total Conversas"
@@ -122,23 +122,23 @@ export default function AgentesDashboardPage() {
 
       {/* Channel Breakdown */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+          <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
             <ChatBubbleLeftRightIcon className="w-5 h-5 text-green-400" />
             WhatsApp
           </h3>
-          <div className="text-3xl font-bold text-slate-800 mb-1">{stats?.whatsappCount || 0}</div>
+          <div className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-1">{stats?.whatsappCount || 0}</div>
           <p className="text-slate-400 text-sm">conversas</p>
           <a href="/agentes/whatsapp/conversas" className="mt-4 inline-block text-cyan-600 text-sm hover:underline">
             Ver conversas →
           </a>
         </div>
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+          <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
             <EnvelopeIcon className="w-5 h-5 text-blue-400" />
             Email
           </h3>
-          <div className="text-3xl font-bold text-slate-800 mb-1">{stats?.emailCount || 0}</div>
+          <div className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-1">{stats?.emailCount || 0}</div>
           <p className="text-slate-400 text-sm">conversas</p>
           <a href="/agentes/email/conversas" className="mt-4 inline-block text-cyan-600 text-sm hover:underline">
             Ver conversas →
@@ -147,8 +147,8 @@ export default function AgentesDashboardPage() {
       </div>
 
       {/* Recent Conversations */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <h3 className="text-slate-800 font-semibold mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+        <h3 className="text-slate-800 dark:text-slate-200 font-semibold mb-4 flex items-center gap-2">
           <ClockIcon className="w-5 h-5 text-slate-400" />
           Conversas Recentes
         </h3>
@@ -160,17 +160,17 @@ export default function AgentesDashboardPage() {
               <a
                 key={conv.id}
                 href={`/agentes/${conv.channel}/conversas`}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
               >
                 {/* Avatar */}
-                <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 text-sm font-medium flex-shrink-0">
+                <div className="w-9 h-9 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 text-sm font-medium flex-shrink-0">
                   {(conv.contactName || '?')[0].toUpperCase()}
                 </div>
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-slate-800 text-sm font-medium truncate">{conv.contactName}</span>
+                    <span className="text-slate-800 dark:text-slate-200 text-sm font-medium truncate">{conv.contactName}</span>
                     <span className={`px-1 py-0.5 rounded text-[10px] font-medium ${
                       conv.channel === 'whatsapp' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'
                     }`}>
@@ -200,11 +200,11 @@ function StatCard({ icon, label, value, color, bgColor, subtitle }: {
   icon: React.ReactNode; label: string; value: number; color: string; bgColor: string; subtitle?: string
 }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5">
+    <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-5">
       <div className={`w-10 h-10 ${bgColor} rounded-xl flex items-center justify-center ${color} mb-3`}>
         {icon}
       </div>
-      <div className="text-2xl font-bold text-slate-800">{value}</div>
+      <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">{value}</div>
       <div className="text-slate-400 text-sm">{label}</div>
       {subtitle && <div className="text-slate-300 text-xs mt-0.5">{subtitle}</div>}
     </div>
@@ -213,7 +213,7 @@ function StatCard({ icon, label, value, color, bgColor, subtitle }: {
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; color: string }> = {
-    active: { label: 'IA', color: 'bg-[#13DEFC]/20 text-cyan-600' },
+    active: { label: 'IA', color: 'bg-secondary/20 text-secondary-700' },
     human_handoff: { label: 'Humano', color: 'bg-yellow-500/20 text-yellow-400' },
     resolved: { label: 'Resolvido', color: 'bg-green-500/20 text-green-400' },
     expired: { label: 'Expirado', color: 'bg-slate-500/20 text-slate-400' },

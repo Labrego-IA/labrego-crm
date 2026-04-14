@@ -19,7 +19,7 @@ export const AGING_COLORS: Record<AgingBand, string> = {
 }
 
 export const CHART_COLORS = [
-  '#13DEFC', '#47c799', '#fbbc05', '#f28b82',
+  '#06B6D4', '#47c799', '#fbbc05', '#f28b82',
   '#06B3D4', '#09B00F', '#171717', '#A3A3A3',
   '#3CD4F5', '#078EA9',
 ]

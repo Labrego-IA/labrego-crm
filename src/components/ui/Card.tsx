@@ -12,9 +12,9 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 const variantClasses: Record<CardVariant, string> = {
   default:
-    'bg-white border border-surface-mid rounded-2xl shadow-subtle',
+    'bg-white border border-surface-mid rounded-2xl shadow-subtle dark:bg-dark dark:border-surface-dark',
   glass:
-    'glass-card rounded-2xl',
+    'glass-card rounded-2xl dark:bg-dark/80 dark:border-surface-dark',
   frost:
     'bg-gradient-to-br from-surface to-secondary-100 rounded-2xl border border-white/30 backdrop-blur-sm',
   dark:

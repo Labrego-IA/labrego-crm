@@ -3,7 +3,7 @@
 import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes, type SelectHTMLAttributes, type ReactNode } from 'react'
 
 const baseClasses =
-  'w-full rounded-xl border border-surface-mid bg-white px-3 py-2.5 text-sm text-navy transition-colors focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none disabled:bg-surface disabled:cursor-not-allowed disabled:text-slate-400 placeholder:text-slate-400'
+  'w-full rounded-xl border border-surface-mid bg-white px-3 py-2.5 text-sm text-navy transition-colors focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none disabled:bg-surface disabled:cursor-not-allowed disabled:text-slate-400 placeholder:text-slate-400 dark:bg-dark dark:border-surface-dark dark:text-slate-100 dark:placeholder:text-slate-500'
 
 const errorClasses =
   'border-error bg-error-50 focus:ring-error/20 focus:border-error'
@@ -19,7 +19,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-navy mb-1.5">
+          <label className="block text-sm font-medium text-navy dark:text-slate-200 mb-1.5">
             {label}
           </label>
         )}
@@ -55,7 +55,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-navy mb-1.5">
+          <label className="block text-sm font-medium text-navy dark:text-slate-200 mb-1.5">
             {label}
           </label>
         )}
@@ -85,7 +85,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-navy mb-1.5">
+          <label className="block text-sm font-medium text-navy dark:text-slate-200 mb-1.5">
             {label}
           </label>
         )}

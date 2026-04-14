@@ -22,7 +22,7 @@ export default function HumanHandoffBanner({ onResumeAI, loading }: HumanHandoff
       <button
         onClick={onResumeAI}
         disabled={loading}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-50 hover:bg-[#13DEFC]/20 text-cyan-600 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-50 hover:bg-secondary/20 text-secondary-700 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
       >
         <SparklesIcon className="w-3.5 h-3.5" />
         Reativar IA

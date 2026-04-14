@@ -10,7 +10,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   if (!member) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[#13DEFC]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-secondary" />
       </div>
     )
   }

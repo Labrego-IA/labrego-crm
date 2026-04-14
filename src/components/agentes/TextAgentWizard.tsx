@@ -204,7 +204,7 @@ export default function TextAgentWizard({ answers, onChange, strengthScore }: Te
         <button
           onClick={() => setActivePhase(Math.min(5, activePhase + 1))}
           disabled={activePhase === 5}
-          className="px-6 py-2 bg-cyan-50 hover:bg-[#13DEFC]/20 text-cyan-600 font-medium rounded-xl transition-colors text-sm disabled:opacity-30"
+          className="px-6 py-2 bg-cyan-50 hover:bg-secondary/20 text-secondary-700 font-medium rounded-xl transition-colors text-sm disabled:opacity-30"
         >
           Proximo
         </button>

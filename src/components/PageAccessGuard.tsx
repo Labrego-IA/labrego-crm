@@ -48,7 +48,7 @@ export default function PageAccessGuard({ children }: PageAccessGuardProps) {
           </p>
           <button
             onClick={() => router.push('/contatos')}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#13DEFC] text-slate-900 font-medium rounded-lg hover:bg-[#13DEFC]/80 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-slate-900 font-medium rounded-lg hover:bg-secondary/80 transition"
           >
             Voltar ao CRM
           </button>

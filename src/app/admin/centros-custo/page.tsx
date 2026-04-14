@@ -28,7 +28,7 @@ import ConfirmCloseDialog from '@/components/ConfirmCloseDialog'
 
 const COST_CENTER_COLORS = [
   '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-  '#EC4899', '#06B6D4', '#13DEFC', '#6366F1', '#14B8A6',
+  '#EC4899', '#06B6D4', '#06B6D4', '#6366F1', '#14B8A6',
   '#84CC16', '#A855F7',
 ]
 

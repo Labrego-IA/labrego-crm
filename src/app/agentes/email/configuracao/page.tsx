@@ -107,7 +107,7 @@ export default function EmailConfigPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-3">
             <EnvelopeIcon className="w-7 h-7 text-cyan-600" />
             Agente Email
           </h1>
@@ -115,14 +115,14 @@ export default function EmailConfigPage() {
         </div>
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 cursor-pointer">
-            <span className="text-slate-600 text-sm">{config.email.enabled ? 'Ativo' : 'Inativo'}</span>
+            <span className="text-slate-600 dark:text-slate-400 text-sm">{config.email.enabled ? 'Ativo' : 'Inativo'}</span>
             <button
               onClick={() => updateConfig({ email: { ...config.email, enabled: !config.email.enabled } })}
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 config.email.enabled ? 'bg-green-500' : 'bg-slate-600'
               }`}
             >
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-navy rounded-full transition-transform ${
                 config.email.enabled ? 'translate-x-6' : ''
               }`} />
             </button>
@@ -131,7 +131,7 @@ export default function EmailConfigPage() {
             onClick={handleSave}
             disabled={!dirty || saving}
             className={`px-6 py-2 rounded-xl font-medium text-sm transition-all ${
-              dirty ? 'bg-[#13DEFC] text-slate-900 hover:bg-[#13DEFC]/90' : 'bg-slate-200 text-slate-300 cursor-not-allowed'
+              dirty ? 'bg-secondary text-slate-900 dark:text-slate-100 hover:bg-secondary-600' : 'bg-slate-200 text-slate-300 cursor-not-allowed'
             }`}
           >
             {saving ? 'Salvando...' : 'Salvar'}
@@ -145,7 +145,7 @@ export default function EmailConfigPage() {
         <p className="text-slate-500 text-sm leading-relaxed">
           Configure o encaminhamento de emails do seu provider (Gmail, Resend ou SendGrid) para o webhook:
         </p>
-        <code className="block mt-2 px-3 py-2 bg-slate-50 rounded-lg text-cyan-600 text-xs">
+        <code className="block mt-2 px-3 py-2 bg-slate-50 dark:bg-navy/80 rounded-lg text-cyan-600 text-xs">
           {typeof window !== 'undefined' ? `${window.location.origin}/api/agent/email/webhook` : '/api/agent/email/webhook'}
         </code>
         <p className="text-slate-300 text-xs mt-2">
@@ -154,15 +154,15 @@ export default function EmailConfigPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 pb-px">
+      <div className="flex gap-2 border-b border-slate-200 dark:border-navy-mid pb-px">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-xl transition-all ${
               activeTab === tab.id
-                ? 'bg-white text-cyan-600 border-b-2 border-[#13DEFC]'
-                : 'text-slate-500 hover:text-slate-600 hover:bg-slate-50'
+                ? 'bg-white dark:bg-navy text-secondary-700 border-b-2 border-secondary'
+                : 'text-slate-500 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5'
             }`}
           >
             {tab.label}
@@ -186,22 +186,22 @@ export default function EmailConfigPage() {
 
         {activeTab === 'configuracoes' && (
           <div className="space-y-6">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Modelo de IA</h3>
+            <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Modelo de IA</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-slate-600 text-sm font-medium mb-1">Modelo</label>
+                  <label className="block text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">Modelo</label>
                   <select
                     value={config.shared.llmModel}
                     onChange={e => updateConfig({ shared: { ...config.shared, llmModel: e.target.value } })}
-                    className="w-64 px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm focus:outline-none focus:border-cyan-500"
+                    className="w-64 px-3 py-2 bg-white dark:bg-navy border border-slate-300 rounded-lg text-slate-800 dark:text-slate-200 text-sm focus:outline-none focus:border-cyan-500"
                   >
                     <option value="gpt-4o-mini">GPT-4o Mini (Rapido e economico)</option>
                     <option value="gpt-4o">GPT-4o (Mais inteligente)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-600 text-sm font-medium mb-1">
+                  <label className="block text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">
                     Temperatura: {config.shared.temperature}
                   </label>
                   <input
@@ -214,17 +214,17 @@ export default function EmailConfigPage() {
               </div>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-slate-800 mb-4">Acoes no CRM</h3>
+            <div className="bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-2xl p-6">
+              <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Acoes no CRM</h3>
               <div className="space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={config.crmActions.autoCreateContact}
                     onChange={e => updateConfig({ crmActions: { ...config.crmActions, autoCreateContact: e.target.checked } })}
-                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 text-cyan-600"
+                    className="w-4 h-4 rounded border-slate-300 bg-slate-50 dark:bg-navy/80 text-cyan-600"
                   />
-                  <span className="text-slate-600 text-sm">Criar contato automaticamente no CRM</span>
+                  <span className="text-slate-600 dark:text-slate-400 text-sm">Criar contato automaticamente no CRM</span>
                 </label>
               </div>
             </div>

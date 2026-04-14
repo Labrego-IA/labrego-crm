@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Target, Bot, Zap, BarChart3 } from 'lucide-react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -233,13 +234,15 @@ function LoginPage() {
           {/* Feature highlights */}
           <div className="space-y-4 pt-4">
             {[
-              { icon: '🎯', text: 'Funis de vendas inteligentes' },
-              { icon: '🤖', text: 'Agentes de voz com IA' },
-              { icon: '⚡', text: 'Automação de cadências' },
-              { icon: '📊', text: 'Analytics em tempo real' },
+              { icon: Target, text: 'Funis de vendas inteligentes' },
+              { icon: Bot, text: 'Agentes de voz com IA' },
+              { icon: Zap, text: 'Automação de cadências' },
+              { icon: BarChart3, text: 'Analytics em tempo real' },
             ].map((feature) => (
               <div key={feature.text} className="flex items-center gap-3">
-                <span className="text-lg">{feature.icon}</span>
+                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.06] border border-white/[0.08]">
+                  <feature.icon className="w-4 h-4 text-secondary" />
+                </div>
                 <span className="text-sm text-slate-300">{feature.text}</span>
               </div>
             ))}

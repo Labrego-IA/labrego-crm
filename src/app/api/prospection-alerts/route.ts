@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: linear-gradient(135deg, #13DEFC, #8B5CF6); padding: 24px; border-radius: 12px 12px 0 0;">
+        <div style="background: linear-gradient(135deg, #06B6D4, #8B5CF6); padding: 24px; border-radius: 12px 12px 0 0;">
           <h1 style="color: white; margin: 0; font-size: 20px;">Voxium CRM</h1>
         </div>
         <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">

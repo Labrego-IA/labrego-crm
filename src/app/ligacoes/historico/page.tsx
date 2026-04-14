@@ -353,20 +353,20 @@ export default function HistoricoLigacoesPage() {
   const hasActiveFilters = filters.search || filters.dateFrom || filters.dateTo || filters.funnelId
 
   return (
-    <div className="h-full bg-slate-50 flex flex-col">
+    <div className="h-full bg-slate-50 dark:bg-navy/80 flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
+      <div className="flex-shrink-0 bg-white dark:bg-navy border-b border-slate-200 dark:border-navy-mid px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Link
               href="/ligacoes/configuracao"
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors flex-shrink-0"
+              className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 transition-colors flex-shrink-0"
             >
-              <ArrowLeftIcon className="w-4 h-4 text-slate-600" />
+              <ArrowLeftIcon className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </Link>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
-                <PhoneIcon className="w-5 h-5 text-[#13DEFC] flex-shrink-0" />
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                <PhoneIcon className="w-5 h-5 text-secondary flex-shrink-0" />
                 <span className="truncate">Historico de Ligacoes</span>
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -377,7 +377,7 @@ export default function HistoricoLigacoesPage() {
           <button
             onClick={handleDownloadZip}
             disabled={downloading || filteredCalls.filter((c) => c.recordingUrl).length === 0}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-[#13DEFC] text-white font-medium rounded-xl hover:bg-[#11c8e3] disabled:opacity-50 transition-colors text-sm flex-shrink-0"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-secondary text-white font-medium rounded-xl hover:bg-secondary-600 disabled:opacity-50 transition-colors text-sm flex-shrink-0"
           >
             {downloading ? (
               <>
@@ -397,11 +397,11 @@ export default function HistoricoLigacoesPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Filters */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-4 mb-6">
           <div className="flex flex-wrap items-end gap-4">
             {/* Search */}
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+            <div className="flex-1 w-full sm:min-w-[200px]">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                 Buscar contato
               </label>
               <div className="relative">
@@ -413,14 +413,14 @@ export default function HistoricoLigacoesPage() {
                     setFilters((f) => ({ ...f, search: e.target.value }))
                   }
                   placeholder="Nome, empresa ou telefone..."
-                  className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/30 focus:border-[#13DEFC]"
+                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
                 />
               </div>
             </div>
 
             {/* Date from */}
-            <div className="min-w-[150px]">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+            <div className="w-full sm:min-w-[150px]">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                 Data inicio
               </label>
               <input
@@ -429,13 +429,13 @@ export default function HistoricoLigacoesPage() {
                 onChange={(e) =>
                   setFilters((f) => ({ ...f, dateFrom: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/30 focus:border-[#13DEFC]"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
               />
             </div>
 
             {/* Date to */}
-            <div className="min-w-[150px]">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+            <div className="w-full sm:min-w-[150px]">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                 Data fim
               </label>
               <input
@@ -444,13 +444,13 @@ export default function HistoricoLigacoesPage() {
                 onChange={(e) =>
                   setFilters((f) => ({ ...f, dateTo: e.target.value }))
                 }
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/30 focus:border-[#13DEFC]"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary"
               />
             </div>
 
             {/* Funnel */}
-            <div className="min-w-[180px]">
-              <label className="block text-xs font-medium text-slate-600 mb-1">
+            <div className="w-full sm:min-w-[180px]">
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
                 Funil
               </label>
               <div className="relative">
@@ -460,7 +460,7 @@ export default function HistoricoLigacoesPage() {
                   onChange={(e) =>
                     setFilters((f) => ({ ...f, funnelId: e.target.value }))
                   }
-                  className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#13DEFC]/30 focus:border-[#13DEFC] appearance-none bg-white"
+                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-navy-mid rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-secondary/30 focus:border-secondary appearance-none bg-white dark:bg-navy"
                 >
                   <option value="">Todos os funis</option>
                   {funnels.map((f) => (
@@ -476,7 +476,7 @@ export default function HistoricoLigacoesPage() {
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                className="flex items-center gap-1 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors"
               >
                 <XMarkIcon className="w-4 h-4" />
                 Limpar
@@ -492,7 +492,7 @@ export default function HistoricoLigacoesPage() {
               ? 'Carregando...'
               : `${filteredCalls.length} ligacao${filteredCalls.length !== 1 ? 'es' : ''} encontrada${filteredCalls.length !== 1 ? 's' : ''}`}
             {filteredCalls.filter((c) => c.recordingUrl).length > 0 && (
-              <span className="ml-2 text-[#13DEFC]">
+              <span className="ml-2 text-secondary">
                 ({filteredCalls.filter((c) => c.recordingUrl).length} com gravacao)
               </span>
             )}
@@ -501,12 +501,12 @@ export default function HistoricoLigacoesPage() {
 
         {/* Table */}
         {loading ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 flex flex-col items-center justify-center">
-            <div className="w-10 h-10 border-3 border-slate-200 border-t-[#13DEFC] rounded-full animate-spin mb-4" />
+          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-12 flex flex-col items-center justify-center">
+            <div className="w-10 h-10 border-3 border-slate-200 dark:border-navy-mid border-t-secondary rounded-full animate-spin mb-4" />
             <p className="text-sm text-slate-500">Carregando historico de ligacoes...</p>
           </div>
         ) : filteredCalls.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-12 flex flex-col items-center justify-center">
+          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid p-12 flex flex-col items-center justify-center">
             <PhoneIcon className="w-12 h-12 text-slate-300 mb-3" />
             <p className="text-sm text-slate-500">
               {hasActiveFilters
@@ -515,11 +515,11 @@ export default function HistoricoLigacoesPage() {
             </p>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="bg-white dark:bg-navy rounded-2xl border border-slate-200 dark:border-navy-mid overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50">
+                  <tr className="border-b border-slate-100 bg-slate-50/50 dark:bg-navy/80">
                     <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">
                       Data/Hora
                     </th>
@@ -544,14 +544,14 @@ export default function HistoricoLigacoesPage() {
                   {filteredCalls.map((call) => (
                     <tr
                       key={`${call.clientId}-${call.id}`}
-                      className="hover:bg-slate-50/50 transition-colors"
+                      className="hover:bg-slate-50 dark:hover:bg-white/5/50 transition-colors"
                     >
-                      <td className="px-4 py-3 text-sm text-slate-700 whitespace-nowrap">
+                      <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">
                         {formatDate(call.createdAt)}
                       </td>
                       <td className="px-4 py-3">
                         <div>
-                          <p className="text-sm font-medium text-slate-800">
+                          <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                             {call.contactName}
                           </p>
                           {call.phone && (
@@ -559,10 +559,10 @@ export default function HistoricoLigacoesPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600">
+                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
                         {call.company || '--'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-slate-600 whitespace-nowrap">
+                      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                         {formatDuration(call.duration)}
                       </td>
                       <td className="px-4 py-3">
@@ -574,7 +574,7 @@ export default function HistoricoLigacoesPage() {
                                 ? 'bg-orange-50 text-orange-700'
                                 : call.result === 'error'
                                   ? 'bg-red-50 text-red-700'
-                                  : 'bg-slate-100 text-slate-600'
+                                  : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400'
                           }`}
                         >
                           {call.result || '--'}

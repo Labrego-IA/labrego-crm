@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
 
       const welcomeHtml = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #13DEFC, #8B5CF6); padding: 32px; border-radius: 12px 12px 0 0; text-align: center;">
+          <div style="background: linear-gradient(135deg, #06B6D4, #8B5CF6); padding: 32px; border-radius: 12px 12px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">Voxium CRM</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px;">Sua plataforma de vendas inteligente</p>
           </div>
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
                 <strong>Importante:</strong> Troque sua senha no primeiro acesso em Configurações > Segurança.
               </p>
             </div>
-            <a href="${appUrl}/login" style="display: inline-block; background: linear-gradient(135deg, #13DEFC, #8B5CF6); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
+            <a href="${appUrl}/login" style="display: inline-block; background: linear-gradient(135deg, #06B6D4, #8B5CF6); color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 8px;">
               Acessar o Voxium
             </a>
             <p style="color: #94a3b8; font-size: 12px; margin-top: 24px; margin-bottom: 0;">

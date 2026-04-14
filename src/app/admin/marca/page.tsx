@@ -716,7 +716,7 @@ export default function BrandBookPage() {
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
-                  <span>Theme color: <code className="bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">#13DEFC</code></span>
+                  <span>Theme color: <code className="bg-[#F5F3FF] px-1 rounded text-[#8B5CF6]">#06B6D4</code></span>
                 </div>
               </div>
             </div>

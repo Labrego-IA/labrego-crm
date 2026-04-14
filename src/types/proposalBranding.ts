@@ -24,7 +24,7 @@ export const DEFAULT_PROPOSAL_BRANDING: ProposalBranding = {
   instagram: '',
   logoUrl: '',
   watermarkUrl: '',
-  primaryColor: '#13DEFC',
+  primaryColor: '#06B6D4',
   presentationText: '',
   missionText: '',
   showLogosPage: true,

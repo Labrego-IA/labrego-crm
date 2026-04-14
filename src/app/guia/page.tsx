@@ -501,8 +501,8 @@ export default function GuiaPage() {
       <SectionGroup
         title="Modulos Principais"
         description="Ferramentas do dia a dia para gerenciar suas vendas."
-        accentColor="bg-[#13DEFC]"
-        dotColor="bg-[#13DEFC]"
+        accentColor="bg-secondary"
+        dotColor="bg-secondary"
         sections={moduleSections}
         count={moduleSections.length}
       />

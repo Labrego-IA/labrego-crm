@@ -793,20 +793,20 @@ function AnalyticsDashboard() {
   /* ─── Render ─── */
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-navy/50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 md:px-8 py-5">
+      <div className="bg-white dark:bg-navy border-b border-slate-200 dark:border-navy-mid px-4 md:px-8 py-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Análises & Insights</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Análises & Insights</h1>
             <p className="text-sm text-slate-500 mt-1">Dashboards analíticos para tomada de decisão</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={loadData} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+            <button onClick={loadData} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
               <ArrowPathIcon className="w-4 h-4" />
               Atualizar
             </button>
-            <button onClick={handleExportPDF} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+            <button onClick={handleExportPDF} className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
               <ArrowDownTrayIcon className="w-4 h-4" />
               PDF
             </button>
@@ -819,17 +819,17 @@ function AnalyticsDashboard() {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3 mt-4">
-          <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
+          <div className="flex bg-slate-100 dark:bg-white/10 rounded-lg p-1 gap-1">
             {PERIOD_OPTIONS.map(p => (
               <button key={p.value} onClick={() => setPeriodPreset(p.value)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${periodPreset === p.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${periodPreset === p.value ? 'bg-white dark:bg-navy text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-300'}`}>
                 {p.label}
               </button>
             ))}
           </div>
 
           <select value={selectedFunnel} onChange={e => setSelectedFunnel(e.target.value)}
-            className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400">
+            className="text-sm border border-slate-200 dark:border-navy-mid rounded-lg px-3 py-2 bg-white dark:bg-navy text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-400">
             <option value="all">Todos os Funis</option>
             {funnelsRef.current.map(f => (
               <option key={f.id} value={f.id}>{f.name}</option>
@@ -841,7 +841,7 @@ function AnalyticsDashboard() {
         <div className="flex gap-1 mt-4 overflow-x-auto pb-1">
           {TABS.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}>
+              className={`whitespace-nowrap px-4 py-2 text-sm font-medium rounded-lg transition-all ${activeTab === tab.id ? 'bg-primary-50 text-primary-700 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5'}`}>
               {tab.label}
             </button>
           ))}
@@ -880,12 +880,12 @@ function AnalyticsDashboard() {
 function LoadingSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl p-5 h-28 border border-slate-100" />
+          <div key={i} className="bg-white dark:bg-navy rounded-2xl p-5 h-28 border border-slate-100" />
         ))}
       </div>
-      <div className="bg-white rounded-2xl p-6 h-80 border border-slate-100" />
+      <div className="bg-white dark:bg-navy rounded-2xl p-6 h-80 border border-slate-100" />
     </div>
   )
 }
@@ -900,7 +900,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
       <div className="bg-red-50 rounded-full p-4 mb-4">
         <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
       </div>
-      <h3 className="text-lg font-semibold text-slate-900 mb-2">Erro ao carregar dados</h3>
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">Erro ao carregar dados</h3>
       <p className="text-sm text-slate-500 mb-6 text-center max-w-md">{message}</p>
       <button onClick={onRetry}
         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl hover:bg-primary/80 transition-colors">
@@ -918,10 +918,10 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 function EmptyState({ hasFunnels, onRetry }: { hasFunnels: boolean; onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-20">
-      <div className="bg-slate-100 rounded-full p-4 mb-4">
+      <div className="bg-slate-100 dark:bg-white/10 rounded-full p-4 mb-4">
         <ChartBarIcon className="w-8 h-8 text-slate-400" />
       </div>
-      <h3 className="text-lg font-semibold text-slate-900 mb-2">
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
         {hasFunnels ? 'Nenhum contato encontrado' : 'Configure um funil para ver analytics completo'}
       </h3>
       <p className="text-sm text-slate-500 mb-6 text-center max-w-md">
@@ -930,7 +930,7 @@ function EmptyState({ hasFunnels, onRetry }: { hasFunnels: boolean; onRetry: () 
           : 'Acesse Configurações > Funis para criar seu primeiro funil de vendas e começar a acompanhar seus contatos.'}
       </p>
       <button onClick={onRetry}
-        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-navy border border-slate-200 dark:border-navy-mid rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
         <ArrowPathIcon className="w-4 h-4" />
         Atualizar
       </button>
@@ -964,15 +964,15 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         {kpiCards.map(card => (
-          <div key={card.label} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm min-w-0">
+          <div key={card.label} className="bg-white dark:bg-navy rounded-2xl p-5 border border-slate-100 shadow-sm min-w-0">
             <div className="flex items-center gap-2 mb-3">
               <span className={`p-2 rounded-xl ${card.color}`}>
                 <card.icon className="w-4 h-4" />
               </span>
             </div>
-            <p className="text-lg xl:text-xl font-bold text-slate-900 truncate">{typeof card.value === 'number' ? card.value.toLocaleString('pt-BR') : card.value}</p>
+            <p className="text-lg xl:text-xl font-bold text-slate-900 dark:text-slate-100 truncate">{typeof card.value === 'number' ? card.value.toLocaleString('pt-BR') : card.value}</p>
             <p className="text-xs text-slate-500 mt-1 truncate">{card.label}</p>
             {card.sub && <p className="text-xs text-slate-400 mt-0.5 truncate">{card.sub}</p>}
           </div>
@@ -981,8 +981,8 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
 
       {/* Value by Stage Chart */}
       {valueByStage.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-4">Valor do Pipeline por Etapa</h3>
+        <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Valor do Pipeline por Etapa</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={valueByStage}>
               <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#94a3b8" />
@@ -1006,8 +1006,8 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
       )}
 
       {/* Temporal Chart */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Evolução Temporal</h3>
+      <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Evolução Temporal</h3>
         {temporal.length === 0 ? (
           <p className="text-sm text-slate-400 text-center py-12">Sem dados no período selecionado</p>
         ) : (
@@ -1020,7 +1020,7 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
               <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" width={40} />
               <RechartsTooltip content={<ChartTooltip />} />
               <Legend />
-              <Line type="monotone" dataKey="newLeads" name="Novos Leads" stroke="#13DEFC" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="newLeads" name="Novos Leads" stroke="#06B6D4" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="converted" name="Convertidos" stroke="#10b981" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="lost" name="Perdidos" stroke="#ef4444" strokeWidth={2} dot={false} />
             </LineChart>
@@ -1030,9 +1030,9 @@ function OverviewTab({ clients, stages, periodStart }: { clients: Client[]; stag
 
       {/* FRT by Seller */}
       {frtKPIs.bySeller.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-slate-700">First Response Time por Vendedor</h3>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">First Response Time por Vendedor</h3>
             <div className="flex items-center gap-2 text-xs">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" /> {'< 2h'}</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 2-8h</span>
@@ -1134,32 +1134,32 @@ function AgingTab({ clients, stages }: { clients: Client[]; stages: FunnelStage[
       </div>
 
       {/* View toggle */}
-      <div className="flex bg-slate-100 rounded-lg p-1 gap-1 w-fit">
+      <div className="flex bg-slate-100 dark:bg-white/10 rounded-lg p-1 gap-1 w-fit">
         <button onClick={() => setAgingView('heatmap')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${agingView === 'heatmap' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${agingView === 'heatmap' ? 'bg-white dark:bg-navy text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500'}`}>
           Heatmap por Etapa
         </button>
         <button onClick={() => setAgingView('creation')}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${agingView === 'creation' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${agingView === 'creation' ? 'bg-white dark:bg-navy text-slate-900 dark:text-slate-100 shadow-sm' : 'text-slate-500'}`}>
           Por Data de Criação
         </button>
       </div>
 
       {agingView === 'heatmap' ? (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
+        <div className="bg-white dark:bg-navy rounded-2xl border border-slate-100 shadow-sm overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-100">
-                <th className="text-left p-4 font-semibold text-slate-600">Etapa</th>
+                <th className="text-left p-4 font-semibold text-slate-600 dark:text-slate-400">Etapa</th>
                 {AGING_BANDS.map(band => (
-                  <th key={band} className="p-4 text-center font-semibold text-slate-600">{band}</th>
+                  <th key={band} className="p-4 text-center font-semibold text-slate-600 dark:text-slate-400">{band}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {stageNames.map(name => (
                 <tr key={name} className="border-b border-slate-50">
-                  <td className="p-4 font-medium text-slate-700">{name}</td>
+                  <td className="p-4 font-medium text-slate-700 dark:text-slate-300">{name}</td>
                   {AGING_BANDS.map(band => {
                     const count = matrix[name]?.[band]?.length || 0
                     return (
@@ -1179,8 +1179,8 @@ function AgingTab({ clients, stages }: { clients: Client[]; stages: FunnelStage[
           </table>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-700 mb-4">Leads por Mês de Criação × Status Atual</h3>
+        <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Leads por Mês de Criação × Status Atual</h3>
           {creationData.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-12">Sem dados</p>
           ) : (
@@ -1203,18 +1203,18 @@ function AgingTab({ clients, stages }: { clients: Client[]; stages: FunnelStage[
       {/* Modal */}
       {modalClients && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setModalClients(null)}>
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-navy rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">{modalTitle} ({modalClients.length})</h3>
-              <button onClick={() => setModalClients(null)} className="p-1 rounded-lg hover:bg-slate-100">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{modalTitle} ({modalClients.length})</h3>
+              <button onClick={() => setModalClients(null)} className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10">
                 <XMarkIcon className="w-5 h-5 text-slate-500" />
               </button>
             </div>
             <div className="space-y-2">
               {modalClients.slice(0, 50).map(c => (
-                <a key={c.id} href={`/contatos/${c.id}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-slate-100 transition-colors">
+                <a key={c.id} href={`/contatos/${c.id}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 border border-slate-100 transition-colors">
                   <div>
-                    <p className="text-sm font-medium text-slate-700">{c.name as string || 'Sem nome'}</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{c.name as string || 'Sem nome'}</p>
                     <p className="text-xs text-slate-400">{c.company as string || ''}</p>
                   </div>
                   <span className="text-xs text-slate-500">{c.status as string || '—'}</span>
@@ -1245,10 +1245,10 @@ function ProfileTab({ clients }: { clients: Client[] }) {
     <div className="space-y-6">
       {/* Toggle */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-600 font-medium">Comparar com pipeline</span>
+        <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Comparar com pipeline</span>
         <button onClick={() => setCompareMode(!compareMode)}
           className={`relative w-11 h-6 rounded-full transition-colors ${compareMode ? 'bg-primary-500' : 'bg-slate-300'}`}>
-          <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${compareMode ? 'translate-x-5' : ''}`} />
+          <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white dark:bg-navy rounded-full shadow transition-transform ${compareMode ? 'translate-x-5' : ''}`} />
         </button>
       </div>
 
@@ -1278,8 +1278,8 @@ function ProfileChart({ field, label, type, activeClients, pipelineClients, comp
 
   if (type === 'pie') {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">{label}</h3>
+      <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">{label}</h3>
         <div className={`${compareMode ? 'grid grid-cols-2 gap-4' : ''}`}>
           <div>
             {compareMode && <p className="text-xs text-slate-400 mb-2 text-center">Clientes Ativos</p>}
@@ -1309,7 +1309,7 @@ function ProfileChart({ field, label, type, activeClients, pipelineClients, comp
         {/* Legend */}
         <div className="flex flex-wrap gap-2 mt-3">
           {activeData.map((d, i) => (
-            <span key={d.name} className="inline-flex items-center gap-1 text-xs text-slate-600">
+            <span key={d.name} className="inline-flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
               {d.name} ({d.percent}%)
             </span>
@@ -1325,8 +1325,8 @@ function ProfileChart({ field, label, type, activeClients, pipelineClients, comp
     : activeData.map(d => ({ name: d.name, value: d.value }))
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-      <h3 className="text-sm font-semibold text-slate-700 mb-4">{label}</h3>
+    <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+      <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">{label}</h3>
       {barData.length === 0 ? (
         <p className="text-sm text-slate-400 text-center py-12">Sem dados</p>
       ) : (
@@ -1363,8 +1363,8 @@ function OpportunitiesTab({ clients, stages }: { clients: Client[]; stages: Funn
   return (
     <div className="space-y-6">
       {/* Funnel visual */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Funil de Vendas</h3>
+      <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Funil de Vendas</h3>
         {funnelData.length === 0 ? (
           <p className="text-sm text-slate-400 text-center py-8">Nenhuma etapa configurada</p>
         ) : (
@@ -1375,11 +1375,11 @@ function OpportunitiesTab({ clients, stages }: { clients: Client[]; stages: Funn
               return (
                 <div key={stage.name} className="flex items-center gap-4">
                   <div className="w-32 shrink-0 text-right">
-                    <p className="text-sm font-medium text-slate-700">{stage.name}</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{stage.name}</p>
                     <p className="text-xs text-slate-400">{stage.avgDays}d média</p>
                   </div>
                   <div className="flex-1 relative">
-                    <div className="h-10 rounded-lg overflow-hidden bg-slate-50">
+                    <div className="h-10 rounded-lg overflow-hidden bg-slate-50 dark:bg-navy/80">
                       <div className="h-full rounded-lg flex items-center px-3 transition-all" style={{ width: `${width}%`, backgroundColor: stage.color }}>
                         <span className="text-white text-sm font-semibold drop-shadow">{stage.count}</span>
                       </div>
@@ -1416,9 +1416,9 @@ function OpportunitiesTab({ clients, stages }: { clients: Client[]; stages: Funn
       )}
 
       {/* Top Opportunities */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Top Oportunidades Quentes</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Top Oportunidades Quentes</h3>
           <p className="text-xs text-slate-400 mt-1">Contatos em etapas com probabilidade &gt;50%, ordenados por urgência</p>
         </div>
         {topOpps.length === 0 ? (
@@ -1427,7 +1427,7 @@ function OpportunitiesTab({ clients, stages }: { clients: Client[]; stages: Funn
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 text-slate-600">
+                <tr className="bg-slate-50 dark:bg-navy/80 text-slate-600 dark:text-slate-400">
                   <th className="text-left p-3 font-medium">Nome</th>
                   <th className="text-left p-3 font-medium">Empresa</th>
                   <th className="text-left p-3 font-medium">Etapa</th>
@@ -1438,16 +1438,16 @@ function OpportunitiesTab({ clients, stages }: { clients: Client[]; stages: Funn
               </thead>
               <tbody>
                 {topOpps.map(opp => (
-                  <tr key={opp.id} className="border-b border-slate-50 hover:bg-slate-50/50">
+                  <tr key={opp.id} className="border-b border-slate-50 hover:bg-slate-50/50 dark:hover:bg-navy/50">
                     <td className="p-3">
                       <a href={`/contatos/${opp.id}`} className="text-primary-600 hover:text-primary-800 font-medium">{opp.name}</a>
                     </td>
-                    <td className="p-3 text-slate-600">{opp.company || '—'}</td>
-                    <td className="p-3 text-slate-600">{opp.stage}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{opp.company || '—'}</td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400">{opp.stage}</td>
                     <td className="p-3 text-center">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-50 text-primary-700">{opp.probability}%</span>
                     </td>
-                    <td className="p-3 text-center text-slate-600">{opp.daysInStage}d</td>
+                    <td className="p-3 text-center text-slate-600 dark:text-slate-400">{opp.daysInStage}d</td>
                     <td className="p-3 text-center">
                       {opp.isOverdue ? (
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700">Atrasado</span>
@@ -1501,15 +1501,15 @@ function ConversionTab({ clients }: { clients: Client[] }) {
       <div className="flex flex-wrap gap-2">
         {(Object.keys(DIMENSION_LABELS) as ConversionDimension[]).map(dim => (
           <button key={dim} onClick={() => { setDimension(dim); setDrillDimValue(null) }}
-            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${dimension === dim ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-200' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}`}>
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${dimension === dim ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-200' : 'bg-white dark:bg-navy text-slate-500 border border-slate-200 dark:border-navy-mid hover:bg-slate-50 dark:hover:bg-white/5'}`}>
             {DIMENSION_LABELS[dim]}
           </button>
         ))}
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Conversão por {DIMENSION_LABELS[dimension]}</h3>
+      <div className="bg-white dark:bg-navy rounded-2xl p-6 border border-slate-100 shadow-sm">
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Conversão por {DIMENSION_LABELS[dimension]}</h3>
         {chartData.length === 0 ? (
           <p className="text-sm text-slate-400 text-center py-12">Sem dados para esta dimensão</p>
         ) : (
@@ -1527,14 +1527,14 @@ function ConversionTab({ clients }: { clients: Client[] }) {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-navy rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-slate-100">
-          <h3 className="text-sm font-semibold text-slate-700">Detalhamento por {DIMENSION_LABELS[dimension]}</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Detalhamento por {DIMENSION_LABELS[dimension]}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-50 text-slate-600">
+              <tr className="bg-slate-50 dark:bg-navy/80 text-slate-600 dark:text-slate-400">
                 <th className="text-left p-3 font-medium">{DIMENSION_LABELS[dimension]}</th>
                 <th className="text-center p-3 font-medium">Total</th>
                 <th className="text-center p-3 font-medium">Convertidos</th>
@@ -1545,16 +1545,16 @@ function ConversionTab({ clients }: { clients: Client[] }) {
             </thead>
             <tbody>
               {rows.map(r => (
-                <tr key={r.dimension} className="border-b border-slate-50 hover:bg-slate-50/50">
-                  <td className="p-3 font-medium text-slate-700">{r.dimension}</td>
-                  <td className="p-3 text-center text-slate-600">{r.total}</td>
-                  <td className="p-3 text-center text-slate-600">{r.converted}</td>
+                <tr key={r.dimension} className="border-b border-slate-50 hover:bg-slate-50/50 dark:hover:bg-navy/50">
+                  <td className="p-3 font-medium text-slate-700 dark:text-slate-300">{r.dimension}</td>
+                  <td className="p-3 text-center text-slate-600 dark:text-slate-400">{r.total}</td>
+                  <td className="p-3 text-center text-slate-600 dark:text-slate-400">{r.converted}</td>
                   <td className="p-3 text-center">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${r.rate >= 20 ? 'bg-emerald-50 text-emerald-700' : r.rate >= 10 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${r.rate >= 20 ? 'bg-emerald-50 text-emerald-700' : r.rate >= 10 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400'}`}>
                       {formatPct(r.rate)}
                     </span>
                   </td>
-                  <td className="p-3 text-center text-slate-600">{r.avgDays || '—'}</td>
+                  <td className="p-3 text-center text-slate-600 dark:text-slate-400">{r.avgDays || '—'}</td>
                   <td className="p-3">
                     <button onClick={() => setDrillDimValue(r.dimension)}
                       className="text-primary-600 hover:text-primary-800 text-xs font-medium">
@@ -1573,10 +1573,10 @@ function ConversionTab({ clients }: { clients: Client[] }) {
         <div>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Detalhamento: {drillDimValue}</h3>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Detalhamento: {drillDimValue}</h3>
               <p className="text-sm text-slate-500 mt-0.5">{drillClients.length} contatos · {DIMENSION_LABELS[dimension]}</p>
             </div>
-            <button onClick={() => setDrillDimValue(null)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+            <button onClick={() => setDrillDimValue(null)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
               <XMarkIcon className="w-5 h-5 text-slate-400" />
             </button>
           </div>
@@ -1587,7 +1587,7 @@ function ConversionTab({ clients }: { clients: Client[] }) {
             if (!row) return null
             return (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                <div className="bg-slate-50 rounded-xl p-3">
+                <div className="bg-slate-50 dark:bg-navy/80 rounded-xl p-3">
                   <p className="text-xs text-slate-500">Total</p>
                   <p className="text-lg font-bold text-slate-800">{row.total}</p>
                 </div>
@@ -1617,8 +1617,8 @@ function ConversionTab({ clients }: { clients: Client[] }) {
                 <div className="space-y-2">
                   {drillStageDistribution.map((d, i) => (
                     <div key={d.name} className="flex items-center gap-2">
-                      <div className="w-24 text-xs text-slate-600 truncate">{d.name}</div>
-                      <div className="flex-1 h-5 bg-slate-50 rounded overflow-hidden">
+                      <div className="w-24 text-xs text-slate-600 dark:text-slate-400 truncate">{d.name}</div>
+                      <div className="flex-1 h-5 bg-slate-50 dark:bg-navy/80 rounded overflow-hidden">
                         <div className="h-full rounded" style={{ width: `${d.percent}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }} />
                       </div>
                       <span className="text-xs text-slate-500 w-12 text-right">{d.value} ({d.percent}%)</span>
@@ -1632,9 +1632,9 @@ function ConversionTab({ clients }: { clients: Client[] }) {
               <h4 className="text-xs font-semibold text-slate-500 uppercase mb-3">Contatos</h4>
               <div className="space-y-1 max-h-72 overflow-y-auto">
                 {drillClients.slice(0, 50).map(c => (
-                  <a key={c.id} href={`/contatos/${c.id}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 text-xs">
-                    <span className="text-slate-700 font-medium">{c.name as string || 'Sem nome'}</span>
-                    <span className={`px-1.5 py-0.5 rounded text-xs ${c.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                  <a key={c.id} href={`/contatos/${c.id}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/5 text-xs">
+                    <span className="text-slate-700 dark:text-slate-300 font-medium">{c.name as string || 'Sem nome'}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-xs ${c.status === 'Ativo' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 dark:bg-white/10 text-slate-500'}`}>
                       {c.status as string || '—'}
                     </span>
                   </a>

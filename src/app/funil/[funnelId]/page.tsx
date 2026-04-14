@@ -2274,8 +2274,8 @@ export default function FunilDetailPage() {
       const XLSX = await import('xlsx-js-style')
       const exportClients = getReportClients()
 
-      // App primary color: #13DEFC (cyan)
-      const primaryColor = '13DEFC'
+      // App secondary color: #06B6D4 (cyan)
+      const primaryColor = '06B6D4'
       const primaryDark = '0BBDD6'
       const headerFontColor = 'FFFFFF'
       const lightBg = 'F0FDFF'

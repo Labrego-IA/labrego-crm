@@ -12,7 +12,7 @@ interface ConversationInboxProps {
 }
 
 const STATUS_LABELS: Record<ConversationStatus, { label: string; color: string }> = {
-  active: { label: 'IA', color: 'bg-[#13DEFC]/20 text-cyan-600' },
+  active: { label: 'IA', color: 'bg-secondary/20 text-secondary-700' },
   human_handoff: { label: 'Humano', color: 'bg-yellow-500/20 text-yellow-400' },
   resolved: { label: 'Resolvido', color: 'bg-green-500/20 text-green-400' },
   expired: { label: 'Expirado', color: 'bg-slate-500/20 text-slate-400' },
@@ -161,7 +161,7 @@ export default function ConversationInbox({
                     </p>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {conv.unreadCount > 0 && (
-                        <span className="w-5 h-5 bg-[#13DEFC] text-slate-900 text-[10px] font-bold rounded-full flex items-center justify-center">
+                        <span className="w-5 h-5 bg-secondary text-slate-900 text-[10px] font-bold rounded-full flex items-center justify-center">
                           {conv.unreadCount > 9 ? '9+' : conv.unreadCount}
                         </span>
                       )}
