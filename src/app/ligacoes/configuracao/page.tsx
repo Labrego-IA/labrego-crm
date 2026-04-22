@@ -19,10 +19,7 @@ import {
   Cog6ToothIcon,
   SparklesIcon,
   BookOpenIcon,
-  ArrowsPointingOutIcon,
-  ArrowsPointingInIcon,
   LinkIcon,
-  PencilSquareIcon,
 } from '@heroicons/react/24/outline'
 import { CallRoutingConfig, CallAgentKnowledge, DEFAULT_AGENT_KNOWLEDGE } from '@/types/callRouting'
 import { assemblePromptFromWizard } from '@/lib/promptAssembler'
@@ -48,53 +45,6 @@ const HOURS = Array.from({ length: 24 }, (_, i) => ({
 
 type TabType = 'config' | 'knowledge' | 'integrations'
 
-function ExpandableTextarea({
-  value,
-  onChange,
-  rows = 2,
-  className = '',
-  placeholder,
-  fieldId,
-  expandedFields,
-  onToggleExpand,
-}: {
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
-  rows?: number
-  className?: string
-  placeholder?: string
-  fieldId: string
-  expandedFields: Set<string>
-  onToggleExpand: (fieldId: string) => void
-}) {
-  const isExpanded = expandedFields.has(fieldId)
-  const expandedRows = Math.max(rows * 3, 10)
-
-  return (
-    <div className="relative group">
-      <textarea
-        value={value}
-        onChange={onChange}
-        rows={isExpanded ? expandedRows : rows}
-        className={`${className} pr-9 transition-all duration-200`}
-        placeholder={placeholder}
-      />
-      <button
-        type="button"
-        onClick={() => onToggleExpand(fieldId)}
-        className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 rounded transition-colors"
-        title={isExpanded ? 'Reduzir campo' : 'Expandir campo'}
-      >
-        {isExpanded ? (
-          <ArrowsPointingInIcon className="w-4 h-4" />
-        ) : (
-          <ArrowsPointingOutIcon className="w-4 h-4" />
-        )}
-      </button>
-    </div>
-  )
-}
-
 export default function ConfiguracaoPage() {
   const { orgId } = useCrmUser()
   const { isBlocked: isPlanBlocked } = useFreePlanGuard()
@@ -103,19 +53,6 @@ export default function ConfiguracaoPage() {
   const [saving, setSaving] = useState(false)
   const [config, setConfig] = useState<CallRoutingConfig | null>(null)
   const [hasChanges, setHasChanges] = useState(false)
-  const [expandedFields, setExpandedFields] = useState<Set<string>>(new Set())
-
-  const toggleExpand = useCallback((fieldId: string) => {
-    setExpandedFields(prev => {
-      const next = new Set(prev)
-      if (next.has(fieldId)) {
-        next.delete(fieldId)
-      } else {
-        next.add(fieldId)
-      }
-      return next
-    })
-  }, [])
 
   // When orgId is not available, stop loading immediately
   useEffect(() => {
@@ -801,28 +738,14 @@ export default function ConfiguracaoPage() {
           </div>
         )}
 
-        {/* Knowledge Tab — Wizard Gamificado (Story 12.2+12.5) */}
+        {/* Knowledge Tab — Config Simplificada do Agente */}
         {activeTab === 'knowledge' && config && orgId && (
-          <div className="space-y-4">
-            {/* Custom prompt indicator */}
-            {config.agentKnowledge?.wizardAnswers?.manuallyEdited && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
-                <PencilSquareIcon className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-amber-800">Prompt customizado em uso</p>
-                  <p className="text-xs text-amber-600 mt-0.5">
-                    O prompt foi editado manualmente. Ao clicar em &quot;Salvar&quot; no topo da pagina, o prompt sera regenerado pelo wizard.
-                  </p>
-                </div>
-              </div>
-            )}
-            <AgentWizard
-              orgId={orgId}
-              initialAnswers={config.agentKnowledge?.wizardAnswers}
-              existingKnowledge={config.agentKnowledge}
-              onKnowledgeUpdate={handleKnowledgeUpdate}
-            />
-          </div>
+          <AgentWizard
+            orgId={orgId}
+            initialAnswers={config.agentKnowledge?.wizardAnswers}
+            existingKnowledge={config.agentKnowledge}
+            onKnowledgeUpdate={handleKnowledgeUpdate}
+          />
         )}
 
         {/* Integrations Tab */}

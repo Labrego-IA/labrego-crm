@@ -41,6 +41,64 @@ export interface AgentWizardAnswers {
   strengthScore: number
   lastUpdated: string
   manuallyEdited?: boolean
+
+  // Config simplificada (sobrescreve campos individuais quando presente)
+  simpleConfig?: SimpleAgentConfig
+}
+
+// ========== ESTILOS PRE-CONSTRUIDOS SDR ==========
+
+export interface AgentStyle {
+  id: string
+  label: string
+  description: string
+  tone: string
+}
+
+export const AGENT_STYLES: AgentStyle[] = [
+  {
+    id: 'direto',
+    label: 'Direto e Confiante',
+    description: 'Vai ao ponto, transmite autoridade',
+    tone: 'Confiante e direto, sem enrolação. Fala como alguém que já viu centenas de operações e sabe exatamente como ajudar. Profissional mas acessível.',
+  },
+  {
+    id: 'consultivo',
+    label: 'Consultivo e Empático',
+    description: 'Escuta muito, constrói rapport',
+    tone: 'Empático e consultivo. Escuta mais do que fala. Faz perguntas inteligentes e demonstra interesse genuíno na situação do prospect. Tom de conselheiro experiente.',
+  },
+  {
+    id: 'energetico',
+    label: 'Energético e Entusiasmado',
+    description: 'Alto-astral, contagiante',
+    tone: 'Energético e entusiasmado, mas sem ser forçado. Transmite paixão pelo que faz. Usa exemplos concretos e gera senso de oportunidade. Tom positivo e motivador.',
+  },
+  {
+    id: 'formal',
+    label: 'Profissional e Formal',
+    description: 'Corporativo, técnico, respeitoso',
+    tone: 'Profissional e formal. Usa linguagem corporativa sem ser robótico. Demonstra conhecimento técnico e respeito pelo tempo do prospect. Tom executivo e estruturado.',
+  },
+  {
+    id: 'casual',
+    label: 'Casual e Amigável',
+    description: 'Descontraído, como um amigo',
+    tone: 'Casual e amigável, como um amigo que entende do assunto. Usa linguagem simples e direta, sem formalidades excessivas. Cria conexão rápida e natural.',
+  },
+]
+
+// ========== CONFIG SIMPLIFICADA DO AGENTE ==========
+
+export interface SimpleAgentConfig {
+  agentName: string
+  styleId: string
+  companyName: string
+  aboutCompany: string
+  products: string
+  idealCustomer: string
+  specialistName: string
+  meetingDuration: number
 }
 
 // ========== CONFIGURAÇÕES ==========
