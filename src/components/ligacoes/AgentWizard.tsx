@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebaseClient'
-import { useCrmUser } from '@/contexts/CrmUserContext'
+import { useSuperAdmin } from '@/hooks/useSuperAdmin'
 import type { AgentWizardAnswers, SimpleAgentConfig } from '@/types/callRouting'
 import { AGENT_STYLES } from '@/types/callRouting'
 import {
@@ -39,8 +39,7 @@ interface AgentWizardProps {
 }
 
 export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, onKnowledgeUpdate }: AgentWizardProps) {
-  const { member } = useCrmUser()
-  const isAdmin = member?.role === 'admin' || member?.systemRole === 'admin'
+  const { isSuperAdmin } = useSuperAdmin()
 
   const initialSimple: SimpleAgentConfig = initialAnswers?.simpleConfig || {
     agentName: initialAnswers?.agentName || existingKnowledge?.agentName || '',
@@ -352,8 +351,8 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
         </div>
 
         {/* Actions */}
-        <div className={`flex items-center ${isAdmin ? 'justify-between' : 'justify-end'} pt-4 border-t border-slate-100 dark:border-white/5`}>
-          {isAdmin && (
+        <div className={`flex items-center ${isSuperAdmin ? 'justify-between' : 'justify-end'} pt-4 border-t border-slate-100 dark:border-white/5`}>
+          {isSuperAdmin && (
             <button
               onClick={() => setPreviewOpen(true)}
               className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 rounded-xl transition-colors"
@@ -394,7 +393,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
       </div>
 
       {/* Prompt Preview Drawer — apenas admin */}
-      {isAdmin && (
+      {isSuperAdmin && (
         <PromptPreview
           answers={previewAnswers}
           open={previewOpen}
