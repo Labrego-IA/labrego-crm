@@ -353,78 +353,20 @@ function buildSystemPrompt(config: CallRoutingConfig, prospect: {
   const knowledge = config.agentKnowledge
   if (!knowledge?.systemPrompt) return undefined
 
-  // Montar contexto adicional
   const contextParts: string[] = []
 
-  // Quando não temos nome pessoal do contato, instruir o agente a perguntar
   if (!contactName) {
     contextParts.push(`IMPORTANTE: Voce nao sabe o nome da pessoa que vai atender. No inicio da ligacao, apos se apresentar, pergunte com quem voce esta falando. Use o nome que a pessoa informar durante toda a conversa.`)
   }
 
-  if (knowledge.agentName || knowledge.agentRole) {
-    contextParts.push(`Voce e ${knowledge.agentName || 'um agente'}, ${knowledge.agentRole || 'consultor'} da ${knowledge.companyName || 'empresa'}.`)
-  }
-
-  if (knowledge.companyDescription) {
-    contextParts.push(`Sobre a empresa: ${knowledge.companyDescription}`)
-  }
-
-  if (knowledge.productsServices) {
-    contextParts.push(`Produtos/Servicos oferecidos: ${knowledge.productsServices}`)
-  }
-
-  if (knowledge.valueProposition) {
-    contextParts.push(`Proposta de valor: ${knowledge.valueProposition}`)
-  }
-
-  if (knowledge.competitiveDifferentials) {
-    contextParts.push(`Diferenciais: ${knowledge.competitiveDifferentials}`)
-  }
-
-  if (knowledge.targetAudience) {
-    contextParts.push(`Publico-alvo: ${knowledge.targetAudience}`)
-  }
-
-  if (knowledge.toneOfVoice) {
-    contextParts.push(`Tom de voz: ${knowledge.toneOfVoice}`)
-  }
-
-  if (knowledge.languageStyle) {
-    contextParts.push(`Estilo de linguagem: ${knowledge.languageStyle}`)
-  }
-
-  if (knowledge.keyPhrases && knowledge.keyPhrases.length > 0) {
-    contextParts.push(`Frases importantes para usar: ${knowledge.keyPhrases.join('; ')}`)
-  }
-
-  if (knowledge.forbiddenPhrases && knowledge.forbiddenPhrases.length > 0) {
-    contextParts.push(`Frases PROIBIDAS (nunca use): ${knowledge.forbiddenPhrases.join('; ')}`)
-  }
-
-  if (knowledge.commonObjections && knowledge.commonObjections.length > 0) {
-    const objections = knowledge.commonObjections
-      .map(o => `- Se disser "${o.objection}": responda "${o.response}"`)
-      .join('\n')
-    contextParts.push(`Como lidar com objecoes:\n${objections}`)
-  }
-
-  if (knowledge.faqItems && knowledge.faqItems.length > 0) {
-    const faqs = knowledge.faqItems
-      .map(f => `- "${f.question}": ${f.answer}`)
-      .join('\n')
-    contextParts.push(`Perguntas frequentes:\n${faqs}`)
-  }
-
-  // Contexto do prospect atual
-  contextParts.push(`\nInformacoes do prospect atual:`)
+  contextParts.push(`\nInformacoes do prospect desta ligacao:`)
   if (contactName) {
     contextParts.push(`- Nome do contato: ${contactName}`)
   }
   contextParts.push(`- Empresa: ${prospect.company || prospect.name}`)
   if (prospect.industry) contextParts.push(`- Setor: ${prospect.industry}`)
 
-  // Montar prompt final
-  const context = contextParts.length > 0 ? `\n\n### CONTEXTO ###\n${contextParts.join('\n\n')}` : ''
+  const context = `\n\n### CONTEXTO DA LIGACAO ###\n${contextParts.join('\n')}`
 
   return `${knowledge.systemPrompt}${context}`
 }
