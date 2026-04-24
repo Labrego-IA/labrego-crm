@@ -348,6 +348,11 @@ Use esse conhecimento para adaptar suas perguntas e conectar a dor do prospect a
 `)
 
   // ── 4. FRAMEWORK DE QUALIFICACAO ──
+  const customQuestions = (cfg.discoveryQuestions || []).filter(q => q.trim())
+  const customQuestionsBlock = customQuestions.length > 0
+    ? `\n\n**Perguntas especificas do negocio (use durante a fase de Discovery):**\n${customQuestions.map(q => `- "${q}"`).join('\n')}\n\nDistribua essas perguntas naturalmente ao longo da conversa. NAO faca todas de uma vez.`
+    : ''
+
   sections.push(`## 4. FRAMEWORK DE QUALIFICACAO (BANT adaptado)
 
 Durante a conversa, voce precisa descobrir 4 coisas. NAO transforme isso em interrogatorio — distribua ao longo do dialogo naturalmente.
@@ -368,7 +373,14 @@ Tem ideia de investimento? NAO pergunte diretamente sobre budget — descubra in
 - 3-4 criterios atendidos → Agendar reuniao com ${specialist}
 - 2 criterios atendidos → Propor reuniao mais curta ou envio de material + follow-up
 - 0-1 criterio → Agradecer, encerrar educadamente. NAO force reuniao com prospect desqualificado
+${customQuestionsBlock}
 `)
+
+  // ── Social proof block (usado na fase 3) ──
+  const socialProofs = (cfg.socialProof || []).filter(p => p.trim())
+  const socialProofBlock = socialProofs.length > 0
+    ? `\n**Resultados reais para usar como prova social (escolha o mais relevante para o contexto):**\n${socialProofs.map(p => `- "${p}"`).join('\n')}\n\nUse esses dados quando o prospect estiver cetico ou precisar de evidencia concreta. NAO despeje todos de uma vez — escolha 1-2 que se conectem com a dor que o prospect mencionou.`
+    : ''
 
   // ── 5. FLUXO DE CONVERSA ──
   const openingByStyle: Record<string, string> = {
@@ -428,11 +440,11 @@ Siga a sequencia SPIN. Faca UMA pergunta por vez. Escute. Aprofunde antes de ir 
 Estrutura:
 1. Repita a dor do prospect com as palavras DELE (espelhamento)
 2. Conecte ao que a ${companyName} resolve
-3. Mencione resultado de empresas similares (social proof generico)
+3. Mencione resultado de empresas similares (social proof)
 
 Exemplo de estrutura:
-"Entendi, entao o principal desafio e [dor do prospect nas palavras dele]. Isso e bem comum em empresas do porte de voces. O que a gente tem feito com clientes em situacao parecida e [beneficio concreto do produto]. Inclusive temos visto [resultado generico mas credivel]."
-
+"Entendi, entao o principal desafio e [dor do prospect nas palavras dele]. Isso e bem comum em empresas do porte de voces. O que a gente tem feito com clientes em situacao parecida e [beneficio concreto do produto]. Inclusive temos visto [resultado]."
+${socialProofBlock}
 **NAO entre em detalhes tecnicos.** Isso e papel do ${specialist} na reuniao.
 
 ### FASE 4: Agendamento (30-60 segundos)
@@ -673,8 +685,21 @@ Use \`end_call\` com outcome apropriado.
 6. Confirme verbalmente: "Agendado, {{contactName}}. Voce recebe a confirmacao no email."
 `)
 
-  // ── 13. VARIAVEIS DINAMICAS ──
-  sections.push(`## 13. VARIAVEIS DINAMICAS
+  // ── 13. FAQ ──
+  const faqItems = (cfg.faq || []).filter(f => f.question.trim() && f.answer.trim())
+  if (faqItems.length > 0) {
+    sections.push(`## 13. PERGUNTAS FREQUENTES (FAQ)
+
+Se o prospect fizer alguma dessas perguntas, use a resposta correspondente. Adapte o tom ao estilo da conversa — nao leia a resposta literalmente.
+
+${faqItems.map(f => `**"${f.question}"**\n→ ${f.answer}`).join('\n\n')}
+
+**Pergunta nao mapeada:** Se o prospect perguntar algo que nao esta aqui, seja honesto: "Essa e uma otima pergunta, {{contactName}}. Pra te dar a resposta mais precisa, vou pedir pro ${specialist} cobrir isso na reuniao. Ele vai ter todos os detalhes."
+`)
+  }
+
+  // ── 14. VARIAVEIS DINAMICAS ──
+  sections.push(`## ${faqItems.length > 0 ? '14' : '13'}. VARIAVEIS DINAMICAS
 
 Substituidas automaticamente antes de cada ligacao:
 - {{contactName}} — Nome do prospect
@@ -690,14 +715,23 @@ Use {{contactName}} ao longo da conversa para criar conexao. Use {{prospectCompa
 
 export function calculateSimpleConfigStrength(cfg: SimpleAgentConfig): number {
   let score = 0
-  if (cfg.agentName.trim()) score += 15
-  if (cfg.styleId) score += 10
-  if (cfg.companyName.trim()) score += 15
-  if (cfg.aboutCompany.trim()) score += 20
-  if (cfg.products.trim()) score += 20
-  if (cfg.idealCustomer.trim()) score += 10
-  if (cfg.specialistName.trim()) score += 10
-  return score
+  if (cfg.agentName.trim()) score += 10
+  if (cfg.styleId) score += 5
+  if (cfg.companyName.trim()) score += 10
+  if (cfg.aboutCompany.trim()) score += cfg.aboutCompany.trim().length >= 30 ? 15 : 8
+  if (cfg.products.trim()) score += cfg.products.trim().length >= 20 ? 15 : 8
+  if (cfg.idealCustomer.trim()) score += cfg.idealCustomer.trim().length >= 15 ? 10 : 5
+  if (cfg.specialistName.trim()) score += 5
+  const filledQuestions = (cfg.discoveryQuestions || []).filter(q => q.trim()).length
+  if (filledQuestions >= 3) score += 10
+  else if (filledQuestions >= 1) score += 5
+  const filledProofs = (cfg.socialProof || []).filter(p => p.trim()).length
+  if (filledProofs >= 2) score += 10
+  else if (filledProofs >= 1) score += 5
+  const filledFaqs = (cfg.faq || []).filter(f => f.question.trim() && f.answer.trim()).length
+  if (filledFaqs >= 3) score += 10
+  else if (filledFaqs >= 1) score += 5
+  return Math.min(score, 100)
 }
 
 export function simpleConfigToWizardAnswers(cfg: SimpleAgentConfig): AgentWizardAnswers {
@@ -713,7 +747,7 @@ export function simpleConfigToWizardAnswers(cfg: SimpleAgentConfig): AgentWizard
     valueProposition: cfg.aboutCompany,
     openingApproach: '',
     hookStrategy: '',
-    discoveryQuestions: [],
+    discoveryQuestions: (cfg.discoveryQuestions || []).filter(q => q.trim()),
     qualificationCriteria: '',
     solutionBridge: '',
     specialistName: cfg.specialistName,

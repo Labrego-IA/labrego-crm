@@ -18,6 +18,9 @@ import {
   CheckCircleIcon,
   DocumentTextIcon,
   ChevronDownIcon,
+  PlusIcon,
+  TrashIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 
 const EMPTY_SIMPLE_CONFIG: SimpleAgentConfig = {
@@ -29,6 +32,9 @@ const EMPTY_SIMPLE_CONFIG: SimpleAgentConfig = {
   idealCustomer: '',
   specialistName: '',
   meetingDuration: 30,
+  discoveryQuestions: [''],
+  socialProof: [''],
+  faq: [{ question: '', answer: '' }],
 }
 
 interface AgentWizardProps {
@@ -50,6 +56,9 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
     idealCustomer: initialAnswers?.idealCustomer || existingKnowledge?.targetAudience || '',
     specialistName: initialAnswers?.specialistName || '',
     meetingDuration: initialAnswers?.meetingDuration || 30,
+    discoveryQuestions: initialAnswers?.discoveryQuestions?.filter(q => q.trim()) || [''],
+    socialProof: [''],
+    faq: existingKnowledge?.faqItems?.map(f => ({ question: f.question, answer: f.answer })) || [{ question: '', answer: '' }],
   }
 
   const [config, setConfig] = useState<SimpleAgentConfig>(initialSimple)
@@ -85,6 +94,83 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
     setConfig(prev => ({ ...prev, [field]: value }))
   }, [])
 
+  const updateDiscoveryQuestion = useCallback((index: number, value: string) => {
+    setConfig(prev => {
+      const questions = [...(prev.discoveryQuestions || [''])]
+      questions[index] = value
+      return { ...prev, discoveryQuestions: questions }
+    })
+  }, [])
+
+  const addDiscoveryQuestion = useCallback(() => {
+    setConfig(prev => ({
+      ...prev,
+      discoveryQuestions: [...(prev.discoveryQuestions || []), ''],
+    }))
+  }, [])
+
+  const removeDiscoveryQuestion = useCallback((index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      discoveryQuestions: (prev.discoveryQuestions || []).filter((_, i) => i !== index),
+    }))
+  }, [])
+
+  const updateSocialProof = useCallback((index: number, value: string) => {
+    setConfig(prev => {
+      const proofs = [...(prev.socialProof || [''])]
+      proofs[index] = value
+      return { ...prev, socialProof: proofs }
+    })
+  }, [])
+
+  const addSocialProof = useCallback(() => {
+    setConfig(prev => ({
+      ...prev,
+      socialProof: [...(prev.socialProof || []), ''],
+    }))
+  }, [])
+
+  const removeSocialProof = useCallback((index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      socialProof: (prev.socialProof || []).filter((_, i) => i !== index),
+    }))
+  }, [])
+
+  const updateFaq = useCallback((index: number, field: 'question' | 'answer', value: string) => {
+    setConfig(prev => {
+      const faqs = [...(prev.faq || [{ question: '', answer: '' }])]
+      faqs[index] = { ...faqs[index], [field]: value }
+      return { ...prev, faq: faqs }
+    })
+  }, [])
+
+  const addFaq = useCallback(() => {
+    setConfig(prev => ({
+      ...prev,
+      faq: [...(prev.faq || []), { question: '', answer: '' }],
+    }))
+  }, [])
+
+  const removeFaq = useCallback((index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      faq: (prev.faq || []).filter((_, i) => i !== index),
+    }))
+  }, [])
+
+  const fieldWarnings = useMemo(() => {
+    const warnings: Record<string, string> = {}
+    if (config.aboutCompany.trim().length > 0 && config.aboutCompany.trim().length < 30)
+      warnings.aboutCompany = 'Descricao muito curta — quanto mais detalhes, melhor o agente conversa'
+    if (config.products.trim().length > 0 && config.products.trim().length < 20)
+      warnings.products = 'Descreva melhor seus produtos para o agente nao ficar generico'
+    if (config.idealCustomer.trim().length > 0 && config.idealCustomer.trim().length < 15)
+      warnings.idealCustomer = 'Detalhe o perfil de cliente ideal para qualificacao mais precisa'
+    return warnings
+  }, [config.aboutCompany, config.products, config.idealCustomer])
+
   const handleFieldBlur = useCallback(async () => {
     if (!orgId) return
     setSaving(true)
@@ -107,6 +193,10 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
       const wizardAnswers = simpleConfigToWizardAnswers(config)
       wizardAnswers.strengthScore = strengthScore
 
+      const faqItems = (config.faq || [])
+        .filter(f => f.question.trim() && f.answer.trim())
+        .map((f, i) => ({ id: `faq-${i}`, question: f.question.trim(), answer: f.answer.trim() }))
+
       const configRef = doc(db, 'callRoutingConfig', orgId)
       await updateDoc(configRef, {
         'agentKnowledge.wizardAnswers': wizardAnswers,
@@ -117,6 +207,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
         'agentKnowledge.companyDescription': config.aboutCompany,
         'agentKnowledge.productsServices': config.products,
         'agentKnowledge.targetAudience': config.idealCustomer,
+        'agentKnowledge.faqItems': faqItems,
       })
 
       setSaveSuccess(true)
@@ -131,6 +222,7 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
         companyDescription: config.aboutCompany,
         productsServices: config.products,
         targetAudience: config.idealCustomer,
+        faqItems,
       })
     } catch (error) {
       console.error('Error saving agent:', error)
@@ -267,6 +359,12 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
             rows={3}
             className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none bg-white dark:bg-surface-dark"
           />
+          {fieldWarnings.aboutCompany && (
+            <p className="flex items-center gap-1 mt-1 text-xs text-amber-600 dark:text-amber-400">
+              <ExclamationTriangleIcon className="w-3.5 h-3.5 flex-shrink-0" />
+              {fieldWarnings.aboutCompany}
+            </p>
+          )}
         </div>
 
         {/* Produtos / Servicos */}
@@ -282,6 +380,12 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
             rows={3}
             className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none bg-white dark:bg-surface-dark"
           />
+          {fieldWarnings.products && (
+            <p className="flex items-center gap-1 mt-1 text-xs text-amber-600 dark:text-amber-400">
+              <ExclamationTriangleIcon className="w-3.5 h-3.5 flex-shrink-0" />
+              {fieldWarnings.products}
+            </p>
+          )}
         </div>
 
         {/* Cliente ideal */}
@@ -297,6 +401,168 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
             rows={2}
             className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none bg-white dark:bg-surface-dark"
           />
+          {fieldWarnings.idealCustomer && (
+            <p className="flex items-center gap-1 mt-1 text-xs text-amber-600 dark:text-amber-400">
+              <ExclamationTriangleIcon className="w-3.5 h-3.5 flex-shrink-0" />
+              {fieldWarnings.idealCustomer}
+            </p>
+          )}
+        </div>
+
+        {/* Perguntas de Discovery */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            Perguntas de Discovery
+            <span className="text-xs font-normal text-slate-400 ml-1">(opcional)</span>
+          </label>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">
+            Perguntas especificas do seu negocio para o agente fazer durante a ligacao.
+          </p>
+          <div className="space-y-2">
+            {(config.discoveryQuestions || ['']).map((q, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => updateDiscoveryQuestion(i, e.target.value)}
+                  onBlur={handleFieldBlur}
+                  placeholder={
+                    i === 0 ? 'Ex: Quantos vendedores tem na equipe hoje?'
+                    : i === 1 ? 'Ex: Como voces fazem prospecao atualmente?'
+                    : 'Adicione outra pergunta...'
+                  }
+                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all bg-white dark:bg-surface-dark"
+                />
+                {(config.discoveryQuestions || []).length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => { removeDiscoveryQuestion(i); setTimeout(handleFieldBlur, 100) }}
+                    className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          {(config.discoveryQuestions || []).length < 5 && (
+            <button
+              type="button"
+              onClick={addDiscoveryQuestion}
+              className="flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              Adicionar pergunta
+            </button>
+          )}
+        </div>
+
+        {/* Social Proof / Cases */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            Resultados e Cases
+            <span className="text-xs font-normal text-slate-400 ml-1">(opcional)</span>
+          </label>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">
+            Resultados reais de clientes para o agente usar como prova social.
+          </p>
+          <div className="space-y-2">
+            {(config.socialProof || ['']).map((proof, i) => (
+              <div key={i} className="flex gap-2">
+                <input
+                  type="text"
+                  value={proof}
+                  onChange={(e) => updateSocialProof(i, e.target.value)}
+                  onBlur={handleFieldBlur}
+                  placeholder={
+                    i === 0 ? 'Ex: Empresa X aumentou 40% das vendas em 3 meses'
+                    : i === 1 ? 'Ex: Reduzimos o tempo de prospecao em 60% para a Empresa Y'
+                    : 'Adicione outro resultado...'
+                  }
+                  className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all bg-white dark:bg-surface-dark"
+                />
+                {(config.socialProof || []).length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => { removeSocialProof(i); setTimeout(handleFieldBlur, 100) }}
+                    className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          {(config.socialProof || []).length < 5 && (
+            <button
+              type="button"
+              onClick={addSocialProof}
+              className="flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              Adicionar resultado
+            </button>
+          )}
+        </div>
+
+        {/* FAQ */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            Perguntas Frequentes (FAQ)
+            <span className="text-xs font-normal text-slate-400 ml-1">(opcional)</span>
+          </label>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mb-2">
+            Perguntas que o prospect pode fazer e o agente precisa saber responder.
+          </p>
+          <div className="space-y-3">
+            {(config.faq || [{ question: '', answer: '' }]).map((item, i) => (
+              <div key={i} className="bg-slate-50 dark:bg-white/5 rounded-xl p-3 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={item.question}
+                    onChange={(e) => updateFaq(i, 'question', e.target.value)}
+                    onBlur={handleFieldBlur}
+                    placeholder={
+                      i === 0 ? 'Ex: Quanto custa o servico?'
+                      : 'Pergunta do prospect...'
+                    }
+                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all bg-white dark:bg-surface-dark"
+                  />
+                  {(config.faq || []).length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => { removeFaq(i); setTimeout(handleFieldBlur, 100) }}
+                      className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <textarea
+                  value={item.answer}
+                  onChange={(e) => updateFaq(i, 'answer', e.target.value)}
+                  onBlur={handleFieldBlur}
+                  placeholder={
+                    i === 0 ? 'Ex: Nossos planos comecam a partir de R$297/mes, mas o valor exato depende do porte da empresa. Na reuniao o especialista apresenta a proposta personalizada.'
+                    : 'Resposta que o agente deve dar...'
+                  }
+                  rows={2}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary/30 transition-all resize-none bg-white dark:bg-surface-dark"
+                />
+              </div>
+            ))}
+          </div>
+          {(config.faq || []).length < 10 && (
+            <button
+              type="button"
+              onClick={addFaq}
+              className="flex items-center gap-1 mt-2 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              Adicionar FAQ
+            </button>
+          )}
         </div>
 
         {/* Especialista + Duracao reuniao */}
@@ -341,12 +607,13 @@ export default function AgentWizard({ orgId, initialAnswers, existingKnowledge, 
         <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-xs text-slate-500 dark:text-slate-400 space-y-1">
           <p className="font-medium text-slate-600 dark:text-slate-300">O que ja vem pronto no seu agente:</p>
           <ul className="list-disc list-inside space-y-0.5">
-            <li>Script de abertura e gancho de atencao</li>
-            <li>Perguntas de qualificacao e investigacao</li>
-            <li>Tratamento de 5 objecoes mais comuns</li>
+            <li>Script de abertura adaptado ao estilo escolhido</li>
+            <li>Framework SPIN Selling + BANT para qualificacao</li>
+            <li>Tratamento de 6 objecoes com respostas no seu estilo</li>
             <li>Comportamento adaptativo por tipo de prospect</li>
-            <li>Regras de linguagem e function calling</li>
+            <li>Manejo de gatekeeper e script de voicemail</li>
             <li>Agendamento automatico via Google Calendar</li>
+            <li>Controle de tempo e regras de desqualificacao</li>
           </ul>
         </div>
 

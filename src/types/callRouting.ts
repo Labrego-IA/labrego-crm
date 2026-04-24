@@ -99,6 +99,9 @@ export interface SimpleAgentConfig {
   idealCustomer: string
   specialistName: string
   meetingDuration: number
+  discoveryQuestions?: string[]
+  socialProof?: string[]
+  faq?: { question: string; answer: string }[]
 }
 
 // ========== CONFIGURAÇÕES ==========
