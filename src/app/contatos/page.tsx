@@ -396,7 +396,8 @@ export default function ContatosPage() {
 
   // Handle stage change
   const handleStageChange = async () => {
-    if (isPlanBlocked || !stageChangeClient || !newStageId) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (!stageChangeClient || !newStageId) return
     setSavingStage(true)
     try {
       const fromStageName = funnelStages.find(s => s.id === stageChangeClient.funnelStage)?.name || 'Sem etapa'
@@ -438,7 +439,8 @@ export default function ContatosPage() {
 
   // Handle follow-up registration
   const handleFollowUp = async () => {
-    if (isPlanBlocked || !followUpClient) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (!followUpClient) return
     setSavingFollowUp(true)
     try {
       const now = new Date().toISOString()
@@ -581,7 +583,8 @@ export default function ContatosPage() {
 
   // Import contacts from CSV or XLSX
   const handleImport = async () => {
-    if (isPlanBlocked || !importFile) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (!importFile) return
 
     const fieldMap: Record<string, string> = {
       // Nome
@@ -1331,7 +1334,8 @@ export default function ContatosPage() {
 
   // Upload partners
   const handleUploadPartners = async () => {
-    if (isPlanBlocked || !partnersFile) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (!partnersFile) return
 
     setUploadingPartners(true)
     const isExcel = partnersFile.name.endsWith('.xlsx') || partnersFile.name.endsWith('.xls')
@@ -1510,10 +1514,19 @@ export default function ContatosPage() {
 
   // Save client
   const handleSave = async () => {
-    if (isPlanBlocked) return
+    if (isPlanBlocked) {
+      toast.error('Seu plano expirou. Renove para criar ou editar contatos.')
+      return
+    }
     // Verificar permissão de criar/editar contato
-    if (!editingId && !can('canCreateContacts')) return
-    if (editingId && !can('canEditContacts')) return
+    if (!editingId && !can('canCreateContacts')) {
+      toast.error('Você não tem permissão para criar contatos. Fale com o administrador.')
+      return
+    }
+    if (editingId && !can('canEditContacts')) {
+      toast.error('Você não tem permissão para editar contatos. Fale com o administrador.')
+      return
+    }
 
     if (!form.name.trim() || !form.phone.trim()) {
       toast.error('Nome e telefone são obrigatórios')
@@ -1645,7 +1658,8 @@ export default function ContatosPage() {
 
   // Delete client
   const handleDelete = async () => {
-    if (isPlanBlocked || !deleteId || !can('canDeleteContacts')) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (!deleteId || !can('canDeleteContacts')) return
     try {
       await deleteDoc(doc(db, 'clients', deleteId))
       setDeleteId(null)
@@ -1682,7 +1696,8 @@ export default function ContatosPage() {
   }
 
   const handleBulkDelete = async () => {
-    if (isPlanBlocked || selectedIds.size === 0 || !can('canDeleteContacts')) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (selectedIds.size === 0 || !can('canDeleteContacts')) return
     setDeletingBulk(true)
     try {
       const deletePromises = Array.from(selectedIds).map((id) =>
@@ -1701,7 +1716,8 @@ export default function ContatosPage() {
   }
 
   const handleBulkMove = async () => {
-    if (isPlanBlocked || selectedIds.size === 0 || !bulkFunnelId || !bulkStageId) return
+    if (isPlanBlocked) { toast.error('Seu plano expirou. Renove para continuar.'); return }
+    if (selectedIds.size === 0 || !bulkFunnelId || !bulkStageId) return
     setSavingBulkMove(true)
     try {
       const ids = Array.from(selectedIds)
